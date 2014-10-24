@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.univlorraine</groupId>
+	<artifactId>mondossierweb</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>mondossierweb</name>
+
+	<prerequisites>
+		<maven>3.0.4</maven>
+	</prerequisites>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+		<vaadin.version>7.3.0</vaadin.version>
+		<springframework.version>4.1.0.RELEASE</springframework.version>
+		<spring.security.version>3.2.5.RELEASE</spring.security.version>
+		<aspectj.version>1.8.2</aspectj.version>
+		<slf4j.version>1.7.7</slf4j.version>
+		<jasperreports.version>5.6.1</jasperreports.version>
+		<groovy.version>2.3.6</groovy.version>
+			<mysql.connector.version>5.1.24</mysql.connector.version>
+		<ojdbc14.version>10.2.0.4.0</ojdbc14.version>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>ul-releases</id>
+			<name>Université de Lorraine Releases</name>
+			<url>http://maven.univ-lorraine.fr/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>ul-snapshots</id>
+			<name>Université de Lorraine Snapshots</name>
+			<url>http://maven.univ-lorraine.fr/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:svn:https://subversion.renater.fr/mondossierweb/trunk</connection>
+		<developerConnection>scm:svn:https://subversion.renater.fr/mondossierweb/trunk</developerConnection>
+		<url>scm:svn:https://subversion.renater.fr/mondossierweb/trunk</url>
+	</scm>
+
+	<repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+
+		<!-- Univ Lorraine repositories -->
+		<repository>
+			<id>ul-releases</id>
+			<url>http://maven.univ-lorraine.fr/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>ul-thirdparty</id>
+			<url>http://maven.univ-lorraine.fr/content/repositories/thirdparty/</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<resources>
+			<resource>
+				<!-- Filtre le fichier app.properties -->
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>app.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>**/*.scss</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.version}</version>
+				<configuration>
+						<!--  <modules>
+                                <module>fr.univlorraine.mondossierweb.AppWidgetset</module>
+                            </modules>-->
+                            <extraJvmArgs>-Xmx512M -Xss4096k</extraJvmArgs>
+					<!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
+						way compatible with Vaadin eclipse plugin. -->
+					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
+					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
+					<noServer>true</noServer>
+					<!-- Remove draftCompile when project is ready -->
+					<draftCompile>false</draftCompile>
+					<compileReport>true</compileReport>
+					<style>OBF</style>
+					<strict>true</strict>
+					<runTarget>http://localhost:18080/</runTarget>
+					<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+				</configuration>
+			</plugin>
+			
+			
+			<!-- Active le compile-time weaving, pour configurer l'AOP -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.6</version>
+				<configuration>
+					<showWeaveInfo>true</showWeaveInfo>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<complianceLevel>${java.version}</complianceLevel>
+					<forceAjcCompile>true</forceAjcCompile>
+					<sources />
+					<weaveDirectories>
+						<weaveDirectory>${project.build.outputDirectory}</weaveDirectory>
+					</weaveDirectories>
+					<!-- Activation des profils: décommenter cette zone et commenter les weaveDirectories ci-dessus
+					<weaveDirectories>
+						<weaveDirectory>${project.build.directory}/classes/fr/univlorraine/${project.artifactId}/</weaveDirectory>
+					</weaveDirectories>
+					<weaveDependencies>
+						<weaveDependency>
+							<groupId>fr.univlorraine</groupId>
+							<artifactId>security</artifactId>
+						</weaveDependency>
+					</weaveDependencies>
+					-->
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectj.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<!-- Active le Static Weaving d'EclipseLink -->
+			<!-- Scan des annotations -->
+			<plugin>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections-maven</artifactId>
+				<version>0.9.9-RC2</version>
+				<configuration>
+					<destinations>${project.build.directory}/generated-persistenceinfo/reflections.xml</destinations>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>reflections</goal>
+						</goals>
+						<phase>process-classes</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>groovy-maven-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<!-- Création du persistence.xml temporaire -->
+					<execution>
+						<id>generatePersistenceXml</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								def puMap = ['pun-jpa' : 'fr.univlorraine.mondossierweb.entities']
+
+								println 'génère le fichier persistence.xml...'
+								def directory = new File(project.build.directory + '/generated-persistenceinfo/META-INF')
+								directory.mkdirs()
+								def file = new File(directory, 'persistence.xml')
+								file.newWriter()
+
+								def reflections = new XmlParser().parse(new File(project.build.directory + '/generated-persistenceinfo/reflections.xml'))
+								def entityClasses = reflections.TypeAnnotationsScanner.entry.find{it.key.text() == 'javax.persistence.Entity'}?.values?.value
+								def converterClasses = reflections.TypeAnnotationsScanner.entry.find{it.key.text() == 'javax.persistence.Converter'}?.values?.value
+
+								file &lt;&lt; '&lt;?xml version="1.0" encoding="UTF-8"?&gt;'
+								file &lt;&lt; '\n&lt;persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_1.xsd"&gt;'
+								puMap.each() {puName, puPackage ->
+									println 'traite la persistence-unit:' + puName + ', package:' + puPackage + '...'
+									file &lt;&lt; '\n\n\t&lt;persistence-unit name="' + puName + '"&gt;'
+									entityClasses.findAll{it.text().startsWith(puPackage)}.each() {
+										println 'ajout de l\'entité ' + it.text() + '...'
+										file &lt;&lt; '\n\t\t&lt;class&gt;' + it.text() + '&lt;/class&gt;'
+									}
+									converterClasses.findAll{it.text().startsWith(puPackage)}.each() {
+										println 'ajout du converter ' + it.text() + '...'
+										file &lt;&lt; '\n\t\t&lt;class&gt;' + it.text() + '&lt;/class&gt;'
+									}
+									file &lt;&lt; '\n\t&lt;/persistence-unit&gt;'
+								}
+								file &lt;&lt; '\n\n&lt;/persistence&gt;'
+							</source>
+						</configuration>
+					</execution>
+					<!-- Compilation des fichiers .scss (theme Vaadin) -->
+					<execution>
+						<id>compileScss</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<classpathScope>compile</classpathScope>
+							<source>
+								def resourceDirectory = new File(project.build.resources[0].directory)
+
+								resourceDirectory.eachFileRecurse(groovy.io.FileType.FILES) {
+									if(it.name.endsWith('.scss')) {
+										def compiledPath = project.build.outputDirectory + '/' + resourceDirectory.toURI().relativize(it.parentFile.toURI())
+										def compiledFilename = it.name.substring(0, it.name.lastIndexOf('.scss')) + '.css'
+										println 'Compilation de ' + compiledPath + compiledFilename + '...'
+										new File(compiledPath).mkdirs()
+										com.vaadin.sass.SassCompiler.main(it.path, compiledPath + compiledFilename)
+									}
+								}
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Traite les entités avec StaticWeave -->
+		<!--  <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<killAfter>-1</killAfter>
+							<classpathScope>compile</classpathScope>
+							<mainClass>org.eclipse.persistence.tools.weaving.jpa.StaticWeave</mainClass>
+							<commandlineArgs>-loglevel ALL -persistenceinfo ${project.build.directory}/generated-persistenceinfo ${project.build.outputDirectory} ${project.build.outputDirectory}</commandlineArgs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>-->
+			
+			<!-- Traite les entités avec StaticWeave2 -->
+			 <plugin>
+				<artifactId>eclipselink-staticweave-maven-plugin</artifactId>
+				<groupId>au.com.alderaan</groupId>
+				<version>1.0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>weave</goal>
+						</goals>
+						<phase>process-classes</phase>
+						<configuration>
+							<logLevel>ALL</logLevel>
+							<includeProjectClasspath>true</includeProjectClasspath>
+							<persistenceInfo>${project.build.directory}/generated-persistenceinfo</persistenceInfo>
+							<source>${project.build.outputDirectory}</source>
+							<target>${project.build.outputDirectory}</target>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.persistence</groupId>
+						<artifactId>eclipselink</artifactId>
+						  <version>2.5.2</version>
+						<!-- <version>2.3.2</version> -->
+					</dependency>
+				</dependencies>
+			</plugin> 
+			
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<tagBase>https://subversion.renater.fr/mondossierweb/tags</tagBase>
+				</configuration>
+			</plugin>
+
+			<!-- Génération des classes metamodel -->
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>2.2.4</version>
+				<executions>
+					<execution>
+						<id>process</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.hibernate</groupId>
+						<artifactId>hibernate-jpamodelgen</artifactId>
+						<version>4.3.6.Final</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.9</version>
+				<executions>
+					<execution>
+						<id>add-generated-metamodel</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/metamodel</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Compilation des JasperReports -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<version>1.0-beta-2</version>
+				<executions>
+					<execution>
+						<id>compile-jasperreports</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile-reports</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<compiler>net.sf.jasperreports.compilers.JRGroovyCompiler</compiler>
+					<outputDirectory>${project.build.outputDirectory}/jasper</outputDirectory>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>javax.servlet</groupId>
+						<artifactId>javax.servlet-api</artifactId>
+						<version>3.1.0</version>
+					</dependency>
+					<dependency>
+						<groupId>net.sf.jasperreports</groupId>
+						<artifactId>jasperreports</artifactId>
+						<version>${jasperreports.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+						<version>${groovy.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<!-- Embedded Tomcat -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/</path>
+					<contextFile>src/main/webapp/META-INF/context.xml</contextFile>
+					<protocol>org.apache.coyote.http11.Http11NioProtocol</protocol>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+	
+		<!-- Vaadin -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiled</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client</artifactId>
+			<version>${vaadin.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-themes</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<!-- Vaadin add-ons -->
+		<dependency>
+			<groupId>ru.xpoft.vaadin</groupId>
+			<artifactId>spring-vaadin-integration</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+<dependency>
+  <groupId>com.zybnet</groupId>
+  <artifactId>vaadin-autocomplete</artifactId>
+  <version>1.0.0</version>
+</dependency>
+	
+	
+		<!-- Servlet 3 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- JCache -->
+		<dependency>
+			<groupId>javax.cache</groupId>
+			<artifactId>cache-api</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
+			<version>2.7.6</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<!-- La version 1.4.* est celle requise par logback -->
+			<version>1.4.7</version>
+		</dependency>
+
+		<!-- WS apogee -->
+		<dependency>
+			<groupId>gouv.education.apogee</groupId>
+			<artifactId>apo-webservicesclient</artifactId>
+			<version>4.50.lal</version>
+		</dependency>
+		
+		<!-- PhotoServer UL -->
+		<dependency>
+  			<groupId>fr.univlorraine.photoserver</groupId>
+  			<artifactId>photoserver-client</artifactId>
+  			<version>0.0.5-RC3</version>
+		</dependency>
+
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+
+		<!-- Spring Data JPA -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>1.7.0.RELEASE</version>
+		</dependency>
+
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-cas</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-ldap</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<!-- Spring Mobile -->
+		<dependency>
+    	<groupId>org.springframework.mobile</groupId>
+    	<artifactId>spring-mobile-device</artifactId>
+    	<version>1.1.2.RELEASE</version>
+		</dependency>
+		
+		<!-- JPA implementation -->
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>2.6.0-M3</version>
+		</dependency>
+
+		<!-- Beans validator -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.1.2.Final</version>
+		</dependency>
+
+		<!-- AOP -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<!-- Database connector -->
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.3.2</version>
+		</dependency>
+
+		<!-- Security -->
+		<!-- Activation des profils: décommenter cette zone
+		<dependency>
+			<groupId>fr.univlorraine</groupId>
+			<artifactId>security</artifactId>
+			<version>1.0.8</version>
+		</dependency>
+		-->
+
+		<!-- Tools -->
+		<dependency>
+			<groupId>fr.univlorraine</groupId>
+			<artifactId>tools</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.14.8</version>
+		</dependency>
+
+		<!-- SOLR  -->
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>4.7.0</version>
+			<type>jar</type>
+		</dependency>
+		
+		<!-- Elastic search -->
+		<dependency>
+    	<groupId>org.elasticsearch</groupId>
+    	<artifactId>elasticsearch</artifactId>
+    	<version>1.3.4</version>
+		</dependency>
+
+		<!-- ORACLE -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc14</artifactId>
+			<version>${ojdbc14.version}</version>
+		</dependency>
+		
+		<!-- MYSQL -->
+			<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.connector.version}</version>
+		</dependency>
+		
+		<!-- JasperReports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-ext</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>${groovy.version}</version>
+		</dependency>
+	</dependencies>
+
+</project>

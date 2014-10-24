@@ -1,0 +1,23 @@
+.valo-menu {
+	color: #ff0000;
+}
+
+
+.v-slot-googlepopupview {
+	position: absolute;
+	/* left:112px; */
+	/* top: 54px; */
+	 left:137px; 
+	 top: 68px;
+	z-index: 2;
+}
+
+.v-table-body-googletable{
+      overflow: hidden !important;
+}
+
+
+.valo-ul .v-link {
+color: inherit;
+}
+

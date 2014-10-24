@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+<!-- Desactive la persistence des sessions apres un redemarrage -->
+	<Manager pathname="" />
+
+<!-- Connexion a la base de donnees -->
+	<Resource name="jdbc/db"
+		type="javax.sql.DataSource"
+		username="root"
+		password=""
+		driverClassName="org.hsqldb.jdbcDriver"
+		url="jdbc:hsqldb:mem:mondossierwebDb"
+		maxActive="20"
+		maxIdle="4"
+		maxWait="10000"
+		removeAbandoned="true"
+		removeAbandonedTimeout="600"
+		logAbandoned="true"
+		validationQuery="select 1 from INFORMATION_SCHEMA.SYSTEM_USERS"
+		testOnBorrow="true" />
+
+<!-- URL de l'application -->
+	<Parameter name="app.url" value="http://mondossierweb.univ-lorraine.fr:8080" />
+<!-- URL du CAS -->
+	<Parameter name="cas.url" value="https://auth.univ-lorraine.fr" />
+
+<!-- Assistance -->
+	<Parameter name="assistance.documentation.url" value="http://wikidocs.univ-lorraine.fr" />
+	<Parameter name="assistance.helpdesk.url" value="http://helpdesk.univ-lorraine.fr" />
+	<Parameter name="assistance.contact.mail" value="contact.mondossierweb@univ-lorraine.fr" />
+
+<!-- Configuration du LDAP -->
+	<Parameter name="ldap.url" value="ldap://ldaptest.univ-lorraine.fr:983/dc=univ-lorraine,dc=fr" />
+	<Parameter name="ldap.roleAttribute" value="udlGroup" />
+<!-- Identifiants (facultatif) -->
+<!--
+	<Parameter name="ldap.userDn" value="" />
+	<Parameter name="ldap.password" value="" />
+-->
+
+<!-- Administrateur -->
+	<!-- Activation des profils: decommenter cette ligne et commenter la suivante
+	<Parameter name="role.admin" value="admin" />
+	-->
+	<Parameter name="role.admin" value="100:G1N:G1N01" />
+
+<!-- Configuration de l'envoi de mails d'erreur -->
+	<Parameter name="mail.smtpHost" value="smtp-sig.univ-lorraine.fr" />
+	<Parameter name="mail.from" value="mondossierweb@univ-lorraine.fr" />
+	<Parameter name="mail.to" value="dn-sig-dev@univ-lorraine.fr" />
+
+<!-- Mode production : Desactive le mode debug -->
+	<Parameter name="productionMode" value="true" />
+<!-- Active/Desactive le push -->
+	<Parameter name="enablePush" value="true" />
+
+	<!--  SOLR -->
+	<Parameter name="solr.url" value="http://toto.univ-lorraine.fr:8181/solr/apogee" />
+	
+	<Parameter name="param.elasticsearch.url" value="172.0.0.0" />
+	<Parameter name="param.elasticsearch.port" value="9300" />
+	<Parameter name="param.elasticsearch.cluster" value="dev-1.3.4" />
+	<Parameter name="param.elasticsearch.index" value="apogeealias1" />
+	<Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
+	
+	
+	
+	
+	<!-- true pour que l'email de l'étudiant (état-civil) soit récupéré par le WS dans l'annuaire.
+		false pour que ce soir iBATIS qui s'en charge
+		Note : à true, pkb_annu et TEM_ACC_ANNUAIRE doivent être actifs dans APOGEE -->
+	<Parameter name="param.apogee.mail.annuaire" value="false" />
+		<!-- l'extension au login pour l'e-mail des étudiants -->
+	<Parameter name="param.apogee.extesion.mail.etudiant" value="@etu.univ-ville.fr" />
+	
+<!-- Compte Google Analytics, facultatif -->
+<!-- 
+	<Parameter name="analytics.account" value="UA-XXXXXXXX-X" />
+ -->
+
+
+<Parameter name="param.photoserver.ressourceurl" value="http://photoserver-test.univ-lorraine.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&amp;chksum=%chksum%" />
+<Parameter name="param.photoserver.ticketurl" value="http://photoserver-test.univ-lorraine.fr/PhotoServer/getTicket?ip=%ip%&amp;mode=%mode%&amp;typ_lim=%typLim%&amp;val_lim=%valLim%&amp;client=%client%" />
+<Parameter name="param.photoserver.codeapp" value="31BD930BFA207BD07139928E4CC8CD76" />
+
+
+</Context>

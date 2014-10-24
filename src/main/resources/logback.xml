@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+	<property name="logsPath" value="${catalina.base}/logs" />
+
+	<property name="defaultPattern" value="%date{HH:mm:ss.SSS} [%thread] %-5level %mdc{username} %logger - %message%n" />
+
+	<!-- increases performances for jul -->
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${defaultPattern}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logsPath}/mondossierweb.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${logsPath}/mondossierweb-%d.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 1MB -->
+				<maxFileSize>1MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- deletes older files -->
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${defaultPattern}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Regroupe les mails d'erreur pour éviter le spam -->
+	<appender name="mailAppender" class="fr.univlorraine.tools.logback.GroupEventsSMTPAppender">
+		<!-- Délai des mails en secondes (1 par défaut) -->
+		<mailDelaySeconds>10</mailDelaySeconds>
+
+		<smtpHost>${context.mail.smtpHost}</smtpHost>
+		<from>${context.mail.from}</from>
+		<to>${context.mail.to}</to>
+		<subject>[mondossierweb] Logback Message from ${context.app.url}</subject>
+		<asynchronousSending>false</asynchronousSending>
+
+		<layout class="ch.qos.logback.classic.html.HTMLLayout" />
+	</appender>
+
+	<if condition="Boolean.valueOf(p(&quot;context.productionMode&quot;))">
+		<then>
+			<!-- in production mode -->
+			<logger name="fr.univlorraine.mondossierweb" level="info" />
+		</then>
+		<else>
+			<!-- in debug mode -->
+			<logger name="fr.univlorraine.mondossierweb" level="trace" />
+		</else>
+	</if>
+
+	<logger name="org.springframework" level="warn" />
+
+	<logger name="net.sf.jasperreports" level="warn" />
+
+	<logger name="com.vaadin" level="warn" />
+	<!-- Ne mail pas les erreurs push -->
+	<logger name="com.vaadin.server.DefaultErrorHandler" level="warn" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+	<logger name="com.vaadin.server.communication.PushHandler" level="warn" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+	<logger name="org.apache.catalina.core.ContainerBase" level="warn" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+	<!-- -->
+
+	<logger name="org.atmosphere" level="warn" />
+
+	<root level="warn">
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+		<appender-ref ref="mailAppender" />
+	</root>
+
+</configuration>
