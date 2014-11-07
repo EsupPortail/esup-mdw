@@ -9,6 +9,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.PopupView;
@@ -16,6 +17,9 @@ import com.vaadin.ui.PopupView.PopupVisibilityEvent;
 import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+
+import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 
 public class AutoComplete extends TextField{
 
@@ -26,27 +30,36 @@ public class AutoComplete extends TextField{
 
 
 
-	public void showChoices(List<String> text, Layout layout) {
+	public void showChoices(List<ResultatDeRecherche> text, Layout layout) {
 
-		/*	if(choicesPopup!=null){
-			layout.removeComponent(choicesPopup);
-		}*/
+
+
 		if(text.size()>0){
+			
+
+			if(choicesPopup!=null){
+				choicesPopup.setPopupVisible(false);
+
+			}
+		
+			
 			if(choices==null){
 
 				choices = new Table();
-				choices.addContainerProperty("", String.class,  null);
+				choices.addContainerProperty("lib", String.class,  "");
+				choices.addContainerProperty("type", String.class,  "");
 				choices.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
 				choices.setWidth(getWidth(), Unit.PIXELS);
 				choices.setStyleName("googletable");
+				choices.setColumnWidth("lib", 596);
+				choices.setColumnWidth("type", 100);
 
 				choices.setImmediate(true);
 				choices.addItemClickListener(new ItemClickListener() {
 					@Override
 					public void itemClick(ItemClickEvent event) {
 						Item i = event.getItem();
-						//System.out.println("item selected : "+i);
-						setValue(i.toString());
+						setValue(i.getItemProperty("lib").getValue().toString());
 
 					}
 				});
@@ -55,20 +68,24 @@ public class AutoComplete extends TextField{
 			}else{
 				choices.removeAllItems();
 			}
-			//System.out.println("show Choices "+text);
+
 			int i =1;
-			for(String s : text){
-				choices.addItem(new Object[] {s}, new Integer(i));
+			for(ResultatDeRecherche r : text){
+				Item item = choices.addItem(i);
+				item.getItemProperty("lib").setValue(r.getLib());
+				item.getItemProperty("type").setValue(transcodeType(r.getType()));
 				i++;
 			}
 			selectedItem=0;
-			choices.setHeight(40 * text.size(), Unit.PIXELS);
+			choices.setHeight(38 * text.size()+1, Unit.PIXELS);
 			choices.setWidth(getWidth(), Unit.PIXELS);
+			
 			// Show popup
 			if(choicesPopup==null){
 				choicesPopup = new PopupView(new PopupTextFieldContent());
 				choicesPopup.setStyleName("googlepopupview");
 				layout.addComponent(choicesPopup);
+				//layout.setComponentAlignment(choicesPopup, Alignment.TOP_CENTER);
 				choicesPopup.setWidth(getWidth(), Unit.PIXELS);
 				choices.setSelectable(true);
 				choices.setImmediate(true);
@@ -80,19 +97,17 @@ public class AutoComplete extends TextField{
 	                    }
 	                }
 	            });
-				//choices.setSizeFull();
-				//choicesPopup.setSizeFull();
+
 			}
 
-			//layout.addComponent(choicesPopup);
 			choicesPopup.setVisible(true);
 			choicesPopup.setPopupVisible(true);
-			choicesPopup.setHeight(40 * text.size(), Unit.PIXELS);
+			//choicesPopup.setHeight(40 * text.size(), Unit.PIXELS);
+			//choicesPopup.addStyleName("googlepopupview");
+			choicesPopup.setHeight(choices.getHeight(), Unit.PIXELS);
+			System.out.println("height : "+choicesPopup.getHeight());
 
-
-			//addBlurListener(e -> choicesPopup.setVisible(false));
-
-
+		
 
 		}else{
 			if(choicesPopup!=null){
@@ -103,6 +118,22 @@ public class AutoComplete extends TextField{
 
 
 
+	}
+
+	private Object transcodeType(String type) {
+		if(type.equals("ETU")){
+			return "ETUDIANT";
+		}
+		if(type.equals("ELP")){
+			return "ELEMENT";
+		}
+		if(type.equals("CMP")){
+			return "COMPOSANTE";
+		}
+		if(type.equals("VET")){
+			return "ETAPE";
+		}
+		return type;
 	}
 
 	// Create a dynamically updating content for the popup

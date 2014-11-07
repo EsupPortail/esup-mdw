@@ -70,6 +70,8 @@ import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 
 /**
  * Application Vaadin
+ * 
+ * 
  */
 @Component @Scope("prototype")
 @Theme("valo-ul")

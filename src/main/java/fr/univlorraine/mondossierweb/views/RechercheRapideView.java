@@ -83,7 +83,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient RechercheController rechercheController;
-	
+
 
 
 
@@ -159,7 +159,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 		//CHAMP DE RECHERCHE
 		champRecherche = new AutoComplete();
-		champRecherche.setWidth(540, Unit.PIXELS);
+		champRecherche.setWidth(700, Unit.PIXELS); //540
 		champRecherche.setEnabled(true);
 		champRecherche.setImmediate(true);
 		champRecherche.focus();
@@ -167,7 +167,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		champRecherche.addTextChangeListener(new TextChangeListener() {
 			@Override
 			public void textChange(TextChangeEvent event) {
-				//System.out.println("event : "+event.getText());
 				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout);
 
 			}
@@ -180,7 +179,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					//Si on était sur une ligne proposée sous le champ de recherche
 					if(champRecherche.getSelectedItem()>0){
 						//On remplie d'abord le champ avec la ligne sélectionnée
-						champRecherche.setValue(champRecherche.getChoices().getItem(champRecherche.getSelectedItem()).toString());
+						champRecherche.setValue(champRecherche.getChoices().getItem(champRecherche.getSelectedItem()).getItemProperty("lib").getValue().toString());
 					}
 					search(false);
 				}
@@ -335,9 +334,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 
-	private List<String> quickSearch(String valueString){
+	private List<ResultatDeRecherche> quickSearch(String valueString){
 
-		List<String> listeReponses = new LinkedList<String>();
+		List<ResultatDeRecherche> listeReponses = new LinkedList<ResultatDeRecherche>();
 		/**
 		 * ESSAYER D'AFFICHER LE MENU DOSSIER ETUDIANT AU CLIC
 		 * OU DEPUIS LE CONTROLEUR QU'ON VA APPELER
@@ -379,7 +378,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				listeTypeAutorise.add("ETU");
 			}
 
-			
+
 			///////////////////////////////////////////////////////
 			// recuperation des obj SOLR
 			///////////////////////////////////////////////////////
@@ -394,18 +393,20 @@ public class RechercheRapideView extends VerticalLayout implements View {
 									//On evite des doublons
 									while(triOk && rang<listeReponses.size()){
 										//En quickSearch on prend la description et non pas le libelle
-										if((listeReponses.get(rang).toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										if((listeReponses.get(rang).lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
 											triOk=false;
 										}
 										rang++;
 									}
 									if(triOk){
 										//En quickSearch on prend la description et non pas le libelle
-										listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
+										//listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
+										listeReponses.add(new ResultatDeRecherche(obj));
 									}
 								}else{
 									//En quickSearch on prend la description et non pas le libelle
-									listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
+									//listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
+									listeReponses.add(new ResultatDeRecherche(obj));
 								}
 							}
 						}
@@ -436,6 +437,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		//ChoicesPopup null si aucun choix propose
 		if(champRecherche.getChoicesPopup()!=null){
 			champRecherche.getChoicesPopup().setVisible(false);
+			champRecherche.getChoicesPopup().setPopupVisible(false);
 		}
 		String value = String.valueOf(champRecherche.getValue());
 
@@ -451,7 +453,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valuesolr = value;
-		//	valuesolr = valuesolr+" OR "+valuesolr+"*";
+			//	valuesolr = valuesolr+" OR "+valuesolr+"*";
 			long startTime = System.currentTimeMillis();
 			List<Map<String,Object>> lobjresult = SolrService.findObj(valuesolr, 0, false);
 			long stopTime = System.currentTimeMillis();
@@ -560,7 +562,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			b.addStyleName("v-link");
 
 			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString()));
-			
+
 
 			return b;
 		}
@@ -603,7 +605,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	}
 
-	
+
 
 
 
