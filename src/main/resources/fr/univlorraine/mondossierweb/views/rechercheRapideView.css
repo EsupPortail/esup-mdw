@@ -8,13 +8,16 @@
 	/* left:112px; */
 	/* top: 54px; */
 	 left:137px; 
-	 top: 68px;
+	 top: 70px;
 	z-index: 2;
 }
 
 .v-table-body-googletable{
-      overflow: hidden !important;
+     /*  overflow: hidden !important; */
+    overflow-x: hidden;
+	overflow-y: hidden;
 }
+
 
 
 .valo-ul .v-link {
