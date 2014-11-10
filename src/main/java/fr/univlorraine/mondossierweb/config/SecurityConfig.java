@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import net.sf.ehcache.CacheManager;
+
+import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.context.annotation.Bean;
@@ -74,6 +77,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(casAuthenticationProvider());
 	}
 
+	
+
+	/* Uportal service */
+	@Bean
+	public CachingUportalServiceImpl cachingUportalServiceImpl(){
+		CachingUportalServiceImpl cachingUportalService= new CachingUportalServiceImpl();
+		cachingUportalService.setUrl(environment.getRequiredProperty("uportal.ws"));
+		cachingUportalService.setCacheManager(new CacheManager());
+		return cachingUportalService;
+		
+	}
+	
+	
+	
+	
 	/* Configuration CAS */
 
 	@Bean

@@ -51,6 +51,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
@@ -97,6 +98,8 @@ public class MainUI extends UI {
 	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="codetuFromLoginDao")
+	private transient IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
 
 
 
@@ -113,7 +116,12 @@ public class MainUI extends UI {
 	@Resource
 	private FavorisView favorisView;
 
-	
+	//Type (rôle) de l'utilisateur connecté
+	@Setter
+	@Getter
+	private String typeUser;
+
+
 	//Etudiant dont on consulte le dossier
 	@Setter
 	@Getter
@@ -125,12 +133,13 @@ public class MainUI extends UI {
 	private String anneeUnivEnCours;
 
 	/* Composants */
+	private VerticalLayout mainVerticalLayout;
 	private CssLayout mainMenu = new CssLayout();
 	private CssLayout menuLayout = new CssLayout(mainMenu);
 	private CssLayout contentLayout = new CssLayout();
 	private HorizontalLayout layoutDossierEtudiant = new HorizontalLayout(menuLayout, contentLayout);
 	private TabSheet tabSheetGlobal = new TabSheet();
-	private VerticalLayout ongletRecherche;
+	private VerticalLayout layoutOngletRecherche;
 	private TabSheet tabSheetEnseignant= new TabSheet();
 	//private CssLayout contentTabSheetEnseignantLayout = new CssLayout();
 
@@ -196,106 +205,111 @@ public class MainUI extends UI {
 		if(currentDevice.isNormal())
 			System.out.println("device : normal");*/
 
-		/* Construit la vue globale */
-		menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
-		contentLayout.addStyleName("v-scrollable");
-		contentLayout.setSizeFull();
-		layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
-		layoutDossierEtudiant.setSizeFull();
 
-		/* Construit le menu horizontal pour les enseignants */
-		VerticalLayout mainVerticalLayout=new VerticalLayout();
-		tabSheetGlobal.setSizeFull();
+		mainVerticalLayout=new VerticalLayout();
 
-		tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
-		ongletRecherche = new VerticalLayout();
-		ajoutOngletRecherche();
-		ongletRecherche.setSizeFull();
-		tabSheetGlobal.addTab(ongletRecherche, "Recherche", FontAwesome.SEARCH);
-
-		addTabDossierEtudiant();
-
-		tabSheetGlobal.addStyleName("right-aligned-tabs");
-		mainVerticalLayout.addComponent(tabSheetGlobal);
-		mainVerticalLayout.setSizeFull();
-		mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
-		//mainVerticalLayout.addComponent(layout);
-
-		//setContent(layout);
-		setContent(mainVerticalLayout);
+		if(userController.isEnseignant() || userController.isEtudiant()){
 
 
 
-		/* Contruit le menu */
-		buildMainMenuEtudiant();
-
-		/* Construit le gestionnaire de vues */
-		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
-		navigator.addViewChangeListener(new ViewChangeListener() {
-			private static final long serialVersionUID = 7905379446201794289L;
-
-			private static final String SELECTED_ITEM = "selected";
-
-			@Override
-			public boolean beforeViewChange(ViewChangeEvent event) {
-				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
-				return true;
-			}
-
-			@Override
-			public void afterViewChange(ViewChangeEvent event) {
-				Button button = viewButtons.get(event.getViewName());
-				if (button instanceof Button) {
-					button.addStyleName(SELECTED_ITEM);
-				}
-			}
-		});
+			/* Parametre le layoutDossierEtudiant */
+			menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
+			contentLayout.addStyleName("v-scrollable");
+			contentLayout.setSizeFull();
+			layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
+			layoutDossierEtudiant.setSizeFull();
 
 
-		/*	navigatorEnseignant.addViewChangeListener(new ViewChangeListener() {
-
-			private static final long serialVersionUID = -2192212269518396806L;
-
-			@Override
-			public boolean beforeViewChange(ViewChangeEvent event) {
-				return true;
-			}
-
-			@Override
-			public void afterViewChange(ViewChangeEvent event) {
-				int numtab = viewEnseignantTab.get(event.getViewName());
-				tabSheetEnseignant.setSelectedTab(numtab);
-			}
-		});*/
-
-		/* Initialise Google Analytics */
-		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
-		/* Suis les changements de vue du navigator */
-		googleAnalyticsTracker.trackNavigator(navigator);
-
-		/* Enregistre l'UI pour la réception de notifications */
-		uiController.registerUI(this);
-
-		/* Résout la vue à afficher */
-		String fragment = Page.getCurrent().getUriFragment();
-		//PROBLEME DU F5 : on passe ici que quand on reinitialise l'UI. 
-		//On ne peut donc pas rediriger vers des vu qui utilise des variables non initialisées (ex : Main.getCurrent.getEtudiant)
-		//if (fragment == null || fragment.isEmpty()) {
+			//Si user enseignant
 			if(userController.isEnseignant()){
+				/* Construit le menu horizontal pour les enseignants */
+				tabSheetGlobal.setSizeFull();
+				tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
+
+				//ajout de l'onglet recherche
+				layoutOngletRecherche = new VerticalLayout();
+				ajoutOngletRecherche();
+				layoutOngletRecherche.setSizeFull();
+				tabSheetGlobal.addTab(layoutOngletRecherche, "Recherche", FontAwesome.SEARCH);
+
+				//ajout de l'onglet dossier étudiant
+				addTabDossierEtudiant();
+				tabSheetGlobal.addStyleName("right-aligned-tabs");
+
+				//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
+				mainVerticalLayout.addComponent(tabSheetGlobal);
+				mainVerticalLayout.setSizeFull();
+				mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
+			}else{
+				//User Etudiant
+				//Le Dossier est définit comme étant le contenu de la page
+				mainVerticalLayout.addComponent(layoutDossierEtudiant);
+				mainVerticalLayout.setSizeFull();
+				mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
+
+				etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
+				System.out.println("MainUI etudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
+				etudiantController.recupererEtatCivil();
+				/*etudiantController.recupererInscriptions();
+				etudiantController.recupererCalendrierExamens();*/
+				buildMainMenuEtudiant();
+			}
+
+			//setContent(layout);
+			setContent(mainVerticalLayout);
+
+
+
+			/* Contruit le menu */
+			//buildMainMenuEtudiant();
+
+			/* Construit le gestionnaire de vues */
+			navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
+			navigator.addViewChangeListener(new ViewChangeListener() {
+				private static final long serialVersionUID = 7905379446201794289L;
+
+				private static final String SELECTED_ITEM = "selected";
+
+				@Override
+				public boolean beforeViewChange(ViewChangeEvent event) {
+					viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
+					return true;
+				}
+
+				@Override
+				public void afterViewChange(ViewChangeEvent event) {
+					Button button = viewButtons.get(event.getViewName());
+					if (button instanceof Button) {
+						button.addStyleName(SELECTED_ITEM);
+					}
+				}
+			});
+
+
+			/* Initialise Google Analytics */
+			googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
+			/* Suis les changements de vue du navigator */
+			googleAnalyticsTracker.trackNavigator(navigator);
+
+			/* Enregistre l'UI pour la réception de notifications */
+			uiController.registerUI(this);
+
+			/* Résout la vue à afficher */
+			String fragment = Page.getCurrent().getUriFragment();
+			//PROBLEME DU F5 : on passe ici que quand on reinitialise l'UI. 
+			//On ne peut donc pas rediriger vers des vu qui utilise des variables non initialisées (ex : Main.getCurrent.getEtudiant)
+			//if (fragment == null || fragment.isEmpty()) {
+			if(userController.isEnseignant()){
+				//navigator.navigateTo(ErreurView.NAME);
 				navigator.navigateTo(RechercheRapideView.NAME);
 			}else{
-				navigator.navigateTo(EtatCivilView.NAME);
-			}
-		/*}else{
-			System.out.println("fragment : "+fragment);
-			if(fragment.contains("etatCivilView")&& (etudiant==null || etudiant.getCod_etu()==null)){
-				if(userController.isEnseignant()){
-					navigator.navigateTo(RechercheRapideView.NAME);
-				}else{
+				if(userController.isEtudiant()){
 					navigator.navigateTo(EtatCivilView.NAME);
+				}else{
+					navigator.navigateTo(ErreurView.NAME);
 				}
 			}
-		}*/
+		}
 	}
 
 	private void ajoutOngletRecherche() {
@@ -313,20 +327,20 @@ public class MainUI extends UI {
 		tabSheetEnseignant.addTab(favorisView, "Favoris", FontAwesome.BOOKMARK_O);
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {
 
-            public void selectedTabChange(SelectedTabChangeEvent event){
-                // Find the tabsheet
-                TabSheet tabsheet = event.getTabSheet();
-                
-                // Find the tab (here we know it's a layout)
-                View vue = (View) tabsheet.getSelectedTab();
-                if (vue instanceof FavorisView){
-                	//System.out.println("init favoris view");
-                	favorisView.init();
-                }
+			public void selectedTabChange(SelectedTabChangeEvent event){
+				// Find the tabsheet
+				TabSheet tabsheet = event.getTabSheet();
+
+				// Find the tab (here we know it's a layout)
+				View vue = (View) tabsheet.getSelectedTab();
+				if (vue instanceof FavorisView){
+					//System.out.println("init favoris view");
+					favorisView.init();
+				}
 
 
-            }
-        });
+			}
+		});
 		//tabSheetEnseignant.addTab(contentTabSheetEnseignantLayout, "Favoris", FontAwesome.STAR_O);
 
 		addTabListeInscrits();
@@ -337,9 +351,9 @@ public class MainUI extends UI {
 		//navigator.addView("rechercheArborescenteView/", rechercheArborescenteView);
 
 		tabSheetEnseignant.addStyleName("left-aligned-tabs");
-		ongletRecherche.addComponent(tabSheetEnseignant);
-		ongletRecherche.setSizeFull();
-		ongletRecherche.setExpandRatio(tabSheetEnseignant, 1);
+		layoutOngletRecherche.addComponent(tabSheetEnseignant);
+		layoutOngletRecherche.setSizeFull();
+		layoutOngletRecherche.setExpandRatio(tabSheetEnseignant, 1);
 
 	}
 

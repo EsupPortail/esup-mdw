@@ -86,4 +86,36 @@ public class PropertyUtils {
 	
 	
 
+	/** Retourne vrai on doit aller voir dans la table utilisateur d'apogée pour gérer les accès à l'appli */
+	public static boolean isLoginApogee(){
+		if(StringUtils.hasText(System.getProperty("context.loginApogee"))
+				&& System.getProperty("context.loginApogee").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	/** Retourne le type Etudiant dans Ldap */
+	public static String getTypeEtudiantLdap(){
+		String value = System.getProperty("context.typeEtudiantLdap");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("typeEtudiantLdap cannot be null !");
+		return value;
+	}
+	
+	/** Retourne la propriete ldap du contact désignant son type (typeEtudiantLdap ou pas )  */
+	public static String getAttributLdapEtudiant(){
+		String value = System.getProperty("context.attributLdapEtudiant");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("attributLdapEtudiant cannot be null !");
+		return value;
+	}
+	
+	
+
+	/** Retourne la propriete ldap du contact désignant son code etudiant  */
+	public static String getAttributLdapCodEtu(){
+		String value = System.getProperty("context.attributLdapCodEtu");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("attributLdapCodEtu cannot be null !");
+		return value;
+	}
 }

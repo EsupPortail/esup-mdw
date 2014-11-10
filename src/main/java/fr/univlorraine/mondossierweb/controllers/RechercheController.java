@@ -51,8 +51,8 @@ public class RechercheController {
 				MainUI.getCurrent().setEtudiant(new Etudiant(code));
 				System.out.println("sessionController.setEtudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
 				etudiantController.recupererEtatCivil();
-				etudiantController.recupererInscriptions();
-				etudiantController.recupererCalendrierExamens();
+				/*etudiantController.recupererInscriptions();
+				etudiantController.recupererCalendrierExamens();*/
 				MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
 		}
 	}
