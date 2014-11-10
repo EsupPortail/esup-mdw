@@ -132,4 +132,40 @@ public class PropertyUtils {
 		}
 		return values;
 	}
+
+	public static String getTemoinNotesEtudiant() {
+		String value = System.getProperty("context.temoinNotesEtudiant");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("temoinNotesEtudiant cannot be null !");
+		return value;
+	}
+
+	public static String getSourceResultats() {
+		String value = System.getProperty("context.sourceResultats");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("sourceResultats cannot be null !");
+		return value;
+	}
+
+	public static String getTemoinNotesEnseignant() {
+		String value = System.getProperty("context.temoinNotesEnseignant");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("temoinNotesEnseignant cannot be null !");
+		return value;
+	}
+
+	public static boolean isAffRangEtudiant() {
+		if(StringUtils.hasText(System.getProperty("context.afficherRangEtudiant"))
+				&& System.getProperty("context.afficherRangEtudiant").equals("true")){
+			return true;
+		}
+		return false;
+	}
+
+	public static List<String> getCodesEtapeAffichageRang() {
+		LinkedList<String> values = new LinkedList<String>();
+		String value = System.getProperty("context.codesEtapeAffichageRang");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("codesEtapeAffichageRang cannot be null !");
+		for(String s : value.split(",")){
+			values.add(s);
+		}
+		return values;
+	}
 }

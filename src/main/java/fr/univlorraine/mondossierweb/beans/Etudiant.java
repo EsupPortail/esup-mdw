@@ -4,7 +4,9 @@
 package fr.univlorraine.mondossierweb.beans;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Data;
 
@@ -131,13 +133,47 @@ public class Etudiant {
 	 * vrai si on a deja tenté de récupérer le calendrier des examens
 	 */
 	private boolean calendrierRecupere;
+	/**
+	 * vrai si on a deja tenté de récupérer les notes
+	 */
+	private boolean notesRecuperees;
+	/**
+	 * les diplomes avec les résultats obtenus.
+	 */
+	private List<Diplome> diplomes;
+	/**
+	 * les etapes avec les résultats obtenus.
+	 */
+	private List<Etape> etapes;
+	/**
+	 * vrai si on affiche le rang de l'étudiant
+	 */
+	private boolean afficherRang;
+	/**
+	 * map qui contient les couples (indice,signification) pour les résultats.
+	 */
+	private Map allSignificationResultats;
+	/**
+	 * map qui contient les couples (indice,signification) pour les résultats à afficher.
+	 */
+	private Map significationResultats;
+	/**
+	 * le cache du résultat et des notes déjà récupérés.
+	 */
+	private CacheResultats cacheResultats;
 	
 
 	
 	
 	public Etudiant() {
 		super();
-		
+		linsciae = new ArrayList<Inscription>();
+		linscdac = new ArrayList<Inscription>();
+		allSignificationResultats = new HashMap<String, String>();
+		significationResultats = new HashMap<String, String>();
+		diplomes = new ArrayList<Diplome>();
+		etapes = new ArrayList<Etape>();
+		cacheResultats = new CacheResultats();
 	}
 	
 	public Etudiant(String cod_etu) {

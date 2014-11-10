@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.controllers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -17,7 +18,12 @@ import org.springframework.util.StringUtils;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.beans.CacheResultatsVdiVet;
+import fr.univlorraine.mondossierweb.beans.Diplome;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
+import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
@@ -25,6 +31,8 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterfaceProxy;
 import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterfaceProxy;
+import gouv.education.apogee.commun.servicesmetiers.PedagogiqueMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.pedagogiquemetier.PedagogiqueMetierServiceInterfaceProxy;
 import gouv.education.apogee.commun.servicesmetiers.AdministratifMetierServiceInterface;
 import gouv.education.apogee.commun.servicesmetiers.EtudiantMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExterneDTO;
@@ -37,6 +45,10 @@ import gouv.education.apogee.commun.transverse.dto.etudiant.IdentifiantsEtudiant
 import gouv.education.apogee.commun.transverse.dto.etudiant.IndBacDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.InfoAdmEtuDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementCourtDTO;
+import gouv.education.apogee.commun.transverse.dto.pedagogique.ContratPedagogiqueResultatVdiVetDTO;
+import gouv.education.apogee.commun.transverse.dto.pedagogique.EtapeResVdiVetDTO;
+import gouv.education.apogee.commun.transverse.dto.pedagogique.ResultatVdiDTO;
+import gouv.education.apogee.commun.transverse.dto.pedagogique.ResultatVetDTO;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
 /**
@@ -74,6 +86,11 @@ public class EtudiantController {
 	 * proxy pour faire appel aux infos administratives du WS .
 	 */
 	protected AdministratifMetierServiceInterface monProxyAdministratif;
+
+	/**
+	 * proxy pour faire appel aux infos sur les résultats du WS .
+	 */
+	protected PedagogiqueMetierServiceInterface monProxyPedagogique;
 
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
@@ -492,6 +509,9 @@ public class EtudiantController {
 	}
 
 
+
+
+
 	/**
 	 * va chercher et renseigne les informations concernant le calendrier des examens
 	 */
@@ -514,4 +534,523 @@ public class EtudiantController {
 
 
 
+	/**
+	 * va chercher et renseigne les notes de
+	 * l'étudiant via le WS de l'Amue.
+	 */
+	public void recupererNotesEtResultats(Etudiant e) {
+		if(monProxyPedagogique==null)
+			monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
+		
+
+		try {
+			e.getDiplomes().clear();
+			e.getEtapes().clear();
+
+			String temoin = PropertyUtils.getTemoinNotesEtudiant();
+			if(temoin == null || temoin.equals("")){
+				temoin="T";
+			}
+
+			String sourceResultat = PropertyUtils.getSourceResultats();
+			if(sourceResultat == null || sourceResultat.equals("")){
+				sourceResultat="Apogee";
+			}
+			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
+			// Si different annee en cours => sourceResultat = Apogee
+			if(sourceResultat.compareTo("Apogee-extraction")==0){
+				// On recupere les resultats dans cpdto avec sourceResultat=Apogee
+				sourceResultat="Apogee";
+				ContratPedagogiqueResultatVdiVetDTO[] cpdtoResult = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
+
+				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
+				temoin=null;
+				sourceResultat="Apogee-extraction";
+				String annee = getAnneeUnivEnCours();
+				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
+				try {
+					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
+				} catch (Exception ex) {
+					cpdtoExtract = null;
+				}
+
+				// Et on fusionne cpdtoResult et cpdtoExtract
+				ArrayList<ContratPedagogiqueResultatVdiVetDTO> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO>();
+				for (int i = 0; i < cpdtoResult.length; i++ ) {
+					if (cpdtoResult[i].getAnnee() != null) {
+						if (cpdtoResult[i].getAnnee().compareTo(annee)!=0) {
+							cpdtoAl.add(cpdtoResult[i]);
+						}
+					}
+				}
+				if (cpdtoExtract!=null) {
+					for (int i = 0; i < cpdtoExtract.length; i++ ) {
+						cpdtoAl.add(cpdtoExtract[i]);
+					}
+				}
+				ContratPedagogiqueResultatVdiVetDTO[] cpdto = cpdtoAl.toArray(new ContratPedagogiqueResultatVdiVetDTO[ cpdtoAl.size() ]);
+				setNotesEtResultats(e, cpdto);
+
+			} else {
+
+				ContratPedagogiqueResultatVdiVetDTO[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
+				setNotesEtResultats(e, cpdto);
+			}
+
+
+		} catch (WebBaseException ex) {
+			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			LOG.error(ex.getLastErrorMsg());
+		} catch (Exception ex) {
+			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+		}
+
+	}
+
+
+	/**
+	 * va chercher et renseigne les notes de
+	 * l'étudiant à destination d'un enseignant via le WS de l'Amue.
+	 */
+	public void recupererNotesEtResultatsEnseignant(Etudiant e) {
+		
+		if(monProxyPedagogique==null)
+			monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
+
+		try {
+			e.getDiplomes().clear();
+			e.getEtapes().clear();
+
+			String temoin = PropertyUtils.getTemoinNotesEnseignant();
+			if(temoin == null || temoin.equals("")){
+				temoin="AET";
+			}
+
+			String sourceResultat = PropertyUtils.getSourceResultats();
+			if(sourceResultat == null || sourceResultat.equals("")){
+				sourceResultat="Apogee";
+			}
+
+			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
+			// Si different annee en cours => sourceResultat = Apogee
+			if(sourceResultat.compareTo("Apogee-extraction")==0){
+				// On recupere les resultats dans cpdto avec sourceResultat=Apogee
+				sourceResultat="Apogee";
+				ContratPedagogiqueResultatVdiVetDTO[] cpdtoResult = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
+				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
+				temoin=null;
+				sourceResultat="Apogee-extraction";
+				String annee = getAnneeUnivEnCours();
+				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
+				try {
+					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
+				} catch (Exception ex) {
+					cpdtoExtract = null;
+				}
+
+				// Et on fusionne cpdtoResult et cpdtoExtract
+				ArrayList<ContratPedagogiqueResultatVdiVetDTO> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO>();
+				for (int i = 0; i < cpdtoResult.length; i++ ) {
+					if (cpdtoResult[i].getAnnee() != null) {
+						if (cpdtoResult[i].getAnnee().compareTo(annee)!=0) {
+							cpdtoAl.add(cpdtoResult[i]);
+						}
+					}
+				}
+				if (cpdtoExtract!=null) {
+					for (int i = 0; i < cpdtoExtract.length; i++ ) {
+						cpdtoAl.add(cpdtoExtract[i]);
+					}
+				}
+				ContratPedagogiqueResultatVdiVetDTO[] cpdto = cpdtoAl.toArray(new ContratPedagogiqueResultatVdiVetDTO[ cpdtoAl.size() ]);
+				setNotesEtResultats(e, cpdto);
+
+			} else {
+
+				ContratPedagogiqueResultatVdiVetDTO[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
+				setNotesEtResultats(e, cpdto);
+			}
+
+		} catch (WebBaseException ex) {
+			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			LOG.error(ex.getLastErrorMsg());
+		} catch (Exception ex) {
+			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+		}
+
+	}
+	
+	
+	
+	/**
+	 * renseigne les attributs concernant les notes et résultats obtenus.
+	 * @param e
+	 * @param cpdto
+	 */
+	public void setNotesEtResultats(Etudiant e, ContratPedagogiqueResultatVdiVetDTO[] resultatVdiVet) {
+		try {
+
+
+			e.getDiplomes().clear();
+			e.getEtapes().clear();
+			//Si on a configure pour toujours afficher le rang, on affichera les rangs de l'étudiant.
+			e.setAfficherRang(PropertyUtils.isAffRangEtudiant());
+
+			for (int i = 0; i < resultatVdiVet.length; i++ ) {
+				//information sur le diplome:
+				ContratPedagogiqueResultatVdiVetDTO rdto = resultatVdiVet[i];
+
+				if(rdto.getDiplome() != null){
+					Diplome d = new Diplome();
+
+					d.setLib_web_vdi(rdto.getDiplome().getLibWebVdi());
+					d.setCod_dip(rdto.getDiplome().getCodDip());
+					d.setCod_vrs_vdi(rdto.getDiplome().getCodVrsVdi().toString());
+					//System.out.println("coddip : "+d.getCod_dip() + " " + d.getLib_web_vdi());
+					//System.out.println("vrsdip : "+d.getCod_vrs_vdi());
+
+					int annee2 = new Integer(rdto.getAnnee()) + 1;
+
+
+					d.setAnnee(rdto.getAnnee() + "/" + annee2);
+					//information sur les résultats obtenus au diplome:
+					ResultatVdiDTO[] tabres = rdto.getResultatVdi();
+
+					if (tabres != null && tabres.length > 0) {
+
+
+						for (int j = 0; j < tabres.length; j++ ) {
+							Resultat r = new Resultat();
+							ResultatVdiDTO res = tabres[j];
+
+							r.setSession(res.getSession().getLibSes());
+							if(res.getNatureResultat() != null && res.getNatureResultat().getCodAdm() != null && res.getNatureResultat().getCodAdm().equals("0")){
+								//on est en Admissibilité à l'étape.Pas en admission.
+								//on le note pour que ce soit plus clair pour l'étudiant
+								r.setNote(res.getNatureResultat().getLibAdm());
+
+
+							}
+
+							//recuperation de la mention
+							if(res.getMention() != null){
+								r.setCodMention(res.getMention().getCodMen());
+								r.setLibMention(res.getMention().getLibMen());
+							}
+
+							String result="";
+							if( res.getTypResultat()!=null){
+								result= res.getTypResultat().getCodTre();
+								r.setAdmission(result);
+							}
+							if (res.getNotVdi() != null) {
+								r.setNote(res.getNotVdi().toString());
+								//ajout pour note Jury
+								if(res.getNotPntJurVdi() != null && !res.getNotPntJurVdi().equals(new BigDecimal(0))){
+									r.setNote(r.getNote()+"(+"+res.getNotPntJurVdi()+")");
+								}
+							} else {
+								if (result.equals("DEF")) {
+									r.setNote("DEF");
+								}
+							}
+
+							//Gestion du barème:
+							if(res.getBarNotVdi() != null){
+								r.setBareme(res.getBarNotVdi());
+							}
+
+							
+							//ajout de la signification du résultat dans la map
+							if ((result != null && !result.equals("")) && !e.getSignificationResultats().containsKey(r.getAdmission())) {
+								e.getSignificationResultats().put(r.getAdmission(), res.getTypResultat().getLibTre());
+							}
+
+							//ajout du résultat au diplome:
+							d.getResultats().add(r);
+							if(res.getNbrRngEtuVdi() != null && !res.getNbrRngEtuVdi().equals("")){
+								d.setRang(res.getNbrRngEtuVdi()+"/"+res.getNbrRngEtuVdiTot());
+								//On indique si on affiche le rang du diplome.
+								d.setAfficherRang(PropertyUtils.isAffRangEtudiant());
+
+							}
+						}
+						//ajout du diplome si on a au moins un résultat
+						//e.getDiplomes().add(0, d);
+					}
+					e.getDiplomes().add(0, d);
+				}
+				//information sur les etapes:
+				EtapeResVdiVetDTO[] etapes = rdto.getEtapes();
+				if (etapes != null && etapes.length > 0) {
+
+					for (int j = 0; j < etapes.length; j++ ) {
+						EtapeResVdiVetDTO etape = etapes[j];
+
+						//29/01/10
+						//on rejete les etapes annulée. MAJ sur proposition de Rennes1
+						if((etape.getCodEtaIae()== null) || (etape.getCodEtaIae()!= null && !etape.getCodEtaIae().equals("A"))){
+
+							Etape et = new Etape();
+							int anneeEtape = new Integer(etape.getCodAnu());
+							et.setAnnee(anneeEtape + "/" + (anneeEtape + 1));
+							et.setCode(etape.getEtape().getCodEtp());
+							et.setVersion(etape.getEtape().getCodVrsVet().toString());
+							et.setLibelle(etape.getEtape().getLibWebVet());
+
+							//ajout 16/02/2012 pour WS exposés pour la version mobile en HttpInvoker
+							if(rdto.getDiplome()!= null){
+								et.setCod_dip(rdto.getDiplome().getCodDip());
+								et.setVers_dip(rdto.getDiplome().getCodVrsVdi());
+							}
+
+							//résultats de l'étape:
+							ResultatVetDTO[] tabresetape = etape.getResultatVet();
+							if (tabresetape != null && tabresetape.length > 0) {
+								for (int k = 0; k < tabresetape.length; k++ ) {
+									ResultatVetDTO ret = tabresetape[k];
+									Resultat r = new Resultat();
+									//System.out.println("credit etape : "+ret.getNbrCrdVet());
+									if(!ret.getEtatDelib().getCodEtaAvc().equals("T")) {
+										et.setDeliberationTerminee(false);
+									} else {
+										et.setDeliberationTerminee(true);
+									}
+
+									r.setSession(ret.getSession().getLibSes());
+									if(ret.getNatureResultat() != null && ret.getNatureResultat().getCodAdm()!= null && ret.getNatureResultat().getCodAdm().equals("0")){
+										//on est en Admissibilité à l'étape.Pas en admission.
+										//on le note pour que ce soit plus clair pour l'étudiant
+										r.setNote(ret.getNatureResultat().getLibAdm());
+
+									}
+									//recuperation de la mention
+									if(ret.getMention() != null){
+										r.setCodMention(ret.getMention().getCodMen());
+										r.setLibMention(ret.getMention().getLibMen());
+									}
+
+									//System.out.println("session : " + ret.getSession().getLibSes()+" "+	ret.getSession().getCodSes());
+									String result="";
+									if(ret.getTypResultat() != null){
+										result = ret.getTypResultat().getCodTre();
+										r.setAdmission(result);
+									}
+									if (ret.getNotVet() != null) {
+										r.setNote(ret.getNotVet().toString());
+										//ajout note jury
+										if(ret.getNotPntJurVet() != null && !ret.getNotPntJurVet().equals(new BigDecimal(0))){
+											r.setNote(r.getNote()+"(+"+ret.getNotPntJurVet()+")");
+										}
+
+									} else {
+										if (result.equals("DEF")) {
+											r.setNote("DEF");
+										}
+									}
+
+									//Gestion du barème:
+									if(ret.getBarNotVet() != null){
+										r.setBareme(ret.getBarNotVet());
+									}
+
+									//ajout de la signification du résultat dans la map
+									if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(r.getAdmission())) {
+										e.getSignificationResultats().put(r.getAdmission(), ret.getTypResultat().getLibTre());
+									}
+
+									//si le resultat n'est pas deja ajouté on l'ajoute:
+									/*	boolean ajoutRes = true;
+									for(Resultat resu : et.getResultats()){
+										if(resu.getSession().equals(r.getSession())
+												&& resu.getAdmission().equals(r.getAdmission())){
+											if(resu.getNote() == null
+													&& r.getNote() == null){
+												ajoutRes=false;
+											}else{
+												if(resu.getNote() != null
+														&& r.getNote() != null){
+													if(resu.getNote().equals(r.getNote())) {
+														ajoutRes=false;
+													}
+												}
+											}
+										}
+									}*/
+
+
+									//ajout du résultat par ordre de code session (Juillet 2014)
+									//ajout du resultat en fin de liste
+									//et.getResultats().add(r);
+									try{
+										int session = Integer.parseInt(ret.getSession().getCodSes());
+										if(et.getResultats().size()>0 && et.getResultats().size()>=session){
+											//ajout du résultat à la bonne place dans la liste
+											et.getResultats().add((session-1),r);
+										}else{
+											//ajout du résultat en fin de liste
+											et.getResultats().add(r);
+										}
+									}catch(Exception excep){
+										et.getResultats().add(r);
+									}
+
+									//ajout du rang
+									if(ret.getNbrRngEtuVet() != null && !ret.getNbrRngEtuVet().equals("")){
+										et.setRang(ret.getNbrRngEtuVet()+"/"+ret.getNbrRngEtuVetTot());
+										//On calcule si on affiche ou non le rang.
+										boolean cetteEtapeDoitEtreAffiche=false;
+										for(String codetape : PropertyUtils.getCodesEtapeAffichageRang()){
+											if(codetape.equals(et.getCode())){
+												cetteEtapeDoitEtreAffiche=true;
+											}
+										}
+										if(PropertyUtils.isAffRangEtudiant() || cetteEtapeDoitEtreAffiche){
+											//On affichera le rang de l'étape.
+											et.setAfficherRang(true);
+											//On remonte au niveau de l'étudiant qu'on affiche le rang
+											e.setAfficherRang(true);
+										}
+									}
+
+								}
+							}
+
+							//ajout de l'étape a la liste d'étapes de l'étudiant:
+							//e.getEtapes().add(0, et);
+							//en attendant la maj du WS :
+							insererEtapeDansListeTriee(e, et);
+
+						}
+					}
+				}
+
+			}
+		} catch (WebBaseException ex) {
+			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+		} catch (Exception ex) {
+			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+		}
+
+	}
+	
+	
+	
+	
+	private void insererEtapeDansListeTriee(Etudiant e, Etape et){
+
+		boolean insere = false;
+		int rang = 0;
+		int anneeEtape = new Integer(et.getAnnee().substring(0, 4));
+		//LOG.info("anneeEtape : "+anneeEtape);
+		while(!insere && rang < e.getEtapes().size()){
+
+			int anneeEtapeEnCours = new Integer(e.getEtapes().get(rang).getAnnee().substring(0, 4));
+			//LOG.info("anneeEtapeEnCours : "+anneeEtapeEnCours);
+			if(anneeEtape > anneeEtapeEnCours){
+				e.getEtapes().add(rang, et);
+				insere = true;
+				//	LOG.info("etape inseree");
+			}
+			rang++;
+		} 
+		if(!insere){
+			e.getEtapes().add(et);
+			//LOG.info("etape inseree en fin");
+		}
+	}
+	
+	
+	
+	
+	public void renseigneNotesEtResultats(Etudiant e) {
+		//On regarde si on a pas déjà les infos dans le cache:
+		String rang = getRangNotesEtResultatsEnCache(true,e);
+
+		if(rang == null){
+			recupererNotesEtResultats(e);
+			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
+			ajouterCacheResultatVdiVet(true,e);
+		}else{
+			//on récupére les infos du cache grace au rang :
+			recupererCacheResultatVdiVet(new Integer(rang),e);
+		}
+	}
+	
+	public void renseigneNotesEtResultatsVueEnseignant(Etudiant e) {
+		//On regarde si on a pas déjà les infos dans le cache:
+		String rang = getRangNotesEtResultatsEnCache(false,e);
+		if(rang == null){
+			recupererNotesEtResultatsEnseignant(e);
+			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
+			ajouterCacheResultatVdiVet(false,e);
+		}else{
+			//on récupére les infos du cache grace au rang :
+			recupererCacheResultatVdiVet(new Integer(rang),e);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param vueEtudiant
+	 * @return le rang dans la liste des Notes et Résultat (aux diplomes et étapes) en cache pour la vueEtudiant
+	 */
+	private String getRangNotesEtResultatsEnCache(boolean vueEtudiant, Etudiant e){
+		int rang=0;
+		boolean enCache=false;
+
+		//on parcourt le résultatVdiVet pour voir si on a ce qu'on cherche:
+		for(CacheResultatsVdiVet crvv : e.getCacheResultats().getResultVdiVet()){
+			if(!enCache){
+				//si on a déjà les infos:
+				if(crvv.isVueEtudiant() == vueEtudiant){
+					enCache=true;
+				}else{
+					//on a pas trouvé, on incrémente le rang pour se placer sur le rang suivant
+					rang++;
+				}
+			}
+		}
+
+		//si on a pas les infos en cache:
+		if(!enCache){
+			return null;
+		}
+
+		return ""+rang;
+
+	}
+	
+	
+	/**
+	 * On complète les infos du cache pour les Résultats aux diplomes et étapes.
+	 * @param vueEtudiant
+	 */
+	public void ajouterCacheResultatVdiVet(boolean vueEtudiant, Etudiant e){
+		CacheResultatsVdiVet crvv = new CacheResultatsVdiVet();
+		crvv.setVueEtudiant(vueEtudiant);
+		crvv.setDiplomes(new LinkedList<Diplome>(e.getDiplomes()));
+		crvv.setEtapes(new LinkedList<Etape>(e.getEtapes()));
+		e.getCacheResultats().getResultVdiVet().add(crvv);
+	}
+	
+	
+	/**
+	 * récupère les résultat aux diplomes et etapes dans le cache (en s'indexant sur le rang)
+	 * @param rang
+	 */
+	private void recupererCacheResultatVdiVet(int rang, Etudiant e){
+		//1-on vide les listes existantes
+		if(e.getDiplomes()!=null){
+			e.getDiplomes().clear();
+		}
+		if(e.getEtapes()!=null){
+			e.getEtapes().clear();
+		}
+		//2-on récupère les infos du cache.
+		e.setDiplomes(new LinkedList<Diplome>(e.getCacheResultats().getResultVdiVet().get(rang).getDiplomes()));
+		e.setEtapes(new LinkedList<Etape>(e.getCacheResultats().getResultVdiVet().get(rang).getEtapes()));
+
+
+	}
 }

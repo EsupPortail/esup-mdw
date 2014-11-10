@@ -15,6 +15,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 
@@ -47,11 +48,24 @@ public class NotesView extends VerticalLayout implements View {
 		setMargin(true);
 		setSpacing(true);
 
-	
+
 		/* Titre */
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 		title.addStyleName(ValoTheme.LABEL_H1);
 		addComponent(title);
+
+		//Si on n'a pas déjà essayer de récupérer les notes
+		if(!MainUI.getCurrent().getEtudiant().isNotesRecuperees()){
+			//Test si user enseignant
+			if(userController.isEnseignant()){
+				//On recupere les notes pour un enseignant
+				etudiantController.renseigneNotesEtResultatsVueEnseignant(MainUI.getCurrent().getEtudiant());
+			}else{
+				//On récupère les notes pour un étudiant
+				etudiantController.renseigneNotesEtResultats(MainUI.getCurrent().getEtudiant());
+			}
+		}
+
 	}
 
 	/**
@@ -64,5 +78,5 @@ public class NotesView extends VerticalLayout implements View {
 
 
 
-	
+
 }
