@@ -1,5 +1,8 @@
 package fr.univlorraine.mondossierweb.utils;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -117,5 +120,16 @@ public class PropertyUtils {
 		String value = System.getProperty("context.attributLdapCodEtu");
 		if(!StringUtils.hasText(value)) throw new NullPointerException("attributLdapCodEtu cannot be null !");
 		return value;
+	}
+	
+	/** Retourne la liste des groupes uportal autorisés  */
+	public static List<String> getListeGroupesUportalAutorises(){
+		LinkedList<String> values = new LinkedList<String>();
+		String value = System.getProperty("context.uportal.groupes.autorises");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("uportal.groupes.autorises cannot be null !");
+		for(String s : value.split(",")){
+			values.add(s);
+		}
+		return values;
 	}
 }

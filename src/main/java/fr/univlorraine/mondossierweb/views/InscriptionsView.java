@@ -73,6 +73,11 @@ public class InscriptionsView extends VerticalLayout implements View {
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
 
+		//Si les informations sur les inscriptions n'ont pas déjà été récupérées, on les récupère
+		if(MainUI.getCurrent().getEtudiant().getLibEtablissement()==null){
+			etudiantController.recupererInscriptions();
+		}
+		
 		Panel panelInscription= new Panel(MainUI.getCurrent().getEtudiant().getLibEtablissement());
 		
 

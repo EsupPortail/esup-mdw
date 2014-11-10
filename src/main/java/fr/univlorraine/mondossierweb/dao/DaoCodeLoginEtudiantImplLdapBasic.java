@@ -46,11 +46,8 @@ public class DaoCodeLoginEtudiantImplLdapBasic implements IDaoCodeLoginEtudiant 
 		
 		
 		try {
-			System.out.println(PropertyUtils.getAttributLdapCodEtu() +" "+login);
 			if(ldapUserSearch.searchForUser(login)!=null){
-				System.out.println("1 "+PropertyUtils.getAttributLdapCodEtu() +" "+login);
 				String[] vals= ldapUserSearch.searchForUser(login).getStringAttributes(PropertyUtils.getAttributLdapCodEtu());
-				System.out.println(vals);
 				if(vals!=null){
 					LOG.info("Codetu via LDAP pour "+login+" => "+vals[0]);
 					return vals[0];

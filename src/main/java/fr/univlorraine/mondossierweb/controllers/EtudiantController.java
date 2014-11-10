@@ -497,6 +497,7 @@ public class EtudiantController {
 	 */
 	public void recupererCalendrierExamens() {
 		MainUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(MainUI.getCurrent().getEtudiant().getCod_ind()));
+		MainUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
 	}
 
 

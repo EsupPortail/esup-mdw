@@ -219,8 +219,7 @@ public class UserController {
 			boolean useruportal = false;
 			try {
 				//on reucupère la liste de groupes mis dans le bean security
-				List<String> listegroupes = new LinkedList<String>();
-				listegroupes.add("Utilisateurs MDW");
+				List<String> listegroupes = PropertyUtils.getListeGroupesUportalAutorises();
 
 				//on test si on est en portlet
 				if (listegroupes != null && listegroupes.size()>0) {

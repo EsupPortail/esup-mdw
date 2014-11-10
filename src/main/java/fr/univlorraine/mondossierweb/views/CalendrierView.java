@@ -68,6 +68,12 @@ public class CalendrierView extends VerticalLayout implements View {
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
 
+		//Si on n'a pas déjà essayer de récupérer le calendrier
+		if(!MainUI.getCurrent().getEtudiant().isCalendrierRecupere()){
+			etudiantController.recupererCalendrierExamens();
+		}
+		
+		
 		Panel panelCalendrier= new Panel(applicationContext.getMessage(NAME + ".calendrier.title", null, getLocale()));
 		panelCalendrier.setSizeFull();
 

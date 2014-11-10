@@ -127,7 +127,10 @@ public class Etudiant {
 	 * liste des examens prévus.
 	 */
 	private List<Examen> calendrier;
-	
+	/**
+	 * vrai si on a deja tenté de récupérer le calendrier des examens
+	 */
+	private boolean calendrierRecupere;
 	
 
 	
