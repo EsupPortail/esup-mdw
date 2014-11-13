@@ -306,7 +306,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		tableResultats = new TreeTable();
 		tableResultats.setSizeFull();
 		tableResultats.setSelectable(true);
-		tableResultats.setMultiSelect(true);
+		tableResultats.setMultiSelect(false);
 		tableResultats.setImmediate(true);
 		etuColumnHeaders = new String[ETU_FIELDS_ORDER.length];
 		for (int fieldIndex = 0; fieldIndex < ETU_FIELDS_ORDER.length; fieldIndex++){
@@ -555,8 +555,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			Item item = source.getItem(itemId);
 
 			// RECUPERATION DE LA VALEUR 
-			/*Link  b=new Link();
-			b.setCaption(item.getItemProperty("lib").getValue().toString());*/
 			Button b = new Button(item.getItemProperty("lib").getValue().toString());
 			b.setStyleName("link"); 
 			b.addStyleName("v-link");

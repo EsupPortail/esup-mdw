@@ -6,7 +6,6 @@ package fr.univlorraine.mondossierweb.beans;
 import java.util.List;
 
 import lombok.Data;
-import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 
 
 /**

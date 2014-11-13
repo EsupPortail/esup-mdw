@@ -127,6 +127,11 @@ public class MainUI extends UI {
 	@Getter
 	private Etudiant etudiant;
 
+	//vrai si on consulte les notes en vue enseignant
+	@Setter
+	@Getter
+	private boolean vueEnseignantNotesEtResultats;
+
 	//annee universitaire en cours
 	@Setter
 	@Getter
@@ -207,6 +212,7 @@ public class MainUI extends UI {
 
 
 		mainVerticalLayout=new VerticalLayout();
+		
 
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
@@ -222,6 +228,8 @@ public class MainUI extends UI {
 
 			//Si user enseignant
 			if(userController.isEnseignant()){
+				//On consultera les notes en vue enseignant
+				vueEnseignantNotesEtResultats=true;
 				/* Construit le menu horizontal pour les enseignants */
 				tabSheetGlobal.setSizeFull();
 				tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
@@ -241,6 +249,8 @@ public class MainUI extends UI {
 				mainVerticalLayout.setSizeFull();
 				mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
 			}else{
+				//On consultera les notes en vue etudiant
+				vueEnseignantNotesEtResultats=false;
 				//User Etudiant
 				//Le Dossier est définit comme étant le contenu de la page
 				mainVerticalLayout.addComponent(layoutDossierEtudiant);

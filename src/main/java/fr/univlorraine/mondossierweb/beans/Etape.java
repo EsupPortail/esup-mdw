@@ -26,31 +26,31 @@ public class Etape implements Serializable {
 	 */
 	private String version;
 	/**
-	 * ann�e de l'étape.
+	 * année de l'étape.
 	 */
 	private String annee;
 	/**
-	 * libell� de l'étape.
+	 * libellé de l'étape.
 	 */
 	private String libelle;
 	/**
-	 * code du dipl�me p�re.
+	 * code du diplôme père.
 	 */
 	private String cod_dip;
 	/**
-	 * version du diplome p�re;
+	 * version du diplome père;
 	 */
 	private int vers_dip;
 	/**
-	 * le rang de l'étudiant pour son r�sultat a l'étape.
+	 * le rang de l'étudiant pour son résultat a l'étape.
 	 */
 	private String rang;
 	/**
-	 * les r�sultats.
+	 * les résultats.
 	 */
 	private List<Resultat> resultats;
 	/**
-	 * vrai si les r�sultat � l'�preuve sont d�finitifs.
+	 * vrai si les résultat à l'épreuve sont définitifs.
 	 */
 	private boolean deliberationTerminee;
 	/**

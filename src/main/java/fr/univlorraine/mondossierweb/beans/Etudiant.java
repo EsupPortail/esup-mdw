@@ -134,10 +134,6 @@ public class Etudiant {
 	 */
 	private boolean calendrierRecupere;
 	/**
-	 * vrai si on a deja tenté de récupérer les notes
-	 */
-	private boolean notesRecuperees;
-	/**
 	 * les diplomes avec les résultats obtenus.
 	 */
 	private List<Diplome> diplomes;
@@ -161,12 +157,35 @@ public class Etudiant {
 	 * le cache du résultat et des notes déjà récupérés.
 	 */
 	private CacheResultats cacheResultats;
+	/**
+	 * vrai si significationResultats n'est pas vide.
+	 */
+	private boolean significationResultatsUtilisee;
+	/**
+	 * la liste des éléments pédagogique (avec résultats) d'une étape choisie.
+	 */
+	private List<ElementPedagogique> elementsPedagogiques;
+	/**
+	 * vrai si les résultat à l'épreuve sont définitifs.
+	 */
+	private boolean deliberationTerminee;
 	
 
 	
 	
 	public Etudiant() {
 		super();
+		initAttributesValues();
+	}
+	
+	
+	public Etudiant(String cod_etu) {
+		super();
+		initAttributesValues();
+		this.cod_etu= cod_etu;
+	}
+	
+	private void initAttributesValues(){
 		linsciae = new ArrayList<Inscription>();
 		linscdac = new ArrayList<Inscription>();
 		allSignificationResultats = new HashMap<String, String>();
@@ -174,11 +193,7 @@ public class Etudiant {
 		diplomes = new ArrayList<Diplome>();
 		etapes = new ArrayList<Etape>();
 		cacheResultats = new CacheResultats();
-	}
-	
-	public Etudiant(String cod_etu) {
-		super();
-		this.cod_etu= cod_etu;
+		elementsPedagogiques = new ArrayList<ElementPedagogique>();
 	}
 
 	/**
@@ -191,6 +206,19 @@ public class Etudiant {
 		
 	}
 	
+	
+	public boolean isSignificationResultatsUtilisee() {
+		significationResultatsUtilisee = true;
+		if (significationResultats.isEmpty()) {
+			significationResultatsUtilisee = false;
+		}
+		return significationResultatsUtilisee;
+	}
+
+	public void setSignificationResultatsUtilisee(
+			boolean significationResultatsUtilisee) {
+		this.significationResultatsUtilisee = significationResultatsUtilisee;
+	}
 
 
 }

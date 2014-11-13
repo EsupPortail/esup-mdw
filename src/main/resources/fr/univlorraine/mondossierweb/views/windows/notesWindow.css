@@ -1,0 +1,25 @@
+
+.v-table-body{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.v-window {
+@include transition(none);
+}
+
+
+
+.valo-ul .v-panel-caption-significationpanel {
+	box-sizing: border-box;
+	padding: 0 12px;
+	line-height: 36px;
+	border-bottom: none;
+	margin-bottom: 1px;
+	background-color: #fe902a;
+	background-image: linear-gradient(to bottom,#fe922a 2%, #fa8b28 98%);
+	color: #f4e0ce;
+	font-weight: 400;
+	font-size: 14px;
+}
+
