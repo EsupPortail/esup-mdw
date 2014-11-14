@@ -89,7 +89,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			}
 			calendrierTable.setColumnCollapsingAllowed(true);
 			calendrierTable.setColumnReorderingAllowed(true);
-			calendrierTable.setSelectable(true);
+			calendrierTable.setSelectable(false);
 			calendrierTable.setImmediate(true);
 			calendrierTable.setPageLength(calendrierTable.getItemIds().size() );
 			LOG.info("calendrierTable.getItemIds().size()  : "+calendrierTable.getItemIds().size());

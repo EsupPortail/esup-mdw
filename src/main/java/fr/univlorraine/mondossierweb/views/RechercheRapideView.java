@@ -305,7 +305,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		rrContainer.addContainerProperty("type", String.class, "");
 		tableResultats = new TreeTable();
 		tableResultats.setSizeFull();
-		tableResultats.setSelectable(true);
+		tableResultats.setSelectable(false);
 		tableResultats.setMultiSelect(false);
 		tableResultats.setImmediate(true);
 		etuColumnHeaders = new String[ETU_FIELDS_ORDER.length];

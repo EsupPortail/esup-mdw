@@ -160,8 +160,8 @@ public class NotesView extends VerticalLayout implements View {
 		}
 
 		notesDiplomesTable.setColumnCollapsingAllowed(true);
-		notesDiplomesTable.setColumnReorderingAllowed(true);
-		notesDiplomesTable.setSelectable(true);
+		notesDiplomesTable.setColumnReorderingAllowed(false);
+		notesDiplomesTable.setSelectable(false);
 		notesDiplomesTable.setImmediate(true);
 		notesDiplomesTable.setPageLength(notesDiplomesTable.getItemIds().size() );
 		panelNotesDiplomes.setContent(notesDiplomesTable);
@@ -192,8 +192,8 @@ public class NotesView extends VerticalLayout implements View {
 		}
 
 		notesEtapesTable.setColumnCollapsingAllowed(true);
-		notesEtapesTable.setColumnReorderingAllowed(true);
-		notesEtapesTable.setSelectable(true);
+		notesEtapesTable.setColumnReorderingAllowed(false);
+		notesEtapesTable.setSelectable(false);
 		notesEtapesTable.setImmediate(true);
 		notesEtapesTable.setPageLength(notesEtapesTable.getItemIds().size() );
 		panelNotesEtapes.setContent(notesEtapesTable);

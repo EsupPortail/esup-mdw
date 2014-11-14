@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.views.windows;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -32,6 +34,7 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Fenêtre du détail des notes
@@ -62,7 +65,7 @@ public class DetailNotesWindow extends Window {
 		etape = et;
 		init();
 	}
-	
+
 	private void init() {
 
 		/* Style */
@@ -91,6 +94,8 @@ public class DetailNotesWindow extends Window {
 		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
 
 
+		List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
+
 		//Sous titre avec l'année
 		HorizontalLayout titleLayout = new HorizontalLayout();
 		titleLayout.setSizeFull();
@@ -98,19 +103,22 @@ public class DetailNotesWindow extends Window {
 		Label labelSousMenu = new Label(applicationContext.getMessage(NAME+".sousmenu", null, getLocale()));
 		Label labelAnneeUniv = new Label(applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" <b>"+ etape.getAnnee()+"</b>");
 		labelAnneeUniv.setContentMode(ContentMode.HTML);
-		Button pdfButton = new Button();
-		pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-		pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 		titleLayout.addComponent(labelSousMenu);
 		titleLayout.addComponent(labelAnneeUniv);
 		titleLayout.setComponentAlignment(labelAnneeUniv, Alignment.MIDDLE_CENTER);
-		titleLayout.addComponent(pdfButton);
-		titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
+		if(lelp!=null && lelp.size()>0){
+			Button pdfButton = new Button();
+			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
+			titleLayout.addComponent(pdfButton);
+			titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
+		}
 		layout.addComponent(titleLayout);
 
 
+
 		//Test si user enseignant
-		if(userController.isEnseignant()){
+		if(userController.isEnseignant() && lelp!=null && lelp.size()>0){
 			Panel panelVue= new Panel();
 
 			HorizontalLayout vueLayout = new HorizontalLayout();
@@ -146,40 +154,62 @@ public class DetailNotesWindow extends Window {
 
 
 		//Message informatif sur les notes
-		HorizontalLayout messageLayout = new HorizontalLayout();
-		messageLayout.setSizeFull();
-		messageLayout.setHeight("20px");
-		messageLayout.setMargin(false);
-		messageLayout.setSpacing(false);
-		Label messageLabel = new Label(applicationContext.getMessage(NAME+".label.messageinfo", null, getLocale()));
-		messageLabel.setContentMode(ContentMode.HTML);
-		messageLabel.setStyleName(ValoTheme.LABEL_SMALL);
-		messageLayout.addComponent(messageLabel);
-		layout.addComponent(messageLayout);
-
+		if(lelp!=null && lelp.size()>0){
+			HorizontalLayout messageLayout = new HorizontalLayout();
+			messageLayout.setSizeFull();
+			messageLayout.setHeight("20px");
+			messageLayout.setMargin(false);
+			messageLayout.setSpacing(false);
+			Label messageLabel = new Label(applicationContext.getMessage(NAME+".label.messageinfo", null, getLocale()));
+			messageLabel.setContentMode(ContentMode.HTML);
+			messageLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			messageLayout.addComponent(messageLabel);
+			layout.addComponent(messageLayout);
+		}
 
 		Panel panelDetailNotes= new Panel(etape.getLibelle());
 		panelDetailNotes.setSizeFull();
-		Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, MainUI.getCurrent().getEtudiant().getElementsPedagogiques()));
-		detailNotesTable.setSizeFull();
-		detailNotesTable.setVisibleColumns(new String[0]);
-		detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
-		detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
-		detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale()), new Session1ColumnGenerator());
-		detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.resultatsession1", null, getLocale()), new ResultatSession1ColumnGenerator());
-		detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
-		detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
-		detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
-		detailNotesTable.setColumnCollapsingAllowed(true);
-		detailNotesTable.setColumnReorderingAllowed(false);
-		detailNotesTable.setSelectable(true);
-		detailNotesTable.setImmediate(true);
-		panelDetailNotes.setContent(detailNotesTable);
+
+
+		if(lelp!=null && lelp.size()>0){
+			Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
+			detailNotesTable.setSizeFull();
+			detailNotesTable.setVisibleColumns(new String[0]);
+			detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
+			detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
+			detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale()), new Session1ColumnGenerator());
+			detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.resultatsession1", null, getLocale()), new ResultatSession1ColumnGenerator());
+			detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
+			detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
+			detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
+			if(PropertyUtils.isAffRangEtudiant() || etudiantController.isAfficherRangElpEpr()){
+				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.rang", null, getLocale()), new RangColumnGenerator());
+			}
+			if(PropertyUtils.isAffECTSEtudiant()){
+				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
+			}
+			detailNotesTable.setColumnCollapsingAllowed(true);
+			detailNotesTable.setColumnReorderingAllowed(false);
+			detailNotesTable.setSelectable(false);
+			detailNotesTable.setImmediate(true);
+			detailNotesTable.addStyleName("scrollabletable");
+			panelDetailNotes.setContent(detailNotesTable);
+		}else{
+			setHeight(30, Unit.PERCENTAGE);
+			HorizontalLayout messageLayout=new HorizontalLayout();
+			messageLayout.setSpacing(true);
+			messageLayout.setMargin(true);
+			Label labelAucunResultat = new Label(applicationContext.getMessage(NAME+".message.aucuneresultat", null, getLocale()));
+			labelAucunResultat.setStyleName(ValoTheme.LABEL_BOLD);
+			messageLayout.addComponent(labelAucunResultat);
+			panelDetailNotes.setContent(messageLayout);
+
+		}
 		layout.addComponent(panelDetailNotes);
-		
 
 
-		if(MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
+
+		if(lelp!=null && lelp.size()>0 && MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
 			Panel panelSignificationResultats= new Panel(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 
 			panelSignificationResultats.addStyleName("significationpanel");
@@ -205,13 +235,13 @@ public class DetailNotesWindow extends Window {
 
 			panelSignificationResultats.setContent(significationLayout);
 			layout.addComponent(panelSignificationResultats);
-			
+
 		}
 
 
 
 		layout.setExpandRatio(panelDetailNotes, 1);
-		
+
 
 		setContent(layout);
 
@@ -423,6 +453,54 @@ public class DetailNotesWindow extends Window {
 				libLabel.setValue(res);
 			}
 			libLabel.setContentMode(ContentMode.HTML);
+			return libLabel;
+		}
+	}
+	
+	
+	/** Formats the position in a column containing Date objects. */
+	class RangColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
+			ElementPedagogique el = (ElementPedagogique) bid.getBean();
+			Label libLabel = new Label();
+
+			if(StringUtils.hasText(el.getRang())){
+				libLabel.setValue(el.getRang());
+			}
+			libLabel.setContentMode(ContentMode.HTML);
+			return libLabel;
+		}
+	}
+	
+	/** Formats the position in a column containing Date objects. */
+	class ECTSColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
+			ElementPedagogique el = (ElementPedagogique) bid.getBean();
+			Label libLabel = new Label();
+
+			if(StringUtils.hasText(el.getEcts())){
+				libLabel.setValue(el.getEcts());
+			}
 			return libLabel;
 		}
 	}

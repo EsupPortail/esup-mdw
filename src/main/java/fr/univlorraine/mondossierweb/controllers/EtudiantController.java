@@ -3,8 +3,10 @@ package fr.univlorraine.mondossierweb.controllers;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -28,7 +30,11 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
+import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
+import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
@@ -79,8 +85,16 @@ public class EtudiantController {
 	private transient Environment environment;
 	@Resource
 	private transient UserDetailsService userDetailsService;
+	/** {@link DiplomeApogeeServiceImpl} */
+	@Resource
+	private DiplomeApogeeService diplomeService;
+	/** {@link InscriptionServiceImpl} */
+	@Resource
+	private InscriptionService inscriptionService;
 	@Resource
 	private transient UiController uiController;
+	@Resource
+	private transient UserController userController;
 
 	@Resource(name="emailConverter")
 	private transient EmailConverterInterface emailConverter;
@@ -913,7 +927,7 @@ public class EtudiantController {
 										et.setRang(ret.getNbrRngEtuVet()+"/"+ret.getNbrRngEtuVetTot());
 										//On calcule si on affiche ou non le rang.
 										boolean cetteEtapeDoitEtreAffiche=false;
-										for(String codetape : PropertyUtils.getCodesEtapeAffichageRang()){
+										for(String codetape : PropertyUtils.getListeCodesEtapeAffichageRang()){
 											if(codetape.equals(et.getCode())){
 												cetteEtapeDoitEtreAffiche=true;
 											}
@@ -1342,7 +1356,7 @@ public class EtudiantController {
 			}
 
 			//indentation des libelles dans la liste:
-		/*	if (e.getElementsPedagogiques().size() > 0) {
+			/*	if (e.getElementsPedagogiques().size() > 0) {
 				for (ElementPedagogique el : e.getElementsPedagogiques()) {
 					int rg = new Integer(el.getLevel());
 
@@ -1475,10 +1489,10 @@ public class EtudiantController {
 	 */
 	public void recupererDetailNotesEtResultats(Etudiant e,Etape et){
 		try {
-			
+
 			if(monProxyPedagogique==null)
 				monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
-			
+
 			e.getElementsPedagogiques().clear();
 
 			String temoin = PropertyUtils.getTemoinNotesEtudiant();
@@ -1535,7 +1549,7 @@ public class EtudiantController {
 	 */
 	public void recupererDetailNotesEtResultatsEnseignant(Etudiant e,Etape et){
 		try {
-			
+
 			if(monProxyPedagogique==null)
 				monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
 
@@ -1576,11 +1590,11 @@ public class EtudiantController {
 		} catch (WebBaseException ex) {
 			//on catch le cas ou les inscriptions aux elp de l'étape ne soient pas effectués.
 			if (!ex.getNature().equals("nullretrieve") && !ex.getDomaine().equals("data") && !ex.getElement().equals("elp") && !ex.getType().equals("tecnical")){
-				LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_etu(),ex);
+				LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
 			}
-			LOG.error(ex.getLastErrorMsg()+" pour etudiant dont codind est : " + e.getCod_etu());
+			LOG.error(ex.getLastErrorMsg()+" pour etudiant dont codind est : " + e.getCod_ind());
 		}catch (Exception ex) {
-			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_etu(),ex);
+			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
 		}
 
 	}
@@ -1748,9 +1762,12 @@ public class EtudiantController {
 			e.getEtapes().clear();
 		}
 		//2-on récupère les infos du cache.
-		e.setDiplomes(new LinkedList<Diplome>(e.getCacheResultats().getResultVdiVet().get(rang).getDiplomes()));
-		e.setEtapes(new LinkedList<Etape>(e.getCacheResultats().getResultVdiVet().get(rang).getEtapes()));
-
+		if(e.getCacheResultats().getResultVdiVet().get(rang).getDiplomes()!=null){
+			e.setDiplomes(new LinkedList<Diplome>(e.getCacheResultats().getResultVdiVet().get(rang).getDiplomes()));
+		}
+		if(e.getCacheResultats().getResultVdiVet().get(rang).getEtapes()!=null){
+			e.setEtapes(new LinkedList<Etape>(e.getCacheResultats().getResultVdiVet().get(rang).getEtapes()));
+		}
 
 	}
 
@@ -1765,8 +1782,9 @@ public class EtudiantController {
 		}
 
 		//2-on récupère les infos du cache.
-		e.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getCacheResultats().getResultElpEpr().get(rang).getElementsPedagogiques()));
-
+		if(e.getCacheResultats().getResultElpEpr().get(rang).getElementsPedagogiques()!=null){
+			e.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getCacheResultats().getResultElpEpr().get(rang).getElementsPedagogiques()));
+		}
 
 	}
 
@@ -1778,4 +1796,89 @@ public class EtudiantController {
 			MainUI.getCurrent().setVueEnseignantNotesEtResultats(true);
 		}
 	}
+
+
+	public boolean proposerCertificat(Inscription ins, Etudiant etu) {
+
+		// autoriser ou non la generation de certificats de scolarite.
+		if (!PropertyUtils.isCertificatScolaritePDF()) {
+			return false;
+		}
+		// autoriser ou non les personnels à imprimer les certificats.
+		if ( !PropertyUtils.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
+			return false;
+		}
+		String codAnuIns=ins.getCod_anu().substring(0, 4);
+		// autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
+		if (!PropertyUtils.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours())) {
+			return false;
+		}
+		List<String> listeCertScolTypDiplomeDesactive=PropertyUtils.getListeCertScolTypDiplomeDesactive();
+		if ( !listeCertScolTypDiplomeDesactive.isEmpty()) {
+			// interdit les certificats pour certains types de diplomes
+			DiplomeApogee dip = diplomeService.findDiplome(ins.getCod_dip());
+			if(dip!=null && StringUtils.hasText(dip.getCodTpdEtb())){
+				if (listeCertScolTypDiplomeDesactive.contains(dip.getCodTpdEtb())) {
+					return false;
+				}
+			}
+		}
+		//interdit l'edition de certificat pour les étudiants si l'inscription n'est pas payée
+		if ( !ins.isEstEnRegle() && userController.isEtudiant()){
+			return false;
+		}
+		//interdit l'edition de certificat pour les étudiants si l'inscription en cours est une cohabitation
+		List<String> listeCertScolProfilDesactive=PropertyUtils.getListeCertScolProfilDesactive();
+		if ( !listeCertScolProfilDesactive.isEmpty()) {
+			// interdit les certificats pour certains types de diplomes
+			String profil = inscriptionService.getProfil(codAnuIns, etu.getCod_ind());
+
+			if (listeCertScolProfilDesactive.contains(profil)) {
+				return false;
+			}
+		}
+		//interdit l'édition de certificat pour les étudiants si l'inscription correspond à un code CGE désactivé
+		List<String> listeCertScolCGEDesactive=PropertyUtils.getListeCertScolCGEDesactive();
+		if ( !listeCertScolCGEDesactive.isEmpty()) {
+			// interdit les certificats pour certains code CGE
+			String cge = inscriptionService.getCgeFromCodIndIAE(codAnuIns, etu.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
+
+			if (listeCertScolCGEDesactive.contains(cge)) {
+				return false;
+			}
+		}
+		//interdit l'édition de certificat pour les étudiants si l'inscription correspond à un code composante désactivé
+		List<String> listeCertScolCmpDesactive=PropertyUtils.getListeCertScolCmpDesactive();
+		if ( !listeCertScolCmpDesactive.isEmpty()) {
+			// interdit les certificats pour certains code composante
+			String cmp = inscriptionService.getCmpFromCodIndIAE(codAnuIns, etu.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
+
+			if (listeCertScolCmpDesactive.contains(cmp)) {
+				return false;
+			}
+		}
+
+
+
+		return true;
+	}
+
+
+	
+	
+	public boolean isAfficherRangElpEpr(){
+		List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
+		if(lelp != null && lelp.size()>0){
+			List<String> codesAutorises = PropertyUtils.getListeCodesEtapeAffichageRang();
+			String codeEtpEnCours = lelp.get(0).getCode();
+			for(String code : codesAutorises){
+				if(code.equals(codeEtpEnCours)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
 }

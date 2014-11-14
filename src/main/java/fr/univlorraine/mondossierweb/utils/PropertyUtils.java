@@ -163,7 +163,7 @@ public class PropertyUtils {
 	 * retourne la liste des codes etape dont on affiche le rang même si affRangEtudiant=false
 	 * @return
 	 */
-	public static List<String> getCodesEtapeAffichageRang() {
+	public static List<String> getListeCodesEtapeAffichageRang() {
 		LinkedList<String> values = new LinkedList<String>();
 		String value = System.getProperty("context.codesEtapeAffichageRang");
 		if(StringUtils.hasText(value)){
@@ -233,4 +233,124 @@ public class PropertyUtils {
 		}
 		return null;
 	}
+	
+	
+	/**
+	 * Edition pdf des certificats de scolarité : true pour l'activer, false sinon
+	 * @return
+	 */
+	public static boolean isCertificatScolaritePDF() {
+		if(StringUtils.hasText(System.getProperty("context.certificatScolaritePDF"))
+				&& System.getProperty("context.certificatScolaritePDF").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	/**
+	 *  Indiquer true si on veut permettre l'édition des certificats de scolarité pour toutes les années et plus seulement pour l'année en cours.
+	 * @return
+	 */
+	public static boolean isCertificatScolariteTouteAnnee() {
+		if(StringUtils.hasText(System.getProperty("context.certificatScolariteTouteAnnee"))
+				&& System.getProperty("context.certificatScolariteTouteAnnee").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 *  IAutoriser les personnels à imprimer les certificats de scolarité. 
+	 * @return
+	 */
+	public static boolean isCertScolAutorisePersonnel() {
+		if(StringUtils.hasText(System.getProperty("context.certScolAutorisePersonnel"))
+				&& System.getProperty("context.certScolAutorisePersonnel").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * Liste des codes de types de diplomes pour lesquels la generation de certificat est desactivee. (balises value)
+	 * @return
+	 */
+	public static List<String> getListeCertScolTypDiplomeDesactive() {
+		LinkedList<String> values = new LinkedList<String>();
+		String value = System.getProperty("context.certScolTypDiplomeDesactive");
+		if(StringUtils.hasText(value)){
+			for(String s : value.split(",")){
+				values.add(s);
+			}
+			return values;
+		}
+		return null;
+	}
+	
+	/**
+	 *  Liste des codes profil pour lesquels la generation de certificat est desactivee. (balises value)
+	 * @return
+	 */
+	public static List<String> getListeCertScolProfilDesactive() {
+		LinkedList<String> values = new LinkedList<String>();
+		String value = System.getProperty("context.certScolProfilDesactive");
+		if(StringUtils.hasText(value)){
+			for(String s : value.split(",")){
+				values.add(s);
+			}
+		}
+		return values;
+	}
+	
+	/**
+	 * Liste des codes CGE pour lesquels la generation de certificat est desactivee. (balises value) 
+	 * @return
+	 */
+	public static List<String> getListeCertScolCGEDesactive() {
+		LinkedList<String> values = new LinkedList<String>();
+		String value = System.getProperty("context.certScolCGEDesactive");
+		if(StringUtils.hasText(value)){
+			for(String s : value.split(",")){
+				values.add(s);
+			}
+		}
+		return values;
+	}
+	
+	/**
+	 * Liste des codes composante pour lesquels la generation de certificat est desactivee. (balises value) 
+	 * @return
+	 */
+	public static List<String> getListeCertScolCmpDesactive() {
+		LinkedList<String> values = new LinkedList<String>();
+		String value = System.getProperty("context.certScolCmpDesactive");
+		if(StringUtils.hasText(value)){
+			for(String s : value.split(",")){
+				values.add(s);
+			}
+		}
+		return values;
+	}
+	
+	
+
+	
+	
+	
+	/**
+	 *  Affichage ou non des informations crédits ECTS par la page du détail des notes
+	 * @return
+	 */
+	public static boolean isAffECTSEtudiant() {
+		if(StringUtils.hasText(System.getProperty("context.affECTSEtudiant"))
+				&& System.getProperty("context.affECTSEtudiant").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+
 }

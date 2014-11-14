@@ -1,0 +1,11 @@
+
+.v-table-body-scrollabletable{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.v-window {
+@include transition(none);
+}
+
+

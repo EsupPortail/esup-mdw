@@ -124,28 +124,29 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 
 
+
+		/* Info de contact */
+		FormLayout formContactLayout = new FormLayout();
+		formContactLayout.setSpacing(true);
+		formContactLayout.setMargin(true);
+
+		Panel panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
+
+		String captionTelPortable = applicationContext.getMessage(NAME+".portable.title", null, getLocale());
+		TextField fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
+		formatTextField(fieldTelPortable);
+		formContactLayout.addComponent(fieldTelPortable);
+
 		if(userController.isEtudiant()){
-			/* Info de contact */
-			FormLayout formContactLayout = new FormLayout();
-			formContactLayout.setSpacing(true);
-			formContactLayout.setMargin(true);
-
-			Panel panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
-
-			String captionTelPortable = applicationContext.getMessage(NAME+".portable.title", null, getLocale());
-			TextField fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
-			formatTextField(fieldTelPortable);
-			formContactLayout.addComponent(fieldTelPortable);
-
 			String captionMailPerso = applicationContext.getMessage(NAME+".mailperso.title", null, getLocale());
 			TextField fieldMailPerso = new TextField(captionMailPerso, MainUI.getCurrent().getEtudiant().getEmailPerso());
 			formatTextField(fieldMailPerso);
 			formContactLayout.addComponent(fieldMailPerso);
-
-
-			panelContact.setContent(formContactLayout);
-			idLayout.addComponent(panelContact);
 		}
+
+		panelContact.setContent(formContactLayout);
+		idLayout.addComponent(panelContact);
+
 
 		globalLayout.addComponent(idLayout);
 

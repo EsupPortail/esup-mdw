@@ -10,22 +10,32 @@ import org.springframework.stereotype.Component;
 import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.annotations.StyleSheet;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.views.NotesView.ResultatColumnGenerator;
+import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
+import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 
 /**
  * Page d'accueil
@@ -38,7 +48,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 	public static final String NAME = "inscriptionsView";
 
-	public static final String[] IA_FIELDS_ORDER = {"cod_anu", "cod_comp","cod_etp","cod_vrs_vet","lib_etp"};
+	public static final String[] IA_FIELDS_ORDER = {"cod_anu", "cod_comp","cod_etp","cod_vrs_vet"};
 
 	public static final String[] DAC_FIELDS_ORDER = {"cod_anu", "cod_dac","lib_cmt_dac","lib_etb","res"};
 
@@ -87,10 +97,12 @@ public class InscriptionsView extends VerticalLayout implements View {
 		for (String fieldName : IA_FIELDS_ORDER) {
 			inscriptionsTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
 		}
+		inscriptionsTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.lib_etp", null, getLocale()), new LibelleInscriptionColumnGenerator());
+
 		//inscriptionsTable.setSortContainerPropertyId("cod_anu");
 		inscriptionsTable.setColumnCollapsingAllowed(true);
-		inscriptionsTable.setColumnReorderingAllowed(true);
-		inscriptionsTable.setSelectable(true);
+		inscriptionsTable.setColumnReorderingAllowed(false);
+		inscriptionsTable.setSelectable(false);
 		inscriptionsTable.setImmediate(true);
 		inscriptionsTable.setPageLength(inscriptionsTable.getItemIds().size() );
 		panelInscription.setContent(inscriptionsTable);
@@ -108,8 +120,8 @@ public class InscriptionsView extends VerticalLayout implements View {
 				inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".tabledac." + fieldName, null, getLocale()));
 			}
 			inscriptionsDAC.setColumnCollapsingAllowed(true);
-			inscriptionsDAC.setColumnReorderingAllowed(true);
-			inscriptionsDAC.setSelectable(true);
+			inscriptionsDAC.setColumnReorderingAllowed(false);
+			inscriptionsDAC.setSelectable(false);
 			inscriptionsDAC.setImmediate(true);
 			inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size() );
 			panelDAC.setContent(inscriptionsDAC);
@@ -163,5 +175,68 @@ public class InscriptionsView extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 	}
+
+	
+	/** Formats the position in a column containing Date objects. */
+	class LibelleInscriptionColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<Inscription> bid = (BeanItem<Inscription>) item;
+			Inscription inscription = (Inscription) bid.getBean();
+			HorizontalLayout libelleLayout = new HorizontalLayout();
+
+			//ajout du libellé de l'étape concernée par l'inscription
+			Label lib_label = new Label(inscription.getLib_etp());
+			libelleLayout.addComponent(lib_label);
+			libelleLayout.setComponentAlignment(lib_label, Alignment.MIDDLE_CENTER);
+			
+			
+			//Si c'est une inscription sur l'année en cours
+			if(inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours())){
+				//On affiche le bouton pour voir de le détail de l'inscription
+				Button bDetailInscription=new Button();
+				bDetailInscription.setIcon(FontAwesome.SEARCH);
+				bDetailInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				bDetailInscription.setDescription(applicationContext.getMessage(NAME + ".inscriptionPedagogique.link", null, getLocale()));
+				//Appel de la window contenant le détail des notes
+				Etape etape = new Etape();
+				etape.setAnnee(inscription.getCod_anu());
+				etape.setCode(inscription.getCod_etp());
+				etape.setVersion(inscription.getCod_vrs_vet());
+				etape.setLibelle(inscription.getLib_etp());
+				bDetailInscription.addClickListener(e->{
+					DetailInscriptionWindow dnw = new DetailInscriptionWindow(etape); 
+					UI.getCurrent().addWindow(dnw);
+				});
+				libelleLayout.addComponent(bDetailInscription);
+			}
+
+			
+			//Si on peut proposer le certificat de scolarité
+			if(etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant())){
+				//On affiche le bouton pour éditer le certificat de scolarité
+				Button bCertificatInscription=new Button();
+				bCertificatInscription.setIcon(FontAwesome.FILE_TEXT);
+				bCertificatInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				bCertificatInscription.setDescription(applicationContext.getMessage(NAME + ".certificatScolarite.link", null, getLocale()));
+				libelleLayout.addComponent(bCertificatInscription);
+			}
+			
+			
+			
+
+			return libelleLayout;
+		}
+	}
+	
+	
 
 }
