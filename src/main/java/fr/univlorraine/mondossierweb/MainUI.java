@@ -212,7 +212,7 @@ public class MainUI extends UI {
 
 
 		mainVerticalLayout=new VerticalLayout();
-		
+
 
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
@@ -397,20 +397,11 @@ public class MainUI extends UI {
 			mainMenu.setPrimaryStyleName(ValoTheme.MENU_PART);
 			mainMenu.setWidth("232px");
 
-			/* En-tete */
-			Image logo = new Image(null, new ClassResource("/images/UL.png"));
 
-			//Image fotoEtudiant = new Image(null, new ClassResource("/images/fotoEtudiantCadena.jpg"));
-			Image fotoEtudiant = new Image(null, new ExternalResource(etudiant.getPhoto()));
-			fotoEtudiant.setWidth("120px");
-			fotoEtudiant.setHeight("153px");
 
-			/*Label title = new Label(environment.getRequiredProperty("app.name"));
-		title.addStyleName(ValoTheme.LABEL_HUGE);
-		title.addStyleName(ValoTheme.LABEL_BOLD);*/
 
-			Label versionLabel = new Label("v" + environment.getRequiredProperty("app.version"));
-			versionLabel.addStyleName(ValoTheme.LABEL_TINY);
+			//Label versionLabel = new Label("v" + environment.getRequiredProperty("app.version"));
+			//versionLabel.addStyleName(ValoTheme.LABEL_TINY);
 
 			//VerticalLayout appTitleLayout = new VerticalLayout(title, versionLabel);
 			/*VerticalLayout buttonGroupLayout = new VerticalLayout();
@@ -463,11 +454,18 @@ public class MainUI extends UI {
 
 			fotoLayout.addComponent(new HorizontalLayout());
 
-			fotoLayout.addComponent(fotoEtudiant);
-			fotoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
-
+			/* Photo étudiant */
+			if(etudiant.getPhoto()!=null){
+				Image logo = new Image(null, new ClassResource("/images/UL.png"));
+				Image fotoEtudiant = new Image(null, new ExternalResource(etudiant.getPhoto()));
+				fotoEtudiant.setWidth("120px");
+				fotoEtudiant.setHeight("153px");
+				fotoLayout.addComponent(fotoEtudiant);
+				fotoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
+				fotoLayout.setExpandRatio(fotoEtudiant, 1);
+			}
 			fotoLayout.addComponent(etuInscritBtn);
-			fotoLayout.setExpandRatio(fotoEtudiant, 1);
+
 
 			mainMenu.addComponent(fotoLayout);
 

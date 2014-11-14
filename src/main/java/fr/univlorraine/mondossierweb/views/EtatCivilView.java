@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
@@ -13,6 +14,7 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -94,9 +96,24 @@ public class EtatCivilView extends VerticalLayout implements View {
 		formGeneralitesLayout.addComponent(fieldNom);
 
 		String captionEmail = applicationContext.getMessage(NAME+".mail.title", null, getLocale());
-		TextField fieldEmail = new TextField(captionEmail, MainUI.getCurrent().getEtudiant().getEmail());
+		/*TextField fieldEmail = new TextField(captionEmail, MainUI.getCurrent().getEtudiant().getEmail());
 		formatTextField(fieldEmail);
-		formGeneralitesLayout.addComponent(fieldEmail);
+		formGeneralitesLayout.addComponent(fieldEmail);*/
+		
+		Label mailLabel = new Label();
+		mailLabel.setCaption(captionEmail);
+		String mail = MainUI.getCurrent().getEtudiant().getEmail();
+		if(StringUtils.hasText(mail)){
+			mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
+			mailLabel.setValue(mail);
+			mailLabel.setContentMode(ContentMode.HTML);
+		}
+		mailLabel.setSizeFull();
+		formGeneralitesLayout.addComponent(mailLabel);
+		
+		
+		
+		
 
 		String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
 		TextField fieldNationalite = new TextField(captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());

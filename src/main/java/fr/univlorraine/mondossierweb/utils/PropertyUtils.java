@@ -352,5 +352,20 @@ public class PropertyUtils {
 		return false;
 	}
 	
+	
+	
+	
+	/**
+	 *  true pour que l'étudiant puisse modifier son adresse. False sinon
+	 * @return
+	 */
+	public static boolean isModificationAdressesAutorisee() {
+		if(StringUtils.hasText(System.getProperty("context.modificationAdresses"))
+				&& System.getProperty("context.modificationAdresses").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
 
 }

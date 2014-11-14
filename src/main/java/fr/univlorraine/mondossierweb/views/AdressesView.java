@@ -12,6 +12,9 @@ import ru.xpoft.vaadin.VaadinView;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -23,6 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Page d'accueil
@@ -138,10 +142,23 @@ public class AdressesView extends VerticalLayout implements View {
 			panelAdresseFixe.setContent(formAdresseFixeLayout);
 
 			globalLayout.addComponent(panelAdresseFixe);
+
 		}
 
 		addComponent(globalLayout);
 
+		if(userController.isEtudiant() && PropertyUtils.isModificationAdressesAutorisee()){
+			HorizontalLayout btnLayout = new HorizontalLayout();
+			btnLayout.setSizeFull();
+			btnLayout.setSpacing(true);
+			
+			Button btnModifAdresses = new Button (applicationContext.getMessage(NAME+".bouton.modifieradresses", null, getLocale()));
+			btnModifAdresses.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnModifAdresses.setIcon(FontAwesome.EDIT);
+			btnLayout.addComponent(btnModifAdresses);
+			btnLayout.setComponentAlignment(btnModifAdresses, Alignment.MIDDLE_LEFT);
+			addComponent(btnLayout);
+		}
 	}
 
 	private String valuateTextFieldFromMultipleValues(String string1, String string2) {
