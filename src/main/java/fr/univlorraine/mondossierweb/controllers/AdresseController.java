@@ -19,6 +19,7 @@ import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -141,7 +142,7 @@ public class AdresseController {
 		boolean boolFixeEtranger = false;
 		String message = "";
 		if (adresseAnnuelle.getType()==null || adresseAnnuelle.getType().equals("")) {
-			message = "Veuillez indiquer un type d'hébergement pour l'adresse annuelle";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.hebergement", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}else{
@@ -150,34 +151,35 @@ public class AdresseController {
 		boolAnEtranger = !adresseAnnuelle.getCodPays().equals(COD_PAY_FRANCE);
 		boolFixeEtranger= !adresseFixe.getCodPays().equals(COD_PAY_FRANCE);
 
+		System.out.println("Locale.getDefault() "+Locale.getDefault());
 		if (!adresseIdentique) {
 			if (!StringUtils.hasText(adresseAnnuelle.getAdresse1())) {
-				message = "Veuillez remplir le premier champ de l'adresse annuelle";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.detail", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
 			}
 			if (!StringUtils.hasText(adresseAnnuelle.getCodePostal()) && !boolAnEtranger) {
-				message = "Veuillez indiquer un code postal pour l'adresse annuelle";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.codepostal", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
 			}
 			if (!StringUtils.hasText(adresseAnnuelle.getVille()) && !boolAnEtranger) {
-				message = "Veuillez sélectionner une ville pour l'adresse annuelle";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.ville", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
 			}
 			if (!StringUtils.hasText(adresseAnnuelle.getCodPays())) {
-				message = "Veuillez sélectionner un pays pour l'adresse annuelle";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.pays", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
 			}
 			if (adresseAnnuelle.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseAnnuelle.getNumerotel()))){
-				message = "Veuillez indiquer un numéro de téléphone pour l'adresse annuelle";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.telephone", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
 			}
 			if (!StringUtils.hasText(adresseAnnuelle.getAdresseetranger()) && boolAnEtranger) {
-				message = "Veuillez indiquer une ville pour l'adresse annuelle";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.villeetrangere", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
 			}
@@ -185,32 +187,32 @@ public class AdresseController {
 		}
 
 		if (!StringUtils.hasText(adresseFixe.getAdresse1())) {
-			message = "Veuillez remplir le premier champ de l'adresse fixe";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.detail", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}
 		if (!StringUtils.hasText(adresseFixe.getCodePostal()) && !boolFixeEtranger) {
-			message = "Veuillez indiquer un code postal pour l'adresse fixe";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.codepostal", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}
 		if (!StringUtils.hasText(adresseFixe.getVille()) && !boolFixeEtranger) {
-			message = "Veuillez sélectionner une ville pour l'adresse fixe";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.ville", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}
 		if (!StringUtils.hasText(adresseFixe.getCodPays())) {
-			message = "Veuillez sélectionner un pays pour l'adresse fixe";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.pays", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}
 		if (adresseFixe.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseFixe.getNumerotel()))){
-			message = "Veuillez indiquer un numéro de téléphone pour l'adresse fixe";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.telephone", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}
 		if (!StringUtils.hasText(adresseFixe.getAdresseetranger()) && boolFixeEtranger) {
-			message = "Veuillez indiquer une ville pour l'adresse fixe";
+			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.villeetrangere", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
 		}
@@ -231,7 +233,7 @@ public class AdresseController {
 
 			
 			if (!succes) {
-				message = "Un problème est survenu pendant la mise à jour. Veuillez réessayer ultérieurement";
+				message = applicationContext.getMessage("modificationAdressesWindow.erreur.ws", null, Locale.getDefault());
 				retour.add(message);
 			}else{
 				retour.add("OK");
