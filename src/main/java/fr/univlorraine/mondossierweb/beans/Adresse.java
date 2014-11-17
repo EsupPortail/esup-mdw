@@ -32,6 +32,8 @@ public class Adresse {
 	
 	private String pays;
 	
+	private String codPays;
+	
 	private String numerotel;
 	
 	private String type;

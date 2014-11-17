@@ -359,7 +359,8 @@ public class EtudiantController {
 					//TypeHebergementCourtDTO th = ada.getTypeHebergement();
 					TypeHebergementCourtDTO th = cdto.getTypeHebergement();
 					if (th != null) {
-						adresseAnnuelle.setType(th.getLibTypeHebergement());
+						//adresseAnnuelle.setType(th.getLibTypeHebergement());
+						adresseAnnuelle.setType(th.getCodTypeHebergement());
 					} else {
 						adresseAnnuelle.setType("");
 					}
@@ -369,6 +370,7 @@ public class EtudiantController {
 					adresseAnnuelle.setNumerotel(ada.getNumTel());
 					if (ada.getPays() != null) {
 						adresseAnnuelle.setPays(ada.getPays().getLibPay());
+						adresseAnnuelle.setCodPays(ada.getPays().getCodPay());
 					} else {
 						adresseAnnuelle.setPays("");
 					}
@@ -401,6 +403,7 @@ public class EtudiantController {
 					}
 					if (adf.getPays() != null) {
 						adresseFixe.setPays(adf.getPays().getLibPay());
+						adresseFixe.setCodPays(adf.getPays().getCodPay());
 					} else {
 						adresseFixe.setPays("");
 					}

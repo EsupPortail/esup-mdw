@@ -20,6 +20,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -27,6 +28,8 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
+import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
 
 /**
  * Page d'accueil
@@ -53,6 +56,9 @@ public class AdressesView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
+		
+		removeAllComponents();
+		
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
@@ -61,6 +67,7 @@ public class AdressesView extends VerticalLayout implements View {
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 		title.addStyleName(ValoTheme.LABEL_H1);
 		addComponent(title);
+		
 
 		HorizontalLayout globalLayout = new HorizontalLayout();
 		globalLayout.setSizeFull();
@@ -155,6 +162,11 @@ public class AdressesView extends VerticalLayout implements View {
 			Button btnModifAdresses = new Button (applicationContext.getMessage(NAME+".bouton.modifieradresses", null, getLocale()));
 			btnModifAdresses.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			btnModifAdresses.setIcon(FontAwesome.EDIT);
+			btnModifAdresses.addClickListener(e->{
+				ModificationAdressesWindow maw = new ModificationAdressesWindow(MainUI.getCurrent().getEtudiant()); 
+				maw.addCloseListener(f->{init();});
+				UI.getCurrent().addWindow(maw);
+			});
 			btnLayout.addComponent(btnModifAdresses);
 			btnLayout.setComponentAlignment(btnModifAdresses, Alignment.MIDDLE_LEFT);
 			addComponent(btnLayout);
