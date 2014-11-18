@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -49,7 +51,10 @@ import gouv.education.apogee.commun.transverse.dto.administratif.CursusExternesE
 import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmAnuDTO2;
 import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmEtpDTO2;
 import gouv.education.apogee.commun.transverse.dto.etudiant.AdresseDTO2;
+import gouv.education.apogee.commun.transverse.dto.etudiant.AdresseMajDTO;
+import gouv.education.apogee.commun.transverse.dto.etudiant.CommuneMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesDTO2;
+import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.IdentifiantsEtudiantDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.IndBacDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.InfoAdmEtuDTO;
@@ -77,6 +82,7 @@ public class EtudiantController {
 	 */
 	private final String SIGNIFICATION_TYP_RESULT_COR ="Obtenu par Correspondance";
 
+	private static final String COD_PAY_FRANCE = "100";
 
 	/* Injections */
 	@Resource
@@ -167,9 +173,9 @@ public class EtudiantController {
 
 				//MODIF POUR UTILISER LE NOM USUEL SI RENSEIGNE 19/09/2012
 				if (iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
-					MainUI.getCurrent().getEtudiant().setNom(iaetu.getNomUsuel()+ " " + iaetu.getPrenom1());
+					MainUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
 				}else{
-					MainUI.getCurrent().getEtudiant().setNom( iaetu.getNomPatronymique() + " " + iaetu.getPrenom1());
+					MainUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
 				}
 
 				if (iaetu.getNumBoursier() != null ){
@@ -559,6 +565,12 @@ public class EtudiantController {
 			return MainUI.getCurrent().getAnneeUnivEnCours();
 		}
 		return multipleApogeeService.getAnneeEnCours();
+	}
+	
+	public String getAnneeUnivEnCoursToDisplay() {
+		int annee = Integer.parseInt(getAnneeUnivEnCours());
+		return annee+"/"+(annee+1);
+		
 	}
 
 
@@ -1867,8 +1879,8 @@ public class EtudiantController {
 	}
 
 
-	
-	
+
+
 	public boolean isAfficherRangElpEpr(){
 		List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
 		if(lelp != null && lelp.size()>0){
@@ -1881,6 +1893,108 @@ public class EtudiantController {
 			}
 		}
 		return false;
+	}
+
+
+	public List<String> updateContact(String telephone, String mail,String codetu) {
+		List<String> retour = new LinkedList<String>();
+		boolean erreur = false;
+		String message = "";
+		if(StringUtils.hasText(telephone) && !Pattern.matches("[0-9[. ]]*", telephone)){
+			message = applicationContext.getMessage("modificationContact.erreur.tel", null, Locale.getDefault());
+			retour.add(message);
+			erreur = true;
+		}
+		if(StringUtils.hasText(mail) && !Pattern.matches("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]{2,}[.][a-zA-Z]{2,4}$", mail)){
+			message = applicationContext.getMessage("modificationContact.erreur.mail", null, Locale.getDefault());
+			retour.add(message);
+			erreur = true;
+		}
+		
+		//Si aucune erreur sur les données insérées
+		if(!erreur){
+			boolean succes = false;
+			//On insere dans Apogée
+			if(monProxyEtu==null)
+				monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
+			if(monProxyAdministratif==null)
+				monProxyAdministratif = new AdministratifMetierServiceInterfaceProxy();
+
+			try {
+				//recup de l'ancienne et modif dessus:
+				String[] annees =  monProxyAdministratif.recupererAnneesIa(codetu, null);
+				//récupération de l'année la plus récente
+				String annee = "0";
+				for(int i=0; i<annees.length;i++){
+					if (Integer.parseInt(annees[i])>Integer.parseInt(annee)){
+						annee = annees[i];
+					}
+				}
+				CoordonneesDTO2 cdto = monProxyEtu.recupererAdressesEtudiant_v2(codetu, annee , "N");
+
+
+				AdresseMajDTO adanmaj = new AdresseMajDTO();
+				AdresseMajDTO adfixmaj = new AdresseMajDTO();
+
+				adanmaj.setLibAd1(cdto.getAdresseAnnuelle().getLibAd1());
+				adanmaj.setLibAd2(cdto.getAdresseAnnuelle().getLibAd2());
+				adanmaj.setLibAd3(cdto.getAdresseAnnuelle().getLibAd3());
+				adanmaj.setNumTel(cdto.getAdresseAnnuelle().getNumTel());
+				adanmaj.setCodPays(cdto.getAdresseAnnuelle().getPays().getCodPay());
+				if (cdto.getAdresseAnnuelle().getCommune()!=null) {
+					CommuneMajDTO comanmaj = new CommuneMajDTO();
+					comanmaj.setCodeInsee(cdto.getAdresseAnnuelle().getCommune().getCodeInsee());
+					comanmaj.setCodePostal(cdto.getAdresseAnnuelle().getCommune().getCodePostal());
+					adanmaj.setCommune(comanmaj);
+				}
+				if(StringUtils.hasText(cdto.getAdresseAnnuelle().getLibAde())){
+					adanmaj.setLibAde(cdto.getAdresseAnnuelle().getLibAde());
+				}
+
+
+
+				adfixmaj.setLibAd1(cdto.getAdresseFixe().getLibAd1());
+				adfixmaj.setLibAd2(cdto.getAdresseFixe().getLibAd2());
+				adfixmaj.setLibAd3(cdto.getAdresseFixe().getLibAd3());
+				adfixmaj.setNumTel(cdto.getAdresseFixe().getNumTel());
+				adfixmaj.setCodPays(cdto.getAdresseFixe().getPays().getCodPay());
+				if (cdto.getAdresseFixe().getCommune()!=null) {
+					CommuneMajDTO comfixmaj = new CommuneMajDTO();
+					comfixmaj.setCodeInsee(cdto.getAdresseFixe().getCommune().getCodeInsee());
+					comfixmaj.setCodePostal(cdto.getAdresseFixe().getCommune().getCodePostal());
+					adfixmaj.setCommune(comfixmaj);
+				}
+				if(StringUtils.hasText(cdto.getAdresseFixe().getLibAde())){
+					adfixmaj.setLibAde(cdto.getAdresseFixe().getLibAde());
+				}
+
+
+				CoordonneesMajDTO cdtomaj = new CoordonneesMajDTO();
+				cdtomaj.setAnnee(annee);
+				cdtomaj.setTypeHebergement(cdto.getTypeHebergement().getCodTypeHebergement());
+				cdtomaj.setEmail(mail);
+				cdtomaj.setNumTelPortable(telephone);
+				cdtomaj.setAdresseAnnuelle(adanmaj);
+				cdtomaj.setAdresseFixe(adfixmaj);
+
+				System.out.println("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+cdto.getTypeHebergement().getCodTypeHebergement());
+				monProxyEtu.mettreAJourAdressesEtudiant(cdtomaj, codetu);
+
+				succes = true;
+			} catch (WebBaseException ex) {
+				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + codetu,ex);
+			} catch (Exception ex) {
+				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + codetu,ex);
+			}
+			
+			if (!succes) {
+				message = applicationContext.getMessage("modificationContact.erreur.ws", null, Locale.getDefault());
+				retour.add(message);
+			}else{
+				retour.add("OK");
+			}
+		}
+		return retour;
 	}
 
 

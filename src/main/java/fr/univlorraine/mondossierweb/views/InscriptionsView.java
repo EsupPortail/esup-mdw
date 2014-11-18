@@ -15,6 +15,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -32,6 +33,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.InscriptionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.views.NotesView.ResultatColumnGenerator;
 import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
@@ -60,6 +62,8 @@ public class InscriptionsView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient InscriptionController inscriptionController;
 
 
 	/**
@@ -227,6 +231,13 @@ public class InscriptionsView extends VerticalLayout implements View {
 				bCertificatInscription.setIcon(FontAwesome.FILE_TEXT);
 				bCertificatInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				bCertificatInscription.setDescription(applicationContext.getMessage(NAME + ".certificatScolarite.link", null, getLocale()));
+				FileDownloader fd = new FileDownloader(inscriptionController.exportPdf(inscription));
+				fd.extend(bCertificatInscription);
+				/*bCertificatInscription.addClickListener(e->{
+						if (fd!=null) 
+							fd.setFileDownloadResource(xlsController.getOpiExcelRessource((List<Opi>)opiTable.getItemIds()));
+					}
+				});*/
 				libelleLayout.addComponent(bCertificatInscription);
 			}
 			

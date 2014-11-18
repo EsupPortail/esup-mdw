@@ -1,5 +1,7 @@
 package fr.univlorraine.mondossierweb.views;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
@@ -15,12 +17,15 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -28,6 +33,8 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
 
 /**
  * Page d'accueil
@@ -48,6 +55,13 @@ public class EtatCivilView extends VerticalLayout implements View {
 	@Resource
 	private transient EtudiantController etudiantController;
 
+
+	private TextField fieldTelPortable;
+	private TextField fieldMailPerso;
+	private Button btnAnnulerModifCoordonneesPerso;
+	private Button btnValidModifCoordonneesPerso;
+	private Button btnModifCoordonneesPerso;
+	private Panel panelContact;
 
 	/**
 	 * Initialise la vue
@@ -99,7 +113,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		/*TextField fieldEmail = new TextField(captionEmail, MainUI.getCurrent().getEtudiant().getEmail());
 		formatTextField(fieldEmail);
 		formGeneralitesLayout.addComponent(fieldEmail);*/
-		
+
 		Label mailLabel = new Label();
 		mailLabel.setCaption(captionEmail);
 		String mail = MainUI.getCurrent().getEtudiant().getEmail();
@@ -110,10 +124,10 @@ public class EtatCivilView extends VerticalLayout implements View {
 		}
 		mailLabel.setSizeFull();
 		formGeneralitesLayout.addComponent(mailLabel);
-		
-		
-		
-		
+
+
+
+
 
 		String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
 		TextField fieldNationalite = new TextField(captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
@@ -143,25 +157,10 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 
 		/* Info de contact */
-		FormLayout formContactLayout = new FormLayout();
-		formContactLayout.setSpacing(true);
-		formContactLayout.setMargin(true);
+		panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
 
-		Panel panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
+		renseignerPanelContact();
 
-		String captionTelPortable = applicationContext.getMessage(NAME+".portable.title", null, getLocale());
-		TextField fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
-		formatTextField(fieldTelPortable);
-		formContactLayout.addComponent(fieldTelPortable);
-
-		if(userController.isEtudiant()){
-			String captionMailPerso = applicationContext.getMessage(NAME+".mailperso.title", null, getLocale());
-			TextField fieldMailPerso = new TextField(captionMailPerso, MainUI.getCurrent().getEtudiant().getEmailPerso());
-			formatTextField(fieldMailPerso);
-			formContactLayout.addComponent(fieldMailPerso);
-		}
-
-		panelContact.setContent(formContactLayout);
 		idLayout.addComponent(panelContact);
 
 
@@ -219,6 +218,119 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 
 
+
+	}
+
+	private void renseignerPanelContact() {
+
+		VerticalLayout contactLayout = new VerticalLayout();
+		
+		/* Layout pour afficher les erreurs */
+		VerticalLayout erreursLayout = new VerticalLayout();
+		contactLayout.addComponent(erreursLayout);
+		erreursLayout.setVisible(false);
+		
+		/* Layout avec les champ 'Portable' et 'Email personnel' */
+		FormLayout formContactLayout = new FormLayout();
+		formContactLayout.setSpacing(true);
+		formContactLayout.setMargin(true);
+
+		String captionTelPortable = applicationContext.getMessage(NAME+".portable.title", null, getLocale());
+		fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
+		formatTextField(fieldTelPortable);
+		fieldTelPortable.setMaxLength(15);
+		formContactLayout.addComponent(fieldTelPortable);
+
+		if(userController.isEtudiant()){
+			String captionMailPerso = applicationContext.getMessage(NAME+".mailperso.title", null, getLocale());
+			fieldMailPerso = new TextField(captionMailPerso, MainUI.getCurrent().getEtudiant().getEmailPerso());
+			formatTextField(fieldMailPerso);
+			fieldMailPerso.setMaxLength(200);
+			formContactLayout.addComponent(fieldMailPerso);
+		}
+
+		contactLayout.addComponent(formContactLayout);
+
+		/* Si user étudiant et modifi autorisée des coordonnées de contact, on affiche les boutons de modification */
+		if(userController.isEtudiant() && PropertyUtils.isModificationCoordonneesPersoAutorisee()){
+			//Layout pour les boutons de modification
+			HorizontalLayout btnLayout = new HorizontalLayout();
+			btnLayout.setSizeFull();
+			btnLayout.setSpacing(true);
+			btnLayout.setMargin(true);
+
+			//Bouton pour valider la modification
+			btnValidModifCoordonneesPerso = new Button(applicationContext.getMessage(NAME+".bouton.validercoordonnees", null, getLocale()));
+			btnValidModifCoordonneesPerso.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+			btnValidModifCoordonneesPerso.setIcon(FontAwesome.CHECK);
+			btnValidModifCoordonneesPerso.addClickListener(e -> {
+				erreursLayout.removeAllComponents();
+				List<String> retour = etudiantController.updateContact(fieldTelPortable.getValue(),fieldMailPerso.getValue(),MainUI.getCurrent().getEtudiant().getCod_etu());
+				//si modif ok
+				if(retour!=null && retour.size()==1 && retour.get(0).equals("OK")){
+					etudiantController.recupererEtatCivil();
+					renseignerPanelContact();
+				}else{
+					//affichage erreurs
+					if(retour!=null && retour.size()>0){
+						String errorMsg="";
+						for(String erreur : retour){
+							if(!errorMsg.equals(""))
+								errorMsg = errorMsg + "<br />";
+							errorMsg= errorMsg + erreur;
+						}
+						Label labelErreur = new Label(errorMsg);
+						labelErreur.setContentMode(ContentMode.HTML);
+						labelErreur.setStyleName(ValoTheme.LABEL_FAILURE);
+						erreursLayout.addComponent(labelErreur);
+					}
+					erreursLayout.setVisible(true);
+				}
+			});
+			btnValidModifCoordonneesPerso.setVisible(false);
+			btnLayout.addComponent(btnValidModifCoordonneesPerso);
+			btnLayout.setComponentAlignment(btnValidModifCoordonneesPerso, Alignment.MIDDLE_CENTER);
+
+			//Bouton pour annuler la modification
+			btnAnnulerModifCoordonneesPerso = new Button(applicationContext.getMessage(NAME+".bouton.annulercoordonnees", null, getLocale()));
+			btnAnnulerModifCoordonneesPerso.setStyleName(ValoTheme.BUTTON_DANGER);
+			btnAnnulerModifCoordonneesPerso.setIcon(FontAwesome.TIMES);
+			btnAnnulerModifCoordonneesPerso.addClickListener(e -> {
+				erreursLayout.removeAllComponents();
+				fieldMailPerso.setValue(MainUI.getCurrent().getEtudiant().getEmailPerso());
+				fieldMailPerso.setEnabled(false);
+				fieldMailPerso.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+				fieldTelPortable.setValue(MainUI.getCurrent().getEtudiant().getTelPortable());
+				fieldTelPortable.setEnabled(false);
+				fieldTelPortable.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+				btnValidModifCoordonneesPerso.setVisible(false);
+				btnAnnulerModifCoordonneesPerso.setVisible(false);
+				btnModifCoordonneesPerso.setVisible(true);
+
+			});
+			btnAnnulerModifCoordonneesPerso.setVisible(false);
+			btnLayout.addComponent(btnAnnulerModifCoordonneesPerso);
+			btnLayout.setComponentAlignment(btnAnnulerModifCoordonneesPerso, Alignment.MIDDLE_CENTER);
+
+			//Bouton pour activer la modification des données
+			btnModifCoordonneesPerso = new Button (applicationContext.getMessage(NAME+".bouton.modifiercoordonnees", null, getLocale()));
+			btnModifCoordonneesPerso.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnModifCoordonneesPerso.setIcon(FontAwesome.EDIT);
+			btnModifCoordonneesPerso.addClickListener(e->{
+				fieldMailPerso.setEnabled(true);
+				fieldMailPerso.removeStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+				fieldTelPortable.setEnabled(true);
+				fieldTelPortable.removeStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+				btnValidModifCoordonneesPerso.setVisible(true);
+				btnAnnulerModifCoordonneesPerso.setVisible(true);
+				btnModifCoordonneesPerso.setVisible(false);
+			});
+			btnLayout.addComponent(btnModifCoordonneesPerso);
+			btnLayout.setComponentAlignment(btnModifCoordonneesPerso, Alignment.MIDDLE_CENTER);
+			contactLayout.addComponent(btnLayout);
+		}
+
+		panelContact.setContent(contactLayout);
 
 	}
 

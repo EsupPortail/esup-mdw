@@ -368,4 +368,108 @@ public class PropertyUtils {
 	}
 	
 
+	
+	/**
+	 *  true pour que l'étudiant puisse modifier son mail et son tel perso
+	 * @return
+	 */
+	public static boolean isModificationCoordonneesPersoAutorisee() {
+		if(StringUtils.hasText(System.getProperty("context.modificationCoordonneesContactPerso"))
+				&& System.getProperty("context.modificationCoordonneesContactPerso").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * 
+	 * @return le code du signataire des certificats de scolarité
+	 */
+	public static String getCertScolCodeSignataire() {
+		String value = System.getProperty("context.certScolCodeSignataire");
+		if(StringUtils.hasText(value)) {
+			return value;
+		}
+		return null;
+	}
+	
+	/**
+	 *  true pour ajouter le logo de l'université dans les certificats de scolarité générés.
+	 * @return
+	 */
+	public static boolean isCertScolUtiliseLogo() {
+		if(StringUtils.hasText(System.getProperty("context.certScolUtiliseLogo"))
+				&& System.getProperty("context.certScolUtiliseLogo").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @return  url vers le logo de l'université pour le pdf. A laisser vide pour ne pas importer de logo.
+	 */
+	public static String getLogoUniversitePdf() {
+		String value = System.getProperty("context.logoUniversitePdf");
+		if(StringUtils.hasText(value)) {
+			return value;
+		}
+		return null;
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @return   url vers le header de l'université pour le certificats de scolarité (1240x176). A laisser vide pour ne pas importer de logo.
+	 */
+	public static String getCertScolHeaderUniv() {
+		String value = System.getProperty("context.certScolHeaderUniv");
+		if(StringUtils.hasText(value)) {
+			return value;
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return   url vers le footer pour le certificats de scolarité (1240x286). A laisser vide pour ne pas importer de logo
+	 */
+	public static String getCertScolFooter() {
+		String value = System.getProperty("context.certScolFooter");
+		if(StringUtils.hasText(value)) {
+			return value;
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return    Lieu d'édition des certificats de scolarité
+	 */
+	public static String getCertScolLieuEdition() {
+		String value = System.getProperty("context.certScolLieuEdition");
+		if(StringUtils.hasText(value)) {
+			return value;
+		}
+		return null;
+	}
+	
+	
+	
+	
+	/**
+	 * 
+	 * @return    Tampon des certificats de scolarité 
+	 */
+	public static String getCertScolTampon() {
+		String value = System.getProperty("context.certScolTampon");
+		if(StringUtils.hasText(value)) {
+			return value;
+		}
+		return null;
+	}
 }

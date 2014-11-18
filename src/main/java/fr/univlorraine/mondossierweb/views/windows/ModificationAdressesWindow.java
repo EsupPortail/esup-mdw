@@ -18,6 +18,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -468,6 +469,7 @@ public class ModificationAdressesWindow extends Window {
 			adresseFixe.setAdresseetranger(fieldVilleEtranger2.getValue());
 			adresseFixe.setNumerotel(fieldTelephone2.getValue());
 
+			erreursLayout.removeAllComponents();
 			List<String> retour = adresseController.majAdresses(adresseAnnuelle, adresseFixe);
 			if(retour!=null && retour.size()==1 && retour.get(0).equals("OK")){
 				//ajout maj vue adresse
@@ -475,11 +477,17 @@ public class ModificationAdressesWindow extends Window {
 				close();
 			}else{
 				//affichage erreurs
-				erreursLayout.removeAllComponents();
 				if(retour!=null && retour.size()>0){
+					String errorMsg="";
 					for(String erreur : retour){
-						erreursLayout.addComponent(new Label(erreur));
+						if(!errorMsg.equals(""))
+							errorMsg = errorMsg + "<br />";
+						errorMsg= errorMsg + erreur;
 					}
+					Label labelErreur = new Label(errorMsg);
+					labelErreur.setContentMode(ContentMode.HTML);
+					labelErreur.setStyleName(ValoTheme.LABEL_FAILURE);
+					erreursLayout.addComponent(labelErreur);
 				}
 				erreursLayout.setVisible(true);
 			}

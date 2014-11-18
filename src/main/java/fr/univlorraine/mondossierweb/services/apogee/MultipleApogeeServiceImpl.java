@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 
 
 
@@ -20,20 +21,20 @@ import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 @Data
 public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
-	
+
 	@PersistenceContext (unitName="entityManagerFactoryApogee")
 	private transient EntityManager entityManagerApogee;
 
 	@Override
 	public String getAnneeEnCours() {
 		return (String) entityManagerApogee.createNativeQuery("select cod_anu from annee_uni where eta_anu_iae = 'O'").getSingleResult();
-		
+
 	}
 
 	@Override
 	public String getLibEtablissementDef() {
 		return (String) entityManagerApogee.createNativeQuery("select e.lib_etb from apogee.variable_appli va, etablissement e where COD_VAP = 'ETB_COD' and va.PAR_VAP = e.COD_ETB").getSingleResult();
-		
+
 	}
 
 	@Override
@@ -72,13 +73,34 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				lannee.remove(i);
 			}
 		}
-		
+
 		return lannee;
+	}
+
+	@Override
+	public Signataire getSignataire(String codeSignataire) {
+		@SuppressWarnings("unchecked")
+		Signataire signataire = (Signataire)entityManagerApogee.createNativeQuery("select sig.COD_SIG, sig.NOM_SIG, sig.QUA_SIG, "+
+				"PKB_CRY1.decryptLob(decode(std.TEM_CES_STD,'T',std.IMG_TAM_STD,std.IMG_SIG_STD), "+
+				" UTL_RAW.cast_to_raw('CLEFAPOGEE123456')) as IMG_SIG_STD "+
+				" from APOGEE.SIGNATAIRE sig, APOGEE.SIGN_TAMP_DIGITALISE std "+
+				" where sig.COD_SIG = std.COD_SIG (+) "+
+				" and sig.COD_SIG = '"+codeSignataire+"'", Signataire.class).getSingleResult();
+		return signataire;
+	}
+
+	@Override
+	public String getCodCivFromCodInd(String cod_ind) {
+		@SuppressWarnings("unchecked")
+		String codCiv = (String)entityManagerApogee.createNativeQuery("select i.cod_civ "+
+				" from apogee.individu i  "+
+				" where i.cod_ind ="+cod_ind).getSingleResult();
+		return codCiv;
 	}
 
 
 
-	
-	
+
+
 
 }
