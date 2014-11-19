@@ -541,10 +541,10 @@ public class MainUI extends UI {
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */
-			Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
+		/*	Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 			decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			decoBtn.addClickListener(e -> getUI().getPage().setLocation("j_spring_security_logout"));
-			mainMenu.addComponent(decoBtn);
+			mainMenu.addComponent(decoBtn);*/
 
 			CssLayout bottomMainMenu = new CssLayout();
 			bottomMainMenu.setStyleName(ValoTheme.MENU_SUBTITLE);

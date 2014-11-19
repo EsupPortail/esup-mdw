@@ -13,6 +13,7 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -33,6 +34,7 @@ import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
@@ -54,6 +56,8 @@ public class DetailNotesWindow extends Window {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient NoteController noteController;
 
 	private Etape etape;
 
@@ -106,10 +110,13 @@ public class DetailNotesWindow extends Window {
 		titleLayout.addComponent(labelSousMenu);
 		titleLayout.addComponent(labelAnneeUniv);
 		titleLayout.setComponentAlignment(labelAnneeUniv, Alignment.MIDDLE_CENTER);
-		if(lelp!=null && lelp.size()>0){
+		if(lelp!=null && lelp.size()>0 && PropertyUtils.isPdfNotesActive()){
 			Button pdfButton = new Button();
 			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
+			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
+			FileDownloader fd = new FileDownloader(noteController.exportPdfDetail(etape));
+			fd.extend(pdfButton);
 			titleLayout.addComponent(pdfButton);
 			titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 		}

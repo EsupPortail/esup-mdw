@@ -472,4 +472,44 @@ public class PropertyUtils {
 		}
 		return null;
 	}
+	
+	
+	/**
+	 *  Edition pdf des notes : true pour l'activer, false sinon 
+	 * @return
+	 */
+	public static boolean isPdfNotesActive() {
+		if(StringUtils.hasText(System.getProperty("context.notesPDF"))
+				&& System.getProperty("context.notesPDF").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	/**
+	 *  Vrai si on insere un filigrane dans les pdf des notes
+	 * @return
+	 */
+	public static boolean isInsertionFiligranePdfNotes() {
+		if(StringUtils.hasText(System.getProperty("context.insertionFiligranePdfNotes"))
+				&& System.getProperty("context.insertionFiligranePdfNotes").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 *  Affichage du numéro de place dans le calendrier des examens : true pour l'activer, false sinon
+	 * @return
+	 */
+	public static boolean isAffNumPlaceExamen() {
+		if(StringUtils.hasText(System.getProperty("context.affNumPlaceExamen"))
+				&& System.getProperty("context.affNumPlaceExamen").equals("true")){
+			return true;
+		}
+		return false;
+	}
 }

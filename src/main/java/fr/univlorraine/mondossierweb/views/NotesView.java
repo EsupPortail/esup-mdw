@@ -18,6 +18,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -39,6 +40,7 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
@@ -60,7 +62,7 @@ public class NotesView extends VerticalLayout implements View {
 	public static final String[] DIPLOMES_FIELDS_ORDER = {"annee", "cod_dip","lib_web_vdi"};
 
 	public static final String[] ETAPES_FIELDS_ORDER = {"annee"};
-	
+
 	private boolean vueEnseignant;
 
 	/* Injections */
@@ -70,6 +72,8 @@ public class NotesView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient NoteController noteController;
 
 
 	/**
@@ -82,13 +86,6 @@ public class NotesView extends VerticalLayout implements View {
 		setMargin(true);
 		setSpacing(true);
 
-
-		/* Titre */
-		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
-
-
 		//Test si user enseignant et en vue Enseignant
 		if(userController.isEnseignant() && MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
 			//On recupere les notes pour un enseignant
@@ -97,6 +94,30 @@ public class NotesView extends VerticalLayout implements View {
 			//On récupère les notes pour un étudiant
 			etudiantController.renseigneNotesEtResultats(MainUI.getCurrent().getEtudiant());
 		}
+
+
+		/* Titre */
+		HorizontalLayout titleLayout = new HorizontalLayout();
+		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
+		title.addStyleName(ValoTheme.LABEL_H1);
+		titleLayout.addComponent(title);
+		titleLayout.setComponentAlignment(title,Alignment.MIDDLE_LEFT);
+		//Test si on a des diplomes ou des etapes
+		if((MainUI.getCurrent().getEtudiant().getDiplomes()!=null && MainUI.getCurrent().getEtudiant().getDiplomes().size()>0)||
+				(MainUI.getCurrent().getEtudiant().getEtapes()!=null && MainUI.getCurrent().getEtudiant().getEtapes().size()>0)){
+			Button pdfButton = new Button();
+			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
+			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
+			FileDownloader fd = new FileDownloader(noteController.exportPdfResume());
+			fd.extend(pdfButton);
+			titleLayout.addComponent(pdfButton);
+			titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
+		}
+		addComponent(titleLayout);
+
+
+
 
 		VerticalLayout globalLayout = new VerticalLayout();
 		globalLayout.setSizeFull();
@@ -111,7 +132,7 @@ public class NotesView extends VerticalLayout implements View {
 			vueLayout.setMargin(true);
 			vueLayout.setSpacing(true);
 			vueLayout.setSizeFull();
-			
+
 			Button changerVueButton = new Button(applicationContext.getMessage(NAME+".button.vueEnseignant", null, getLocale()));
 			changerVueButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
@@ -120,14 +141,14 @@ public class NotesView extends VerticalLayout implements View {
 			}
 			//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
 			changerVueButton.addClickListener(e -> {etudiantController.changerVueNotesEtResultats();init();});
-			
+
 			Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
 			if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
 				vueLabel.setValue(applicationContext.getMessage(NAME+".label.vueEnseignant", null, getLocale()));
 			}
 			vueLabel.setContentMode(ContentMode.HTML); 
 			vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
-			
+
 			vueLayout.addComponent(changerVueButton);
 			vueLayout.setComponentAlignment(changerVueButton, Alignment.MIDDLE_CENTER);
 			vueLayout.addComponent(vueLabel);
@@ -206,7 +227,7 @@ public class NotesView extends VerticalLayout implements View {
 
 			panelSignificationResultats.addStyleName("significationpanel");
 			panelSignificationResultats.setIcon(FontAwesome.INFO_CIRCLE);
-			
+
 			VerticalLayout significationLayout = new VerticalLayout();
 			significationLayout.setMargin(true);
 			significationLayout.setSpacing(true);
@@ -376,7 +397,7 @@ public class NotesView extends VerticalLayout implements View {
 				Button b = new Button(etape.getCode()+"/"+etape.getVersion());
 				b.setStyleName("link"); 
 				b.addStyleName("v-link");
-				
+
 				//Appel de la window contenant le détail des notes
 				prepareBoutonAppelDetailDesNotes( b, etape);
 
@@ -387,7 +408,7 @@ public class NotesView extends VerticalLayout implements View {
 			return sessionLayout;
 		}
 	}
-	
+
 	private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
 		//Appel de la window contenant le détail des notes
 		b.addClickListener(e->{
@@ -398,7 +419,7 @@ public class NotesView extends VerticalLayout implements View {
 				if(vueEnseignant!=MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
 					init();
 				}
-				});
+			});
 			UI.getCurrent().addWindow(dnw);
 		});
 	}
@@ -423,7 +444,7 @@ public class NotesView extends VerticalLayout implements View {
 				Button b = new Button(etape.getLibelle());
 				b.setStyleName("link"); 
 				b.addStyleName("v-link");
-				
+
 				//Appel de la window contenant le détail des notes
 				prepareBoutonAppelDetailDesNotes( b, etape);
 

@@ -104,7 +104,7 @@ public class InscriptionController {
 			return null;
 		}
 
-		Document document = configureDocument();
+		
 		String nomFichier = applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault())+"_" + inscription.getCod_etp() + "_" + inscription.getCod_anu().replace('/', '-') + "_" + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 
 		
@@ -116,6 +116,7 @@ public class InscriptionController {
 				try {
 					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 					PdfWriter docWriter = null;
+					Document document = configureDocument();
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					docWriter.setStrictImageSequence(true);
