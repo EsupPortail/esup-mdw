@@ -780,7 +780,8 @@ public class NoteController {
 			//Partie des notes
 			PdfPTable table = new PdfPTable(1);
 			table.setWidthPercentage(98);
-			PdfPCell cell = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.elements.epreuves", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + " - "+applicationContext.getMessage("pdf.annee.universitaire", null, Locale.getDefault()) + " : " + etape.getAnnee(), header));
+			//PdfPCell cell = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.elements.epreuves", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + " - "+applicationContext.getMessage("pdf.annee.universitaire", null, Locale.getDefault()) + " : " + etape.getAnnee(), header));
+			PdfPCell cell = new PdfPCell(new Paragraph(etape.getLibelle()+" - "+applicationContext.getMessage("pdf.annee.universitaire", null, Locale.getDefault()) + " : " + etape.getAnnee(), header));
 			cell.setBorder(Rectangle.NO_BORDER);
 			cell.setBackgroundColor(new Color(153, 153, 255));
 			table.addCell(cell);

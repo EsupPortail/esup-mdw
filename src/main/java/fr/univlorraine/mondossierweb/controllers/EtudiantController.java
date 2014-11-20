@@ -34,6 +34,8 @@ import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
+import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
+import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
@@ -97,6 +99,9 @@ public class EtudiantController {
 	/** {@link InscriptionServiceImpl} */
 	@Resource
 	private InscriptionService inscriptionService;
+	/** {@link ComposanteServiceImpl} */
+	@Resource
+	private ComposanteService composanteService;
 	@Resource
 	private transient UiController uiController;
 	@Resource
@@ -477,7 +482,8 @@ public class EtudiantController {
 
 					//récupération des informations sur la composante
 					insc.setCod_comp(insdto.getComposante().getCodComposante());
-					insc.setLib_comp(insdto.getComposante().getLibComposante());
+					//insc.setLib_comp(insdto.getComposante().getLibComposante());
+					insc.setLib_comp(composanteService.getLibelleComposante(insc.getCod_comp()));
 
 					//récupération de l'état en règle de l'inscription
 					if(insdto.getInscriptionPayee().equals(Utils.LIBELLE_WS_INSCRIPTION_PAYEE)){

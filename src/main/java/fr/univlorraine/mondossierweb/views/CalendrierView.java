@@ -8,9 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -26,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
@@ -44,6 +48,10 @@ public class CalendrierView extends VerticalLayout implements View {
 	private Logger LOG = LoggerFactory.getLogger(CalendrierView.class);
 
 	public static final String NAME = "calendrierView";
+	
+	public static final String[] CAL_FIELDS = {"datedeb", "heure","duree","epreuve"};
+	
+	public static final String[] CAL_FIELDS_AVEC_PLACE = {"datedeb", "heure","duree","place","epreuve"};
 
 	public static final String[] CAL_FIELDS_ORDER = {"datedeb", "heure","duree","batiment","salle","epreuve"};
 	
@@ -110,17 +118,22 @@ public class CalendrierView extends VerticalLayout implements View {
 			LOG.info("bic : "+bic.size());
 			Table calendrierTable = new Table(null, bic);
 			calendrierTable.setWidth("100%");
-			
+			String[] colonnes_to_create = CAL_FIELDS;
+			if(PropertyUtils.isAffNumPlaceExamen()){
+				colonnes_to_create = CAL_FIELDS_AVEC_PLACE;
+			}
+			for (String fieldName : colonnes_to_create) {
+				calendrierTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
+			}
+			calendrierTable.addGeneratedColumn("batiment", new BatimentColumnGenerator());
+			calendrierTable.addGeneratedColumn("salle", new SalleColumnGenerator());
+			calendrierTable.setColumnHeader("batiment", applicationContext.getMessage(NAME+".table.batiment", null, getLocale()));
+			calendrierTable.setColumnHeader("salle", applicationContext.getMessage(NAME+".table.salle", null, getLocale()));
 			String[] colonnes_to_display = CAL_FIELDS_ORDER;
 			if(PropertyUtils.isAffNumPlaceExamen()){
 				colonnes_to_display = CAL_FIELDS_ORDER_AVEC_PLACE;
 			}
-			
 			calendrierTable.setVisibleColumns((Object[]) colonnes_to_display);
-			for (String fieldName : colonnes_to_display) {
-				calendrierTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
-			}
-			
 			calendrierTable.setColumnCollapsingAllowed(true);
 			calendrierTable.setColumnReorderingAllowed(true);
 			calendrierTable.setSelectable(false);
@@ -149,6 +162,50 @@ public class CalendrierView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+	}
+	
+	
+	
+	/** Formats the position in a column containing Date objects. */
+	class BatimentColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<Examen> bid = (BeanItem<Examen>) item;
+			Examen ex = (Examen) bid.getBean();
+			Label libLabel = new Label();
+			libLabel.setValue(ex.getBatiment());
+			libLabel.setDescription(ex.getLocalisation());
+			return libLabel;
+		}
+	}
+	
+	/** Formats the position in a column containing Date objects. */
+	class SalleColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<Examen> bid = (BeanItem<Examen>) item;
+			Examen ex = (Examen) bid.getBean();
+			Label libLabel = new Label();
+			libLabel.setValue(ex.getSalle());
+			libLabel.setDescription(ex.getLibsalle());
+			return libLabel;
+		}
 	}
 
 }

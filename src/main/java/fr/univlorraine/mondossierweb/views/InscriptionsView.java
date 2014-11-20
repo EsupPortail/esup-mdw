@@ -51,8 +51,11 @@ public class InscriptionsView extends VerticalLayout implements View {
 	public static final String NAME = "inscriptionsView";
 
 	public static final String[] IA_FIELDS_ORDER = {"cod_anu", "cod_comp","cod_etp","cod_vrs_vet"};
+	
+	public static final String[] IA_FIELDS_ORDER_ETU = {"cod_anu", "lib_comp"};
 
 	public static final String[] DAC_FIELDS_ORDER = {"cod_anu", "cod_dac","lib_cmt_dac","lib_etb","res"};
+	
 
 
 	/* Injections */
@@ -97,8 +100,12 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 		Table inscriptionsTable = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinsciae()));
 		inscriptionsTable.setWidth("100%");
-		inscriptionsTable.setVisibleColumns((Object[]) IA_FIELDS_ORDER);
-		for (String fieldName : IA_FIELDS_ORDER) {
+		String[] colonnes = IA_FIELDS_ORDER;
+		if(userController.isEtudiant()){
+			colonnes = IA_FIELDS_ORDER_ETU;
+		}
+		inscriptionsTable.setVisibleColumns((Object[]) colonnes);
+		for (String fieldName : colonnes) {
 			inscriptionsTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
 		}
 		inscriptionsTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.lib_etp", null, getLocale()), new LibelleInscriptionColumnGenerator());

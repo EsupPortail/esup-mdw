@@ -395,7 +395,7 @@ public class MainUI extends UI {
 		if(etudiant!=null){
 
 			mainMenu.setPrimaryStyleName(ValoTheme.MENU_PART);
-			mainMenu.setWidth("232px");
+			mainMenu.setWidth("233px");
 
 
 
@@ -495,7 +495,7 @@ public class MainUI extends UI {
 
 
 			/* Calendrier */
-			addItemMenu("Calendrier des examens", CalendrierView.NAME, FontAwesome.CALENDAR);
+			addItemMenu("Calendrier des épreuves", CalendrierView.NAME, FontAwesome.CALENDAR);
 
 
 			/* Bouton vers la vue Admin */

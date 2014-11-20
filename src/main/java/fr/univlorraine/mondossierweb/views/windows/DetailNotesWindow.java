@@ -104,12 +104,18 @@ public class DetailNotesWindow extends Window {
 		HorizontalLayout titleLayout = new HorizontalLayout();
 		titleLayout.setSizeFull();
 		titleLayout.setHeight("20px");
-		Label labelSousMenu = new Label(applicationContext.getMessage(NAME+".sousmenu", null, getLocale()));
-		Label labelAnneeUniv = new Label(applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" <b>"+ etape.getAnnee()+"</b>");
+		//Label labelSousMenu = new Label(applicationContext.getMessage(NAME+".sousmenu", null, getLocale()));
+		//titleLayout.addComponent(labelSousMenu);
+		/*Label labelAnneeUniv = new Label(applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" <b>"+ etape.getAnnee()+"</b>");
 		labelAnneeUniv.setContentMode(ContentMode.HTML);
-		titleLayout.addComponent(labelSousMenu);
 		titleLayout.addComponent(labelAnneeUniv);
-		titleLayout.setComponentAlignment(labelAnneeUniv, Alignment.MIDDLE_CENTER);
+		titleLayout.setComponentAlignment(labelAnneeUniv, Alignment.MIDDLE_CENTER);*/
+		Label messageLabel = new Label(applicationContext.getMessage(NAME+".label.messageinfo", null, getLocale()));
+		messageLabel.setContentMode(ContentMode.HTML);
+		messageLabel.setStyleName(ValoTheme.LABEL_SMALL);
+		titleLayout.addComponent(messageLabel);
+		titleLayout.setExpandRatio(messageLabel, 1);
+		titleLayout.setComponentAlignment(messageLabel, Alignment.MIDDLE_LEFT);
 		if(lelp!=null && lelp.size()>0 && PropertyUtils.isPdfNotesActive()){
 			Button pdfButton = new Button();
 			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
@@ -161,7 +167,7 @@ public class DetailNotesWindow extends Window {
 
 
 		//Message informatif sur les notes
-		if(lelp!=null && lelp.size()>0){
+		/*if(lelp!=null && lelp.size()>0){
 			HorizontalLayout messageLayout = new HorizontalLayout();
 			messageLayout.setSizeFull();
 			messageLayout.setHeight("20px");
@@ -172,9 +178,9 @@ public class DetailNotesWindow extends Window {
 			messageLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			messageLayout.addComponent(messageLabel);
 			layout.addComponent(messageLayout);
-		}
+		}*/
 
-		Panel panelDetailNotes= new Panel(etape.getLibelle());
+		Panel panelDetailNotes= new Panel(etape.getLibelle()+" - "+applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" "+ etape.getAnnee());
 		panelDetailNotes.setSizeFull();
 
 

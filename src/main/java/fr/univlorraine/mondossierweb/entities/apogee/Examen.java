@@ -39,6 +39,11 @@ public class Examen {
 	@Column(name = "salle")
 	private String salle;
 	/**
+	 * libellé de la salle ou se déroule l'événement.
+	 */
+	@Column(name = "libsalle")
+	private String libsalle;
+	/**
 	 * place dans la salle.
 	 */
 	@Column(name = "place")
@@ -48,6 +53,11 @@ public class Examen {
 	 */
 	@Column(name = "batiment")
 	private String batiment;
+	/**
+	 * localisation du batiment ou se déroule l'événement.
+	 */
+	@Column(name = "localisation")
+	private String localisation;
 	/**
 	 * épreuve concernéé par l'événement.
 	 */

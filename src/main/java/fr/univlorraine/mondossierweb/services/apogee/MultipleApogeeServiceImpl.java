@@ -33,7 +33,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 	@Override
 	public String getLibEtablissementDef() {
-		return (String) entityManagerApogee.createNativeQuery("select e.lib_etb from apogee.variable_appli va, etablissement e where COD_VAP = 'ETB_COD' and va.PAR_VAP = e.COD_ETB").getSingleResult();
+		return (String) entityManagerApogee.createNativeQuery("select e.lib_web_etb from apogee.variable_appli va, etablissement e where COD_VAP = 'ETB_COD' and va.PAR_VAP = e.COD_ETB").getSingleResult();
 
 	}
 
@@ -45,10 +45,10 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 						"DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', "+
 						"TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| "+
 						"DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, "+
-						"PESA.DUR_EXA_EPR_PES || ' min.' duree, "+
-						"PESA.COD_SAL salle, "+
+						"PESA.DUR_EXA_EPR_PES duree, "+
+						"PESA.COD_SAL salle, SAL.LIB_SAL libsalle, "+
 						"NVL(TO_CHAR(PI.NUM_PLC_AFF_PSI),' ') place, "+
-						"BAT.LIB_BAT BATIMENT, E.LIB_EPR epreuve, "+
+						"BAT.LIB_BAT BATIMENT,BAT.LIB_LOC_BAT localisation, E.LIB_EPR epreuve, "+
 						"'' codcin "+
 						"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, "+
 						"APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX  "+
