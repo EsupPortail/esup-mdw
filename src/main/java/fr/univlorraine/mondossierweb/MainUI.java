@@ -474,7 +474,7 @@ public class MainUI extends UI {
 			/* Titre: Username */
 			//Label usernameLabel = new Label(userController.getCurrentUserName());
 			Label usernameLabel = new Label(etudiant.getNom()+"<br />"+etudiant.getCod_etu(), ContentMode.HTML);
-			usernameLabel.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
+			usernameLabel.addStyleName(ValoTheme.MENU_SUBTITLE);
 			usernameLabel.setSizeUndefined();
 			mainMenu.addComponent(usernameLabel);
 
