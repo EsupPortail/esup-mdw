@@ -1,6 +1,8 @@
 package fr.univlorraine.mondossierweb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -46,12 +48,15 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
+import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
@@ -100,6 +105,9 @@ public class MainUI extends UI {
 	private transient EtudiantController etudiantController;
 	@Resource(name="codetuFromLoginDao")
 	private transient IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
+	
+	@Resource
+	private transient ListeInscritsController listeInscritsController;
 
 
 
@@ -136,6 +144,27 @@ public class MainUI extends UI {
 	@Setter
 	@Getter
 	private String anneeUnivEnCours;
+	
+	//code de l'obj dont on affiche la liste des inscrits
+	@Setter
+	@Getter
+	private String codeObjListInscrits;
+	
+	//type de l'obj dont on affiche la liste des inscrits
+	@Setter
+	@Getter
+	private String typeObjListInscrits;
+	
+	//la liste des inscrits.
+	@Setter
+	@Getter
+	private List<Inscrit> listeInscrits;
+	
+	//l'étape correspondant à la liste des inscrits si c'est une liste d'inscrits à une étape.
+	@Setter
+	@Getter
+	private Etape etapeListeInscrits;
+	
 
 	/* Composants */
 	private VerticalLayout mainVerticalLayout;
@@ -586,7 +615,8 @@ public class MainUI extends UI {
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 		if(parameterMap!=null){
-			listeInscritsView.initFromParameters(parameterMap);
+			listeInscritsController.recupererLaListeDesInscrits(parameterMap);
+			listeInscritsView.initListe();
 		}
 		//Si l'onglet a été closed
 		if(tabSheetEnseignant.getTab(numtab)==null){

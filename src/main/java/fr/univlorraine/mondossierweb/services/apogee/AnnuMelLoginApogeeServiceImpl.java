@@ -24,6 +24,12 @@ public class AnnuMelLoginApogeeServiceImpl implements AnnuMelLoginApogeeService 
 		return (String) entityManagerApogee.createNativeQuery("select MAIL FROM ANNU_MEL_LOGIN WHERE COD_ETU="+cod_etu).getSingleResult();
 		
 	}
+	
+	@Override
+	public String findMailFromLogin(String login) {
+		return (String) entityManagerApogee.createNativeQuery("select MAIL FROM ANNU_MEL_LOGIN WHERE LOGIN="+login).getSingleResult();
+		
+	}
 
 	
 	

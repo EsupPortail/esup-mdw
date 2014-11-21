@@ -44,6 +44,14 @@ public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 				mail = "";
 			return mail;
 		}
+		if (login != null && !login.equals("") ) {
+			String mail="";
+			//aller chercher le mail dans annu_mel_login
+			mail =  annuMelLoginApogeeService.findMailFromLogin(login);
+			if(mail == null)
+				mail = "";
+			return mail;
+		}
 		return "";	
 	}
 	

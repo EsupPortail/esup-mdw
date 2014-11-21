@@ -5,6 +5,8 @@ public interface AnnuMelLoginApogeeService {
 
 
 	public abstract String findMailFromCodEtu(String cod_etu);
+
+	public abstract String findMailFromLogin(String login);
 	
 
 }

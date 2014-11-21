@@ -34,6 +34,8 @@ public class RechercheController {
 
 
 
+
+
 	public void accessToDetail(String code, String type) {
 		//System.out.println("acceder au "+type+" -> "+code);
 		Map<String, String> parameterMap = new HashMap<>();
@@ -57,4 +59,6 @@ public class RechercheController {
 		}
 	}
 
+	
+	
 }

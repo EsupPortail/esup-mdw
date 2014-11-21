@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,7 +12,9 @@ import org.jfree.util.Log;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 
 
@@ -96,6 +99,80 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" from apogee.individu i  "+
 				" where i.cod_ind ="+cod_ind).getSingleResult();
 		return codCiv;
+	}
+
+	@Override
+	public List<Inscrit> getInscritsEtapeJuinSep(Etape e) {
+		@SuppressWarnings("unchecked")
+		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select i.cod_ind,i.cod_etu, i.lib_pr1_ind, decode(I.LIB_NOM_USU_IND,null,i.lib_nom_pat_ind,I.LIB_NOM_USU_IND) NOM, "+
+				" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,   "+
+				" decode(rj.tem_iae_ko_vet,0,'O','N') iae, "+
+				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_vet),null,rj.not_sub_vet,to_char(rj.not_vet)),' ')) notej ,  "+
+				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj , "+
+				" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_vet),null,rs.not_sub_vet,to_char(rs.not_vet)),' ')) notes , "+
+				" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress  "+
+				" from apogee.individu i , apogee.resultat_vet rj  "+
+				" left outer join apogee.resultat_vet rs on ( rs.cod_ind = rj.cod_ind   "+
+				" and rs.tem_iae_ko_vet in ('0','2')  "+
+				" and rs.cod_etp = rj.cod_etp  "+
+				" and rs.cod_vrs_vet = rj.cod_vrs_vet  "+
+				" and rs.cod_anu = rj.cod_anu  "+
+				" and rs.cod_ses = '2'  "+
+				" and rs.cod_adm = '1')  "+
+				" left outer join AVCT_OBJ_ANO avc on (avc.COD_ANU=rj.COD_ANU "+
+				" and avc.COD_OBJ_AOA=rj.cod_etp "+
+				" and avc.COD_SES_OBJ_AOA=rj.COD_SES "+
+				" and avc.COD_ADM_OBJ_AOA=rj.COD_ADM "+
+				" and avc.TYP_OBJ_AOA='VET' "+
+				" and avc.COD_VRS_OBJ_AOA=rj.cod_vrs_vet "+
+				" and avc.ETA_ANO_OBJ_AOA='V' ) "+
+				" left outer join AVCT_OBJ_ANO avc2 on (avc2.COD_ANU=rj.COD_ANU "+
+				" and avc2.COD_OBJ_AOA=rj.cod_etp "+
+				" and avc2.COD_SES_OBJ_AOA='2' "+
+				" and avc2.COD_ADM_OBJ_AOA='1' "+
+				" and avc2.TYP_OBJ_AOA='VET' "+
+				" and avc2.COD_VRS_OBJ_AOA=rj.cod_vrs_vet "+
+				" and avc2.ETA_ANO_OBJ_AOA='V')     "+    
+				" where rj.tem_iae_ko_vet in ('0','2')  "+
+				" and rj.cod_etp = '"+e.getCode()+"' "+
+				" and rj.cod_vrs_vet = "+e.getVersion()+" "+
+				" and rj.cod_anu = "+e.getAnnee()+ " "+
+				" and rj.cod_ses in ('0','1') and rj.cod_adm = '1'  "+
+				" and i.cod_ind = rj.cod_ind  "+
+				" order by NOM,i.lib_pr1_ind,i.date_nai_ind ", Inscrit.class).getResultList();
+
+		return linscrits;
+
+	}
+
+	@Override
+	public String getLibelleEtape(Etape e) {
+		@SuppressWarnings("unchecked")
+		String libelle = (String)entityManagerApogee.createNativeQuery("select lib_web_vet "+
+				" from version_etape "+
+				" where cod_etp = '"+e.getCode()+"' "+
+				" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
+		return libelle;
+	}
+
+	@Override
+	public List<String> getAnneesFromVetDesc(Etape e) {
+		@SuppressWarnings("unchecked")
+		int anneeMin = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MIN(DAA_DEB_RCT_VET) "+
+				" from vdi_fractionner_vet vfv "+
+				" where VFV.COD_ETP='"+e.getCode()+"' "+
+				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
+		int anneeMax = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MAX(DAA_DEB_RCT_VET) "+
+				" from vdi_fractionner_vet vfv "+
+				" where VFV.COD_ETP='"+e.getCode()+"' "+
+				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
+		
+		List<String> lannee = new LinkedList<String>();
+		for(int i=anneeMax; i>=anneeMin;i--){
+			lannee.add(""+i);
+		}
+		return lannee;
+		
 	}
 
 

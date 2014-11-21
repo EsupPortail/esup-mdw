@@ -109,7 +109,7 @@ public class EtudiantController {
 
 	@Resource(name="emailConverter")
 	private transient EmailConverterInterface emailConverter;
-	;
+	
 
 
 	@Resource(name="photoProvider")
