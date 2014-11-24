@@ -1,8 +1,10 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
 import java.util.List;
+import java.util.Map;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
@@ -29,6 +31,7 @@ public interface MultipleApogeeService {
 
 	public abstract List<String> getAnneesFromVetDesc(Etape e);
 	
+	public abstract List<Anonymat> getNumeroAnonymat(String cod_etu, String cod_anu);
 
 
 }

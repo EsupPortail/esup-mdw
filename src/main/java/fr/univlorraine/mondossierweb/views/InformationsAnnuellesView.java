@@ -1,5 +1,7 @@
 package fr.univlorraine.mondossierweb.views;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
@@ -22,6 +24,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
@@ -69,11 +72,34 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 		formInfosLayout.setMargin(true);
 
 		//Numéro Anonymat visible que si l'utilisateur est étudiant
+		List<Anonymat> lano = null;
 		if(userController.isEtudiant()){
-			String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-			TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MainUI.getCurrent().getEtudiant().getNumAnonymat());
-			formatTextField(fieldNumAnonymat);
-			formInfosLayout.addComponent(fieldNumAnonymat);
+			lano = MainUI.getCurrent().getEtudiant().getNumerosAnonymat();
+			if(lano!=null) {
+				//Si l'étudiant n'a qu'un seul numéro d'anonymat
+				if(lano.size()==1){
+					String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
+					TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MainUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
+					formatTextField(fieldNumAnonymat);
+					formInfosLayout.addComponent(fieldNumAnonymat);
+				}
+				//Si l'étudiant a plusieurs numéros d'anonymat
+				if(lano.size()>1){
+					int i=0;
+					for(Anonymat ano : lano){
+						String captionNumAnonymat = "";
+						if(i==0){
+							//Pour le premier numéro affiché on affiche le libellé du champ
+							captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
+						}
+						System.out.println("-"+ ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+						formatTextField(fieldNumAnonymat);
+						formInfosLayout.addComponent(fieldNumAnonymat);
+						i++;
+					}
+				}
+			}
 		}
 
 		String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
@@ -95,7 +121,10 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 
 		panelInfos.setContent(formInfosLayout);
 		globalLayout.addComponent(panelInfos);
-		globalLayout.addComponent(new VerticalLayout());
+		//Si on affiche aucun ou un seul numéro d'anonymat, on diminue la largeur du panneau.
+		if(lano==null || lano.size()<2) {
+			globalLayout.addComponent(new VerticalLayout());
+		}
 		addComponent(globalLayout);
 
 

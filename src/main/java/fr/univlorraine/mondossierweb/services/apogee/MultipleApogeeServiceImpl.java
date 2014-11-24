@@ -2,6 +2,7 @@ package fr.univlorraine.mondossierweb.services.apogee;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,8 +12,10 @@ import lombok.Data;
 import org.jfree.util.Log;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
@@ -166,13 +169,27 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" from vdi_fractionner_vet vfv "+
 				" where VFV.COD_ETP='"+e.getCode()+"' "+
 				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
-		
+
 		List<String> lannee = new LinkedList<String>();
 		for(int i=anneeMax; i>=anneeMin;i--){
 			lannee.add(""+i);
 		}
 		return lannee;
-		
+
+	}
+
+	@Override
+	public List<Anonymat> getNumeroAnonymat(String cod_etu, String cod_anu) {
+		if(StringUtils.hasText(cod_etu) && StringUtils.hasText(cod_anu)){
+			@SuppressWarnings("unchecked")
+			List<Anonymat> lano = (List<Anonymat>)entityManagerApogee.createNativeQuery("select rownum id, t.COD_ETU_ANO, t.LIB_MAN from (select distinct COD_ETU_ANO, LIB_MAN from v_ind_ano,MAQ_ANO, MAQ_OBJ_ANO "+
+					" where v_ind_ano.cod_anu = '"+cod_anu+"' and v_ind_ano.cod_etu = "+cod_etu+" "+
+					" and MAQ_ANO.COD_MAN = MAQ_OBJ_ANO.COD_MAN "+
+					" AND concat(MAQ_OBJ_ANO.COD_OBJ_MOA, MAQ_OBJ_ANO.COD_VRS_OBJ_MOA )= concat(V_IND_ANO.COD_OBJ,  V_IND_ANO.COD_VRS_OBJ ) "+
+					" and COD_ETU_ANO is not null)t ", Anonymat.class).getResultList();
+			return lano;
+		}
+		return null;
 	}
 
 

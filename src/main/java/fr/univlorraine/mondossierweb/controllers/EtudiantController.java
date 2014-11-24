@@ -305,6 +305,9 @@ public class EtudiantController {
 					MainUI.getCurrent().getEtudiant().getListeBac().add(bec);
 				}
 
+				//On recupere les numeros d'anonymat
+				MainUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(MainUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours()));
+				
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
 

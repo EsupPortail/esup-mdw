@@ -12,6 +12,7 @@ import lombok.Data;
 
 import org.springframework.context.annotation.Scope;
 
+import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 
 
@@ -83,10 +84,6 @@ public class Etudiant {
 	 * tel portable
 	 */
 	private String telPortable;
-	/**
-	 * Le numéro d'anonymat
-	 */
-	private String numAnonymat;
 	/**
 	 * Le numéro de boursier
 	 */
@@ -169,6 +166,10 @@ public class Etudiant {
 	 * vrai si les résultat à l'épreuve sont définitifs.
 	 */
 	private boolean deliberationTerminee;
+	/**
+	 * la liste des numérots d'anonymat pour l'année en cours
+	 */
+	private List<Anonymat> numerosAnonymat;
 	
 
 	
@@ -194,6 +195,7 @@ public class Etudiant {
 		etapes = new ArrayList<Etape>();
 		cacheResultats = new CacheResultats();
 		elementsPedagogiques = new ArrayList<ElementPedagogique>();
+		
 	}
 
 	/**
