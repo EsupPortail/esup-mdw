@@ -40,7 +40,6 @@ import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow.ECTSColumnG
  * Fenêtre du détail de l'inscription
  */
 @Configurable(preConstruction=true)
-@StyleSheet("inscriptionWindow.css")
 public class DetailInscriptionWindow extends Window {
 	private static final long serialVersionUID = 1L;
 

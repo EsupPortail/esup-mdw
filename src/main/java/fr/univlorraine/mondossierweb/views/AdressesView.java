@@ -36,7 +36,6 @@ import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(AdressesView.NAME)
-@StyleSheet("adressesView.css")
 public class AdressesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

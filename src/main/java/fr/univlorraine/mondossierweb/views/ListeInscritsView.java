@@ -57,7 +57,6 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  */
 @Component @Scope("prototype")
 @VaadinView(ListeInscritsView.NAME)
-@StyleSheet("listeInscritsView.css")
 public class ListeInscritsView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

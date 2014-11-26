@@ -53,7 +53,6 @@ import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(NotesView.NAME)
-@StyleSheet("notesView.css")
 public class NotesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -6491779626961549383L;
 

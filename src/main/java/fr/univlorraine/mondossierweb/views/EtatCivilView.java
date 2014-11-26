@@ -41,7 +41,6 @@ import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(EtatCivilView.NAME)
-@StyleSheet("etatCivilView.css")
 public class EtatCivilView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

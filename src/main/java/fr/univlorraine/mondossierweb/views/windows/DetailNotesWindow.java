@@ -42,7 +42,6 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  * Fenêtre du détail des notes
  */
 @Configurable(preConstruction=true)
-@StyleSheet("notesWindow.css")
 public class DetailNotesWindow extends Window {
 	private static final long serialVersionUID = 1L;
 

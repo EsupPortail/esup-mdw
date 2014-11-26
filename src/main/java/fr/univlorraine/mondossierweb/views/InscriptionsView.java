@@ -45,7 +45,6 @@ import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(InscriptionsView.NAME)
-@StyleSheet("inscriptionsView.css")
 public class InscriptionsView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

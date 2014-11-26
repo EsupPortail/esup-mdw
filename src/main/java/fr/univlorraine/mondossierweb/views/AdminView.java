@@ -49,7 +49,6 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
  */
 @Component @Scope("prototype")
 @VaadinView(AdminView.NAME)
-@StyleSheet("adminView.css")
 @PreAuthorize("hasRole('ROLE_' + @environment.getRequiredProperty('role.admin'))")
 public class AdminView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -5357574566017551872L;
