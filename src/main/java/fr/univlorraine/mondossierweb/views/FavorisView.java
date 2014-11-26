@@ -90,7 +90,7 @@ public class FavorisView extends VerticalLayout implements View {
 		title.addStyleName(ValoTheme.LABEL_H1);
 		addComponent(title);*/
 
-		List<Favoris> lfav = favorisController.getFavorisFromLogin(userController.getCurrentUserName());
+		List<Favoris> lfav = favorisController.getFavoris();
 
 		VerticalLayout globalLayout = new VerticalLayout();
 		globalLayout.setSizeFull();

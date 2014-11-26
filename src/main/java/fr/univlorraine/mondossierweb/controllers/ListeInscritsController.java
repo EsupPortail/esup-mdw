@@ -21,6 +21,7 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
+import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
@@ -43,37 +44,57 @@ public class ListeInscritsController {
 	private MultipleApogeeService multipleApogeeService;
 	@Resource(name="emailConverter")
 	private transient EmailConverterInterface emailConverter;
+	@Resource
+	private transient EtudiantController etudiantController;
+	@Resource(name="photoProvider")
+	private IPhoto photo;
 
 
-	
-	
-	public void recupererLaListeDesInscrits(Map<String, String> parameterMap){
+
+
+	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee){
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
-		
+
 		if(MainUI.getCurrent().getListeInscrits()!=null){
 			MainUI.getCurrent().getListeInscrits().clear();
 		}
+
+		if(annee==null){
+			MainUI.getCurrent().setAnneeInscrits(null);
+			MainUI.getCurrent().setEtapeListeInscrits(null);
+			MainUI.getCurrent().setListeAnneeInscrits(null);
+		}
+
+		List<Inscrit> listeInscrits = null;
+
 		MainUI.getCurrent().setCodeObjListInscrits(code);
 		MainUI.getCurrent().setTypeObjListInscrits(type);
-		List<Inscrit> listeInscrits = null;
-		
+
 
 		if (type.equals(Utils.TYPE_VET)) {
 			//On part d'une Etape pour établir une liste d'étudiant
 			Etape e = new Etape();
-			e.setCode(code.split("/")[0]);
-			e.setVersion(code.split("/")[1]);
-			System.out.println("code : "+e.getCode()+" version : "+e.getVersion());
-			List<String> annee = multipleApogeeService.getAnneesFromVetDesc(e);
-			//On prend l'année la plus récente (la premiere de la liste)
-			e.setAnnee(annee.get(0));
-			System.out.println("annee : "+e.getAnnee());
-			e.setLibelle(multipleApogeeService.getLibelleEtape(e));
-			System.out.println("libellé : "+e.getLibelle());
-			MainUI.getCurrent().setEtapeListeInscrits(e);
+			if(annee==null){
+				e.setCode(code.split("/")[0]);
+				e.setVersion(code.split("/")[1]);
+				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours()));
+				MainUI.getCurrent().setListeAnneeInscrits(annees);
+				//On prend l'année la plus récente (la premiere de la liste)
+				e.setAnnee(annees.get(0));
+				MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
+				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
+				MainUI.getCurrent().setEtapeListeInscrits(e);
+			}else{
+				e = MainUI.getCurrent().getEtapeListeInscrits();
+				e.setAnnee(annee);
+				MainUI.getCurrent().setEtapeListeInscrits(e);
+				MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
+			}
+
+
 			listeInscrits = (List<Inscrit>) multipleApogeeService.getInscritsEtapeJuinSep(e);
-			
+
 		} else {
 			/*if (type.equals("GRP")) {
 				//On part d'un Groupe pour établir une liste d'étudiant
@@ -88,15 +109,17 @@ public class ListeInscritsController {
 				ElementPedagogique e = new ElementPedagogique();
 				e.setCode(code);
 				e.setAnnee(annee);
-		
+
 				listeInscrits = (ArrayList<Inscrit>) service.getInscritsElementPedagogiqueJuinSepEtape(e);
-				
+
 			}*/
 		}
 
-		
-		//setLoginInscrits(listeInscrits);
-		setMailInscrits(listeInscrits);
+		if(listeInscrits!=null && listeInscrits.size()>0){
+			//setLoginInscrits(listeInscrits);
+			setMailInscrits(listeInscrits);
+			setUrlPhotos(listeInscrits);
+		}
 
 		//on vérifie que les photo sont récupérées pour savoir si on peut afficher le lien vers le trombinoscope:
 		/*if(listeInscrits != null && listeInscrits.size() > 0) {
@@ -105,23 +128,23 @@ public class ListeInscritsController {
 				photosValides = true;
 			}
 		}*/
-		
-		
+
+
 		MainUI.getCurrent().setListeInscrits(listeInscrits);
-		
+
 	}
-	
+
 	/**
 	 * renseigne les logins de chaque inscrit.
 	 *
 	 */
-/*	private void setLoginInscrits( List<Inscrit> listeInscrits) {
+	/*	private void setLoginInscrits( List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
 			if(i.getCod_etu()!=null)
 			i.setLogin(service.getLoginFromCodEtu(i.getCod_etu()));
 		}
 	}*/
-	
+
 	/**
 	 * renseigne les emails de chaque inscrit.
 	 *
@@ -132,6 +155,17 @@ public class ListeInscritsController {
 				i.setEmail(emailConverter.getMail(null,i.getCod_etu()));
 		}
 	}
-	
+
+	/**
+	 * renseigne l'url pour la photo de chaque inscrit.
+	 *
+	 */
+	private void setUrlPhotos(List<Inscrit> listeInscrits) {
+		for (Inscrit i : listeInscrits) {
+			i.setUrlphoto(photo.getUrlPhoto(i.getCod_ind(), i.getCod_etu()));
+
+		}
+	}
+
 
 }

@@ -29,7 +29,7 @@ public interface MultipleApogeeService {
 
 	public abstract String getLibelleEtape(Etape e);
 
-	public abstract List<String> getAnneesFromVetDesc(Etape e);
+	public abstract List<String> getAnneesFromVetDesc(Etape e,int anneeEnCours);
 	
 	public abstract List<Anonymat> getNumeroAnonymat(String cod_etu, String cod_anu);
 

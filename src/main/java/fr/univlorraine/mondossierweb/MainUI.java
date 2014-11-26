@@ -56,6 +56,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
+import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AdminView;
@@ -105,7 +106,7 @@ public class MainUI extends UI {
 	private transient EtudiantController etudiantController;
 	@Resource(name="codetuFromLoginDao")
 	private transient IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
-	
+
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
 
@@ -144,27 +145,37 @@ public class MainUI extends UI {
 	@Setter
 	@Getter
 	private String anneeUnivEnCours;
-	
+
 	//code de l'obj dont on affiche la liste des inscrits
 	@Setter
 	@Getter
 	private String codeObjListInscrits;
-	
+
 	//type de l'obj dont on affiche la liste des inscrits
 	@Setter
 	@Getter
 	private String typeObjListInscrits;
-	
+
 	//la liste des inscrits.
 	@Setter
 	@Getter
 	private List<Inscrit> listeInscrits;
-	
+
 	//l'étape correspondant à la liste des inscrits si c'est une liste d'inscrits à une étape.
 	@Setter
 	@Getter
 	private Etape etapeListeInscrits;
-	
+
+	//la liste des années disponible pour la liste des inscrits en cours.
+	@Setter
+	@Getter
+	private List<String> ListeAnneeInscrits;
+
+	//l'année correspondant à liste des inscrits en cours.
+	@Setter
+	@Getter
+	private String anneeInscrits;
+
 
 	/* Composants */
 	private VerticalLayout mainVerticalLayout;
@@ -376,6 +387,10 @@ public class MainUI extends UI {
 					//System.out.println("init favoris view");
 					favorisView.init();
 				}
+				if (vue instanceof ListeInscritsView){
+					//System.out.println("init favoris view");
+					listeInscritsView.refresh();
+				}
 
 
 			}
@@ -570,7 +585,7 @@ public class MainUI extends UI {
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */
-		/*	Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
+			/*	Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 			decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			decoBtn.addClickListener(e -> getUI().getPage().setLocation("j_spring_security_logout"));
 			mainMenu.addComponent(decoBtn);*/
@@ -615,7 +630,7 @@ public class MainUI extends UI {
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 		if(parameterMap!=null){
-			listeInscritsController.recupererLaListeDesInscrits(parameterMap);
+			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null);
 			listeInscritsView.initListe();
 		}
 		//Si l'onglet a été closed

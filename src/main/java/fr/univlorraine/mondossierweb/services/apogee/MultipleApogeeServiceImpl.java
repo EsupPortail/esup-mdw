@@ -159,20 +159,22 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	}
 
 	@Override
-	public List<String> getAnneesFromVetDesc(Etape e) {
+	public List<String> getAnneesFromVetDesc(Etape e, int anneeEnCours) {
 		@SuppressWarnings("unchecked")
 		int anneeMin = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MIN(DAA_DEB_RCT_VET) "+
 				" from vdi_fractionner_vet vfv "+
 				" where VFV.COD_ETP='"+e.getCode()+"' "+
 				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
-		int anneeMax = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MAX(DAA_DEB_RCT_VET) "+
+		int anneeMax = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MAX(DAA_FIN_RCT_VET) "+
 				" from vdi_fractionner_vet vfv "+
 				" where VFV.COD_ETP='"+e.getCode()+"' "+
 				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
 
 		List<String> lannee = new LinkedList<String>();
 		for(int i=anneeMax; i>=anneeMin;i--){
-			lannee.add(""+i);
+			if(i<=anneeEnCours){
+				lannee.add(""+i);
+			}
 		}
 		return lannee;
 

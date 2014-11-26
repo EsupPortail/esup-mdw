@@ -14,6 +14,9 @@ import org.springframework.util.StringUtils;
 
 
 
+
+
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
@@ -47,7 +50,13 @@ public class FavorisController {
 	/** {@link VersionEtapeServiceImpl} */
 	@Resource
 	private VersionEtapeService versionEtapeService;
+	@Resource
+	private transient UserController userController;
 
+	public List<Favoris> getFavoris() {
+		return getFavorisFromLogin(userController.getCurrentUserName());
+	}
+	
 	public List<Favoris> getFavorisFromLogin(String login) {
 		return favorisRepository.findFavorisFromLogin(login);
 	}

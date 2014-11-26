@@ -5,13 +5,18 @@
 
 .v-slot-googlepopupview {
 	position: absolute;
-	/*left:100px;*/
-	top: 41px;
-	z-index: 0;
+	/* left:112px; */
+	/* top: 54px; */
+	 left:137px; 
+	 top: 70px;
+	z-index: 2;
 }
 
+
 .v-table-body-googletable{
-      overflow: hidden !important;
+     /*  overflow: hidden !important; */
+    overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 .valo-ul .valo-menu-subtitle {
@@ -19,3 +24,58 @@ color: silver;
 font-size: inherit;
 font-weight: bold;
 }
+
+.v-table-row-highlighted {
+	color: #ff0000;
+}
+
+.valo-ul .v-textfield.v-disabled {
+	opacity: inherit;
+	font-weight: bold;
+}
+
+.valo-ul .v-panel {
+	border-radius: 5px;
+}
+
+.valo-ul .v-panel-caption {
+background-color: #4b4b4b;
+background-image: none;
+color: white;
+ font-size: inherit; 
+ border-top-right-radius: 5px;
+border-top-left-radius: 5px;
+}
+
+
+.valo-ul .v-table-body{
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
+height: 37px;
+}
+
+.valo-ul .v-link {
+color: inherit;
+}
+
+
+.valo-ul .label-centre {
+	text-align: center;
+}
+
+.valo-ul .v-image-link{
+	cursor: pointer;
+}
+
+.v-table-body-scrollabletable{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.v-window {
+@include transition(none);
+}
+

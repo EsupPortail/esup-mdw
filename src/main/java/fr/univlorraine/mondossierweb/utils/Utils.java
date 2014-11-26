@@ -20,14 +20,24 @@ public class Utils {
 
 
 	public static final String TYPE_ELP = "Elément pédagogique";
+	
+	public static final String ELP = "ELP";
 
 	public static final String TYPE_VET = "Version d'étape";
+	
+	public static final String VET = "VET";
 
 	public static final String TYPE_CMP = "Composante";
+	
+	public static final String CMP = "CMP";
 
 	public static final String TYPE_ETU = "Etudiant";
 	
+	public static final String ETU = "ETU";
+	
 	public static final String TYPE_VDI = "Version de diplôme";
+	
+	public static final String VDI = "VDI";
 	
 	public static final String LIBELLE_WS_INSCRIPTION_PAYEE ="Paiement effectué";
 	
