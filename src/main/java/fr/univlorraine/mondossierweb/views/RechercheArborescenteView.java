@@ -146,6 +146,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
+		setSizeFull();
 
 		liste_types_favoris = new LinkedList<String>();
 		liste_types_favoris.add(Utils.CMP);

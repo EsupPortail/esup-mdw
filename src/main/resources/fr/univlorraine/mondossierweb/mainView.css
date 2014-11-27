@@ -106,3 +106,8 @@ color: inherit;
 overflow-y: auto;
 overflow-x: hidden;
 }
+
+/* pour bloquer le bug qui ajoute des scrollbar sur les table de un élément */
+.v-table-body-wrapper.v-table-body > div:nth-child(1) > table > tbody td:last-child > div{
+width: auto !important;
+}
