@@ -53,6 +53,11 @@ border-top-left-radius: 5px;
 	overflow-y: hidden;
 }
 
+.valo-ul .v-table-body-noscrollabletable{
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
 .valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
 height: 37px;
 }

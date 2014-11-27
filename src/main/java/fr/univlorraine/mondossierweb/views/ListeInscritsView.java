@@ -99,6 +99,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private String typeFavori;
 	
 	private VerticalLayout dataLayout;
+	
+	private boolean afficherTrombinoscope;
 
 	/**
 	 * Initialise la vue
@@ -255,7 +257,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
 				btnTrombi.setIcon(FontAwesome.GROUP);
 				resumeLayout.addComponent(btnTrombi);
+				if(afficherTrombinoscope){
+					btnTrombi.setVisible(false);
+				}
 				btnTrombi.addClickListener(e->{
+					afficherTrombinoscope=true;
 					btnTrombi.setVisible(false);
 					btnRetourListe.setVisible(true);
 					//inscritstable.setVisible(false);
@@ -270,8 +276,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnRetourListe= new Button(applicationContext.getMessage(NAME+".message.retourliste", null, getLocale()));
 				btnRetourListe.setIcon(FontAwesome.BARS);
 				resumeLayout.addComponent(btnRetourListe);
-				btnRetourListe.setVisible(false);
+				if(!afficherTrombinoscope){
+					btnRetourListe.setVisible(false);
+				}
 				btnRetourListe.addClickListener(e->{
+					afficherTrombinoscope = false;
 					btnTrombi.setVisible(true);
 					btnRetourListe.setVisible(false);
 					//inscritstable.setVisible(true);
@@ -313,8 +322,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				inscritstable.setSelectable(false);
 				inscritstable.setImmediate(true);
 				inscritstable.addStyleName("scrollabletable");
-				dataLayout.addComponent(inscritstable);
-				
+				//Si on n'a pas déjà demandé à afficher le trombinoscope
+				if(!afficherTrombinoscope){
+					dataLayout.addComponent(inscritstable);
+				}
 				//infoLayout.setExpandRatio(inscritstable, 1);
 			
 
@@ -380,8 +391,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				verticalLayoutForTrombi.setSizeFull();
 				verticalLayoutForTrombi.setHeight(null);
 				//verticalLayoutForTrombi.setVisible(false);
-				//dataLayout.addComponent(verticalLayoutForTrombi);
-
+				//Si on a demandé à afficher le trombinoscope
+				if(afficherTrombinoscope){
+					dataLayout.addComponent(verticalLayoutForTrombi);
+				}
 				infoLayout.addComponent(dataLayout);
 				infoLayout.setExpandRatio(dataLayout, 1);
 				addComponent(infoLayout);
