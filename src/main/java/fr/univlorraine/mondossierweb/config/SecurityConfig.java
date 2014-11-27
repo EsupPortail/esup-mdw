@@ -59,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.exceptionHandling()
 				.authenticationEntryPoint(casEntryPoint())
 				.and()
+				.headers().frameOptions().disable()
 			.authorizeRequests()
 				.antMatchers(environment.getRequiredProperty("switchUser.switchUrl")).hasRole(environment.getRequiredProperty("role.admin"))
 				.antMatchers(environment.getRequiredProperty("switchUser.exitUrl")).hasAuthority(SwitchUserFilter.ROLE_PREVIOUS_ADMINISTRATOR)
