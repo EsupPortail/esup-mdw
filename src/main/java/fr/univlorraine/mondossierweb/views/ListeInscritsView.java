@@ -148,7 +148,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		typeFavori = "";
 		String libelle = "";
 		String caption = "";
-		if(type.equals(Utils.TYPE_VET)){
+		if(type.equals(Utils.VET)){
 			caption = applicationContext.getMessage(NAME+".vet.libelle", null, getLocale());
 			libelle = MainUI.getCurrent().getEtapeListeInscrits().getLibelle();
 			typeFavori = Utils.VET;

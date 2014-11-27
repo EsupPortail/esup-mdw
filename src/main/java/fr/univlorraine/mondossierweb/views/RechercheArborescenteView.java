@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.views;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
@@ -39,6 +41,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
@@ -50,6 +53,7 @@ import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBase;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.utils.miscellaneous.ReferencedButton;
 
 /**
  * Recherche arborescente
@@ -98,26 +102,30 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	/** {@link ComposanteServiceImpl} */
 	@Resource
 	private ComposanteService composanteService;
+	@Resource
+	private transient RechercheController rechercheController;
 
 
 	private HierarchicalContainer hc;
-	
+
 	private TreeTable table;
 
 	private List<String> markedRows;
-	
+
 	private List<String> liste_types_favoris;
-	
+
 	private List<String> liste_types_inscrits;
-	
+
 	private List<String> liste_types_deplier;
+
+	private List<ReferencedButton> listeBoutonFavoris;
 
 	private String annee;
 
 	private ComboBox comboBoxAnneeUniv;
-	
+
 	private String code;
-	
+
 	private String type;
 
 	private boolean initEffectue;
@@ -126,6 +134,44 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 * liste des composantes actives
 	 */
 	private List<Composante> lcomp;
+
+
+	public void refresh() {
+		//Actualiser de l'affiche du bouton de mise en favori
+		if(table!=null && hc!=null){
+
+			
+			recuperationDesfavoris();
+
+
+			if(listeBoutonFavoris!=null){
+
+				for(ReferencedButton btnfav : listeBoutonFavoris){
+					//String trueObjectId =(String) hc.getItem(id).getItemProperty("trueObjectId").getValue();
+
+					if(markedRows.contains(btnfav.getIdObj())){	
+						btnfav.getButton().setIcon(FontAwesome.BOOKMARK);
+						btnfav.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+						btnfav.getButton().setDescription("Supprimer des favoris");
+					}else{
+						btnfav.getButton().setIcon(FontAwesome.BOOKMARK_O);
+						btnfav.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+						btnfav.getButton().setDescription("Mettre en favori");
+					}
+				}
+			}
+		}
+	}
+
+	private void recuperationDesfavoris() {
+		//Recuperation des favoris
+		List<Favoris> lfav = favorisController.getFavorisFromLogin(userController.getCurrentUserName());
+		markedRows = new LinkedList<String>();
+		for(Favoris fav : lfav){
+			String idFav = fav.getId().getTypfav()+":"+fav.getId().getIdfav();
+			markedRows.add(idFav);
+		}
+	}
 
 	/**
 	 * reinitialise la vue pour pointer sur les données en paramètres
@@ -148,30 +194,30 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		setSpacing(true);
 		setSizeFull();
 
+		if(listeBoutonFavoris!=null){
+			listeBoutonFavoris.clear();
+		}else{
+			listeBoutonFavoris = new LinkedList<ReferencedButton>();
+		}
+		
 		liste_types_favoris = new LinkedList<String>();
 		liste_types_favoris.add(Utils.CMP);
 		liste_types_favoris.add(Utils.ELP);
 		liste_types_favoris.add(Utils.VET);
-		
+
 		liste_types_inscrits= new LinkedList<String>();
 		liste_types_inscrits.add(Utils.ELP);
 		liste_types_inscrits.add(Utils.VET);
-		
+
 		liste_types_deplier= new LinkedList<String>();
 		liste_types_deplier.add(Utils.ELP);
 		liste_types_deplier.add(Utils.VET);
-		
+
 		List<String> lanneeUniv = rechercheArborescenteController.recupererLesCinqDernieresAnneeUniversitaire();
-		
-		//Recuperation des favoris
-		List<Favoris> lfav = favorisController.getFavorisFromLogin(userController.getCurrentUserName());
-		markedRows = new LinkedList<String>();
-		for(Favoris fav : lfav){
-			String idFav = fav.getId().getTypfav()+":"+fav.getId().getIdfav();
-			markedRows.add(idFav);
-		}
-		
-		
+
+		recuperationDesfavoris();
+
+
 
 		comboBoxAnneeUniv = new ComboBox("Année universitaire");
 		for(String anneeUniv : lanneeUniv){
@@ -202,7 +248,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 		initComposantes();
 
-	
+
 
 
 		//gestion du style pour les lignes en favori
@@ -389,7 +435,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		tableVerticalLayout.setExpandRatio(table, 1);
 		addComponent(tableVerticalLayout);
 		setExpandRatio(tableVerticalLayout, 1);
-	
+
 
 
 
@@ -477,7 +523,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			String idObj = (String)item.getItemProperty(TRUE_ID_PROPERTY).getValue();
 
 			String idFav = typeObj+":"+idObj;
-			
+
 			HorizontalLayout boutonActionLayout = new HorizontalLayout();
 
 			//Si c'est un objet qui peut être mis en favori
@@ -533,23 +579,31 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 						//btonFavori.markAsDirty();
 					}
 				});
+				ReferencedButton rb = new ReferencedButton();
+				rb.setButton(btnfav);
+				rb.setIdObj(idFav);
+				listeBoutonFavoris.add(rb);
 				boutonActionLayout.addComponent(btnfav);
 			}
-			
+
 			if(typeObj!=null && liste_types_deplier!=null && liste_types_deplier.contains(typeObj)){
-			Button btnDeplier=new Button();
-			btnDeplier.setIcon(FontAwesome.SITEMAP);
-			btnDeplier.setDescription("Déplier l'arborescence");
-			boutonActionLayout.addComponent(btnDeplier);
+				Button btnDeplier=new Button();
+				btnDeplier.setIcon(FontAwesome.SITEMAP);
+				btnDeplier.setDescription("Déplier l'arborescence");
+				boutonActionLayout.addComponent(btnDeplier);
 			}
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
 				Button btnListeInscrits=new Button();
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription("Accèder à la liste des inscrits");
+				btnListeInscrits.addClickListener(e->{
+					rechercheController.accessToDetail(idObj,typeObj);
+				});
+
 				boutonActionLayout.addComponent(btnListeInscrits);
 			}
-			
+
 
 			return boutonActionLayout;
 		}

@@ -72,7 +72,7 @@ public class ListeInscritsController {
 		MainUI.getCurrent().setTypeObjListInscrits(type);
 
 
-		if (type.equals(Utils.TYPE_VET)) {
+		if (type.equals(Utils.VET)) {
 			//On part d'une Etape pour établir une liste d'étudiant
 			Etape e = new Etape();
 			if(annee==null){

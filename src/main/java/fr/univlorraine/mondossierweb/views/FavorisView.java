@@ -29,6 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
@@ -55,6 +56,8 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient FavorisController favorisController;
+	@Resource
+	private transient RechercheController rechercheController;
 
 
 	private List<String> liste_types_inscrits;
@@ -201,6 +204,9 @@ public class FavorisView extends VerticalLayout implements View {
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription("Accèder à la liste des inscrits");
+				btnListeInscrits.addClickListener(e->{
+					rechercheController.accessToDetail(idObj,typeObj);
+				});
 				boutonActionLayout.addComponent(btnListeInscrits);
 			}
 

@@ -384,12 +384,13 @@ public class MainUI extends UI {
 				// Find the tab (here we know it's a layout)
 				View vue = (View) tabsheet.getSelectedTab();
 				if (vue instanceof FavorisView){
-					//System.out.println("init favoris view");
 					favorisView.init();
 				}
 				if (vue instanceof ListeInscritsView){
-					//System.out.println("init favoris view");
 					listeInscritsView.refresh();
+				}
+				if (vue instanceof RechercheArborescenteView){
+					rechercheArborescenteView.refresh();
 				}
 
 

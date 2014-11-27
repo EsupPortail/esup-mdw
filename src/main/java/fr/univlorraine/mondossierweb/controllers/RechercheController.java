@@ -41,15 +41,18 @@ public class RechercheController {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
-		if(type.equals(Utils.TYPE_CMP)){
+		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
+				parameterMap.replace("type",Utils.CMP);
 				MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
 		}
 		
-		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.TYPE_ELP) ){
+		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
+				parameterMap.replace("type",Utils.VET);
 				MainUI.getCurrent().navigateToListeInscrits(parameterMap);	
 		}
 		
-		if(type.equals(Utils.TYPE_ETU)){
+		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
+				parameterMap.replace("type",Utils.ETU);
 				MainUI.getCurrent().setEtudiant(new Etudiant(code));
 				System.out.println("sessionController.setEtudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
 				etudiantController.recupererEtatCivil();
