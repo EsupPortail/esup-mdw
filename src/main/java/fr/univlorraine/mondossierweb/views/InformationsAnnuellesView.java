@@ -122,9 +122,9 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 		panelInfos.setContent(formInfosLayout);
 		globalLayout.addComponent(panelInfos);
 		//Si on affiche aucun ou un seul numéro d'anonymat, on diminue la largeur du panneau.
-		if(lano==null || lano.size()<2) {
+		/*if(lano==null || lano.size()<2) {
 			globalLayout.addComponent(new VerticalLayout());
-		}
+		}*/
 		addComponent(globalLayout);
 
 
