@@ -183,6 +183,7 @@ public class NotesView extends VerticalLayout implements View {
 		notesDiplomesTable.setColumnReorderingAllowed(false);
 		notesDiplomesTable.setSelectable(false);
 		notesDiplomesTable.setImmediate(true);
+		notesDiplomesTable.setStyleName("noscrollabletable");
 		notesDiplomesTable.setPageLength(notesDiplomesTable.getItemIds().size() );
 		panelNotesDiplomes.setContent(notesDiplomesTable);
 		globalLayout.addComponent(panelNotesDiplomes);
@@ -215,6 +216,7 @@ public class NotesView extends VerticalLayout implements View {
 		notesEtapesTable.setColumnReorderingAllowed(false);
 		notesEtapesTable.setSelectable(false);
 		notesEtapesTable.setImmediate(true);
+		notesEtapesTable.setStyleName("noscrollabletable");
 		notesEtapesTable.setPageLength(notesEtapesTable.getItemIds().size() );
 		panelNotesEtapes.setContent(notesEtapesTable);
 		globalLayout.addComponent(panelNotesEtapes);

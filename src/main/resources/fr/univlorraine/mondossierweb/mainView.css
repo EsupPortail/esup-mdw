@@ -48,7 +48,7 @@ border-top-left-radius: 5px;
 }
 
 
-.valo-ul .v-table-body{
+.valo-ul .v-table-noscrollabletable{
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -70,12 +70,34 @@ color: inherit;
 	cursor: pointer;
 }
 
-.v-table-body-scrollabletable{
+.valo-ul .scrollableelement{
     overflow-x: auto;
 	overflow-y: auto;
 }
 
+
+/*
+.valo-ul .v-table-body-scrollabletable{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.valo-ul .v-table-scrollabletable{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.valo-ul .v-slot-scrollabletable{
+	overflow-x: auto;
+	overflow-y: auto;
+}
+*/
 .v-window {
 @include transition(none);
 }
 
+
+.v-scrollablepanel{
+overflow-y: auto;
+overflow-x: hidden;
+}

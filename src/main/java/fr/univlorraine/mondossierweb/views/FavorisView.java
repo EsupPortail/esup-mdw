@@ -114,6 +114,7 @@ public class FavorisView extends VerticalLayout implements View {
 			favorisTable.setColumnReorderingAllowed(true);
 			favorisTable.setSelectable(true);
 			favorisTable.setImmediate(true);
+			favorisTable.setStyleName("noscrollabletable");
 			favorisTable.setPageLength(favorisTable.getItemIds().size() );
 			globalLayout.addComponent(favorisTable);
 

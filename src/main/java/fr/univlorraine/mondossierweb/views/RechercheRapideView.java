@@ -73,7 +73,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	private static final int NB_MAX_RESULT_QUICK_SEARCH=5;
 
-	public static final String[] ETU_FIELDS_ORDER = {"lib","type","code"};
+	public static final String[] ETU_FIELDS_ORDER = {"lib","type"};
 
 	/* Injections */
 	@Resource

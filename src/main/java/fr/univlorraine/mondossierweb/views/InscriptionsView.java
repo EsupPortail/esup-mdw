@@ -115,6 +115,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 		inscriptionsTable.setColumnReorderingAllowed(false);
 		inscriptionsTable.setSelectable(false);
 		inscriptionsTable.setImmediate(true);
+		inscriptionsTable.setStyleName("noscrollabletable");
 		inscriptionsTable.setPageLength(inscriptionsTable.getItemIds().size() );
 		panelInscription.setContent(inscriptionsTable);
 		globalLayout.addComponent(panelInscription);
@@ -134,6 +135,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 			inscriptionsDAC.setColumnReorderingAllowed(false);
 			inscriptionsDAC.setSelectable(false);
 			inscriptionsDAC.setImmediate(true);
+			inscriptionsDAC.setStyleName("noscrollabletable");
 			inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size() );
 			panelDAC.setContent(inscriptionsDAC);
 		}else{

@@ -64,7 +64,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	public static final String[] INS_FIELDS = {"nom","prenom","date_nai_ind","iae"};
 	
-	public static final String[] INS_FIELDS_TO_DISPLAY = {"cod_etu", "nom","prenom","date_nai_ind","email","iae","notes1","notes2"};
+	public static final String[] INS_FIELDS_TO_DISPLAY = {"cod_etu","prenom","nom","date_nai_ind","email","iae","notes1","notes2"};
 
 	/* Injections */
 	@Resource
@@ -91,10 +91,14 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private Button btnAjoutFavori;
 
 	private VerticalLayout favoriLayout;
+	
+	private VerticalLayout verticalLayoutForTrombi;
 
 	private String code;
 
 	private String typeFavori;
+	
+	private VerticalLayout dataLayout;
 
 	/**
 	 * Initialise la vue
@@ -128,7 +132,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
-
+		setSizeFull();
+		
 		/* Titre */
 		/*Label title = new Label("Liste inscrits");
 		title.addStyleName(ValoTheme.LABEL_H1);
@@ -238,18 +243,27 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
 
 			if(linscrits!=null && linscrits.size()>0){
+				VerticalLayout infoLayout= new VerticalLayout();
+				infoLayout.setSizeFull();
+				
 				HorizontalLayout resumeLayout=new HorizontalLayout();
-				resumeLayout.setSizeFull();
+				resumeLayout.setWidth("100%");
+				resumeLayout.setHeight("50px");
 				Label infoNbInscrit = new Label(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+linscrits.size());
 				resumeLayout.addComponent(infoNbInscrit);
+				resumeLayout.setComponentAlignment(infoNbInscrit, Alignment.MIDDLE_LEFT);
 				btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
 				btnTrombi.setIcon(FontAwesome.GROUP);
 				resumeLayout.addComponent(btnTrombi);
 				btnTrombi.addClickListener(e->{
 					btnTrombi.setVisible(false);
 					btnRetourListe.setVisible(true);
-					inscritstable.setVisible(false);
-					trombiLayout.setVisible(true);
+					//inscritstable.setVisible(false);
+					//verticalLayoutForTrombi.setVisible(true);
+					dataLayout.removeAllComponents();
+					dataLayout.addComponent(verticalLayoutForTrombi);
+					dataLayout.setHeight("100%");
+					verticalLayoutForTrombi.setHeight("100%");
 				});
 				resumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
 
@@ -260,17 +274,21 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnRetourListe.addClickListener(e->{
 					btnTrombi.setVisible(true);
 					btnRetourListe.setVisible(false);
-					inscritstable.setVisible(true);
-					trombiLayout.setVisible(false);
+					//inscritstable.setVisible(true);
+					//verticalLayoutForTrombi.setVisible(false);
+					dataLayout.removeAllComponents();
+					dataLayout.addComponent(inscritstable);
+					
 				});
 				resumeLayout.setComponentAlignment(btnRetourListe, Alignment.MIDDLE_RIGHT);
 
-				addComponent(resumeLayout);
-
-
+				infoLayout.addComponent(resumeLayout);
+				
+				dataLayout = new VerticalLayout();
+				dataLayout.setSizeFull();
 
 				inscritstable = new Table(null, new BeanItemContainer<>(Inscrit.class, linscrits));
-				inscritstable.setWidth("100%");
+				inscritstable.setSizeFull();
 
 				inscritstable.setVisibleColumns(new String[0]);
 				for (String fieldName : INS_FIELDS) {
@@ -294,12 +312,19 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				inscritstable.setColumnReorderingAllowed(false);
 				inscritstable.setSelectable(false);
 				inscritstable.setImmediate(true);
-				addComponent(inscritstable);
+				inscritstable.addStyleName("scrollabletable");
+				dataLayout.addComponent(inscritstable);
+				
+				//infoLayout.setExpandRatio(inscritstable, 1);
+			
 
-
+				verticalLayoutForTrombi = new VerticalLayout();
+				verticalLayoutForTrombi.setSizeFull();
+				verticalLayoutForTrombi.addStyleName("v-scrollablepanel");
 				trombiLayout = new GridLayout();
 				trombiLayout.setColumns(5);
 				trombiLayout.setWidth("100%");
+				trombiLayout.setHeight(null);
 				trombiLayout.setSpacing(true);
 				for(Inscrit inscrit : linscrits){
 					VerticalLayout photoLayout = new VerticalLayout();
@@ -349,11 +374,23 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					trombiLayout.setComponentAlignment(photoLayout, Alignment.MIDDLE_CENTER);
 				}
 
-				trombiLayout.setVisible(false);
-				addComponent(trombiLayout);
+				
+				
+				verticalLayoutForTrombi.addComponent(trombiLayout);
+				verticalLayoutForTrombi.setSizeFull();
+				verticalLayoutForTrombi.setHeight(null);
+				//verticalLayoutForTrombi.setVisible(false);
+				//dataLayout.addComponent(verticalLayoutForTrombi);
+
+				infoLayout.addComponent(dataLayout);
+				infoLayout.setExpandRatio(dataLayout, 1);
+				addComponent(infoLayout);
+				setExpandRatio(infoLayout, 1);
 			}else{
 				Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
 				addComponent(infoAucuninscrit);
+				setComponentAlignment(infoAucuninscrit, Alignment.TOP_CENTER);
+				setExpandRatio(infoAucuninscrit, 1);
 			}
 
 		}

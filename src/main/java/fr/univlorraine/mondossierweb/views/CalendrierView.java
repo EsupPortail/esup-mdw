@@ -138,6 +138,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			calendrierTable.setColumnReorderingAllowed(true);
 			calendrierTable.setSelectable(false);
 			calendrierTable.setImmediate(true);
+			calendrierTable.setStyleName("noscrollabletable");
 			calendrierTable.setPageLength(calendrierTable.getItemIds().size() );
 			LOG.info("calendrierTable.getItemIds().size()  : "+calendrierTable.getItemIds().size());
 

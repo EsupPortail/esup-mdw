@@ -49,6 +49,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBase;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Recherche arborescente
@@ -100,6 +101,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 	private HierarchicalContainer hc;
+	
 	private TreeTable table;
 
 	private List<String> markedRows;
@@ -112,16 +114,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	private String annee;
 
-
 	private ComboBox comboBoxAnneeUniv;
-
-	private HorizontalLayout boutonContextuelsLayout;
-
-	private Button btonDeplier;
-
-	private Button btonFavori;
-
-	private Button btonListe;
+	
+	private String code;
+	
+	private String type;
 
 	private boolean initEffectue;
 
@@ -136,8 +133,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 */
 	public void initFromParameters(Map<String, String> parameterMap){
 		removeAllComponents();
-		rechercheArborescenteController.setCode(parameterMap.get("code"));
-		rechercheArborescenteController.setType(parameterMap.get("type"));
+		code = parameterMap.get("code");
+		type = parameterMap.get("type");
 		init();
 	}
 	/**
@@ -146,30 +143,22 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-		//System.out.println("init RechercheArborescenteView");
-
-
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
 
-		/* Titre */
-		/*Label title = new Label("Recherche Arborescente");
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);*/
-
 		liste_types_favoris = new LinkedList<String>();
-		liste_types_favoris.add("CMP");
-		liste_types_favoris.add("ELP");
-		liste_types_favoris.add("VET");
+		liste_types_favoris.add(Utils.CMP);
+		liste_types_favoris.add(Utils.ELP);
+		liste_types_favoris.add(Utils.VET);
 		
 		liste_types_inscrits= new LinkedList<String>();
-		liste_types_inscrits.add("ELP");
-		liste_types_inscrits.add("VET");
+		liste_types_inscrits.add(Utils.ELP);
+		liste_types_inscrits.add(Utils.VET);
 		
 		liste_types_deplier= new LinkedList<String>();
-		liste_types_deplier.add("ELP");
-		liste_types_deplier.add("VET");
+		liste_types_deplier.add(Utils.ELP);
+		liste_types_deplier.add(Utils.VET);
 		
 		List<String> lanneeUniv = rechercheArborescenteController.recupererLesCinqDernieresAnneeUniversitaire();
 		
@@ -193,145 +182,27 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		if(annee==null){
 			annee=etudiantController.getAnneeUnivEnCours();
 		}
-		//System.out.println("annee : "+annee);
 		comboBoxAnneeUniv.setValue(annee);
 
 		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
 
 		addComponent(comboBoxAnneeUniv);
 
-		if(rechercheArborescenteController.getCode()!=null && rechercheArborescenteController.getType()!=null){
-			Label elementRecherche = new Label(rechercheArborescenteController.getCode() +" "+rechercheArborescenteController.getType());
+		if(code!=null && type!=null){
+			Label elementRecherche = new Label(code +" "+type);
 			elementRecherche.addStyleName(ValoTheme.LABEL_H1);
 			addComponent(elementRecherche);
 		}
 
-
-
-		btonDeplier=new Button();
-		btonFavori=new Button();
-		btonListe=new Button();
-		btonDeplier.setIcon(FontAwesome.SITEMAP);
-		btonFavori.setIcon(FontAwesome.BOOKMARK_O);
-		btonListe.setIcon(FontAwesome.USERS);
-
-		boutonContextuelsLayout=new HorizontalLayout();
-		boutonContextuelsLayout.addComponent(btonDeplier);
-		boutonContextuelsLayout.addComponent(btonFavori);
-		boutonContextuelsLayout.addComponent(btonListe);
-
-		//Gestion du clic sur le bouton favori
-		/*btonFavori.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if(markedRows.contains(itemSelected)){
-					markedRows.remove(itemSelected);
-					btonFavori.setIcon(FontAwesome.BOOKMARK_O);
-				}else{
-					markedRows.add(itemSelected);
-					btonFavori.setIcon(FontAwesome.BOOKMARK);
-				}
-				table.markAsDirtyRecursive();
-				//btonFavori.markAsDirty();
-			}
-		});*/
-
-
-		//addComponent(boutonContextuelsLayout);
-
-		//boutonContextuelsLayout.setVisible(true);
-		btonDeplier.setEnabled(false);
-		btonFavori.setEnabled(false);
-		btonListe.setEnabled(false);
-
-
-		
-
-
 		table = new TreeTable();
 		table.setSizeFull();
+		table.setStyleName("scrollabletable");
 		table.setSelectable(true);
 
 		initComposantes();
 
+	
 
-
-
-
-		/*Item i = table.addItem("toto");
-
-			i.getItemProperty("libelle").setValue("toto");
-			i.getItemProperty("id").setValue("1");*/
-
-
-
-
-
-		//selection d'une ligne de la table
-		table.addItemClickListener(new ItemClickListener() {
-
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if(markedRows.contains(event.getItemId())){
-					btonFavori.setIcon(FontAwesome.BOOKMARK);
-				}else{
-					btonFavori.setIcon(FontAwesome.BOOKMARK_O);
-				}
-
-				//itemSelected=event.getItemId().toString();
-				btonDeplier.setEnabled(true);
-				btonFavori.setEnabled(true);
-				btonListe.setEnabled(true);
-
-			}
-
-
-		}); 
-
-		//selection d'une option du menu du clic droit
-		/*table.addActionHandler(new Action.Handler() {
-			@Override
-			public void handleAction(final Action action, final Object sender,
-					final Object target) {
-				if (action == TOUT_DEPLIER_ACTION) {
-
-                  //  final Object item = sample.addItem(new Object[] {"New Item", 0, new Date() }, null);
-                   // sample.setChildrenAllowed(item, false);
-                   // sample.setParent(item, target);
-				} else if (action == METTRE_EN_FAVORI_ACTION) {
-					String idrow=target.toString();
-					System.out.println(idrow+" mis en favori");
-					markedRows.add(idrow);
-					table.markAsDirtyRecursive();
-				} else if (action == SUPPRIMER_FAVORI_ACTION) {
-					String idrow=target.toString();
-					markedRows.remove(idrow);
-					table.markAsDirtyRecursive();
-				} else if (action == LISTE_INSCRIT_ACTION) {
-
-				}
-
-			}*/
-
-		//affichage du menu du clic droit
-		/*	@Override
-			public Action[] getActions(final Object target, final Object sender) {
-
-				if (target == null) {
-					// Context menu in an empty space -> add a new main category
-					return null;
-
-				}  else {
-					// Context menu for an item
-					//System.out.println("mr : "+markedRows+" -> "+target+" => "+markedRows.contains(target.toString()));
-					if(markedRows.contains(target.toString())){
-						return new Action[] { TOUT_DEPLIER_ACTION, SUPPRIMER_FAVORI_ACTION,LISTE_INSCRIT_ACTION };
-					}else{
-						return new Action[] { TOUT_DEPLIER_ACTION, METTRE_EN_FAVORI_ACTION,LISTE_INSCRIT_ACTION };
-					}
-				}
-			}
-		});*/
 
 		//gestion du style pour les lignes en favori
 		table.setCellStyleGenerator(new CellStyleGenerator() {
@@ -349,9 +220,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		//gestion du clic sur la fleche pour déplier une entrée
 		table.addExpandListener(new ExpandListener() {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 8532342540008245348L;
 
 			@Override
@@ -366,7 +234,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 					//Si on n'a pas déjà déplié ou tenté de déplier cette élément
 					if(deplie.equals("false")){
-						if(type.equals("CMP")){
+						if(type.equals(Utils.CMP)){
 							//recuperation des vdi
 
 							List<VersionDiplome> lvdi = composanteService.findVdiFromComposante(annee, trueObjectId);
@@ -375,8 +243,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							for(VersionDiplome vdi : lvdi){
 
 								ObjetBase obj = new ObjetBase();
-								obj.setType("VDI");
-								obj.setId("VDI:"+vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi()+"_"+event.getItemId());
+								obj.setType(Utils.VDI);
+								obj.setId(Utils.VDI+":"+vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi()+"_"+event.getItemId());
 								obj.setTrueObjectId(vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi());
 								obj.setLibelle(vdi.getLib_web_vdi());
 								obj.setDeplie("false");
@@ -401,7 +269,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							hc.getItem(event.getItemId()).getItemProperty("deplie").setValue("true");
 
 						}else{
-							if(type.equals("VDI")){
+							if(type.equals(Utils.VDI)){
 
 								//recuperation des vet
 								String[] tabs=trueObjectId.split("/");
@@ -412,8 +280,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								for(VersionEtape vet : lvet){
 
 									ObjetBase obj = new ObjetBase();
-									obj.setType("VET");
-									obj.setId("VET:"+vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet()+"_"+event.getItemId());
+									obj.setType(Utils.VET);
+									obj.setId(Utils.VET+":"+vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet()+"_"+event.getItemId());
 									obj.setTrueObjectId(vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet());
 									obj.setLibelle(vet.getLib_web_vet());
 									obj.setDeplie("false");
@@ -439,10 +307,10 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								//maj du Deplie pour la VDI
 								hc.getItem(event.getItemId()).getItemProperty("deplie").setValue("true");
 							}else{
-								if(type.equals("VET") || type.equals("ELP")){
+								if(type.equals(Utils.VET) || type.equals(Utils.ELP)){
 
 									List<ElementPedagogique> lelp = new LinkedList<ElementPedagogique>();
-									if(type.equals("VET")){
+									if(type.equals(Utils.VET)){
 										//recuperation des elp
 										String[] tabs=trueObjectId.split("/");
 										String codEtp=tabs[0];
@@ -450,7 +318,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 										//System.out.println("appel native query avec : "+codEtp+" - "+vrsEtp);
 										lelp = composanteService.findElpFromVet( codEtp, vrsEtp);
 									}
-									if(type.equals("ELP")){
+									if(type.equals(Utils.ELP)){
 										//recuperation des elp
 										lelp = composanteService.findElpFromElp( trueObjectId);
 									}
@@ -460,8 +328,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 										for(ElementPedagogique elp : lelp){
 
 											ObjetBase obj = new ObjetBase();
-											obj.setType("ELP");
-											obj.setId("ELP:"+elp.getCod_elp()+"_"+event.getItemId());
+											obj.setType(Utils.ELP);
+											obj.setId(Utils.ELP+":"+elp.getCod_elp()+"_"+event.getItemId());
 											obj.setTrueObjectId(elp.getCod_elp());
 											obj.setLibelle(elp.getLib_elp());
 											obj.setDeplie("false");
@@ -513,8 +381,14 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 
-
-		addComponent(table);
+		VerticalLayout tableVerticalLayout = new VerticalLayout();
+		tableVerticalLayout.setMargin(true);
+		tableVerticalLayout.setSizeFull();
+		tableVerticalLayout.addComponent(table);
+		tableVerticalLayout.setExpandRatio(table, 1);
+		addComponent(tableVerticalLayout);
+		setExpandRatio(tableVerticalLayout, 1);
+	
 
 
 
@@ -536,8 +410,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		List<ObjetBase> lobj = new LinkedList<ObjetBase>();
 		for(Composante comp : lcomp){
 			ObjetBase obj = new ObjetBase();
-			obj.setType("CMP");
-			obj.setId("CMP:"+comp.getCodCmp());
+			obj.setType(Utils.CMP);
+			obj.setId(Utils.CMP+":"+comp.getCodCmp());
 			obj.setTrueObjectId(comp.getCodCmp());
 			obj.setLibelle(comp.getLibCmp());
 			obj.setDeplie("false");
@@ -561,7 +435,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.addContainerProperty(TRUE_ID_PROPERTY, String.class, "");
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER);
+			table.setColumnHeader("libelle", applicationContext.getMessage(NAME+".table.libelle", null, getLocale()));
+			table.setColumnHeader("trueObjectId", applicationContext.getMessage(NAME+".table.trueObjectId", null, getLocale()));
+			table.setColumnHeader("type", applicationContext.getMessage(NAME+".table.type", null, getLocale()));
 			table.addGeneratedColumn("actions", new MyColumnGenerator());
+			table.setColumnHeader("actions", applicationContext.getMessage(NAME+".table.actions", null, getLocale()));
 			initEffectue=true;
 		}else{
 			//System.out.println("set visible colonnes for refresh");
@@ -632,7 +510,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//mise à jour de la liste des favoris de la vue
 							//markedRows.remove((String)itemId);
 							markedRows.remove(idFav);
-							btonFavori.setIcon(FontAwesome.BOOKMARK_O);
+							btnfav.setIcon(FontAwesome.BOOKMARK_O);
 							event.getButton().setIcon(FontAwesome.BOOKMARK_O);
 						}else{
 							//creation du favori
@@ -647,7 +525,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//mise à jour de la liste des favoris de la vue
 							//markedRows.add((String)itemId);
 							markedRows.add(idFav);
-							btonFavori.setIcon(FontAwesome.BOOKMARK);
+							btnfav.setIcon(FontAwesome.BOOKMARK);
 							event.getButton().setIcon(FontAwesome.BOOKMARK);
 						}
 						table.markAsDirtyRecursive();
