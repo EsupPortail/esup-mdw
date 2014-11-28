@@ -23,10 +23,12 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -120,6 +122,14 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	private List<ReferencedButton> listeBoutonFavoris;
 
+	private Label ligneSelectionneeLabel;
+	
+	private Label vetElpSelectionneLabel;
+	
+	private Label labelLigneSelectionneeLabel;
+	
+	private FormLayout elpLayout;
+
 	private String annee;
 
 	private ComboBox comboBoxAnneeUniv;
@@ -140,14 +150,14 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		//Actualiser de l'affiche du bouton de mise en favori
 		if(table!=null && hc!=null){
 
-			
+
 			recuperationDesfavoris();
 
 
 			if(listeBoutonFavoris!=null){
 
 				for(ReferencedButton btnfav : listeBoutonFavoris){
-					//String trueObjectId =(String) hc.getItem(id).getItemProperty("trueObjectId").getValue();
+
 
 					if(markedRows.contains(btnfav.getIdObj())){	
 						btnfav.getButton().setIcon(FontAwesome.BOOKMARK);
@@ -199,7 +209,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}else{
 			listeBoutonFavoris = new LinkedList<ReferencedButton>();
 		}
-		
+
 		liste_types_favoris = new LinkedList<String>();
 		liste_types_favoris.add(Utils.CMP);
 		liste_types_favoris.add(Utils.ELP);
@@ -219,21 +229,57 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 
-		comboBoxAnneeUniv = new ComboBox("Année universitaire");
+		HorizontalLayout btnLayout = new HorizontalLayout();
+		btnLayout.setWidth("100%");
+
+		comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
 		for(String anneeUniv : lanneeUniv){
 			comboBoxAnneeUniv.addItem(anneeUniv);
 		}
 		comboBoxAnneeUniv.setTextInputAllowed(false);
 		comboBoxAnneeUniv.setNullSelectionAllowed(false);
-
 		if(annee==null){
 			annee=etudiantController.getAnneeUnivEnCours();
 		}
 		comboBoxAnneeUniv.setValue(annee);
-
 		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
+		
+		labelLigneSelectionneeLabel =new Label();
+		labelLigneSelectionneeLabel.setValue(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
+		labelLigneSelectionneeLabel.addStyleName("label-align-right");
+		labelLigneSelectionneeLabel.setVisible(false);
+		
+		
+		HorizontalLayout btnLeftLayout= new HorizontalLayout();
+		btnLeftLayout.setWidth("100%");
+		btnLeftLayout.setMargin(true);
+		btnLeftLayout.addComponent(comboBoxAnneeUniv);
+		btnLeftLayout.setComponentAlignment(comboBoxAnneeUniv, Alignment.MIDDLE_LEFT);
+		btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
+		btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
+		btnLayout.addComponent(btnLeftLayout);
+		
 
-		addComponent(comboBoxAnneeUniv);
+		ligneSelectionneeLabel =new Label();
+		//ligneSelectionneeLabel.setCaption(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
+		ligneSelectionneeLabel.setVisible(false);
+		elpLayout = new FormLayout();
+		elpLayout.setMargin(false);
+		vetElpSelectionneLabel = new Label();
+		vetElpSelectionneLabel.setVisible(false);
+		elpLayout.addComponent(vetElpSelectionneLabel);
+		elpLayout.setVisible(false);
+		VerticalLayout ligneLayout = new VerticalLayout();
+		ligneLayout.addComponent(ligneSelectionneeLabel);
+		ligneLayout.addComponent(elpLayout);
+		
+		
+		btnLayout.addComponent(ligneLayout);
+		btnLayout.setComponentAlignment(ligneLayout, Alignment.MIDDLE_LEFT);
+
+		addComponent(btnLayout);
+
+
 
 		if(code!=null && type!=null){
 			Label elementRecherche = new Label(code +" "+type);
@@ -263,166 +309,23 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			}
 		});
 
+		table.addItemClickListener(new ItemClickListener() {
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				selectionnerLigne(event.getItemId());
+			}
+
+		});
 
 		//gestion du clic sur la fleche pour déplier une entrée
 		table.addExpandListener(new ExpandListener() {
-
 			private static final long serialVersionUID = 8532342540008245348L;
-
 			@Override
 			public void nodeExpand(ExpandEvent event) {
-				//System.out.println("node expand "+event.getItemId());
-				if(!table.hasChildren(event.getItemId())){
-
-					String type =(String) hc.getItem(event.getItemId()).getItemProperty(TYPE_PROPERTY).getValue();
-					String deplie =(String) hc.getItem(event.getItemId()).getItemProperty("deplie").getValue();
-					String trueObjectId =(String) hc.getItem(event.getItemId()).getItemProperty("trueObjectId").getValue();
-					//System.out.println("searchChild of : "+type + " "+trueObjectId+" "+deplie);
-
-					//Si on n'a pas déjà déplié ou tenté de déplier cette élément
-					if(deplie.equals("false")){
-						if(type.equals(Utils.CMP)){
-							//recuperation des vdi
-
-							List<VersionDiplome> lvdi = composanteService.findVdiFromComposante(annee, trueObjectId);
-							//System.out.println("lvdi "+lvdi!=null?lvdi.size():"vide");
-							List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-							for(VersionDiplome vdi : lvdi){
-
-								ObjetBase obj = new ObjetBase();
-								obj.setType(Utils.VDI);
-								obj.setId(Utils.VDI+":"+vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi()+"_"+event.getItemId());
-								obj.setTrueObjectId(vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi());
-								obj.setLibelle(vdi.getLib_web_vdi());
-								obj.setDeplie("false");
-								lobj.add(obj);
-
-								//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
-								Item i = hc.addItem(obj.getId());
-								if(i!=null){
-									i.getItemProperty("libelle").setValue(obj.getLibelle());
-									i.getItemProperty("id").setValue(obj.getId());
-									i.getItemProperty("trueObjectId").setValue(obj.getTrueObjectId());
-									i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-									i.getItemProperty("deplie").setValue(obj.getDeplie());
-
-									table.setParent(obj.getId(), event.getItemId());
-								}else{
-									//System.out.println("attention : element non créé !");
-								}
-
-							} 
-							//maj du Deplie pour la composante
-							hc.getItem(event.getItemId()).getItemProperty("deplie").setValue("true");
-
-						}else{
-							if(type.equals(Utils.VDI)){
-
-								//recuperation des vet
-								String[] tabs=trueObjectId.split("/");
-								String codDip=tabs[0];
-								String vrsDip=tabs[1];
-								List<VersionEtape> lvet = composanteService.findVetFromVdi(annee, codDip, vrsDip);
-								List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-								for(VersionEtape vet : lvet){
-
-									ObjetBase obj = new ObjetBase();
-									obj.setType(Utils.VET);
-									obj.setId(Utils.VET+":"+vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet()+"_"+event.getItemId());
-									obj.setTrueObjectId(vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet());
-									obj.setLibelle(vet.getLib_web_vet());
-									obj.setDeplie("false");
-									lobj.add(obj);
-
-									//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
-									Item i = hc.addItem(obj.getId());
-									if(i!=null){
-										i.getItemProperty("libelle").setValue(obj.getLibelle());
-										i.getItemProperty("id").setValue(obj.getId());
-										i.getItemProperty("trueObjectId").setValue(obj.getTrueObjectId());
-										i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-										i.getItemProperty("deplie").setValue(obj.getDeplie());
-
-										table.setParent(obj.getId(), event.getItemId());
-									}else{
-										//System.out.println("attention : element non créé !");
-									}
-
-
-								}
-
-								//maj du Deplie pour la VDI
-								hc.getItem(event.getItemId()).getItemProperty("deplie").setValue("true");
-							}else{
-								if(type.equals(Utils.VET) || type.equals(Utils.ELP)){
-
-									List<ElementPedagogique> lelp = new LinkedList<ElementPedagogique>();
-									if(type.equals(Utils.VET)){
-										//recuperation des elp
-										String[] tabs=trueObjectId.split("/");
-										String codEtp=tabs[0];
-										String vrsEtp=tabs[1];
-										//System.out.println("appel native query avec : "+codEtp+" - "+vrsEtp);
-										lelp = composanteService.findElpFromVet( codEtp, vrsEtp);
-									}
-									if(type.equals(Utils.ELP)){
-										//recuperation des elp
-										lelp = composanteService.findElpFromElp( trueObjectId);
-									}
-
-									List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-									if(lelp!=null && lelp.size()>0){
-										for(ElementPedagogique elp : lelp){
-
-											ObjetBase obj = new ObjetBase();
-											obj.setType(Utils.ELP);
-											obj.setId(Utils.ELP+":"+elp.getCod_elp()+"_"+event.getItemId());
-											obj.setTrueObjectId(elp.getCod_elp());
-											obj.setLibelle(elp.getLib_elp());
-											obj.setDeplie("false");
-											lobj.add(obj);
-
-											//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
-											Item i = hc.addItem(obj.getId());
-											if(i!=null){
-												i.getItemProperty("libelle").setValue(obj.getLibelle());
-												i.getItemProperty("id").setValue(obj.getId());
-												i.getItemProperty("trueObjectId").setValue(obj.getTrueObjectId());
-												i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-												i.getItemProperty("deplie").setValue(obj.getDeplie());
-
-												table.setParent(obj.getId(), event.getItemId());
-											}else{
-												System.out.println("attention : element non créé !");
-											}
-
-
-										}
-									}else{
-										//System.out.println("Aucun sous elp pour "+event.getItemId());
-										Notification.show("Aucun sous élément pour cet élément");
-										table.setChildrenAllowed(event.getItemId(), false);
-									}
-
-									//maj du Deplie pour l'element ou la vet
-									hc.getItem(event.getItemId()).getItemProperty("deplie").setValue("true");
-								}
-							}
-						}
-					}
-					/*List<Livre> llivre = diplomeController.getDipFromCompByAnnee(event.getItemId().toString(), annee);
-					for(Livre livre : llivre){
-						Item i = hc.addItem("livre"+livre.getId().toString());
-						if(i!=null){
-							i.getItemProperty("libelle").setValue(livre.getTitre());
-							i.getItemProperty("id").setValue(livre.getId().toString());
-							table.setParent("livre"+livre.getId().toString(), event.getItemId());
-						}
-					}*/
-				}
+				selectionnerLigne(event.getItemId());
+				deplierNoeud((String)event.getItemId(), true);
 			}
-
-
 		});
 
 
@@ -465,11 +368,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			lobj.add(obj);
 			Item i = hc.addItem(obj.getId());
 
-			i.getItemProperty("libelle").setValue(obj.getLibelle());
-			i.getItemProperty("id").setValue(obj.getId());
-			i.getItemProperty("trueObjectId").setValue(obj.getTrueObjectId());
+			i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+			i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
+			i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
 			i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-			i.getItemProperty("deplie").setValue(obj.getDeplie());
+			i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
 
 		}
 		//Vrai si c'est la premiere initialisation de la table
@@ -482,8 +385,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.addContainerProperty(TRUE_ID_PROPERTY, String.class, "");
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER);
-			table.setColumnHeader("libelle", applicationContext.getMessage(NAME+".table.libelle", null, getLocale()));
-			table.setColumnHeader("trueObjectId", applicationContext.getMessage(NAME+".table.trueObjectId", null, getLocale()));
+			table.setColumnHeader(LIBELLE_PROPERTY, applicationContext.getMessage(NAME+".table.libelle", null, getLocale()));
+			table.setColumnHeader(TRUE_ID_PROPERTY, applicationContext.getMessage(NAME+".table.trueObjectId", null, getLocale()));
 			table.setColumnHeader("type", applicationContext.getMessage(NAME+".table.type", null, getLocale()));
 			table.addGeneratedColumn("actions", new MyColumnGenerator());
 			table.setColumnHeader("actions", applicationContext.getMessage(NAME+".table.actions", null, getLocale()));
@@ -534,11 +437,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				if(markedRows.contains(idFav)){	
 					btnfav.setIcon(FontAwesome.BOOKMARK);
 					btnfav.addStyleName(ValoTheme.BUTTON_PRIMARY);
-					btnfav.setDescription("Supprimer des favoris");
+					btnfav.setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
 				}else{
 					btnfav.setIcon(FontAwesome.BOOKMARK_O);
 					btnfav.addStyleName(ValoTheme.BUTTON_PRIMARY);
-					btnfav.setDescription("Mettre en favori");
+					btnfav.setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
 				}
 
 				//Gestion du clic sur le bouton favori
@@ -589,14 +492,18 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			if(typeObj!=null && liste_types_deplier!=null && liste_types_deplier.contains(typeObj)){
 				Button btnDeplier=new Button();
 				btnDeplier.setIcon(FontAwesome.SITEMAP);
-				btnDeplier.setDescription("Déplier l'arborescence");
+				btnDeplier.setDescription(applicationContext.getMessage(NAME+".deplierarbo", null, getLocale()));
+				btnDeplier.addClickListener(e->{
+					deplierNoeudComplet((String)itemId);
+					selectionnerLigne((String)itemId);
+				});
 				boutonActionLayout.addComponent(btnDeplier);
 			}
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
 				Button btnListeInscrits=new Button();
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-				btnListeInscrits.setDescription("Accèder à la liste des inscrits");
+				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
 					rechercheController.accessToDetail(idObj,typeObj);
 				});
@@ -609,4 +516,221 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}
 	}
 
+
+	private void selectionnerLigne(Object itemId) {
+		table.setValue(itemId);
+		String typeItemSelected=(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
+		ligneSelectionneeLabel.setValue((String) hc.getItem(itemId).getItemProperty(LIBELLE_PROPERTY).getValue()+ " ("+typeItemSelected+")");
+		//Si c'est un ELP qui est selectionne
+		if(typeItemSelected.equals(Utils.ELP)){
+			//On va chercher le premier element pere non ELP pour l'afficher en rappel
+			String idItemSelected=(String) hc.getItem(itemId).getItemProperty(ID_PROPERTY).getValue();
+			System.out.println("idItemSelected : "+idItemSelected);
+			//On recupere l'id complet de l'ELP et on le split pour en parcourir l'arborescence
+			String[] elps = idItemSelected.split("_");
+			boolean vetTrouvee = false;
+			String idsElp = "";
+			String idVet = "";
+			for(int i=0;i<elps.length;i++){
+				if(!vetTrouvee){
+					//Si le type est different de ELP
+					if(!elps[i].substring(0,3).equals(Utils.ELP)){
+						vetTrouvee=true;
+						idVet = idItemSelected.replaceAll(idsElp+"_", "");
+						System.out.println("idVet : "+idVet);
+					}else{
+						//tant qu'on n'a pas trouve la VET on reconstitue la partie gauche de l'id
+						if(StringUtils.hasText(idsElp)){
+							idsElp = idsElp+"_";
+						}
+						idsElp = idsElp+elps[i];
+					}
+				}
+			}
+			if(vetTrouvee && StringUtils.hasText(idVet) && hc.getItem(idVet)!=null){
+				//afficher le lib de la VET pour rappel
+				String typeVet=(String) hc.getItem(idVet).getItemProperty(TYPE_PROPERTY).getValue();
+				//On passe l'ELP dans le label du bas
+				vetElpSelectionneLabel.setCaption(ligneSelectionneeLabel.getValue());
+				vetElpSelectionneLabel.setIcon(FontAwesome.ARROW_RIGHT);
+				vetElpSelectionneLabel.setVisible(true);
+				elpLayout.setVisible(true);
+				vetElpSelectionneLabel.setHeight("20px");
+				//La VET est affichée dans le label du haut
+				ligneSelectionneeLabel.setValue((String) hc.getItem(idVet).getItemProperty(LIBELLE_PROPERTY).getValue()+ " ("+typeVet+")");
+			
+			}
+		}else{
+			vetElpSelectionneLabel.setVisible(false);
+			elpLayout.setVisible(false);
+		}
+		ligneSelectionneeLabel.setVisible(true);
+		labelLigneSelectionneeLabel.setVisible(true);
+	}
+
+
+	private void deplierNoeudComplet(String itemId){
+		deplierNoeud(itemId, false);
+		table.setCollapsed(itemId, false);
+		//parcourir les fils, pour chaque fils faire deplierNoeudComplet
+		Collection<String> lfils = (Collection<String>)hc.getChildren(itemId);
+		if(lfils!=null && lfils.size()>0){
+			for(String fils : lfils){
+				deplierNoeudComplet(fils);
+			}
+		}
+	}	
+
+	private void deplierNoeud(String itemId, boolean afficherMessage){
+		//System.out.println("node expand "+event.getItemId());
+		if(!table.hasChildren(itemId)){
+
+			String type =(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
+			String deplie =(String) hc.getItem(itemId).getItemProperty(DEPLIE_PROPERTY).getValue();
+			String trueObjectId =(String) hc.getItem(itemId).getItemProperty(TRUE_ID_PROPERTY).getValue();
+			//System.out.println("searchChild of : "+type + " "+trueObjectId+" "+deplie);
+
+			//Si on n'a pas déjà déplié ou tenté de déplier cette élément
+			if(deplie.equals("false")){
+				if(type.equals(Utils.CMP)){
+					//recuperation des vdi
+
+					List<VersionDiplome> lvdi = composanteService.findVdiFromComposante(annee, trueObjectId);
+					//System.out.println("lvdi "+lvdi!=null?lvdi.size():"vide");
+					List<ObjetBase> lobj = new LinkedList<ObjetBase>();
+					if(lvdi!=null && lvdi.size()>0){
+						for(VersionDiplome vdi : lvdi){
+
+							ObjetBase obj = new ObjetBase();
+							obj.setType(Utils.VDI);
+							obj.setId(Utils.VDI+":"+vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi()+"_"+itemId);
+							obj.setTrueObjectId(vdi.getId().getCod_dip()+"/"+vdi.getId().getCod_vrs_vdi());
+							obj.setLibelle(vdi.getLib_web_vdi());
+							obj.setDeplie("false");
+							lobj.add(obj);
+
+							//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
+							Item i = hc.addItem(obj.getId());
+							if(i!=null){
+								i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+								i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
+								i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
+								i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
+								i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+
+								table.setParent(obj.getId(), itemId);
+							}else{
+								//System.out.println("attention : element non créé !");
+							}
+
+						} 
+					}else{
+						table.setChildrenAllowed(itemId, false);
+					}
+					//maj du Deplie pour la composante
+					hc.getItem(itemId).getItemProperty(DEPLIE_PROPERTY).setValue("true");
+
+				}else{
+					if(type.equals(Utils.VDI)){
+
+						//recuperation des vet
+						String[] tabs=trueObjectId.split("/");
+						String codDip=tabs[0];
+						String vrsDip=tabs[1];
+						List<VersionEtape> lvet = composanteService.findVetFromVdi(annee, codDip, vrsDip);
+						List<ObjetBase> lobj = new LinkedList<ObjetBase>();
+						if(lvet!=null && lvet.size()>0){
+							for(VersionEtape vet : lvet){
+
+								ObjetBase obj = new ObjetBase();
+								obj.setType(Utils.VET);
+								obj.setId(Utils.VET+":"+vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet()+"_"+itemId);
+								obj.setTrueObjectId(vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet());
+								obj.setLibelle(vet.getLib_web_vet());
+								obj.setDeplie("false");
+								lobj.add(obj);
+
+								//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
+								Item i = hc.addItem(obj.getId());
+								if(i!=null){
+									i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+									i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
+									i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
+									i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
+									i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+
+									table.setParent(obj.getId(), itemId);
+								}else{
+									//System.out.println("attention : element non créé !");
+								}
+
+
+							}
+						}else{
+							table.setChildrenAllowed(itemId, false);
+						}
+
+						//maj du Deplie pour la VDI
+						hc.getItem(itemId).getItemProperty(DEPLIE_PROPERTY).setValue("true");
+					}else{
+						if(type.equals(Utils.VET) || type.equals(Utils.ELP)){
+
+							List<ElementPedagogique> lelp = new LinkedList<ElementPedagogique>();
+							if(type.equals(Utils.VET)){
+								//recuperation des elp
+								String[] tabs=trueObjectId.split("/");
+								String codEtp=tabs[0];
+								String vrsEtp=tabs[1];
+								//System.out.println("appel native query avec : "+codEtp+" - "+vrsEtp);
+								lelp = composanteService.findElpFromVet( codEtp, vrsEtp);
+							}
+							if(type.equals(Utils.ELP)){
+								//recuperation des elp
+								lelp = composanteService.findElpFromElp( trueObjectId);
+							}
+
+							List<ObjetBase> lobj = new LinkedList<ObjetBase>();
+							if(lelp!=null && lelp.size()>0){
+								for(ElementPedagogique elp : lelp){
+
+									ObjetBase obj = new ObjetBase();
+									obj.setType(Utils.ELP);
+									obj.setId(Utils.ELP+":"+elp.getCod_elp()+"_"+itemId);
+									obj.setTrueObjectId(elp.getCod_elp());
+									obj.setLibelle(elp.getLib_elp());
+									obj.setDeplie("false");
+									lobj.add(obj);
+
+									//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
+									Item i = hc.addItem(obj.getId());
+									if(i!=null){
+										i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+										i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
+										i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
+										i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
+										i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+
+										table.setParent(obj.getId(), itemId);
+									}else{
+										System.out.println("attention : element non créé !");
+									}
+
+
+								}
+							}else{
+								if(afficherMessage){
+									Notification.show("Aucun sous élément pour cet élément");
+								}
+								table.setChildrenAllowed(itemId, false);
+							}
+
+							//maj du Deplie pour l'element ou la vet
+							hc.getItem(itemId).getItemProperty(DEPLIE_PROPERTY).setValue("true");
+						}
+					}
+				}
+			}
+
+		}
+	}
 }

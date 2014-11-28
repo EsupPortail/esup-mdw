@@ -76,6 +76,10 @@ color: inherit;
 	text-align: center;
 }
 
+.valo-ul .label-align-right{
+	text-align: right;
+}
+
 .valo-ul .v-image-link{
 	cursor: pointer;
 }
