@@ -47,7 +47,10 @@ public class RechercheController {
 		}
 		
 		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
-				parameterMap.replace("type",Utils.VET);
+				if(type.equals(Utils.TYPE_VET))
+					parameterMap.replace("type",Utils.VET);
+				if(type.equals(Utils.TYPE_ELP))
+						parameterMap.replace("type",Utils.ELP);
 				MainUI.getCurrent().navigateToListeInscrits(parameterMap);	
 		}
 		

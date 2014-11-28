@@ -200,8 +200,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	public void init() {
 
 		/* Style */
-		setMargin(true);
-		setSpacing(true);
+		setMargin(false);
+		setSpacing(false);
 		setSizeFull();
 
 		if(listeBoutonFavoris!=null){
@@ -230,11 +230,15 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 		HorizontalLayout btnLayout = new HorizontalLayout();
+		btnLayout.setMargin(false);
+		btnLayout.setSpacing(false);
 		btnLayout.setWidth("100%");
 
 		comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
 		for(String anneeUniv : lanneeUniv){
 			comboBoxAnneeUniv.addItem(anneeUniv);
+			int anneenplusun = Integer.parseInt(anneeUniv) + 1;
+			comboBoxAnneeUniv.setItemCaption(anneeUniv,anneeUniv+"/"+anneenplusun);
 		}
 		comboBoxAnneeUniv.setTextInputAllowed(false);
 		comboBoxAnneeUniv.setNullSelectionAllowed(false);
@@ -505,6 +509,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
+					System.out.println("acces detail "+idObj+" - "+typeObj);
 					rechercheController.accessToDetail(idObj,typeObj);
 				});
 
@@ -525,7 +530,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		if(typeItemSelected.equals(Utils.ELP)){
 			//On va chercher le premier element pere non ELP pour l'afficher en rappel
 			String idItemSelected=(String) hc.getItem(itemId).getItemProperty(ID_PROPERTY).getValue();
-			System.out.println("idItemSelected : "+idItemSelected);
 			//On recupere l'id complet de l'ELP et on le split pour en parcourir l'arborescence
 			String[] elps = idItemSelected.split("_");
 			boolean vetTrouvee = false;
@@ -537,7 +541,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 					if(!elps[i].substring(0,3).equals(Utils.ELP)){
 						vetTrouvee=true;
 						idVet = idItemSelected.replaceAll(idsElp+"_", "");
-						System.out.println("idVet : "+idVet);
 					}else{
 						//tant qu'on n'a pas trouve la VET on reconstitue la partie gauche de l'id
 						if(StringUtils.hasText(idsElp)){
