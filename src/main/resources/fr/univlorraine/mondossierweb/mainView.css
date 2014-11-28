@@ -60,7 +60,7 @@ border-top-left-radius: 5px;
 
 
 .valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
-	background: rgba(65, 102, 169, 0.65);
+	background : rgb(85,96,164);
 	color: white;
 	height: 37px;
 	font: 400 12px/1.55 "Open Sans", sans-serif;
