@@ -196,14 +196,17 @@ public class FavorisView extends VerticalLayout implements View {
 			if(typeObj!=null && liste_type_arbo!=null && liste_type_arbo.contains(typeObj)){
 				Button btnArbo=new Button();
 				btnArbo.setIcon(FontAwesome.SITEMAP);
-				btnArbo.setDescription("Arborescence");
+				btnArbo.setDescription(applicationContext.getMessage(NAME+".accesarborescence", null, getLocale()));
+				btnArbo.addClickListener(e->{
+					rechercheController.accessToRechercheArborescente(idObj,typeObj);
+				});
 				boutonActionLayout.addComponent(btnArbo);
 			}
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
 				Button btnListeInscrits=new Button();
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-				btnListeInscrits.setDescription("Accèder à la liste des inscrits");
+				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
 					rechercheController.accessToDetail(idObj,typeObj);
 				});

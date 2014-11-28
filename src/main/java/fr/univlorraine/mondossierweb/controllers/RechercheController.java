@@ -33,7 +33,18 @@ public class RechercheController {
 	private transient EtudiantController etudiantController;
 
 
-
+	public void accessToRechercheArborescente(String code, String type) {
+		Map<String, String> parameterMap = new HashMap<>();
+		parameterMap.put("code",code);
+		parameterMap.put("type",type);
+		if(type.equals(Utils.TYPE_CMP))
+				parameterMap.replace("type",Utils.CMP);	
+		if(type.equals(Utils.TYPE_VET))
+			parameterMap.replace("type",Utils.VET);
+		if(type.equals(Utils.TYPE_ELP))
+				parameterMap.replace("type",Utils.ELP);
+		MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
+	}
 
 
 	public void accessToDetail(String code, String type) {

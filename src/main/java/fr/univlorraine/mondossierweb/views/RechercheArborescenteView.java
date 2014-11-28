@@ -162,11 +162,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 					if(markedRows.contains(btnfav.getIdObj())){	
 						btnfav.getButton().setIcon(FontAwesome.BOOKMARK);
 						btnfav.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-						btnfav.getButton().setDescription("Supprimer des favoris");
+						btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
 					}else{
 						btnfav.getButton().setIcon(FontAwesome.BOOKMARK_O);
 						btnfav.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-						btnfav.getButton().setDescription("Mettre en favori");
+						btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
 					}
 				}
 			}
@@ -189,6 +189,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 */
 	public void initFromParameters(Map<String, String> parameterMap){
 		removeAllComponents();
+		initEffectue=false;
 		code = parameterMap.get("code");
 		type = parameterMap.get("type");
 		init();
@@ -288,7 +289,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		if(code!=null && type!=null){
 			Label elementRecherche = new Label(code +" "+type);
 			elementRecherche.addStyleName(ValoTheme.LABEL_H1);
-			addComponent(elementRecherche);
+			//addComponent(elementRecherche);
+			
 		}
 
 		table = new TreeTable();
@@ -509,7 +511,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
-					System.out.println("acces detail "+idObj+" - "+typeObj);
 					rechercheController.accessToDetail(idObj,typeObj);
 				});
 

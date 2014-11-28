@@ -51,6 +51,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
@@ -106,9 +107,10 @@ public class MainUI extends UI {
 	private transient EtudiantController etudiantController;
 	@Resource(name="codetuFromLoginDao")
 	private transient IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
-
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
+	@Resource
+	private transient FavorisController favorisController;
 
 
 
@@ -192,9 +194,11 @@ public class MainUI extends UI {
 	@Getter
 	private GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
 
-	/** Gestionnaire de vues */
+	/** Gestionnaire de vues étudiant*/
 	@Getter
 	private DiscoveryNavigator navigator = new DiscoveryNavigator(this, contentLayout);
+	
+	
 
 	/** Gestionnaire de vues */
 	/*@Getter
@@ -351,7 +355,16 @@ public class MainUI extends UI {
 			//if (fragment == null || fragment.isEmpty()) {
 			if(userController.isEnseignant()){
 				//navigator.navigateTo(ErreurView.NAME);
-				navigator.navigateTo(RechercheRapideView.NAME);
+				List<Favoris> lfav = favorisController.getFavoris();
+				if(lfav!=null && lfav.size()>0){
+					System.out.println("to fav view");
+					navigator.navigateTo(FavorisView.NAME);
+					navigateToFavoris();
+				}else{
+					System.out.println("to rech view");
+					navigator.navigateTo(RechercheRapideView.NAME);
+					navigateToRechercheRapide();
+				}
 			}else{
 				if(userController.isEtudiant()){
 					navigator.navigateTo(EtatCivilView.NAME);
@@ -375,6 +388,7 @@ public class MainUI extends UI {
 		viewEnseignantTab.put(rechercheArborescenteView.NAME, 1);
 
 		tabSheetEnseignant.addTab(favorisView, "Favoris", FontAwesome.BOOKMARK_O);
+		viewEnseignantTab.put(favorisView.NAME, 2);
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {
 
 			public void selectedTabChange(SelectedTabChangeEvent event){
@@ -641,6 +655,20 @@ public class MainUI extends UI {
 
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 
+		tabSheetEnseignant.setSelectedTab(numtab);
+	}
+	
+	public void navigateToFavoris() {
+		System.out.println("viewEnseignantTab "+viewEnseignantTab);
+		System.out.println("favorisView "+favorisView);
+		int numtab = viewEnseignantTab.get(favorisView.NAME);
+		tabSheetEnseignant.getTab(numtab).setVisible(true);
+		tabSheetEnseignant.setSelectedTab(numtab);
+	}
+	
+	public void navigateToRechercheRapide() {
+		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
+		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		tabSheetEnseignant.setSelectedTab(numtab);
 	}
 
