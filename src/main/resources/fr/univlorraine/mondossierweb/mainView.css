@@ -39,7 +39,8 @@ font-weight: bold;
 }
 
 .valo-ul .v-panel-caption {
-background-color: #4b4b4b;
+/*background-color: #4b4b4b;*/
+background-color: #6E6E6E;
 background-image: none;
 color: white;
  font-size: inherit; 
