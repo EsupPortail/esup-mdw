@@ -123,11 +123,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	private List<ReferencedButton> listeBoutonFavoris;
 
 	private Label ligneSelectionneeLabel;
-	
+
 	private Label vetElpSelectionneLabel;
-	
+
 	private Label labelLigneSelectionneeLabel;
-	
+
 	private FormLayout elpLayout;
 
 	private String annee;
@@ -248,13 +248,13 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}
 		comboBoxAnneeUniv.setValue(annee);
 		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
-		
+
 		labelLigneSelectionneeLabel =new Label();
 		labelLigneSelectionneeLabel.setValue(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
 		labelLigneSelectionneeLabel.addStyleName("label-align-right");
 		labelLigneSelectionneeLabel.setVisible(false);
-		
-		
+
+
 		HorizontalLayout btnLeftLayout= new HorizontalLayout();
 		btnLeftLayout.setWidth("100%");
 		btnLeftLayout.setMargin(true);
@@ -263,7 +263,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
 		btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
 		btnLayout.addComponent(btnLeftLayout);
-		
+
 
 		ligneSelectionneeLabel =new Label();
 		//ligneSelectionneeLabel.setCaption(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
@@ -277,8 +277,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		VerticalLayout ligneLayout = new VerticalLayout();
 		ligneLayout.addComponent(ligneSelectionneeLabel);
 		ligneLayout.addComponent(elpLayout);
-		
-		
+
+
 		btnLayout.addComponent(ligneLayout);
 		btnLayout.setComponentAlignment(ligneLayout, Alignment.MIDDLE_LEFT);
 
@@ -290,7 +290,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			Label elementRecherche = new Label(code +" "+type);
 			elementRecherche.addStyleName(ValoTheme.LABEL_H1);
 			//addComponent(elementRecherche);
-			
+
 		}
 
 		table = new TreeTable();
@@ -360,27 +360,43 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		hc.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 		hc.addContainerProperty(TYPE_PROPERTY, String.class, "");
 		hc.addContainerProperty(DEPLIE_PROPERTY, String.class, "");
-		if(lcomp==null || lcomp.size()==0){
-			lcomp = composanteService.findComposantesEnService();
-		}
+
 		List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-		for(Composante comp : lcomp){
-			ObjetBase obj = new ObjetBase();
-			obj.setType(Utils.CMP);
-			obj.setId(Utils.CMP+":"+comp.getCodCmp());
-			obj.setTrueObjectId(comp.getCodCmp());
-			obj.setLibelle(comp.getLibCmp());
-			obj.setDeplie("false");
-			lobj.add(obj);
-			Item i = hc.addItem(obj.getId());
 
-			i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
-			i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
-			i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
-			i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-			i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+		//Si aucun code ni type spécifié on récupère toutes les composantes
+		if(!StringUtils.hasText(code) || !StringUtils.hasText(type)){
+			if(lcomp==null || lcomp.size()==0){
+				lcomp = composanteService.findComposantesEnService();
+			}
 
+			for(Composante comp : lcomp){
+				ObjetBase obj = new ObjetBase();
+				obj.setType(Utils.CMP);
+				obj.setId(Utils.CMP+":"+comp.getCodCmp());
+				obj.setTrueObjectId(comp.getCodCmp());
+				obj.setLibelle(comp.getLibCmp());
+				obj.setDeplie("false");
+				lobj.add(obj);
+				Item i = hc.addItem(obj.getId());
+
+				i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+				i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
+				i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
+				i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
+				i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+
+			}
+		}else{
+			
+			//On récupère l'année max pour l'objet en parametre
+			
+			//On récupère la liste de ses sous-éléments dans lobj
+			
+			
 		}
+		
+		
+		
 		//Vrai si c'est la premiere initialisation de la table
 		if(initEffectue){
 			table.removeAllItems();
@@ -562,7 +578,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				vetElpSelectionneLabel.setHeight("20px");
 				//La VET est affichée dans le label du haut
 				ligneSelectionneeLabel.setValue((String) hc.getItem(idVet).getItemProperty(LIBELLE_PROPERTY).getValue()+ " ("+typeVet+")");
-			
+
 			}
 		}else{
 			vetElpSelectionneLabel.setVisible(false);

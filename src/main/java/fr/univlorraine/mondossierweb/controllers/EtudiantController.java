@@ -485,8 +485,10 @@ public class EtudiantController {
 
 					//récupération des informations sur la composante
 					insc.setCod_comp(insdto.getComposante().getCodComposante());
+					//System.out.println("cmp : "+insdto.getComposante().getLibComposante());
 					//insc.setLib_comp(insdto.getComposante().getLibComposante());
 					insc.setLib_comp(composanteService.getLibelleComposante(insc.getCod_comp()));
+					//System.out.println("cmplib : "+insc.getLib_comp());
 
 					//récupération de l'état en règle de l'inscription
 					if(insdto.getInscriptionPayee().equals(Utils.LIBELLE_WS_INSCRIPTION_PAYEE)){
