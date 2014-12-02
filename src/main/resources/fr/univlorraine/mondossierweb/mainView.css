@@ -128,3 +128,16 @@ width: auto !important;
 	height: 37px;
 	font: 400 12px/1.55 "Open Sans", sans-serif;
 }*/
+
+.valo-ul .deletefavbutton {
+width: 52px;
+}
+
+.dropicon .v-icon {
+color: red;
+}
+    
+/* .dropicon .v-icon:before {
+content: "\f05e";
+color: red;
+}*/

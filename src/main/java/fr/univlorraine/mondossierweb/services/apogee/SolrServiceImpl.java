@@ -166,6 +166,22 @@ public class SolrServiceImpl implements SolrService{
 				.actionGet();
 		//System.out.println("status response : "+response.status()+" "+response.getTotalShards()+" "+response.getSuccessfulShards()+" "+response.getHits().getTotalHits());
 		SearchHit[] results = response.getHits().getHits();
+		
+		//Si aucun resultat et on est pas en quicksearch
+		if((results==null || results.length==0) && !quickSearck){
+			//On cherche le code de l'elp
+			qb=QueryBuilders.matchQuery("COD_OBJ", value);
+			response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
+					.setSearchType(SearchType.QUERY_AND_FETCH)
+					.setQuery(qb)
+					.setFrom(0).setSize(60).setExplain(true)
+					.execute()
+					.actionGet();
+			//System.out.println("status response : "+response.status()+" "+response.getTotalShards()+" "+response.getSuccessfulShards()+" "+response.getHits().getTotalHits());
+			results = response.getHits().getHits();
+		}
+		
+		
 		for (SearchHit hit : results) {
 			//prints out the id of the document
 			Map<String,Object> result = hit.getSource();   //the retrieved document

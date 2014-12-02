@@ -101,16 +101,6 @@ public class ComposanteServiceImpl implements ComposanteService{
 		return lelp;
 	}
 
-	/*@Override
-	public List<ElementPedagogique> findElpFromVet(String codEtp, String vrsEtp) {
-		@SuppressWarnings("unchecked")
-		List<ElementPedagogique> lelp = (List<ElementPedagogique>)em.createNativeQuery(
-				"select e.cod_elp, e.lib_elp "+
-						" from element_pedagogi e   "+
-						" order by e.lib_elp", ElementPedagogique.class).getResultList(); 
-		return lelp;
-	}*/
-
 	@Override
 	public List<ElementPedagogique> findElpFromElp(String codElp) {
 		@SuppressWarnings("unchecked")

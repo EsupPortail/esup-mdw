@@ -112,7 +112,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 	public void refresh() {
 		//Actualiser de l'affiche du bouton de mise en favori
-		if(btnTrombi !=null && favoriLayout!=null && StringUtils.hasText(code) && StringUtils.hasText(typeFavori)){
+		if(btnAjoutFavori !=null && favoriLayout!=null && StringUtils.hasText(code) && StringUtils.hasText(typeFavori)){
 
 			List<Favoris> lfav = favorisController.getFavoris();
 			FavorisPK favpk = new FavorisPK();
@@ -220,7 +220,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			favoriLayout.setMargin(true);
 			favoriLayout.setSpacing(true);
 			btnAjoutFavori = new Button(applicationContext.getMessage(NAME+".btn.ajoutFavori", null, getLocale()));
-			btnAjoutFavori.setIcon(FontAwesome.BOOKMARK_O);
+			btnAjoutFavori.setIcon(FontAwesome.STAR_O);
 			btnAjoutFavori.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			btnAjoutFavori.setDescription(applicationContext.getMessage(NAME+".btn.ajoutFavori", null, getLocale()));
 			btnAjoutFavori.addClickListener(e->{

@@ -165,8 +165,9 @@ public class FavorisView extends VerticalLayout implements View {
 			HorizontalLayout boutonActionLayout = new HorizontalLayout();
 
 			Button btnfav=new Button();
-			btnfav.setIcon(FontAwesome.BOOKMARK);
-			btnfav.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnfav.setIcon(FontAwesome.TRASH_O);
+			btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
+			btnfav.addStyleName("deletefavbutton");
 			btnfav.setDescription("Supprimer des favoris");
 			//Gestion du clic sur le bouton favori
 			btnfav.addClickListener(new ClickListener() {

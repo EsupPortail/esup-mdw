@@ -387,7 +387,7 @@ public class MainUI extends UI {
 		//tabSheetEnseignant.addTab(contentTabSheetEnseignantLayout, "Recherche Arborescente", FontAwesome.SITEMAP);
 		viewEnseignantTab.put(rechercheArborescenteView.NAME, 1);
 
-		tabSheetEnseignant.addTab(favorisView, "Favoris", FontAwesome.BOOKMARK_O);
+		tabSheetEnseignant.addTab(favorisView, "Favoris", FontAwesome.STAR_O);
 		viewEnseignantTab.put(favorisView.NAME, 2);
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {
 

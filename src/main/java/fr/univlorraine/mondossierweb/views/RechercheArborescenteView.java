@@ -139,6 +139,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	private String type;
 
 	private boolean initEffectue;
+	
+	private Button reinitButton;
 
 	/**
 	 * liste des composantes actives
@@ -160,12 +162,13 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 					if(markedRows.contains(btnfav.getIdObj())){	
-						btnfav.getButton().setIcon(FontAwesome.BOOKMARK);
-						btnfav.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+						btnfav.getButton().setIcon(FontAwesome.TRASH_O);
+						btnfav.getButton().setStyleName(ValoTheme.BUTTON_DANGER);
+						btnfav.getButton().addStyleName("deletefavbutton");
 						btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
 					}else{
-						btnfav.getButton().setIcon(FontAwesome.BOOKMARK_O);
-						btnfav.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+						btnfav.getButton().setIcon(FontAwesome.STAR_O);
+						btnfav.getButton().setStyleName(ValoTheme.BUTTON_PRIMARY);
 						btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
 					}
 				}
@@ -183,6 +186,20 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}
 	}
 
+	
+	/**
+	 * reinitialise la vue pour pointer sur les données en paramètres
+	 * @param parameterMap
+	 */
+	public void initFromScratch(){
+		removeAllComponents();
+		initEffectue=false;
+		annee=null;
+		code = null;
+		type = null;
+		init();
+	}
+	
 	/**
 	 * reinitialise la vue pour pointer sur les données en paramètres
 	 * @param parameterMap
@@ -190,6 +207,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	public void initFromParameters(Map<String, String> parameterMap){
 		removeAllComponents();
 		initEffectue=false;
+		annee=null;
 		code = parameterMap.get("code");
 		type = parameterMap.get("type");
 		init();
@@ -224,31 +242,46 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		liste_types_deplier.add(Utils.ELP);
 		liste_types_deplier.add(Utils.VET);
 
-		List<String> lanneeUniv = rechercheArborescenteController.recupererLesCinqDernieresAnneeUniversitaire();
 
 		recuperationDesfavoris();
-
-
 
 		HorizontalLayout btnLayout = new HorizontalLayout();
 		btnLayout.setMargin(false);
 		btnLayout.setSpacing(false);
 		btnLayout.setWidth("100%");
 
+
+
+
 		comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
-		for(String anneeUniv : lanneeUniv){
-			comboBoxAnneeUniv.addItem(anneeUniv);
-			int anneenplusun = Integer.parseInt(anneeUniv) + 1;
-			comboBoxAnneeUniv.setItemCaption(anneeUniv,anneeUniv+"/"+anneenplusun);
-		}
 		comboBoxAnneeUniv.setTextInputAllowed(false);
 		comboBoxAnneeUniv.setNullSelectionAllowed(false);
-		if(annee==null){
-			annee=etudiantController.getAnneeUnivEnCours();
+		//Initialisation de la liste des années
+		List<String> lanneeUniv = rechercheArborescenteController.recupererLesDixDernieresAnneeUniversitaire();
+		if(lanneeUniv!=null && lanneeUniv.size()>0){
+			for(String anneeUniv : lanneeUniv){
+				comboBoxAnneeUniv.addItem(anneeUniv);
+				int anneenplusun = Integer.parseInt(anneeUniv) + 1;
+				comboBoxAnneeUniv.setItemCaption(anneeUniv,anneeUniv+"/"+anneenplusun);
+			}
+			if(annee==null){
+				//annee=etudiantController.getAnneeUnivEnCours();
+				annee = lanneeUniv.get(0);
+			}
 		}
 		comboBoxAnneeUniv.setValue(annee);
 		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
-
+		
+		reinitButton = new Button(" ");
+		reinitButton.setDescription(applicationContext.getMessage(NAME+".reinitbutton.description", null, getLocale()));
+		reinitButton.addClickListener(e->{
+			initFromScratch();
+		});
+		reinitButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		reinitButton.setIcon(FontAwesome.ERASER);
+		if(!StringUtils.hasText(code)){
+			reinitButton.setVisible(false);
+		}
 		labelLigneSelectionneeLabel =new Label();
 		labelLigneSelectionneeLabel.setValue(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
 		labelLigneSelectionneeLabel.addStyleName("label-align-right");
@@ -260,6 +293,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		btnLeftLayout.setMargin(true);
 		btnLeftLayout.addComponent(comboBoxAnneeUniv);
 		btnLeftLayout.setComponentAlignment(comboBoxAnneeUniv, Alignment.MIDDLE_LEFT);
+		btnLeftLayout.addComponent(reinitButton);
+		btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_LEFT);
 		btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
 		btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
 		btnLayout.addComponent(btnLeftLayout);
@@ -362,7 +397,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		hc.addContainerProperty(DEPLIE_PROPERTY, String.class, "");
 
 		List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-
+		String rootItemId = null;
 		//Si aucun code ni type spécifié on récupère toutes les composantes
 		if(!StringUtils.hasText(code) || !StringUtils.hasText(type)){
 			if(lcomp==null || lcomp.size()==0){
@@ -371,36 +406,30 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 			for(Composante comp : lcomp){
 				ObjetBase obj = new ObjetBase();
-				obj.setType(Utils.CMP);
-				obj.setId(Utils.CMP+":"+comp.getCodCmp());
-				obj.setTrueObjectId(comp.getCodCmp());
-				obj.setLibelle(comp.getLibCmp());
-				obj.setDeplie("false");
+				rechercheArborescenteController.renseigneObjFromCmp(obj, comp);
 				lobj.add(obj);
 				Item i = hc.addItem(obj.getId());
-
-				i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
-				i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
-				i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
-				i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-				i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
-
+				renseignerItem(i,obj);
 			}
+
 		}else{
+
+			//On ajoute l'objet racine et on déplie le premier niveau
+			ObjetBase obj = rechercheArborescenteController.getObj(code,type);
+			Item i = hc.addItem(obj.getId());
+			renseignerItem(i,obj);
+			rootItemId = (String)i.getItemProperty(ID_PROPERTY).getValue();
 			
-			//On récupère l'année max pour l'objet en parametre
-			
-			//On récupère la liste de ses sous-éléments dans lobj
-			
-			
+
 		}
-		
-		
-		
-		//Vrai si c'est la premiere initialisation de la table
-		if(initEffectue){
-			table.removeAllItems();
-		}
+
+	
+	
+
+		//Vrai si ce n'est pas la premiere initialisation de la table
+		/*if(initEffectue){
+			//table.removeAllItems();
+		}*/
 		table.setContainerDataSource(hc);
 		if(!initEffectue){
 			//System.out.println("set visible colonnes for init");
@@ -419,8 +448,24 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER_ON_REFRESH);
 		}
+		
+		//On déplie l'élément racine (quand la racine de la table n'est pas la totalité des composantes)
+		if(StringUtils.hasText(rootItemId)){
+			selectionnerLigne(rootItemId);
+			deplierNoeud(rootItemId, true);
+			table.setCollapsed(rootItemId, false);
+		}
 
 	}
+	private void renseignerItem(Item i, ObjetBase obj) {
+		i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+		i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
+		i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
+		i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
+		i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+
+	}
+
 	private void changerAnnee(String value) {
 		annee=value;
 		//System.out.println("changment annee : "+annee);
@@ -457,12 +502,13 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				//System.out.println("itemId : "+itemId);
 				//if(markedRows.contains((String)itemId)){
 				if(markedRows.contains(idFav)){	
-					btnfav.setIcon(FontAwesome.BOOKMARK);
-					btnfav.addStyleName(ValoTheme.BUTTON_PRIMARY);
+					btnfav.setIcon(FontAwesome.TRASH_O);
+					btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
+					btnfav.addStyleName("deletefavbutton");
 					btnfav.setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
 				}else{
-					btnfav.setIcon(FontAwesome.BOOKMARK_O);
-					btnfav.addStyleName(ValoTheme.BUTTON_PRIMARY);
+					btnfav.setIcon(FontAwesome.STAR_O);
+					btnfav.setStyleName(ValoTheme.BUTTON_PRIMARY);
 					btnfav.setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
 				}
 
@@ -482,8 +528,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//mise à jour de la liste des favoris de la vue
 							//markedRows.remove((String)itemId);
 							markedRows.remove(idFav);
-							btnfav.setIcon(FontAwesome.BOOKMARK_O);
-							event.getButton().setIcon(FontAwesome.BOOKMARK_O);
+							btnfav.setIcon(FontAwesome.STAR_O);
+							btnfav.setStyleName(ValoTheme.BUTTON_PRIMARY);
+							event.getButton().setIcon(FontAwesome.STAR_O);
 						}else{
 							//creation du favori
 							FavorisPK fpk = new FavorisPK();
@@ -497,8 +544,10 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//mise à jour de la liste des favoris de la vue
 							//markedRows.add((String)itemId);
 							markedRows.add(idFav);
-							btnfav.setIcon(FontAwesome.BOOKMARK);
-							event.getButton().setIcon(FontAwesome.BOOKMARK);
+							btnfav.setIcon(FontAwesome.TRASH_O);
+							btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
+							btnfav.addStyleName("deletefavbutton");
+							event.getButton().setIcon(FontAwesome.TRASH_O);
 						}
 						table.markAsDirtyRecursive();
 						//btonFavori.markAsDirty();
@@ -632,11 +681,12 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
 							Item i = hc.addItem(obj.getId());
 							if(i!=null){
-								i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+								renseignerItem(i,obj);
+								/*i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
 								i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
 								i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
 								i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-								i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+								i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
 
 								table.setParent(obj.getId(), itemId);
 							}else{
@@ -663,21 +713,18 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							for(VersionEtape vet : lvet){
 
 								ObjetBase obj = new ObjetBase();
-								obj.setType(Utils.VET);
-								obj.setId(Utils.VET+":"+vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet()+"_"+itemId);
-								obj.setTrueObjectId(vet.getId().getCod_etp()+"/"+vet.getId().getCod_vrs_vet());
-								obj.setLibelle(vet.getLib_web_vet());
-								obj.setDeplie("false");
+								rechercheArborescenteController.renseigneObjFromVet(obj,vet, itemId);
 								lobj.add(obj);
 
 								//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
 								Item i = hc.addItem(obj.getId());
 								if(i!=null){
-									i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+									renseignerItem(i,obj);
+									/*i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
 									i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
 									i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
 									i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-									i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+									i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
 
 									table.setParent(obj.getId(), itemId);
 								}else{
@@ -714,21 +761,18 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								for(ElementPedagogique elp : lelp){
 
 									ObjetBase obj = new ObjetBase();
-									obj.setType(Utils.ELP);
-									obj.setId(Utils.ELP+":"+elp.getCod_elp()+"_"+itemId);
-									obj.setTrueObjectId(elp.getCod_elp());
-									obj.setLibelle(elp.getLib_elp());
-									obj.setDeplie("false");
+									rechercheArborescenteController.renseigneObjFromElp(obj, elp, itemId);
 									lobj.add(obj);
 
 									//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
 									Item i = hc.addItem(obj.getId());
 									if(i!=null){
-										i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
+										renseignerItem(i,obj);
+										/*i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
 										i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
 										i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
 										i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-										i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());
+										i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
 
 										table.setParent(obj.getId(), itemId);
 									}else{
@@ -753,4 +797,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 		}
 	}
+
+
 }
