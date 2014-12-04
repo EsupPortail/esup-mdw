@@ -74,15 +74,22 @@ public class Inscrit {
 	/**
 	 * le code étape où l'étudiant est incrit.
 	 */
+	@Column(name="cod_etp")
 	private String cod_etp;
 	/**
 	 * la version de l'étape.
 	 */
+	@Column(name="cod_vrs_vet")
 	private String cod_vrs_vet;
 	/**
-	 * le libell� de l'étape.
+	 * le libellé de l'étape.
 	 */
+	@Column(name="lib_etp")
 	private String lib_etp;
+	/**
+	 * code_etp + / + vers_vet
+	 */
+	private String id_etp;
 	/**
 	 * l'e-mail.
 	 */

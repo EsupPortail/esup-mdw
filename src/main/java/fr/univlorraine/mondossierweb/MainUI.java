@@ -48,8 +48,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
@@ -59,6 +62,7 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
+import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
@@ -168,6 +172,11 @@ public class MainUI extends UI {
 	@Getter
 	private Etape etapeListeInscrits;
 
+	//l'elp correspondant à la liste des inscrits si c'est une liste d'inscrits à un elp
+	@Setter
+	@Getter
+	private ElementPedagogique elpListeInscrits;
+
 	//la liste des années disponible pour la liste des inscrits en cours.
 	@Setter
 	@Getter
@@ -177,6 +186,26 @@ public class MainUI extends UI {
 	@Setter
 	@Getter
 	private String anneeInscrits;
+
+	//la liste des étapes affichées dans la liste des inscrits quand on consulte les inscrits à un ELP
+	@Setter
+	@Getter
+	private List<VersionEtape> listeEtapesInscrits;
+
+	//l'identifiant de l'étape sélectionnée dans la liste des inscrits quand on consulte les inscrits à un ELP
+	@Setter
+	@Getter
+	private String etapeInscrits;
+
+	//la liste des groupes affichés dans la liste des inscrits quand on consulte les inscrits à un ELP
+	@Setter
+	@Getter
+	private List<ElpDeCollection> listeGroupesInscrits;
+
+	//l'identifiant du groupe sélectionné dans la liste des inscrits quand on consulte les inscrits à un ELP
+	@Setter
+	@Getter
+	private String groupeInscrits;
 
 
 	/* Composants */
@@ -197,8 +226,8 @@ public class MainUI extends UI {
 	/** Gestionnaire de vues étudiant*/
 	@Getter
 	private DiscoveryNavigator navigator = new DiscoveryNavigator(this, contentLayout);
-	
-	
+
+
 
 	/** Gestionnaire de vues */
 	/*@Getter
@@ -657,7 +686,7 @@ public class MainUI extends UI {
 
 		tabSheetEnseignant.setSelectedTab(numtab);
 	}
-	
+
 	public void navigateToFavoris() {
 		System.out.println("viewEnseignantTab "+viewEnseignantTab);
 		System.out.println("favorisView "+favorisView);
@@ -665,7 +694,7 @@ public class MainUI extends UI {
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		tabSheetEnseignant.setSelectedTab(numtab);
 	}
-	
+
 	public void navigateToRechercheRapide() {
 		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
