@@ -2,6 +2,22 @@
 	color: #ff0000;
 }
 
+.valo-ul .v-slot-btn-reset {
+border-right: 1px solid #c5c5c5;
+border-left: 0px solid #c5c5c5;
+border-top: 1px solid #c5c5c5;
+border-bottom: 1px solid #c5c5c5;
+height: 35px !important;
+}
+
+.valo-ul .textfield-resetable {
+border-radius: 0px; 
+border-right: 0px;
+border-left: 1px solid #c5c5c5;
+border-top: 1px solid #c5c5c5;
+border-bottom: 1px solid #c5c5c5;
+}
+
 
 .v-slot-googlepopupview {
 	position: absolute;

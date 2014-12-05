@@ -41,6 +41,8 @@ public class Utils {
 	
 	public static final String LIBELLE_WS_INSCRIPTION_PAYEE ="Paiement effectué";
 	
+	public static final String SEPARATEUR_CODE_GROUPE = ";";
+	
 	
 	/** formatage d'une date pour ne garder que jour, mois , annee*/
 	public static String formatDateToString(Date d){

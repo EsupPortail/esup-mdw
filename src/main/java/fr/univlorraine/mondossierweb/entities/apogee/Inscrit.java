@@ -98,6 +98,10 @@ public class Inscrit {
 	 * l'url  de la photo.
 	 */
 	private String urlphoto;
+	/**
+	 * la liste des codes des gourpes auxquels appartient l'étudiant séparés par des ;
+	 */
+	private String codes_groupes;
 	
 	/**
 	 * @see java.lang.Object#toString()

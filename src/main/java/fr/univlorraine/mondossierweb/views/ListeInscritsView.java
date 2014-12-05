@@ -1,6 +1,7 @@
 package fr.univlorraine.mondossierweb.views;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
@@ -61,6 +63,8 @@ import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
+import fr.univlorraine.mondossierweb.views.windows.DetailGroupesWindow;
 
 /**
  * Recherche arborescente
@@ -77,9 +81,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	public static final String[] INS_FIELDS_TO_DISPLAY = {"cod_etu","prenom","nom","date_nai_ind","email","iae","etape","notes1","notes2"};
 
 	public static final String TOUTES_LES_ETAPES_LABEL = "toutes";
-	
+
 	public static final String TOUS_LES_GROUPES_LABEL = "tous";
-	
+
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
@@ -122,6 +126,17 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private NativeSelect listeGroupes;
 
+	//liste contenant tous les codind à afficher (apres application du filtre)
+	private List<String> listecodind;
+
+	private VerticalLayout infoLayout;
+
+	private Label infoNbInscrit;
+	
+	private String libelleObj;
+	
+	private Panel panelFormInscrits;
+
 
 	/**
 	 * Initialise la vue
@@ -152,6 +167,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	public void initListe() {
 		removeAllComponents();
+		
+		listeEtapes = null;
+		listeGroupes = null;
 
 		/* Style */
 		setMargin(true);
@@ -160,12 +178,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 		code = MainUI.getCurrent().getCodeObjListInscrits();
 		typeFavori = MainUI.getCurrent().getTypeObjListInscrits();
-		String libelle = "";
+		libelleObj = "";
 		if(typeFavori.equals(Utils.VET) && MainUI.getCurrent().getEtapeListeInscrits()!=null){
-			libelle= MainUI.getCurrent().getEtapeListeInscrits().getLibelle();
+			libelleObj= MainUI.getCurrent().getEtapeListeInscrits().getLibelle();
 		}
 		if(typeFavori.equals(Utils.ELP) && MainUI.getCurrent().getElpListeInscrits()!=null){
-			libelle = MainUI.getCurrent().getElpListeInscrits().getLibelle();
+			libelleObj = MainUI.getCurrent().getElpListeInscrits().getLibelle();
 		}
 
 
@@ -179,7 +197,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			formInscritLayout.setSpacing(true);
 			formInscritLayout.setMargin(true);
 
-			Panel panelFormInscrits= new Panel(code+" "+libelle);
+			panelFormInscrits= new Panel(code+" "+libelleObj);
 
 			//Affichage d'une liste déroulante contenant la liste des années
 			List<String> lannees = MainUI.getCurrent().getListeAnneeInscrits();
@@ -210,7 +228,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							listeInscritsController.recupererLaListeDesInscrits(parameterMap, selectedValue);
 						}
 						if(typeFavori.equals(Utils.ELP)){
-							listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, selectedValue, ((listeEtapes!=null && listeEtapes.getValue()!=null)?(String) listeEtapes.getValue():null), ((listeGroupes!=null && listeGroupes.getValue()!=null)?(String) listeGroupes.getValue():null));
+							listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, selectedValue);
 						}
 						//update de l'affichage
 						initListe();
@@ -262,7 +280,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							//récupération de la nouvelle liste
 							//filtrer la liste par etape
 							//listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, ((listeAnnees!=null && listeAnnees.getValue()!=null)? (String) listeAnnees.getValue():null) ,selectedVet, ((listeGroupes!=null && listeGroupes.getValue()!=null) ? (String) listeGroupes.getValue():null));
-							filtrerEtape(vetSelectionnee);
+							String groupeSelectionne = ((listeGroupes!=null && listeGroupes.getValue()!=null)?(String)listeGroupes.getValue():null);
+							if(groupeSelectionne!=null && groupeSelectionne.equals(TOUS_LES_GROUPES_LABEL)){
+								groupeSelectionne=null;
+							}
+							filtrerInscrits(vetSelectionnee, groupeSelectionne);
 							//update de l'affichage
 							//initListe();
 
@@ -275,18 +297,18 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				List<ElpDeCollection> lgroupes = MainUI.getCurrent().getListeGroupesInscrits();
 				if(lgroupes != null && lgroupes.size()>0){
 					listeGroupes = new NativeSelect();
-					listeGroupes.setCaption(applicationContext.getMessage(NAME+".groupes", null, getLocale()));
+					//listeGroupes.setCaption(applicationContext.getMessage(NAME+".groupes", null, getLocale()));
 					listeGroupes.setNullSelectionAllowed(false);
 					listeGroupes.setRequired(false);
-					listeGroupes.setWidth("300px");
+					listeGroupes.setWidth("348px");
 					listeGroupes.addItem(TOUS_LES_GROUPES_LABEL);
 					listeGroupes.setItemCaption(TOUS_LES_GROUPES_LABEL,TOUS_LES_GROUPES_LABEL);
 					for(ElpDeCollection edc : lgroupes){
 						for(CollectionDeGroupes cdg : edc.getListeCollection()){
 							for(Groupe groupe : cdg.getListeGroupes()){
-								listeGroupes.addItem(groupe.getCodGroupe());
-								listeGroupes.setItemCaption(groupe.getCodGroupe(),groupe.getLibGroupe());
-								
+								listeGroupes.addItem(groupe.getCleGroupe());
+								listeGroupes.setItemCaption(groupe.getCleGroupe(),groupe.getLibGroupe());
+
 							}
 						}
 					}
@@ -295,7 +317,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}else{
 						listeGroupes.setValue(TOUS_LES_GROUPES_LABEL);
 					}
-					
+
+
 					//Gestion de l'événement sur le changement de groupe
 					listeGroupes.addValueChangeListener(new ValueChangeListener() {
 						@Override
@@ -312,12 +335,40 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							//récupération de la nouvelle liste
 							//filtrer la liste par etape
 							//listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, ((listeAnnees!=null && listeAnnees.getValue()!=null)? (String) listeAnnees.getValue():null) ,selectedVet, ((listeGroupes!=null && listeGroupes.getValue()!=null) ? (String) listeGroupes.getValue():null));
-							filtrerGroupe(grpSelectionnee);
+							String etapeSelectionnee = ((listeEtapes!=null && listeEtapes.getValue()!=null)?(String)listeEtapes.getValue():null);
+							if(etapeSelectionnee!=null && etapeSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
+								etapeSelectionnee=null;
+							}
+							filtrerInscrits(etapeSelectionnee,grpSelectionnee);
 							//update de l'affichage
 							//initListe();
 						}
 					});
-					formInscritLayout.addComponent(listeGroupes);
+					
+					HorizontalLayout gpLayout = new HorizontalLayout();
+					gpLayout.setCaption(applicationContext.getMessage(NAME+".groupes", null, getLocale()));
+					gpLayout.setMargin(false);
+					gpLayout.setSpacing(false);
+					gpLayout.addComponent(listeGroupes);
+					Button btnDetailGpe=new Button();
+					btnDetailGpe.setWidth("52px");
+					btnDetailGpe.setHeight("32px");
+					btnDetailGpe.setStyleName(ValoTheme.BUTTON_PRIMARY);
+					btnDetailGpe.setIcon(FontAwesome.SEARCH);
+					btnDetailGpe.setDescription(applicationContext.getMessage(NAME+".detail.groupes", null, getLocale()));
+					btnDetailGpe.addClickListener(e->{
+						String vet =null;
+						if(listeEtapes!=null && listeEtapes.getValue()!=null && !listeEtapes.getValue().equals(TOUTES_LES_ETAPES_LABEL)){
+							vet = listeEtapes.getItemCaption(listeEtapes.getValue());
+						}
+						DetailGroupesWindow dgw = new DetailGroupesWindow(lgroupes, panelFormInscrits.getCaption(), vet, (String)listeAnnees.getValue()); 
+						UI.getCurrent().addWindow(dgw);
+					});
+					gpLayout.addComponent(btnDetailGpe);
+					
+					formInscritLayout.addComponent(gpLayout);
+					
+					//formInscritLayout.addComponent(listeGroupes);
 				}
 			}
 			panelLayout.addComponent(formInscritLayout);
@@ -364,16 +415,19 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			//Récupération de la liste des inscrits
 			List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
+
+			refreshListeCodind(new BeanItemContainer<>(Inscrit.class, linscrits));
+
 			//Test si la liste contient des étudiants
-			if(linscrits!=null && linscrits.size()>0){
-				VerticalLayout infoLayout= new VerticalLayout();
+			if(linscrits!=null && linscrits.size()>0 && listecodind!=null && listecodind.size()>0){
+				infoLayout= new VerticalLayout();
 				infoLayout.setSizeFull();
 				//Layout avec le nb d'inscrit, le bouton trombinoscope et le bouton d'export
 				HorizontalLayout resumeLayout=new HorizontalLayout();
 				resumeLayout.setWidth("100%");
 				resumeLayout.setHeight("50px");
 				//Label affichant le nb d'inscrits
-				Label infoNbInscrit = new Label(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+linscrits.size());
+				infoNbInscrit = new Label(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+linscrits.size());
 				resumeLayout.addComponent(infoNbInscrit);
 				resumeLayout.setComponentAlignment(infoNbInscrit, Alignment.MIDDLE_LEFT);
 				//Bouton trombinoscope
@@ -424,7 +478,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 				//Table contenant la liste des inscrits
 				inscritstable = new Table(null, new BeanItemContainer<>(Inscrit.class, linscrits));
-				
+
 				inscritstable.setSizeFull();
 
 				inscritstable.setVisibleColumns(new String[0]);
@@ -460,61 +514,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				verticalLayoutForTrombi = new VerticalLayout();
 				verticalLayoutForTrombi.setSizeFull();
 				verticalLayoutForTrombi.addStyleName("v-scrollablepanel");
-				//GridLayout du trombinoscope
-				trombiLayout = new GridLayout();
-				trombiLayout.setColumns(5);
-				trombiLayout.setWidth("100%");
-				trombiLayout.setHeight(null);
-				trombiLayout.setSpacing(true);
+
 				//Création du trombinoscope
-				for(Inscrit inscrit : linscrits){
-					VerticalLayout photoLayout = new VerticalLayout();
-					photoLayout.setHeight("100%");
-					if(inscrit.getUrlphoto()!=null){
-						//Button fotoEtu=new Button();
-						Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));
-						fotoEtudiant.setWidth("120px");
-						fotoEtudiant.setHeight("153px");
-						fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
-						fotoEtudiant.addClickListener(e->{
-							rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
-						});
-
-						photoLayout.addComponent(fotoEtudiant);
-						//photoLayout.addComponent(fotoEtu);
-						photoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
-						photoLayout.setExpandRatio(fotoEtudiant, 1);
-
-					}
-					VerticalLayout nomCodeLayout = new VerticalLayout();
-					nomCodeLayout.setSizeFull();
-					nomCodeLayout.setSpacing(false);
-
-					Button btnNomEtudiant = new Button(inscrit.getPrenom()+" "+inscrit.getNom());
-					btnNomEtudiant.setSizeFull();
-					btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-					btnNomEtudiant.addStyleName("link"); 
-					btnNomEtudiant.addStyleName("v-link");
-					nomCodeLayout.addComponent(btnNomEtudiant);
-					btnNomEtudiant.addClickListener(e->{
-						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
-					});
-					nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
-					nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
-
-					Label codetuLabel = new Label(inscrit.getCod_etu());
-					codetuLabel.setSizeFull();
-					codetuLabel.setStyleName(ValoTheme.LABEL_TINY);
-					codetuLabel.addStyleName("label-centre");
-					nomCodeLayout.addComponent(codetuLabel);	
-					nomCodeLayout.setComponentAlignment(codetuLabel, Alignment.TOP_CENTER);
-
-					photoLayout.addComponent(nomCodeLayout);
-
-					trombiLayout.addComponent(photoLayout);
-					trombiLayout.setComponentAlignment(photoLayout, Alignment.MIDDLE_CENTER);
-				}
-
+				displayTrombinoscope();
 
 				verticalLayoutForTrombi.addComponent(trombiLayout);
 				verticalLayoutForTrombi.setSizeFull();
@@ -540,6 +542,76 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	}
 
+	private void displayTrombinoscope() {
+		List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
+
+		if(trombiLayout!=null){
+			trombiLayout.removeAllComponents();
+		}else{
+			trombiLayout = new GridLayout();
+			trombiLayout.setColumns(5);
+			trombiLayout.setWidth("100%");
+			trombiLayout.setHeight(null);
+			trombiLayout.setSpacing(true);
+		}
+
+
+		for(Inscrit inscrit : linscrits){
+			if(listecodind.contains(inscrit.getCod_ind())){
+				VerticalLayout photoLayout = new VerticalLayout();
+				photoLayout.setId(inscrit.getCod_ind());
+				photoLayout.setHeight("100%");
+				if(inscrit.getUrlphoto()!=null){
+					//Button fotoEtu=new Button();
+					Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));
+					fotoEtudiant.setWidth("120px");
+					fotoEtudiant.setHeight("153px");
+					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
+					fotoEtudiant.addClickListener(e->{
+						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+					});
+
+					photoLayout.addComponent(fotoEtudiant);
+					//photoLayout.addComponent(fotoEtu);
+					photoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
+					photoLayout.setExpandRatio(fotoEtudiant, 1);
+
+				}
+				VerticalLayout nomCodeLayout = new VerticalLayout();
+				nomCodeLayout.setSizeFull();
+				nomCodeLayout.setSpacing(false);
+
+				Button btnNomEtudiant = new Button(inscrit.getPrenom()+" "+inscrit.getNom());
+				btnNomEtudiant.setSizeFull();
+				btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+				btnNomEtudiant.addStyleName("link"); 
+				btnNomEtudiant.addStyleName("v-link");
+				nomCodeLayout.addComponent(btnNomEtudiant);
+				btnNomEtudiant.addClickListener(e->{
+					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+				});
+				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
+				nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
+
+				Label codetuLabel = new Label(inscrit.getCod_etu());
+				codetuLabel.setSizeFull();
+				codetuLabel.setStyleName(ValoTheme.LABEL_TINY);
+				codetuLabel.addStyleName("label-centre");
+				nomCodeLayout.addComponent(codetuLabel);	
+				nomCodeLayout.setComponentAlignment(codetuLabel, Alignment.TOP_CENTER);
+
+				photoLayout.addComponent(nomCodeLayout);
+
+				trombiLayout.addComponent(photoLayout);
+				trombiLayout.setComponentAlignment(photoLayout, Alignment.MIDDLE_CENTER);
+			}
+		}
+
+
+
+
+
+	}
 	/**
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
@@ -690,33 +762,51 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		}
 	}
 
-	private void filtrerEtape(String id) {
+	private void filtrerInscrits(String idEtape, String idgroupe) {
+		System.out.println(idEtape+" "+idgroupe);
+		if(inscritstable!=null){
+			
+			BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
+			if(ic!=null){
+				ic.removeAllContainerFilters();
 
-		BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
-		if(ic!=null){
-			ic.removeAllContainerFilters();
+				if(StringUtils.hasText(idEtape)){
+					Filter filterStringToSearch =  new SimpleStringFilter("id_etp",idEtape, true, false);
+					//Test du filtre : 
+					//Filter filterStringToSearch =  new SimpleStringFilter("nom","AN", true, false);
+					ic.addContainerFilter(filterStringToSearch);
+				}
 
-			if(StringUtils.hasText(id)){
-				Filter filterStringToSearch =  new SimpleStringFilter("id_etp",id, true, false);
-				ic.addContainerFilter(filterStringToSearch);
+				if(StringUtils.hasText(idgroupe)){
+					Filter filterStringToSearch =  new SimpleStringFilter("codes_groupes",idgroupe, true, false);
+					ic.addContainerFilter(filterStringToSearch);
+				}
+
 			}
 
+			System.out.println("nb  item valides : "+ic.getItemIds().size());
+
+			//Maj de la liste contenant tous les codind à afficher apres application du filtre
+			refreshListeCodind(ic);
+
+			//maj trombinoscope
+			displayTrombinoscope();
+
+			//maj de l'affichage du nombre d'étudiant
+			infoNbInscrit.setValue(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+listecodind.size());
 		}
-
 	}
-	
-	private void filtrerGroupe(String id) {
 
-		BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
-		if(ic!=null){
-			ic.removeAllContainerFilters();
 
-			if(StringUtils.hasText(id)){
-				Filter filterStringToSearch =  new SimpleStringFilter("groupe",id, true, false);
-				ic.addContainerFilter(filterStringToSearch);
-			}
-
+	private void refreshListeCodind(BeanItemContainer<Inscrit> ic) {
+		if(listecodind!=null){
+			listecodind.clear();
+		}else{
+			listecodind = new LinkedList<String>();
 		}
-
+		for(Inscrit inscrit : ic.getItemIds()){
+			listecodind.add(inscrit.getCod_ind());
+		}
 	}
+
 }

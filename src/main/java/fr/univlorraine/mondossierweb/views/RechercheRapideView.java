@@ -113,6 +113,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private CheckBox casesAcocherElp;
 
 	private CheckBox casesAcocherEtudiant;
+	
+	private Button resetButton;
 
 	/**
 	 * Initialise la vue
@@ -166,6 +168,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		champRecherche.addTextChangeListener(new TextChangeListener() {
 			@Override
 			public void textChange(TextChangeEvent event) {
+				if(event.getText()!=null){
+					resetButton.setIcon(FontAwesome.TIMES);
+				}
 				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout);
 
 			}
@@ -231,6 +236,19 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		/*champRechercheLayout.addComponent(search);
 		champRechercheLayout.setComponentAlignment(search, Alignment.MIDDLE_CENTER);*/
 
+		//BOUTON RESET
+		champRecherche.addStyleName("textfield-resetable");
+		resetButton = new Button();
+		resetButton.setIcon(FontAwesome.TIMES);
+		resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+		resetButton.addStyleName("btn-reset");
+		resetButton.addClickListener(e->{
+			champRecherche.setValue("");
+			resetButton.setIcon(FontAwesome.TIMES);
+		});
+		champRechercheLayout.addComponent(resetButton);
+		champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
+		
 		//BOUTON DE RECHERCHE
 		btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
 		btnRecherche.setIcon(FontAwesome.SEARCH);

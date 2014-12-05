@@ -109,10 +109,10 @@ public class ListeInscritsController {
 
 			listeInscrits = (List<Inscrit>) multipleApogeeService.getInscritsEtapeJuinSep(e);
 
-			finaliserListeInscrits(listeInscrits);
+			finaliserListeInscrits(listeInscrits, null,annee);
 
 		} else {
-			recupererLaListeDesInscritsELP(parameterMap, annee,null, null);
+			recupererLaListeDesInscritsELP(parameterMap, annee);
 
 		}
 
@@ -127,7 +127,8 @@ public class ListeInscritsController {
 	 * @param etape
 	 * @param groupe
 	 */
-	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee,String etape, String groupe) {
+	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee) {
+
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
 
@@ -157,41 +158,38 @@ public class ListeInscritsController {
 		//Récupération de tous les inscrit à l'ELP quelque soit l'étape d'appartenance choisie dans la vue ListeInscritView
 		listeInscrits = (List<Inscrit>) elementPedagogiqueService.getInscritsFromElp(code, annee);
 
-		if(etape==null){
-			List<VersionEtape> letape = null;
-			//test si on a des inscrits
-			if(listeInscrits!=null && listeInscrits.size()>0){
-				letape = new LinkedList<VersionEtape>();
-				//Pour chaque inscrit
-				for(Inscrit i : listeInscrits){
-					//Test si l'étape est renseignée pour l'inscrit
-					if(StringUtils.hasText(i.getCod_etp()) && StringUtils.hasText(i.getCod_vrs_vet()) && StringUtils.hasText(i.getLib_etp())){
-						VersionEtape vet = new VersionEtape();
-						VersionEtapePK vetpk = new VersionEtapePK();
-						vetpk.setCod_etp(i.getCod_etp());
-						vetpk.setCod_vrs_vet(i.getCod_vrs_vet());
-						vet.setId(vetpk);
-						vet.setLib_web_vet(i.getLib_etp());
-						if(!letape.contains(vet)){
-							letape.add(vet);
-						}
+
+		List<VersionEtape> letape = null;
+		//test si on a des inscrits
+		if(listeInscrits!=null && listeInscrits.size()>0){
+			letape = new LinkedList<VersionEtape>();
+			//Pour chaque inscrit
+			for(Inscrit i : listeInscrits){
+				//Test si l'étape est renseignée pour l'inscrit
+				if(StringUtils.hasText(i.getCod_etp()) && StringUtils.hasText(i.getCod_vrs_vet()) && StringUtils.hasText(i.getLib_etp())){
+					VersionEtape vet = new VersionEtape();
+					VersionEtapePK vetpk = new VersionEtapePK();
+					vetpk.setCod_etp(i.getCod_etp());
+					vetpk.setCod_vrs_vet(i.getCod_vrs_vet());
+					vet.setId(vetpk);
+					vet.setLib_web_vet(i.getLib_etp());
+					if(!letape.contains(vet)){
+						letape.add(vet);
 					}
 				}
 			}
-			MainUI.getCurrent().setListeEtapesInscrits(letape);
-			MainUI.getCurrent().setEtapeInscrits(null);
-		}else{
-			System.out.println("etape : "+etape);
-			MainUI.getCurrent().setEtapeInscrits(etape);
 		}
+		MainUI.getCurrent().setListeEtapesInscrits(letape);
+		MainUI.getCurrent().setEtapeInscrits(null);
+
 
 		//Récupération des groupes
 		List<ElpDeCollection> listeGroupes = recupererGroupes(annee, code);
 		if(listeGroupes!=null && listeGroupes.size()>0){
 			MainUI.getCurrent().setListeGroupesInscrits(listeGroupes);
 		}
-		
-		finaliserListeInscrits(listeInscrits);
+
+		finaliserListeInscrits(listeInscrits,listeGroupes,annee);
 
 	}
 
@@ -208,11 +206,13 @@ public class ListeInscritsController {
 
 		if(annee==null){
 			MainUI.getCurrent().setAnneeInscrits(null);
-			MainUI.getCurrent().setEtapeListeInscrits(null);
 			MainUI.getCurrent().setListeAnneeInscrits(null);
-			MainUI.getCurrent().setListeEtapesInscrits(null);
-			MainUI.getCurrent().setListeGroupesInscrits(null);
 		}
+		MainUI.getCurrent().setEtapeListeInscrits(null);
+		MainUI.getCurrent().setEtapeInscrits(null);
+		MainUI.getCurrent().setGroupeInscrits(null);
+		MainUI.getCurrent().setListeEtapesInscrits(null);
+		MainUI.getCurrent().setListeGroupesInscrits(null);
 
 		MainUI.getCurrent().setCodeObjListInscrits(code);
 		MainUI.getCurrent().setTypeObjListInscrits(type);
@@ -234,7 +234,7 @@ public class ListeInscritsController {
 	 * Finalise une liste d'inscrits pour affichage dans la vue listeInscritsView
 	 * @param listeInscrits
 	 */
-	private void finaliserListeInscrits(List<Inscrit> listeInscrits) {
+	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee) {
 
 		if(listeInscrits!=null && listeInscrits.size()>0){
 			//setLoginInscrits(listeInscrits);
@@ -252,11 +252,35 @@ public class ListeInscritsController {
 		}*/
 
 
+		//On parcourt les groupes, on recup les inscrit puis 
+		//pour chaque inscrit on ajoute les id des groupes auxquels il appartient dans un attribut ";codgpe;"
+		if(listeGroupes!=null && listeGroupes.size()>0){
+			for(ElpDeCollection edc : listeGroupes){
+				for(CollectionDeGroupes cdg : edc.getListeCollection()){
+					for(Groupe groupe : cdg.getListeGroupes()){
+
+						List<String> lcodindinscrits = elementPedagogiqueService.getCodIndInscritsFromGroupe(groupe.getCleGroupe(), annee);
+
+						for (Inscrit i : listeInscrits) {
+							if(lcodindinscrits.contains(i.getCod_ind())){
+								//ajout codgroupe dans attribut de l'inscrit";codgpe;"
+								if(!StringUtils.hasText(i.getCodes_groupes())){
+									i.setCodes_groupes(Utils.SEPARATEUR_CODE_GROUPE+groupe.getCodGroupe()+Utils.SEPARATEUR_CODE_GROUPE);
+								}else{
+									i.setCodes_groupes(i.getCodes_groupes()+Utils.SEPARATEUR_CODE_GROUPE+groupe.getCodGroupe()+Utils.SEPARATEUR_CODE_GROUPE);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		MainUI.getCurrent().setListeInscrits(listeInscrits);
 
 	}
 
-	
+
 	/**
 	 * renseigne les id etape.
 	 * @param listeInscrits

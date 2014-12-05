@@ -82,6 +82,19 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 	}
 
 
+	@Override
+	public List<String> getCodIndInscritsFromGroupe(String code, String annee) {
+		@SuppressWarnings("unchecked")
+		List<String> lCodindInscrits = (List<String>)entityManagerApogee.createNativeQuery("select distinct ind.cod_ind "+
+    "from IND_AFFECTE_GPE ind, GROUPE g "+
+    "where ind.COD_GPE = g.cod_gpe  "+
+    "and g.COD_GPE = "+code+ " "+
+    "and ind.COD_ANU= "+annee+ " ").getResultList();
+    		
+		return lCodindInscrits;
+	}
+
+
 
 
 }

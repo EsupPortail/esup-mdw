@@ -13,5 +13,7 @@ public interface ElementPedagogiqueService {
 
 	public List<Inscrit> getInscritsFromElp(String code, String annee);
 	
-
+	public List<String> getCodIndInscritsFromGroupe(String code, String annee);
+	
+	
 }
