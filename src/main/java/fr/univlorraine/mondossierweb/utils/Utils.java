@@ -45,6 +45,8 @@ public class Utils {
 	
 	public static final String SHOW_MESSAGE_NOTES_PREFERENCE= "SHOW_MESSAGE_NOTES";
 	
+	public static final String SHOW_MESSAGE_INTRO_PREFERENCE = "SHOW_MESSAGE_INTRO";
+	
 	/** formatage d'une date pour ne garder que jour, mois , annee*/
 	public static String formatDateToString(Date d){
 		if(d!=null){

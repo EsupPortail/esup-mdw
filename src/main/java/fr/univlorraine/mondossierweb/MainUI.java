@@ -19,6 +19,7 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.DiscoveryNavigator;
 
@@ -390,18 +391,56 @@ public class MainUI extends UI {
 					System.out.println("to fav view");
 					navigator.navigateTo(FavorisView.NAME);
 					navigateToFavoris();
+					
+					afficherMessageIntroEnseignants();
+					
 				}else{
 					System.out.println("to rech view");
 					navigator.navigateTo(RechercheRapideView.NAME);
 					navigateToRechercheRapide();
+					afficherMessageIntroEnseignants();
 				}
 			}else{
 				if(userController.isEtudiant()){
 					navigator.navigateTo(EtatCivilView.NAME);
+					afficherMessageIntroEtudiants();
 				}else{
 					navigator.navigateTo(ErreurView.NAME);
 				}
 			}
+		}
+	}
+
+	private void afficherMessageIntroEtudiants() {
+		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()));
+		
+	}
+
+	private void afficherMessageIntroEnseignants() {
+		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.enseignant", null, getLocale()));
+		
+	}
+	
+	private void afficherMessageIntro(String text){
+		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE);
+		boolean afficherMessage = true;
+		if(StringUtils.hasText(val)){
+			afficherMessage = Boolean.valueOf(val);
+		}
+
+		if(afficherMessage){
+			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
+			hbw.addCloseListener(g->{
+				boolean choix = hbw.getCheckBox().getValue();
+				//Test si l'utilisateur a coché la case pour ne plus afficher le message
+				if(choix){
+					//mettre a jour dans la base de données
+					System.out.println("ne plus afficher le message d'introduction pour "+userController.getCurrentUserName());
+					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE, "false");
+				}
+			});
+			UI.getCurrent().addWindow(hbw);
 		}
 	}
 
@@ -626,7 +665,7 @@ public class MainUI extends UI {
 			/* Assistance */
 			Button helpBtn = new Button("Assistance", FontAwesome.SUPPORT);
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpBasicWindow(applicationContext.getMessage("helpWindow.text", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale())));});
+			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpBasicWindow(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale())));});
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */

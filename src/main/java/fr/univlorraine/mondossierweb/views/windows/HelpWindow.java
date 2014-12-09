@@ -86,9 +86,6 @@ public class HelpWindow extends Window {
 		setCaption(titre);
 
 		/* Texte */
-		if (message == null) {
-			message = applicationContext.getMessage("helpWindow.text", null, getLocale());
-		}
 		Label textLabel = new Label(message,ContentMode.HTML);
 		layout.addComponent(textLabel);
 
