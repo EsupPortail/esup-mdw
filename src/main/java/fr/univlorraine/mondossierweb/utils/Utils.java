@@ -43,6 +43,7 @@ public class Utils {
 	
 	public static final String SEPARATEUR_CODE_GROUPE = ";";
 	
+	public static final String SHOW_MESSAGE_NOTES_PREFERENCE= "SHOW_MESSAGE_NOTES";
 	
 	/** formatage d'une date pour ne garder que jour, mois , annee*/
 	public static String formatDateToString(Date d){

@@ -122,6 +122,7 @@ color: inherit;
 	overflow-y: auto;
 }
 */
+
 .v-window {
 @include transition(none);
 }

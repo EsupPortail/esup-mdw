@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -41,7 +42,11 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateur;
+import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateurPK;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
+import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
+import fr.univlorraine.mondossierweb.repositories.PreferencesUtilisateurRepository;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
@@ -71,6 +76,8 @@ public class UserController {
 	/** {@link UtilisateurServiceImpl} */
 	@Resource
 	private UtilisateurService utilisateurService;
+	@Resource
+	private PreferencesUtilisateurRepository preferencesUtilisateurRepository;
 
 
 
@@ -311,6 +318,38 @@ public class UserController {
 			LOG.error("Probleme à la recuperation de l'utilisateur : "+login+" dans le LDAP",e);
 			return null;
 		}
+	}
+
+	/**
+	 * @param preference
+	 * @return la valeur pour l'utilisateur de la préférence en parametre
+	 */
+	public String getPreference(String preference) {
+	
+		PreferencesUtilisateur pu = preferencesUtilisateurRepository.findOnePrefFromLoginAndPrefid(getCurrentUserName(), preference);
+		
+		if(pu!=null && pu.getId()!=null && pu.getValeur()!=null){
+			return pu.getValeur();
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Met à jour la valeur pour l'utilisateur de la préférence en parametre avec la valeur en parametre
+	 * @param showMessageNotesPreference
+	 * @param valeur
+	 */
+	@Procedure
+	public void updatePreference(String showMessageNotesPreference, String valeur) {
+		PreferencesUtilisateur pu = new PreferencesUtilisateur();
+		PreferencesUtilisateurPK pupk = new PreferencesUtilisateurPK();
+		pupk.setLogin(getCurrentUserName());
+		pupk.setPrefid(showMessageNotesPreference);
+		pu.setId(pupk);
+		pu.setValeur(valeur);
+		preferencesUtilisateurRepository.save(pu);
+		
 	}
 
 }

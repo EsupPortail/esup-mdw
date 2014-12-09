@@ -3,6 +3,8 @@ package fr.univlorraine.mondossierweb.views;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
@@ -45,8 +47,10 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.MyColumnGenerator;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
+import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 
 /**
  * Page de gestion des structures
@@ -422,6 +426,29 @@ public class NotesView extends VerticalLayout implements View {
 				}
 			});
 			UI.getCurrent().addWindow(dnw);
+			
+			
+			//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE);
+			boolean afficherMessage = true;
+			if(StringUtils.hasText(val)){
+				afficherMessage = Boolean.valueOf(val);
+			}
+
+			if(afficherMessage){
+				String message =applicationContext.getMessage(NAME+".window.message.info", null, getLocale());
+				HelpWindow hbw = new HelpWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
+				hbw.addCloseListener(g->{
+					boolean choix = hbw.getCheckBox().getValue();
+					//Test si l'utilisateur a coché la case pour ne plus afficher le message
+					if(choix){
+						//mettre a jour dans la base de données
+						System.out.println("ne plus afficher le message des notes pour "+userController.getCurrentUserName());
+						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE, "false");
+					}
+				});
+				UI.getCurrent().addWindow(hbw);
+			}
 		});
 	}
 

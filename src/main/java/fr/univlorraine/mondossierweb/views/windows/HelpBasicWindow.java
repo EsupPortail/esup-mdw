@@ -2,8 +2,6 @@ package fr.univlorraine.mondossierweb.views.windows;
 
 import javax.annotation.Resource;
 
-import lombok.Getter;
-
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
 
@@ -12,7 +10,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -20,11 +17,16 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
- * Fenêtre d'aide
+ * Fenêtre d'aide basique
  */
 @Configurable(preConstruction=true)
-public class HelpWindow extends Window {
-	private static final long serialVersionUID = -1792808588462463042L;
+public class HelpBasicWindow extends Window {
+	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2974754443259576179L;
 
 	/* Injections */
 	@Resource
@@ -32,9 +34,6 @@ public class HelpWindow extends Window {
 
 	/* Composants */
 	private Button btnFermer = new Button();
-	
-	@Getter
-	private CheckBox checkBox=new CheckBox();
 
 	
 
@@ -49,7 +48,7 @@ public class HelpWindow extends Window {
 	/**
 	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
 	 */
-	public HelpWindow() {
+	public HelpBasicWindow() {
 		this(null, null);
 	}
 
@@ -57,7 +56,7 @@ public class HelpWindow extends Window {
 	 * Crée une fenêtre de confirmation avec un titre par défaut
 	 * @param message
 	 */
-	public HelpWindow(String message) {
+	public HelpBasicWindow(String message) {
 		this(message, null);
 	}
 
@@ -66,7 +65,7 @@ public class HelpWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public HelpWindow(String message, String titre) {
+	public HelpBasicWindow(String message, String titre) {
 		/* Style */
 		setWidth(900, Unit.PIXELS);
 		setModal(true);
@@ -80,15 +79,9 @@ public class HelpWindow extends Window {
 		setContent(layout);
 
 		/* Titre */
-		if (titre == null) {
-			titre = applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale());
-		}
 		setCaption(titre);
 
 		/* Texte */
-		if (message == null) {
-			message = applicationContext.getMessage("helpWindow.text", null, getLocale());
-		}
 		Label textLabel = new Label(message,ContentMode.HTML);
 		layout.addComponent(textLabel);
 
@@ -98,16 +91,11 @@ public class HelpWindow extends Window {
 		buttonsLayout.setSpacing(true);
 		layout.addComponent(buttonsLayout);
 
-		checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.message", null, getLocale()));
-		buttonsLayout.addComponent(checkBox);
-		buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
-		
 		btnFermer.setCaption(applicationContext.getMessage("helpWindow.btnFermer", null, getLocale()));
 		btnFermer.setIcon(FontAwesome.TIMES);
 		btnFermer.addClickListener(e -> close());
 		buttonsLayout.addComponent(btnFermer);
 		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);
-		buttonsLayout.setExpandRatio(checkBox, 1);
 
 
 		/* Centre la fenêtre */

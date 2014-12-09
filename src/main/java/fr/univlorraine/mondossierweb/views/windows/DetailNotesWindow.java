@@ -261,6 +261,7 @@ public class DetailNotesWindow extends Window {
 		/* Centre la fenêtre */
 		center();
 
+		
 
 	}
 
@@ -468,8 +469,8 @@ public class DetailNotesWindow extends Window {
 			return libLabel;
 		}
 	}
-	
-	
+
+
 	/** Formats the position in a column containing Date objects. */
 	class RangColumnGenerator implements Table.ColumnGenerator {
 		/**
@@ -493,7 +494,7 @@ public class DetailNotesWindow extends Window {
 			return libLabel;
 		}
 	}
-	
+
 	/** Formats the position in a column containing Date objects. */
 	class ECTSColumnGenerator implements Table.ColumnGenerator {
 		/**

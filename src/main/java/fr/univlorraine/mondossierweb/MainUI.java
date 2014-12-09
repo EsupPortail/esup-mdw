@@ -79,6 +79,7 @@ import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
+import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 
 /**
  * Application Vaadin
@@ -625,7 +626,7 @@ public class MainUI extends UI {
 			/* Assistance */
 			Button helpBtn = new Button("Assistance", FontAwesome.SUPPORT);
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpWindow(null,null));});
+			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpBasicWindow(applicationContext.getMessage("helpWindow.text", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale())));});
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */
