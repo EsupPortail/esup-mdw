@@ -2,7 +2,9 @@ package fr.univlorraine.mondossierweb.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,15 +44,20 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.entities.Administrateurs;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateur;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateurPK;
+import fr.univlorraine.mondossierweb.entities.UtilisateurSwap;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
+import fr.univlorraine.mondossierweb.repositories.AdministrateursRepository;
 import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
 import fr.univlorraine.mondossierweb.repositories.PreferencesUtilisateurRepository;
+import fr.univlorraine.mondossierweb.repositories.UtilisateurSwapRepository;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Gestion de l'utilisateur
@@ -78,6 +85,10 @@ public class UserController {
 	private UtilisateurService utilisateurService;
 	@Resource
 	private PreferencesUtilisateurRepository preferencesUtilisateurRepository;
+	@Resource
+	private AdministrateursRepository administrateursRepository;
+	@Resource
+	private UtilisateurSwapRepository utilisateurSwapRepository;
 
 
 
@@ -142,7 +153,20 @@ public class UserController {
 	 * @return username de l'utilisateur courant
 	 */
 	public String getCurrentUserName() {
-		return getCurrentAuthentication().getName();
+		String username= getCurrentAuthentication().getName();
+		UtilisateurSwap us= utilisateurSwapRepository.findOne(username);
+		if(us!=null && us.getLoginCible()!=null){
+			//test si la date de création du swap utilisateur n'est pas plus vieille que 1 heure
+			Calendar dateButoire = Calendar.getInstance(); 
+			dateButoire.setTime(us.getDatCre());
+			dateButoire.add(Calendar.HOUR_OF_DAY, Utils.NB_HEURE_DUREE_SWAP_USER);
+			Date d = new Date();
+			if(d.compareTo(dateButoire.getTime())<0){
+				//swap autorise
+				return us.getLoginCible();
+			}
+		}
+		return username;
 	}
 
 	/**
@@ -186,6 +210,10 @@ public class UserController {
 	}
 
 	public boolean isEnseignant() {
+		//Un admin a les droits d'un enseignant
+		if(isAdmin()){
+			return true;
+		}
 		if(MainUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
@@ -211,6 +239,7 @@ public class UserController {
 	public void determineTypeUser() {
 
 		MainUI.getCurrent().setTypeUser(null);
+		
 		List<String> type = typeLdap(getCurrentUserName());
 
 		if (StringUtils.hasText(PropertyUtils.getTypeEtudiantLdap()) && type!=null &&
@@ -350,6 +379,15 @@ public class UserController {
 		pu.setValeur(valeur);
 		preferencesUtilisateurRepository.save(pu);
 		
+	}
+
+	public boolean isAdmin() {
+		String login = getCurrentUserName();
+		Administrateurs adm = administrateursRepository.findOne(login);
+		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -120,7 +120,9 @@ public class MainUI extends UI {
 
 
 
-
+	@Resource
+	private AdminView adminView;
+	
 	@Resource
 	private RechercheRapideView rechercheRapideView;
 
@@ -208,6 +210,12 @@ public class MainUI extends UI {
 	@Setter
 	@Getter
 	private String groupeInscrits;
+	
+	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
+	private int rangTabDossierEtudiant;
+	
+	//rang de l'onglet contenant la recherche dans le conteneur principal
+	private int rangTabRecherche;
 
 
 	/* Composants */
@@ -305,10 +313,19 @@ public class MainUI extends UI {
 			if(userController.isEnseignant()){
 				//On consultera les notes en vue enseignant
 				vueEnseignantNotesEtResultats=true;
+				
 				/* Construit le menu horizontal pour les enseignants */
 				tabSheetGlobal.setSizeFull();
 				tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
+				//ajout de l'onglet Admin
+				rangTabRecherche=0;
+				rangTabDossierEtudiant = 1;
+				/*if(userController.isAdmin()){
+					tabSheetGlobal.addTab(adminView, "Admin", FontAwesome.WRENCH);
+					rangTabRecherche = 1;
+					rangTabDossierEtudiant = 2;
+				}*/
 				//ajout de l'onglet recherche
 				layoutOngletRecherche = new VerticalLayout();
 				ajoutOngletRecherche();
@@ -494,6 +511,8 @@ public class MainUI extends UI {
 		layoutOngletRecherche.setExpandRatio(tabSheetEnseignant, 1);
 
 	}
+	
+
 
 
 	private void addTabListeInscrits() {
@@ -509,8 +528,8 @@ public class MainUI extends UI {
 
 	private void addTabDossierEtudiant() {
 		tabSheetGlobal.addTab(layoutDossierEtudiant, "Dossier", FontAwesome.USER);
-		tabSheetGlobal.getTab(1).setVisible(false);
-		tabSheetGlobal.getTab(1).setClosable(true);
+		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(false);
+		tabSheetGlobal.getTab(rangTabDossierEtudiant).setClosable(true);
 
 	}
 
@@ -733,12 +752,14 @@ public class MainUI extends UI {
 		int numtab = viewEnseignantTab.get(favorisView.NAME);
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		tabSheetEnseignant.setSelectedTab(numtab);
+		tabSheetGlobal.setSelectedTab(rangTabRecherche);
 	}
 
 	public void navigateToRechercheRapide() {
 		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		tabSheetEnseignant.setSelectedTab(numtab);
+		tabSheetGlobal.setSelectedTab(rangTabRecherche);
 	}
 
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
@@ -746,16 +767,16 @@ public class MainUI extends UI {
 			//listeInscritsView.initFromParameters(parameterMap);
 		}
 		//Si l'onglet a été closed
-		if(tabSheetGlobal.getTab(1)==null){
+		if(tabSheetGlobal.getTab(rangTabDossierEtudiant)==null){
 			addTabDossierEtudiant();
 		}
 		if(mainMenu!=null){
 			mainMenu.removeAllComponents();
 		}
 		buildMainMenuEtudiant();
-		tabSheetGlobal.getTab(1).setVisible(true);
+		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(true);
 
-		tabSheetGlobal.setSelectedTab(1);
+		tabSheetGlobal.setSelectedTab(rangTabDossierEtudiant);
 
 		navigator.navigateTo(EtatCivilView.NAME);
 	}

@@ -46,10 +46,10 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
  * <br/> Sessions / Verrous
  * @author Matthieu MANGINOT
  * @author Adrien Colson
+ * @author Charlie Dubois
  */
 @Component @Scope("prototype")
 @VaadinView(AdminView.NAME)
-@PreAuthorize("hasRole('ROLE_' + @environment.getRequiredProperty('role.admin'))")
 public class AdminView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -5357574566017551872L;
 
@@ -139,21 +139,21 @@ public class AdminView extends VerticalLayout implements View {
 		clientTreeTableButtonsLayout.addComponent(clientTreeTableTitle);
 		clientTreeTableButtonsLayout.setComponentAlignment(clientTreeTableTitle, Alignment.MIDDLE_LEFT);
 
-		btnSendMessage = new Button(applicationContext.getMessage("admin.sendMessage.title", null, getLocale()), FontAwesome.PENCIL);
+		/*btnSendMessage = new Button(applicationContext.getMessage("admin.sendMessage.title", null, getLocale()), FontAwesome.PENCIL);
 		btnSendMessage.setEnabled(UI.getCurrent().getPushConfiguration().getPushMode().isEnabled());
 		btnSendMessage.addClickListener(e -> uiController.sendMessage());
 		clientTreeTableButtonsLayout.addComponent(btnSendMessage);
-		clientTreeTableButtonsLayout.setComponentAlignment(btnSendMessage, Alignment.MIDDLE_CENTER);
+		clientTreeTableButtonsLayout.setComponentAlignment(btnSendMessage, Alignment.MIDDLE_CENTER);*/
 
 		HorizontalLayout clientTreeTableRightButtonsLayout = new HorizontalLayout();
 		clientTreeTableRightButtonsLayout.setSpacing(true);
 		clientTreeTableButtonsLayout.addComponent(clientTreeTableRightButtonsLayout);
 		clientTreeTableButtonsLayout.setComponentAlignment(clientTreeTableRightButtonsLayout, Alignment.MIDDLE_RIGHT);
 
-		btnRemoveLock = new Button(applicationContext.getMessage("admin.uiList.btnRemoveLock", null, getLocale()), FontAwesome.UNLOCK);
+		/*btnRemoveLock = new Button(applicationContext.getMessage("admin.uiList.btnRemoveLock", null, getLocale()), FontAwesome.UNLOCK);
 		btnRemoveLock.setEnabled(false);
 		btnRemoveLock.addClickListener(e -> uiController.confirmRemoveLock(uisTreeTable.getValue()));
-		clientTreeTableRightButtonsLayout.addComponent(btnRemoveLock);
+		clientTreeTableRightButtonsLayout.addComponent(btnRemoveLock);*/
 
 		btnKill = new Button(applicationContext.getMessage("admin.uiList.btnkill", null, getLocale()), FontAwesome.TIMES);
 		btnKill.setEnabled(false);
