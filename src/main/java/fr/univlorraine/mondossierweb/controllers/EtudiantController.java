@@ -1842,7 +1842,7 @@ public class EtudiantController {
 			return false;
 		}
 		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();
-		if ( !listeCertScolTypDiplomeDesactive.isEmpty()) {
+		if ( listeCertScolTypDiplomeDesactive!=null || !listeCertScolTypDiplomeDesactive.isEmpty()) {
 			// interdit les certificats pour certains types de diplomes
 			DiplomeApogee dip = diplomeService.findDiplome(ins.getCod_dip());
 			if(dip!=null && StringUtils.hasText(dip.getCodTpdEtb())){
@@ -1857,7 +1857,7 @@ public class EtudiantController {
 		}
 		//interdit l'edition de certificat pour les étudiants si l'inscription en cours est une cohabitation
 		List<String> listeCertScolProfilDesactive=configController.getListeCertScolProfilDesactive();
-		if ( !listeCertScolProfilDesactive.isEmpty()) {
+		if ( listeCertScolProfilDesactive!=null && !listeCertScolProfilDesactive.isEmpty()) {
 			// interdit les certificats pour certains types de diplomes
 			String profil = inscriptionService.getProfil(codAnuIns, etu.getCod_ind());
 
@@ -1867,7 +1867,7 @@ public class EtudiantController {
 		}
 		//interdit l'édition de certificat pour les étudiants si l'inscription correspond à un code CGE désactivé
 		List<String> listeCertScolCGEDesactive=configController.getListeCertScolCGEDesactive();
-		if ( !listeCertScolCGEDesactive.isEmpty()) {
+		if (listeCertScolCGEDesactive!=null && !listeCertScolCGEDesactive.isEmpty()) {
 			// interdit les certificats pour certains code CGE
 			String cge = inscriptionService.getCgeFromCodIndIAE(codAnuIns, etu.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
 
@@ -1877,7 +1877,7 @@ public class EtudiantController {
 		}
 		//interdit l'édition de certificat pour les étudiants si l'inscription correspond à un code composante désactivé
 		List<String> listeCertScolCmpDesactive=configController.getListeCertScolCmpDesactive();
-		if ( !listeCertScolCmpDesactive.isEmpty()) {
+		if ( listeCertScolCmpDesactive!=null && !listeCertScolCmpDesactive.isEmpty()) {
 			// interdit les certificats pour certains code composante
 			String cmp = inscriptionService.getCmpFromCodIndIAE(codAnuIns, etu.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
 

@@ -42,6 +42,11 @@ public class ConfigController {
 		return getBooleanValueForParameter("certScolAutorisePersonnel");
 	}
 	
+	public List<String> getListeCertScolTypDiplomeDesactive() {
+		return getListValeurForParameter("certScolTypDiplomeDesactive");
+		
+	}
+	
 	public boolean isAffRangEtudiant() {
 		return getBooleanValueForParameter("afficherRangEtudiant");
 	}
@@ -82,10 +87,7 @@ public class ConfigController {
 		return getBooleanValueForParameter("affNumPlaceExamen");
 	}
 				
-	public List<String> getListeCertScolTypDiplomeDesactive() {
-		return getListValeurForParameter("certScolTypDiplomeDesactive");
-		
-	}
+
 	
 	public List<String> getListeCertScolProfilDesactive(){
 		return getListValeurForParameter("certScolProfilDesactive");
@@ -112,10 +114,7 @@ public class ConfigController {
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");
 	}
-	
-	/*public String getSourceResultats() {
-		return getValeurForParameter("sourceResultats");
-	}*/
+
 	
 	public String getTemoinNotesEnseignant() {
 		return getValeurForParameter("temoinNotesEnseignant");
@@ -154,7 +153,7 @@ public class ConfigController {
 	}
 	
 	public String getExtensionMailEtudiant(){
-		return getValeurForParameter("param.apogee.extesion.mail.etudiant");
+		return getValeurForParameter("extensionMailEtudiant");
 	}
 		
 		

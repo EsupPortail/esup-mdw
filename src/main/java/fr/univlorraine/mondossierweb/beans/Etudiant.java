@@ -211,7 +211,7 @@ public class Etudiant {
 	
 	public boolean isSignificationResultatsUtilisee() {
 		significationResultatsUtilisee = true;
-		if (significationResultats.isEmpty()) {
+		if (significationResultats==null || significationResultats.isEmpty()) {
 			significationResultatsUtilisee = false;
 		}
 		return significationResultatsUtilisee;

@@ -130,7 +130,7 @@ public class UserController {
 		MethodInvocation methodInvocation = MethodInvocationUtils.createFromClass(viewClass, "enter");
 		Collection<ConfigAttribute> configAttributes = methodSecurityInterceptor.obtainSecurityMetadataSource().getAttributes(methodInvocation);
 		/* Renvoie true si la vue n'est pas sécurisée */
-		if (configAttributes.isEmpty()) {
+		if (configAttributes==null || configAttributes.isEmpty()) {
 			return true;
 		}
 		/* Vérifie que l'utilisateur a les droits requis */
