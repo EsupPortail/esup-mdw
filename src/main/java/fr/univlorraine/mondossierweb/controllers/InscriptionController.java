@@ -90,6 +90,8 @@ public class InscriptionController {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
+	@Resource
+	private transient ConfigController configController;
 
 
 
@@ -186,21 +188,21 @@ public class InscriptionController {
 		try {
 
 
-			Signataire signataire = multipleApogeeService.getSignataire(PropertyUtils.getCertScolCodeSignataire());
+			Signataire signataire = multipleApogeeService.getSignataire(configController.getCertScolCodeSignataire());
 
 			// Ajout Bordeaux1
-			if (PropertyUtils.isCertScolUtiliseLogo()){
+			if (configController.isCertScolUtiliseLogo()){
 				//ajout image test
-				if (PropertyUtils.getLogoUniversitePdf() != null && !PropertyUtils.getLogoUniversitePdf().equals("")){
-					Image imageLogo = Image.getInstance(PropertyUtils.getLogoUniversitePdf());
+				if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+					Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
 					float scaleRatio = 40 / imageLogo.getHeight(); 
 					float newWidth=scaleRatio * imageLogo.getWidth();
 					imageLogo.scaleAbsolute(newWidth, 40);
 					imageLogo.setAbsolutePosition(100, 750);
 					document.add(imageLogo);
 				}
-				else if (PropertyUtils.getCertScolHeaderUniv() != null && !PropertyUtils.getCertScolHeaderUniv().equals("")) {
-					Image imageHeader = Image.getInstance(PropertyUtils.getCertScolHeaderUniv());
+				else if (configController.getCertScolHeaderUniv() != null && !configController.getCertScolHeaderUniv().equals("")) {
+					Image imageHeader = Image.getInstance(configController.getCertScolHeaderUniv());
 					float scaleHeader = 600 / imageHeader.getWidth();
 					float newHeigthHeader = scaleHeader * imageHeader.getHeight();
 					imageHeader.scaleAbsolute(600, newHeigthHeader);
@@ -208,8 +210,8 @@ public class InscriptionController {
 					document.add(imageHeader);
 				}
 
-				if (PropertyUtils.getCertScolFooter() != null && !PropertyUtils.getCertScolFooter().equals("")) {
-					Image imageFooter = Image.getInstance(PropertyUtils.getCertScolFooter());
+				if (configController.getCertScolFooter() != null && !configController.getCertScolFooter().equals("")) {
+					Image imageFooter = Image.getInstance(configController.getCertScolFooter());
 					float scaleFooter = 600 / imageFooter.getWidth();
 					float newHeigthFooter = scaleFooter * imageFooter.getHeight();
 					imageFooter.scaleAbsolute(600, newHeigthFooter);
@@ -289,7 +291,7 @@ public class InscriptionController {
 			PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
 			tableSignataire.setWidthPercentage(100f);
 			tableSignataire.addCell(makeCellSignataire("", normal));
-			tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.certificat.fait1", null, Locale.getDefault())+" " + PropertyUtils.getCertScolLieuEdition() + applicationContext.getMessage("pdf.certificat.fait2", null, Locale.getDefault())+" " + date, normal));
+			tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.certificat.fait1", null, Locale.getDefault())+" " + configController.getCertScolLieuEdition() + applicationContext.getMessage("pdf.certificat.fait2", null, Locale.getDefault())+" " + date, normal));
 			tableSignataire.addCell(makeCellSignataire("", normal));
 			tableSignataire.addCell(makeCellSignataire(signataire.getNom_sig(), normal));
 			//ajout signature
@@ -309,8 +311,8 @@ public class InscriptionController {
 			document.add(tableSignataire);
 
 			// Ajout tampon
-			if (PropertyUtils.getCertScolTampon() != null && !PropertyUtils.getCertScolTampon().equals("")) {
-				Image imageTampon = Image.getInstance(PropertyUtils.getCertScolTampon());
+			if (configController.getCertScolTampon() != null && !configController.getCertScolTampon().equals("")) {
+				Image imageTampon = Image.getInstance(configController.getCertScolTampon());
 				float scaleTampon = 100 / imageTampon.getWidth();
 				float newHeigthTampon = scaleTampon * imageTampon.getHeight();
 				imageTampon.scaleAbsolute(100, newHeigthTampon);

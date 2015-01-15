@@ -100,6 +100,8 @@ public class NoteController {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
+	@Resource
+	private transient ConfigController configController;
 
 
 	
@@ -126,7 +128,7 @@ public class NoteController {
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					docWriter.setStrictImageSequence(true);
-					if(PropertyUtils.isInsertionFiligranePdfNotes()){
+					if(configController.isInsertionFiligranePdfNotes()){
 						docWriter.setPageEvent(new Watermark());
 					}
 					creerPdfResume(document,MainUI.getCurrent().getEtudiant());
@@ -176,7 +178,7 @@ public class NoteController {
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					docWriter.setStrictImageSequence(true);
-					if(PropertyUtils.isInsertionFiligranePdfNotes()){
+					if(configController.isInsertionFiligranePdfNotes()){
 						docWriter.setPageEvent(new Watermark());
 					}
 					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape);
@@ -270,8 +272,8 @@ public class NoteController {
 		document.open();
 		try {
 			//ajout image test
-			if (PropertyUtils.getLogoUniversitePdf()!= null && !PropertyUtils.getLogoUniversitePdf().equals("")){
-				Image image1 = Image.getInstance(PropertyUtils.getLogoUniversitePdf());
+			if (configController.getLogoUniversitePdf()!= null && !configController.getLogoUniversitePdf().equals("")){
+				Image image1 = Image.getInstance(configController.getLogoUniversitePdf());
 				float scaleRatio = 40 / image1.getHeight();
 				float newWidth=scaleRatio * image1.getWidth();
 				image1.scaleAbsolute(newWidth, 40);
@@ -279,7 +281,7 @@ public class NoteController {
 				document.add(image1);
 			}
 
-			boolean affMentionEtudiant = PropertyUtils.isAffMentionEtudiant();
+			boolean affMentionEtudiant = configController.isAffMentionEtudiant();
 
 			//nouveau paragraphe
 			Paragraph p = new Paragraph(applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + "\n\n", headerbig);
@@ -733,8 +735,8 @@ public class NoteController {
 		document.open();
 		try {
 			//ajout image test
-			if (PropertyUtils.getLogoUniversitePdf() != null && !PropertyUtils.getLogoUniversitePdf().equals("")){
-				Image image1 = Image.getInstance(PropertyUtils.getLogoUniversitePdf());
+			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+				Image image1 = Image.getInstance(configController.getLogoUniversitePdf());
 				float scaleRatio = 40 / image1.getHeight();
 				float newWidth=scaleRatio * image1.getWidth();
 				image1.scaleAbsolute(newWidth, 40);
@@ -790,8 +792,8 @@ public class NoteController {
 
 
 			boolean afficherRangElpEpr = etudiantController.isAfficherRangElpEpr();
-			boolean affRangEtudiant = PropertyUtils.isAffRangEtudiant();
-			boolean affECTSEtudiant =PropertyUtils.isAffECTSEtudiant();
+			boolean affRangEtudiant = configController.isAffRangEtudiant();
+			boolean affECTSEtudiant =configController.isAffECTSEtudiant();
 			
 			if((!affRangEtudiant && !afficherRangElpEpr)&& !affECTSEtudiant){
 				//NI isAffRangEtudiant  NI isAffECTSEtudiant

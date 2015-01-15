@@ -33,6 +33,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -57,6 +58,8 @@ public class DetailNotesWindow extends Window {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient NoteController noteController;
+	@Resource
+	private transient ConfigController configController;
 
 	private Etape etape;
 
@@ -115,7 +118,7 @@ public class DetailNotesWindow extends Window {
 		titleLayout.addComponent(messageLabel);
 		titleLayout.setExpandRatio(messageLabel, 1);
 		titleLayout.setComponentAlignment(messageLabel, Alignment.MIDDLE_LEFT);
-		if(lelp!=null && lelp.size()>0 && PropertyUtils.isPdfNotesActive()){
+		if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
 			Button pdfButton = new Button();
 			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
@@ -194,10 +197,10 @@ public class DetailNotesWindow extends Window {
 			detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
 			detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
 			detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
-			if(PropertyUtils.isAffRangEtudiant() || etudiantController.isAfficherRangElpEpr()){
+			if(configController.isAffRangEtudiant() || etudiantController.isAfficherRangElpEpr()){
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.rang", null, getLocale()), new RangColumnGenerator());
 			}
-			if(PropertyUtils.isAffECTSEtudiant()){
+			if(configController.isAffECTSEtudiant()){
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
 			}
 			detailNotesTable.setColumnCollapsingAllowed(true);

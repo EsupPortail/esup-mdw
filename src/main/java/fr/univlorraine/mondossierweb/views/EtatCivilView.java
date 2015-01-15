@@ -31,6 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -53,6 +54,8 @@ public class EtatCivilView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	private TextField fieldTelPortable;
@@ -251,7 +254,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		contactLayout.addComponent(formContactLayout);
 
 		/* Si user étudiant et modifi autorisée des coordonnées de contact, on affiche les boutons de modification */
-		if(userController.isEtudiant() && PropertyUtils.isModificationCoordonneesPersoAutorisee()){
+		if(userController.isEtudiant() && configController.isModificationCoordonneesPersoAutorisee()){
 			//Layout pour les boutons de modification
 			HorizontalLayout btnLayout = new HorizontalLayout();
 			btnLayout.setSizeFull();

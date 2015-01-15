@@ -25,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -48,6 +49,8 @@ public class AdressesView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	/**
@@ -153,7 +156,7 @@ public class AdressesView extends VerticalLayout implements View {
 
 		addComponent(globalLayout);
 
-		if(userController.isEtudiant() && PropertyUtils.isModificationAdressesAutorisee()){
+		if(userController.isEtudiant() && configController.isModificationAdressesAutorisee()){
 			HorizontalLayout btnLayout = new HorizontalLayout();
 			btnLayout.setSizeFull();
 			btnLayout.setSpacing(true);

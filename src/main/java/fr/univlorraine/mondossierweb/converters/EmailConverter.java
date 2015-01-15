@@ -3,6 +3,9 @@
  */
 package fr.univlorraine.mondossierweb.converters;
 
+import javax.annotation.Resource;
+
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 
@@ -13,6 +16,8 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  */
 public class EmailConverter implements EmailConverterInterface{
 
+	@Resource
+	private transient ConfigController configController;
 	
 	/**
 	 * le constructeur.
@@ -27,8 +32,8 @@ public class EmailConverter implements EmailConverterInterface{
 	 */
 	public String getMail( String login, String cod_etu) {
 		// Gestion du cas ou le login est null ou vide
-		if (login != null && !login.equals("") && PropertyUtils.getExtensionMailEtudiant() != null && !PropertyUtils.getExtensionMailEtudiant().equals("")) {
-			return login + PropertyUtils.getExtensionMailEtudiant();
+		if (login != null && !login.equals("") && configController.getExtensionMailEtudiant() != null && !configController.getExtensionMailEtudiant().equals("")) {
+			return login + configController.getExtensionMailEtudiant();
 		}
 		return "";	
 	}

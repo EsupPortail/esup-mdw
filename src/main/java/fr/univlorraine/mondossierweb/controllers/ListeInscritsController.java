@@ -134,6 +134,8 @@ public class ListeInscritsController {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient UserController userController;
+	@Resource
+	private transient ConfigController configController;
 	/**
 	 * proxy pour faire appel aux infos sur l'étudiant WS .
 	 */
@@ -884,8 +886,8 @@ public class ListeInscritsController {
 		try {
 
 			//ajout image test
-			if (PropertyUtils.getLogoUniversitePdf() != null && !PropertyUtils.getLogoUniversitePdf().equals("")){
-				Image image1 = Image.getInstance(PropertyUtils.getLogoUniversitePdf());
+			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+				Image image1 = Image.getInstance(configController.getLogoUniversitePdf());
 				float scaleRatio = 40 / image1.getHeight();
 				float newWidth=scaleRatio * image1.getWidth();
 				image1.scaleAbsolute(newWidth, 40);

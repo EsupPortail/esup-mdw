@@ -106,6 +106,8 @@ public class EtudiantController {
 	private transient UiController uiController;
 	@Resource
 	private transient UserController userController;
+	@Resource
+	private transient ConfigController configController;
 
 	@Resource(name="emailConverter")
 	private transient EmailConverterInterface emailConverter;
@@ -600,7 +602,7 @@ public class EtudiantController {
 			e.getDiplomes().clear();
 			e.getEtapes().clear();
 
-			String temoin = PropertyUtils.getTemoinNotesEtudiant();
+			String temoin = configController.getTemoinNotesEtudiant();
 			if(temoin == null || temoin.equals("")){
 				temoin="T";
 			}
@@ -674,7 +676,7 @@ public class EtudiantController {
 			e.getDiplomes().clear();
 			e.getEtapes().clear();
 
-			String temoin = PropertyUtils.getTemoinNotesEnseignant();
+			String temoin = configController.getTemoinNotesEnseignant();
 			if(temoin == null || temoin.equals("")){
 				temoin="AET";
 			}
@@ -747,7 +749,7 @@ public class EtudiantController {
 			e.getDiplomes().clear();
 			e.getEtapes().clear();
 			//Si on a configure pour toujours afficher le rang, on affichera les rangs de l'étudiant.
-			e.setAfficherRang(PropertyUtils.isAffRangEtudiant());
+			e.setAfficherRang(configController.isAffRangEtudiant());
 
 			for (int i = 0; i < resultatVdiVet.length; i++ ) {
 				//information sur le diplome:
@@ -824,7 +826,7 @@ public class EtudiantController {
 							if(res.getNbrRngEtuVdi() != null && !res.getNbrRngEtuVdi().equals("")){
 								d.setRang(res.getNbrRngEtuVdi()+"/"+res.getNbrRngEtuVdiTot());
 								//On indique si on affiche le rang du diplome.
-								d.setAfficherRang(PropertyUtils.isAffRangEtudiant());
+								d.setAfficherRang(configController.isAffRangEtudiant());
 
 							}
 						}
@@ -953,12 +955,12 @@ public class EtudiantController {
 										et.setRang(ret.getNbrRngEtuVet()+"/"+ret.getNbrRngEtuVetTot());
 										//On calcule si on affiche ou non le rang.
 										boolean cetteEtapeDoitEtreAffiche=false;
-										for(String codetape : PropertyUtils.getListeCodesEtapeAffichageRang()){
+										for(String codetape : configController.getListeCodesEtapeAffichageRang()){
 											if(codetape.equals(et.getCode())){
 												cetteEtapeDoitEtreAffiche=true;
 											}
 										}
-										if(PropertyUtils.isAffRangEtudiant() || cetteEtapeDoitEtreAffiche){
+										if(configController.isAffRangEtudiant() || cetteEtapeDoitEtreAffiche){
 											//On affichera le rang de l'étape.
 											et.setAfficherRang(true);
 											//On remonte au niveau de l'étudiant qu'on affiche le rang
@@ -1268,9 +1270,9 @@ public class EtudiantController {
 									//      OU si le témoin TemCtlValCadEpr est égal au parametre TemoinCtlValCadEpr de monDossierWeb.xml.
 									boolean recuperationNote = false;
 
-									if(PropertyUtils.getTypesEpreuveAffichageNote() != null && PropertyUtils.getTypesEpreuveAffichageNote().size()>0){
+									if(configController.getTypesEpreuveAffichageNote() != null && configController.getTypesEpreuveAffichageNote().size()>0){
 										//On a renseigné une liste de type épreuve à afficher
-										for(String typeEpreuve : PropertyUtils.getTypesEpreuveAffichageNote()){
+										for(String typeEpreuve : configController.getTypesEpreuveAffichageNote()){
 											if(typeEpreuve.equals(epreuve.getEpreuve().getTypEpreuve().getCodTep())){
 												recuperationNote = true;
 											}
@@ -1279,10 +1281,10 @@ public class EtudiantController {
 									if(!recuperationNote){
 										//On n'a pas renseigné de liste de type épreuve à afficher ou celui ci n'était pas dans la liste
 										if (codsession < 2) {
-											if(temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc()) || elpEtatDelibS1OK || TemCtlValCadEpr.equals(PropertyUtils.getTemoinCtlValCadEpr()))
+											if(temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc()) || elpEtatDelibS1OK || TemCtlValCadEpr.equals(configController.getTemoinCtlValCadEpr()))
 												recuperationNote = true;
 										}else{
-											if(temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc()) || elpEtatDelibS2OK || TemCtlValCadEpr.equals(PropertyUtils.getTemoinCtlValCadEpr()))
+											if(temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc()) || elpEtatDelibS2OK || TemCtlValCadEpr.equals(configController.getTemoinCtlValCadEpr()))
 												recuperationNote = true;
 										}
 									}
@@ -1397,13 +1399,13 @@ public class EtudiantController {
 			}*/
 
 			//Gestion des temoins fictif si temoinFictif est renseigné dans monDossierWeb.xml
-			if(PropertyUtils.getTemoinFictif()!=null && !PropertyUtils.getTemoinFictif().equals("")){
+			if(configController.getTemoinFictif()!=null && !configController.getTemoinFictif().equals("")){
 				if (e.getElementsPedagogiques().size() > 0) {
 					List<Integer> listeRangAsupprimer=new LinkedList<Integer>();
 					int rang = 0;
 					//on note les rangs des éléments à supprimer
 					for (ElementPedagogique el : e.getElementsPedagogiques()) {
-						if(el.getTemFictif()!= null && !el.getTemFictif().equals("") && !el.getTemFictif().equals(PropertyUtils.getTemoinFictif())){
+						if(el.getTemFictif()!= null && !el.getTemFictif().equals("") && !el.getTemFictif().equals(configController.getTemoinFictif())){
 							//on supprime l'élément de la liste
 							listeRangAsupprimer.add(rang);
 						}
@@ -1419,7 +1421,7 @@ public class EtudiantController {
 			}
 
 			//Gestion de la descendance des semestres si temNotesEtuSem est renseigné et à true dans monDossierWeb.xml
-			if(PropertyUtils.isTemNotesEtuSem()){
+			if(configController.isTemNotesEtuSem()){
 				if (e.getElementsPedagogiques().size() > 0) {
 					List<Integer> listeRangAsupprimer=new LinkedList<Integer>();
 					int rang = 0;
@@ -1521,7 +1523,7 @@ public class EtudiantController {
 
 			e.getElementsPedagogiques().clear();
 
-			String temoin = PropertyUtils.getTemoinNotesEtudiant();
+			String temoin = configController.getTemoinNotesEtudiant();
 			if(temoin == null || temoin.equals("")){
 				temoin="T";
 			}
@@ -1581,7 +1583,7 @@ public class EtudiantController {
 
 			e.getElementsPedagogiques().clear();
 
-			String temoin = PropertyUtils.getTemoinNotesEnseignant();
+			String temoin = configController.getTemoinNotesEnseignant();
 			if(temoin == null || temoin.equals("")){
 				temoin="AET";
 			}
@@ -1827,19 +1829,19 @@ public class EtudiantController {
 	public boolean proposerCertificat(Inscription ins, Etudiant etu) {
 
 		// autoriser ou non la generation de certificats de scolarite.
-		if (!PropertyUtils.isCertificatScolaritePDF()) {
+		if (!configController.isCertificatScolaritePDF()) {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les certificats.
-		if ( !PropertyUtils.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
 		// autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
-		if (!PropertyUtils.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours())) {
+		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours())) {
 			return false;
 		}
-		List<String> listeCertScolTypDiplomeDesactive=PropertyUtils.getListeCertScolTypDiplomeDesactive();
+		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();
 		if ( !listeCertScolTypDiplomeDesactive.isEmpty()) {
 			// interdit les certificats pour certains types de diplomes
 			DiplomeApogee dip = diplomeService.findDiplome(ins.getCod_dip());
@@ -1854,7 +1856,7 @@ public class EtudiantController {
 			return false;
 		}
 		//interdit l'edition de certificat pour les étudiants si l'inscription en cours est une cohabitation
-		List<String> listeCertScolProfilDesactive=PropertyUtils.getListeCertScolProfilDesactive();
+		List<String> listeCertScolProfilDesactive=configController.getListeCertScolProfilDesactive();
 		if ( !listeCertScolProfilDesactive.isEmpty()) {
 			// interdit les certificats pour certains types de diplomes
 			String profil = inscriptionService.getProfil(codAnuIns, etu.getCod_ind());
@@ -1864,7 +1866,7 @@ public class EtudiantController {
 			}
 		}
 		//interdit l'édition de certificat pour les étudiants si l'inscription correspond à un code CGE désactivé
-		List<String> listeCertScolCGEDesactive=PropertyUtils.getListeCertScolCGEDesactive();
+		List<String> listeCertScolCGEDesactive=configController.getListeCertScolCGEDesactive();
 		if ( !listeCertScolCGEDesactive.isEmpty()) {
 			// interdit les certificats pour certains code CGE
 			String cge = inscriptionService.getCgeFromCodIndIAE(codAnuIns, etu.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
@@ -1874,7 +1876,7 @@ public class EtudiantController {
 			}
 		}
 		//interdit l'édition de certificat pour les étudiants si l'inscription correspond à un code composante désactivé
-		List<String> listeCertScolCmpDesactive=PropertyUtils.getListeCertScolCmpDesactive();
+		List<String> listeCertScolCmpDesactive=configController.getListeCertScolCmpDesactive();
 		if ( !listeCertScolCmpDesactive.isEmpty()) {
 			// interdit les certificats pour certains code composante
 			String cmp = inscriptionService.getCmpFromCodIndIAE(codAnuIns, etu.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
@@ -1895,7 +1897,7 @@ public class EtudiantController {
 	public boolean isAfficherRangElpEpr(){
 		List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
 		if(lelp != null && lelp.size()>0){
-			List<String> codesAutorises = PropertyUtils.getListeCodesEtapeAffichageRang();
+			List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
 			String codeEtpEnCours = lelp.get(0).getCode();
 			for(String code : codesAutorises){
 				if(code.equals(codeEtpEnCours)){

@@ -103,6 +103,8 @@ public class CalendrierController {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
+	@Resource
+	private transient ConfigController configController;
 
 
 
@@ -201,8 +203,8 @@ public class CalendrierController {
 		document.open();
 		try {
 			//ajout image test
-			if (PropertyUtils.getLogoUniversitePdf() != null && !PropertyUtils.getLogoUniversitePdf().equals("")){
-				Image image1 = Image.getInstance(PropertyUtils.getLogoUniversitePdf());
+			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+				Image image1 = Image.getInstance(configController.getLogoUniversitePdf());
 				float scaleRatio = 40 / image1.getHeight();
 				float newWidth=scaleRatio * image1.getWidth();
 				image1.scaleAbsolute(newWidth, 40);
@@ -258,7 +260,7 @@ public class CalendrierController {
 
 			PdfPTable table2;
 
-			boolean affNumPlaceExamen = PropertyUtils.isAffNumPlaceExamen();
+			boolean affNumPlaceExamen = configController.isAffNumPlaceExamen();
 			
 			if(affNumPlaceExamen) {
 				table2 = new PdfPTable(7);

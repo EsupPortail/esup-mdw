@@ -31,6 +31,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -53,6 +54,8 @@ public class DetailInscriptionWindow extends Window {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient ConfigController configController;
 
 	private Etape etape;
 
@@ -117,7 +120,7 @@ public class DetailInscriptionWindow extends Window {
 			detailInscriptionTable.setVisibleColumns(new String[0]);
 			detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
 			detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
-			if(PropertyUtils.isAffECTSEtudiant()){
+			if(configController.isAffECTSEtudiant()){
 				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
 			}
 			detailInscriptionTable.setColumnCollapsingAllowed(true);

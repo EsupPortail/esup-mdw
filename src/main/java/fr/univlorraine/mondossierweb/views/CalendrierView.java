@@ -31,6 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.controllers.CalendrierController;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -66,6 +67,8 @@ public class CalendrierView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient CalendrierController calendrierController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	/**
@@ -119,7 +122,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			Table calendrierTable = new Table(null, bic);
 			calendrierTable.setWidth("100%");
 			String[] colonnes_to_create = CAL_FIELDS;
-			if(PropertyUtils.isAffNumPlaceExamen()){
+			if(configController.isAffNumPlaceExamen()){
 				colonnes_to_create = CAL_FIELDS_AVEC_PLACE;
 			}
 			for (String fieldName : colonnes_to_create) {
@@ -130,7 +133,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			calendrierTable.setColumnHeader("batiment", applicationContext.getMessage(NAME+".table.batiment", null, getLocale()));
 			calendrierTable.setColumnHeader("salle", applicationContext.getMessage(NAME+".table.salle", null, getLocale()));
 			String[] colonnes_to_display = CAL_FIELDS_ORDER;
-			if(PropertyUtils.isAffNumPlaceExamen()){
+			if(configController.isAffNumPlaceExamen()){
 				colonnes_to_display = CAL_FIELDS_ORDER_AVEC_PLACE;
 			}
 			calendrierTable.setVisibleColumns((Object[]) colonnes_to_display);

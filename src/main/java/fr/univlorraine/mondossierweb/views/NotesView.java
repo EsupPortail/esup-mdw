@@ -41,6 +41,7 @@ import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.beans.Resultat;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -77,6 +78,8 @@ public class NotesView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient NoteController noteController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	/**
@@ -179,7 +182,7 @@ public class NotesView extends VerticalLayout implements View {
 		if(MainUI.getCurrent().getEtudiant().isAfficherRang()){
 			notesDiplomesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.diplomes.mention", null, getLocale()), new MentionColumnGenerator());
 		}
-		if(PropertyUtils.isAffMentionEtudiant()){
+		if(configController.isAffMentionEtudiant()){
 			notesDiplomesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.diplomes.rang", null, getLocale()), new RangColumnGenerator());
 		}
 
@@ -212,7 +215,7 @@ public class NotesView extends VerticalLayout implements View {
 		if(MainUI.getCurrent().getEtudiant().isAfficherRang()){
 			notesEtapesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.etapes.mention", null, getLocale()), new MentionColumnGenerator());
 		}
-		if(PropertyUtils.isAffMentionEtudiant()){
+		if(configController.isAffMentionEtudiant()){
 			notesEtapesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.etapes.rang", null, getLocale()), new RangColumnGenerator());
 		}
 
