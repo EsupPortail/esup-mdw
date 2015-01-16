@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.univlorraine</groupId>
-	<artifactId>mondossierweb</artifactId>
+	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>mondossierweb</name>
@@ -40,9 +40,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://subversion.renater.fr/mondossierweb/trunk</connection>
-		<developerConnection>scm:svn:https://subversion.renater.fr/mondossierweb/trunk</developerConnection>
-		<url>scm:svn:https://subversion.renater.fr/mondossierweb/trunk</url>
+		<connection>scm:svn:https://subversion.renater.fr/mdw-vaadin/trunk</connection>
+		<developerConnection>scm:svn:https://subversion.renater.fr/mdw-vaadin/trunk</developerConnection>
+		<url>scm:svn:https://subversion.renater.fr/mdw-vaadin/trunk</url>
 	</scm>
 
 	<repositories>
@@ -353,7 +353,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
-					<tagBase>https://subversion.renater.fr/mondossierweb/tags</tagBase>
+					<tagBase>https://subversion.renater.fr/mdw-vaadin/tags</tagBase>
 				</configuration>
 			</plugin>
 
