@@ -193,7 +193,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 		code = MainUI.getCurrent().getCodeObjListInscrits();
 		typeFavori = MainUI.getCurrent().getTypeObjListInscrits();
-		System.out.println("typeFavori : "+typeFavori);
 		libelleObj = "";
 		if(typeIsVet() && MainUI.getCurrent().getEtapeListeInscrits()!=null){
 			libelleObj= MainUI.getCurrent().getEtapeListeInscrits().getLibelle();
@@ -228,7 +227,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					int anneenplusun = Integer.parseInt(annee) + 1;
 					listeAnnees.setItemCaption(annee,annee+"/"+anneenplusun);
 				}
-				System.out.println("MainUI.getCurrent().getAnneeInscrits() : "+MainUI.getCurrent().getAnneeInscrits());
 				listeAnnees.setValue( MainUI.getCurrent().getAnneeInscrits());
 				//Gestion de l'événement sur le changement d'année
 				listeAnnees.addValueChangeListener(new ValueChangeListener() {
@@ -285,7 +283,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						@Override
 						public void valueChange(ValueChangeEvent event) {
 							String vetSelectionnee = (String) event.getProperty().getValue();
-							System.out.println("vet selectionnee : "+vetSelectionnee);
 							if(vetSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
 								vetSelectionnee = null;
 							}
@@ -744,7 +741,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		//System.out.println("enter");
+		//LOG.debug("enter listeInscritsView");
 	}
 
 	private void formatTextField(TextField tf){
@@ -892,7 +889,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 
 	private void filtrerInscrits(String idEtape, String idgroupe) {
-		System.out.println(idEtape+" "+idgroupe);
 		if(inscritstable!=null){
 
 			BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
@@ -912,8 +908,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				}
 
 			}
-
-			System.out.println("nb  item valides : "+ic.getItemIds().size());
 
 			//Maj de la liste contenant tous les codind à afficher apres application du filtre
 			refreshListeCodind(ic);

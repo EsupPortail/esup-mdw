@@ -446,7 +446,6 @@ public class NotesView extends VerticalLayout implements View {
 					//Test si l'utilisateur a coché la case pour ne plus afficher le message
 					if(choix){
 						//mettre a jour dans la base de données
-						System.out.println("ne plus afficher le message des notes pour "+userController.getCurrentUserName());
 						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE, "false");
 					}
 				});

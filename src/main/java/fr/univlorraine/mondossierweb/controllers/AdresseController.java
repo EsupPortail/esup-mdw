@@ -151,7 +151,6 @@ public class AdresseController {
 		boolAnEtranger = !adresseAnnuelle.getCodPays().equals(COD_PAY_FRANCE);
 		boolFixeEtranger= !adresseFixe.getCodPays().equals(COD_PAY_FRANCE);
 
-		System.out.println("Locale.getDefault() "+Locale.getDefault());
 		if (!adresseIdentique) {
 			if (!StringUtils.hasText(adresseAnnuelle.getAdresse1())) {
 				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.detail", null, Locale.getDefault());
@@ -313,7 +312,7 @@ public class AdresseController {
 			cdtomaj.setAdresseAnnuelle(adanmaj);
 			cdtomaj.setAdresseFixe(adfixmaj);
 
-			System.out.println("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+adresseAnnuelle.getType());
+			LOG.debug("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+adresseAnnuelle.getType());
 			monProxyEtu.mettreAJourAdressesEtudiant(cdtomaj, cod_etu);
 
 			ok = true;

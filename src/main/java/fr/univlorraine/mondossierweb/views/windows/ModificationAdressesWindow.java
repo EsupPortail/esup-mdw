@@ -139,7 +139,6 @@ public class ModificationAdressesWindow extends Window {
 			lhebergement.setItemCaption(h.getCodTypeHebergement(), h.getLibWebTypeHebergement());
 		}
 		lhebergement.setValue(etudiant.getAdresseAnnuelle().getType());
-		System.out.println("etudiant.getAdresseAnnuelle().getType() : "+etudiant.getAdresseAnnuelle().getType() );
 		lhebergement.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -201,7 +200,6 @@ public class ModificationAdressesWindow extends Window {
 			lpays1.setItemCaption(p.getCodePay(),p.getLibPay());
 		}
 		lpays1.setValue(etudiant.getAdresseAnnuelle().getCodPays());
-		System.out.println("etudiant.getAdresseAnnuelle().getCodPays() : "+etudiant.getAdresseAnnuelle().getCodPays() );
 		lpays1.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -263,12 +261,10 @@ public class ModificationAdressesWindow extends Window {
 				updateCodePostalVilleAnnuelle();
 			}
 		});
-		System.out.println("etudiant.getAdresseAnnuelle().getVille : "+etudiant.getAdresseAnnuelle().getVille() );
 		formAdresseAnnuelleLayout.addComponent(lville1);
 
 
 		//activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
-		System.out.println("maj pays etranger ou pas : "+etudiant.getAdresseAnnuelle().getCodPays());
 		if(etudiant.getAdresseAnnuelle().getCodPays().equals(COD_PAY_FRANCE)){
 			activerChampPourAdresseAnnuelleEnFrance();
 		}else{
@@ -345,7 +341,6 @@ public class ModificationAdressesWindow extends Window {
 			lpays2.setItemCaption(p.getCodePay(),p.getLibPay());
 		}
 		lpays2.setValue(etudiant.getAdresseFixe().getCodPays());
-		System.out.println("etudiant.getAdresseFixe().getCodPays() : "+etudiant.getAdresseFixe().getCodPays() );
 		lpays2.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -407,7 +402,6 @@ public class ModificationAdressesWindow extends Window {
 				updateCodePostalVilleFixe();
 			}
 		});
-		System.out.println("etudiant.getAdresseFixe().getVille : "+etudiant.getAdresseFixe().getVille() );
 		formAdresseFixeLayout.addComponent(lville2);
 
 

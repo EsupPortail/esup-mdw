@@ -92,7 +92,6 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 							//Pour le premier numéro affiché on affiche le libellé du champ
 							captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
 						}
-						System.out.println("-"+ ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
 						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
 						formatTextField(fieldNumAnonymat);
 						formInfosLayout.addComponent(fieldNumAnonymat);

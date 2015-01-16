@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -54,6 +56,7 @@ import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Groupe;
+import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
@@ -92,6 +95,8 @@ import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 @StyleSheet("mainView.css")
 public class MainUI extends UI {
 	private static final long serialVersionUID = -4633936971448921781L;
+	
+	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	/* Redirige java.util.logging vers SLF4j */
 	static {
@@ -287,11 +292,11 @@ public class MainUI extends UI {
 		/* Device Detection */
 		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) request);
 		/*if(currentDevice.isMobile())
-			System.out.println("device : mobile");
+			LOG.debug("device : mobile");
 		if(currentDevice.isTablet())
-			System.out.println("device : tablet");
+			LOG.debug("device : tablet");
 		if(currentDevice.isNormal())
-			System.out.println("device : normal");*/
+			LOG.debug("device : normal");*/
 
 
 		mainVerticalLayout=new VerticalLayout();
@@ -350,7 +355,7 @@ public class MainUI extends UI {
 				mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
 
 				etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
-				System.out.println("MainUI etudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
+				LOG.debug("MainUI etudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
 				etudiantController.recupererEtatCivil();
 				/*etudiantController.recupererInscriptions();
 				etudiantController.recupererCalendrierExamens();*/
@@ -405,14 +410,12 @@ public class MainUI extends UI {
 				//navigator.navigateTo(ErreurView.NAME);
 				List<Favoris> lfav = favorisController.getFavoris();
 				if(lfav!=null && lfav.size()>0){
-					System.out.println("to fav view");
 					navigator.navigateTo(FavorisView.NAME);
 					navigateToFavoris();
 					
 					afficherMessageIntroEnseignants();
 					
 				}else{
-					System.out.println("to rech view");
 					navigator.navigateTo(RechercheRapideView.NAME);
 					navigateToRechercheRapide();
 					afficherMessageIntroEnseignants();
@@ -453,7 +456,6 @@ public class MainUI extends UI {
 				//Test si l'utilisateur a coché la case pour ne plus afficher le message
 				if(choix){
 					//mettre a jour dans la base de données
-					System.out.println("ne plus afficher le message d'introduction pour "+userController.getCurrentUserName());
 					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE, "false");
 				}
 			});
@@ -747,8 +749,6 @@ public class MainUI extends UI {
 	}
 
 	public void navigateToFavoris() {
-		System.out.println("viewEnseignantTab "+viewEnseignantTab);
-		System.out.println("favorisView "+favorisView);
 		int numtab = viewEnseignantTab.get(favorisView.NAME);
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		tabSheetEnseignant.setSelectedTab(numtab);

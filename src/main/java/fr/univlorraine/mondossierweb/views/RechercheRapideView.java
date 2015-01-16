@@ -150,7 +150,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			search.setSuggestionPickedListener(new AutocompleteSuggestionPickedListener<String>() {
 			  @Override
 			  public void onSuggestionPicked(String page) {
-				  System.out.println("handleSuggestionSelection "+page);
+				 LOG.debug("handleSuggestionSelection "+page);
 				  search(false, page);
 			  }
 			});*/
@@ -196,7 +196,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				if(target==champRecherche){
 					if(champRecherche.getChoices().getItemIds()!=null){
 						champRecherche.getChoicesPopup().setVisible(true);
-						//System.out.println("selectionner ligne table suivante");
 						champRecherche.getChoices().setValue(champRecherche.getNextItem());
 
 
@@ -211,7 +210,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				if(target==champRecherche){
 					if(champRecherche.getChoices().getItemIds()!=null){
 						champRecherche.getChoicesPopup().setVisible(true);
-						//System.out.println("selectionner ligne table precedente");
 						Integer champSelectionne = champRecherche.getPreviousItem();
 						if(champSelectionne>0){
 							champRecherche.getChoices().setValue(champSelectionne);
@@ -371,13 +369,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			valuesolr = valuesolr+"*";
 			//valuesolr= "\""+valuesolr+"\"";//NE PAS FAIRE SI ON AJOUTE *
-			//System.out.println("value valuesolr : "+valuesolr);
-			//System.out.println("execution avec la requete solr...");
 			long startTime = System.currentTimeMillis();
 			List<Map<String,Object>> lobjresult = SolrService.findObj(valuesolr, NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 			long stopTime = System.currentTimeMillis();
 			long durationTimeSolr = stopTime - startTime;
-			//System.out.println("elapsedTime : "+durationTimeSolr+" ms");
 
 
 			//Liste des types autorisés
@@ -458,10 +453,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		}
 		String value = String.valueOf(champRecherche.getValue());
 
-
-		//System.out.println("Search : "+value);
-
-		//searchBoxFilter.setValue("");
 		if(StringUtils.hasText(value) && value.length()>1){
 
 
@@ -491,7 +482,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				ResultatDeRecherche rdr=null;
 				for(Map<String,Object> obj : lobjresult){
 					if(obj != null){
-						//System.out.println("=>" +obj.getId().getCodObj()+"/"+obj.getId().getCodVrsObj()+ " - "+obj.getLibObj()+" ["+obj.getId().getTypObj()+"]");
+						
 						String rubrique=(String)obj.get("TYP_OBJ");
 						Item rubriqueCourante = null;
 						//GESTION DES TYPES D'OBJET AFFICHES

@@ -297,7 +297,7 @@ public class UserController {
 
 			} else {
 				//va voir dans apogée
-				System.out.println("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
+				LOG.debug("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
 
 
 				//On test si on doit chercher l'utilisateur dans Apogee

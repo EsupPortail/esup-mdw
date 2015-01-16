@@ -168,7 +168,6 @@ public class DetailGroupesWindow extends Window {
 			}
 
 
-			//System.out.println("set visible colonnes for init");
 			detailGroupesTable.addContainerProperty(ID_PROPERTY, String.class, "");
 			detailGroupesTable.addContainerProperty(CODE_COLLECTION_PROPERTY, String.class, "");
 			detailGroupesTable.addContainerProperty(CODE_GROUPE_PROPERTY, String.class, "");

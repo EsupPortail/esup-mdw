@@ -105,7 +105,6 @@ public class AutoComplete extends TextField{
 			//choicesPopup.setHeight(40 * text.size(), Unit.PIXELS);
 			//choicesPopup.addStyleName("googlepopupview");
 			choicesPopup.setHeight(choices.getHeight(), Unit.PIXELS);
-			System.out.println("height : "+choicesPopup.getHeight());
 
 		
 

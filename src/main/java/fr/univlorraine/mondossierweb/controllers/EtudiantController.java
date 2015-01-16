@@ -487,10 +487,8 @@ public class EtudiantController {
 
 					//récupération des informations sur la composante
 					insc.setCod_comp(insdto.getComposante().getCodComposante());
-					//System.out.println("cmp : "+insdto.getComposante().getLibComposante());
 					//insc.setLib_comp(insdto.getComposante().getLibComposante());
 					insc.setLib_comp(composanteService.getLibelleComposante(insc.getCod_comp()));
-					//System.out.println("cmplib : "+insc.getLib_comp());
 
 					//récupération de l'état en règle de l'inscription
 					if(insdto.getInscriptionPayee().equals(Utils.LIBELLE_WS_INSCRIPTION_PAYEE)){
@@ -761,8 +759,6 @@ public class EtudiantController {
 					d.setLib_web_vdi(rdto.getDiplome().getLibWebVdi());
 					d.setCod_dip(rdto.getDiplome().getCodDip());
 					d.setCod_vrs_vdi(rdto.getDiplome().getCodVrsVdi().toString());
-					//System.out.println("coddip : "+d.getCod_dip() + " " + d.getLib_web_vdi());
-					//System.out.println("vrsdip : "+d.getCod_vrs_vdi());
 
 					int annee2 = new Integer(rdto.getAnnee()) + 1;
 
@@ -865,7 +861,6 @@ public class EtudiantController {
 								for (int k = 0; k < tabresetape.length; k++ ) {
 									ResultatVetDTO ret = tabresetape[k];
 									Resultat r = new Resultat();
-									//System.out.println("credit etape : "+ret.getNbrCrdVet());
 									if(!ret.getEtatDelib().getCodEtaAvc().equals("T")) {
 										et.setDeliberationTerminee(false);
 									} else {
@@ -885,7 +880,6 @@ public class EtudiantController {
 										r.setLibMention(ret.getMention().getLibMen());
 									}
 
-									//System.out.println("session : " + ret.getSession().getLibSes()+" "+	ret.getSession().getCodSes());
 									String result="";
 									if(ret.getTypResultat() != null){
 										result = ret.getTypResultat().getCodTre();
@@ -1082,9 +1076,6 @@ public class EtudiantController {
 								//29/01/10
 								//On récupère les notes si l'ELP est dans un état de delibération compris dans la liste des témoins paramétrés.
 								if(relpdto[j].getEtatDelib()==null ||  temoinEtatDelib.contains(relpdto[j].getEtatDelib().getCodEtaAvc())){
-
-									//System.out.println("credit : "+relpdto[j].getNbrCrdElp()+" anneeResultat ELP : "+relpdto[j].getCodAnu());
-
 
 									int codsession = 0;
 									if(relpdto[j].getSession() != null){
@@ -1990,7 +1981,7 @@ public class EtudiantController {
 				cdtomaj.setAdresseAnnuelle(adanmaj);
 				cdtomaj.setAdresseFixe(adfixmaj);
 
-				System.out.println("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+cdto.getTypeHebergement().getCodTypeHebergement());
+				LOG.debug("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+cdto.getTypeHebergement().getCodTypeHebergement());
 				monProxyEtu.mettreAJourAdressesEtudiant(cdtomaj, codetu);
 
 				succes = true;

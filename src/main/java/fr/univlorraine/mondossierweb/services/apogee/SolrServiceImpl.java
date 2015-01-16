@@ -107,7 +107,7 @@ public class SolrServiceImpl implements SolrService{
 
 		value=value.toLowerCase();
 
-		System.out.println("value Elastic Search for : "+value);
+		//System.out.println("value Elastic Search for : "+value);
 		if(client==null){
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
 			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
@@ -164,7 +164,6 @@ public class SolrServiceImpl implements SolrService{
 				.setFrom(0).setSize(60).setExplain(true)
 				.execute()
 				.actionGet();
-		//System.out.println("status response : "+response.status()+" "+response.getTotalShards()+" "+response.getSuccessfulShards()+" "+response.getHits().getTotalHits());
 		SearchHit[] results = response.getHits().getHits();
 		
 		//Si aucun resultat et on est pas en quicksearch
@@ -177,7 +176,6 @@ public class SolrServiceImpl implements SolrService{
 					.setFrom(0).setSize(60).setExplain(true)
 					.execute()
 					.actionGet();
-			//System.out.println("status response : "+response.status()+" "+response.getTotalShards()+" "+response.getSuccessfulShards()+" "+response.getHits().getTotalHits());
 			results = response.getHits().getHits();
 		}
 		
@@ -186,7 +184,6 @@ public class SolrServiceImpl implements SolrService{
 			//prints out the id of the document
 			Map<String,Object> result = hit.getSource();   //the retrieved document
 			beans.add(result);
-			//System.out.println(hit.getId()+" -> "+result.get("COD_OBJ")+" : "+result.get(PropertyUtils.getElasticSearchChampRecherche())+" "+hit.getScore());
 		}
 		return beans;
 	}

@@ -48,7 +48,6 @@ public class RechercheController {
 
 
 	public void accessToDetail(String code, String type) {
-		//System.out.println("acceder au "+type+" -> "+code);
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
@@ -68,10 +67,7 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 				parameterMap.replace("type",Utils.ETU);
 				MainUI.getCurrent().setEtudiant(new Etudiant(code));
-				System.out.println("sessionController.setEtudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
 				etudiantController.recupererEtatCivil();
-				/*etudiantController.recupererInscriptions();
-				etudiantController.recupererCalendrierExamens();*/
 				MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
 		}
 	}

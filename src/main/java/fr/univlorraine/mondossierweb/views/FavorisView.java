@@ -146,7 +146,7 @@ public class FavorisView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		//System.out.println("ENTER FAVORIS VIEW");
+		//LOG.debug("ENTER FAVORIS VIEW");
 	}
 
 	/** Formats the position in a column containing Date objects. */

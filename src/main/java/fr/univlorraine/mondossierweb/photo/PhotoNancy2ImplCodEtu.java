@@ -238,10 +238,6 @@ public void init(String loginUser) {
 	// Demande d'un ticket au serveur de photos
 	if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 		try {
-			/*System.out.println("remoteadress : "+remoteadress);
-			System.out.println("ticketurl : "+getTicketurl());
-			System.out.println("ressourceurl : "+getRessourceurl());
-			System.out.println("codeapp : "+getCodeapp());*/
 			
 			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
 					remoteadress, "ID", "NONE", loginUser);

@@ -155,8 +155,6 @@ public class ListeInscritsController {
 	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee){
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
-
-		System.out.println("recupererListeInscrit : "+code+" - "+type+" annee : "+annee);
 		
 		if (type.equals(Utils.VET)) {
 
@@ -176,7 +174,6 @@ public class ListeInscritsController {
 				e.setAnnee(annees.get(0));
 				MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
-				System.out.println("set etape main ui");
 				MainUI.getCurrent().setEtapeListeInscrits(e);
 			}else{
 				e = MainUI.getCurrent().getEtapeListeInscrits();
@@ -405,13 +402,10 @@ public class ListeInscritsController {
 			monProxyOffreDeFormation = new OffreFormationMetierServiceInterfaceProxy();
 		}
 
-
-		System.out.println("recuperer groupe :"+annee + " "+codElp);
 		try{
 			RecupererGroupeDTO2 recupererGroupeDTO = monProxyOffreDeFormation.recupererGroupe_v2(annee, null, null, null, codElp, null);
 
 			if (recupererGroupeDTO != null){
-				System.out.println("recuperer groupe :"+recupererGroupeDTO);
 				//On parcourt les ELP
 				for(ElementPedagogiDTO2 elp : recupererGroupeDTO.getListElementPedagogi()){
 					ElpDeCollection el = new ElpDeCollection(elp.getCodElp(), elp.getLibElp());
@@ -479,7 +473,7 @@ public class ListeInscritsController {
 	 */
 	public InputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee, String typeFavori) {
 
-		System.out.println("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
+		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			HSSFWorkbook wb = creerExcel(linscrits, listecodind, (typeFavori!=null && typeFavori.equals(Utils.VET)));
@@ -736,7 +730,7 @@ public class ListeInscritsController {
 	 */
 	public InputStream getPdfStream(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee) {
 
-		System.out.println("generation pdf : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
+		LOG.debug("generation pdf : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
 		try {
 			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			PdfWriter docWriter = null;

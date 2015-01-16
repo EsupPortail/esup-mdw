@@ -432,7 +432,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}*/
 		table.setContainerDataSource(hc);
 		if(!initEffectue){
-			//System.out.println("set visible colonnes for init");
 			table.addContainerProperty(TRUE_ID_PROPERTY, String.class, "");
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER);
@@ -443,7 +442,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.setColumnHeader("actions", applicationContext.getMessage(NAME+".table.actions", null, getLocale()));
 			initEffectue=true;
 		}else{
-			//System.out.println("set visible colonnes for refresh");
 			table.addContainerProperty(TRUE_ID_PROPERTY, String.class, "");
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER_ON_REFRESH);
@@ -468,7 +466,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	private void changerAnnee(String value) {
 		annee=value;
-		//System.out.println("changment annee : "+annee);
 		initComposantes();
 	}
 	/**
@@ -476,7 +473,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		//System.out.println("enter");
+		//LOG.debug("enter");
 	}
 
 	/** Formats the position in a column containing Date objects. */
@@ -499,8 +496,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			//Si c'est un objet qui peut être mis en favori
 			if(typeObj!=null && liste_types_favoris!=null && liste_types_favoris.contains(typeObj)){
 				Button btnfav=new Button();
-				//System.out.println("itemId : "+itemId);
-				//if(markedRows.contains((String)itemId)){
 				if(markedRows.contains(idFav)){	
 					btnfav.setIcon(FontAwesome.TRASH_O);
 					btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
@@ -651,13 +646,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	}	
 
 	private void deplierNoeud(String itemId, boolean afficherMessage){
-		//System.out.println("node expand "+event.getItemId());
 		if(!table.hasChildren(itemId)){
 
 			String type =(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
 			String deplie =(String) hc.getItem(itemId).getItemProperty(DEPLIE_PROPERTY).getValue();
 			String trueObjectId =(String) hc.getItem(itemId).getItemProperty(TRUE_ID_PROPERTY).getValue();
-			//System.out.println("searchChild of : "+type + " "+trueObjectId+" "+deplie);
 
 			//Si on n'a pas déjà déplié ou tenté de déplier cette élément
 			if(deplie.equals("false")){
@@ -665,7 +658,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 					//recuperation des vdi
 
 					List<VersionDiplome> lvdi = composanteService.findVdiFromComposante(annee, trueObjectId);
-					//System.out.println("lvdi "+lvdi!=null?lvdi.size():"vide");
 					List<ObjetBase> lobj = new LinkedList<ObjetBase>();
 					if(lvdi!=null && lvdi.size()>0){
 						for(VersionDiplome vdi : lvdi){
@@ -678,19 +670,13 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							obj.setDeplie("false");
 							lobj.add(obj);
 
-							//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
 							Item i = hc.addItem(obj.getId());
 							if(i!=null){
 								renseignerItem(i,obj);
-								/*i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
-								i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
-								i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
-								i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-								i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
 
 								table.setParent(obj.getId(), itemId);
 							}else{
-								//System.out.println("attention : element non créé !");
+								//LOG.debug("attention : element non créé !");
 							}
 
 						} 
@@ -716,7 +702,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								rechercheArborescenteController.renseigneObjFromVet(obj,vet, itemId);
 								lobj.add(obj);
 
-								//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
 								Item i = hc.addItem(obj.getId());
 								if(i!=null){
 									renseignerItem(i,obj);
@@ -728,7 +713,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 									table.setParent(obj.getId(), itemId);
 								}else{
-									//System.out.println("attention : element non créé !");
+									//LOG.debug("attention : element non créé !");
 								}
 
 
@@ -748,7 +733,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								String[] tabs=trueObjectId.split("/");
 								String codEtp=tabs[0];
 								String vrsEtp=tabs[1];
-								//System.out.println("appel native query avec : "+codEtp+" - "+vrsEtp);
 								lelp = composanteService.findElpFromVet( codEtp, vrsEtp);
 							}
 							if(type.equals(Utils.ELP)){
@@ -764,7 +748,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 									rechercheArborescenteController.renseigneObjFromElp(obj, elp, itemId);
 									lobj.add(obj);
 
-									//System.out.println("vdi : "+obj.getTrueObjectId()+" : "+obj.getLibelle() +" pour pere : "+event.getItemId());
 									Item i = hc.addItem(obj.getId());
 									if(i!=null){
 										renseignerItem(i,obj);
@@ -775,8 +758,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 										i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
 
 										table.setParent(obj.getId(), itemId);
-									}else{
-										System.out.println("attention : element non créé !");
 									}
 
 
