@@ -345,6 +345,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
+					<warSourceExcludes>WEB-INF/classes/configUrlServices.properties</warSourceExcludes>
 				</configuration>
 			</plugin>
 
