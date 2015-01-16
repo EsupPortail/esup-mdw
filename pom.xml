@@ -5,7 +5,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -243,7 +243,7 @@
 
 								file &lt;&lt; '&lt;?xml version="1.0" encoding="UTF-8"?&gt;'
 								file &lt;&lt; '\n&lt;persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_1.xsd"&gt;'
-								puMap.each() {puName, puPackage -&gt;
+								puMap.each() {puName, puPackage ->
 									println 'traite la persistence-unit:' + puName + ', package:' + puPackage + '...'
 									file &lt;&lt; '\n\n\t&lt;persistence-unit name="' + puName + '"&gt;'
 									entityClasses.findAll{it.text().startsWith(puPackage)}.each() {
