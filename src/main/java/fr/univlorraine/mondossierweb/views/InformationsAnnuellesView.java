@@ -13,6 +13,7 @@ import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -81,6 +82,8 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 					String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
 					TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MainUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
 					formatTextField(fieldNumAnonymat);
+					fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+					fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 					formInfosLayout.addComponent(fieldNumAnonymat);
 				}
 				//Si l'étudiant a plusieurs numéros d'anonymat
@@ -94,6 +97,11 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 						}
 						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
 						formatTextField(fieldNumAnonymat);
+						if(i==0){
+							//Pour le premier numéro affiché on affiche l'info bulle
+							fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+							fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+						}
 						formInfosLayout.addComponent(fieldNumAnonymat);
 						i++;
 					}
@@ -102,17 +110,17 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 		}
 
 		String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-		TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().getNumBoursier() == null ? "N" : "O");
+		TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().getNumBoursier() == null ? applicationContext.getMessage(NAME+".boursier.non", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()));
 		formatTextField(fieldNumBoursier);
 		formInfosLayout.addComponent(fieldNumBoursier);
 
 		String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-		TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? "O" : "N");
+		TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
 		formatTextField(fieldSalarie);
 		formInfosLayout.addComponent(fieldSalarie);
 
 		String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-		TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? "O" : "N");
+		TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
 		formatTextField(fieldAmenagementEtude);
 		formInfosLayout.addComponent(fieldAmenagementEtude);
 

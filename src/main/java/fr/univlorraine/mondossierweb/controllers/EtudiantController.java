@@ -439,8 +439,9 @@ public class EtudiantController {
 	/**
 	 * va chercher et renseigne les informations concernant les inscriptions de 
 	 * l'étudiant via le WS de l'Amue.
+	 * @return true si tout c'est bien passé, false sinon
 	 */
-	public void recupererInscriptions() {
+	public boolean recupererInscriptions() {
 		try {
 			if(MainUI.getCurrent().getEtudiant().getLinsciae()!=null){
 				MainUI.getCurrent().getEtudiant().getLinsciae().clear();
@@ -543,15 +544,17 @@ public class EtudiantController {
 				MainUI.getCurrent().getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
 			}
 
-
+			return true;
 		} catch (WebBaseException ex) {
 			LOG.error("Probleme avec le WS lors de la recherche des inscriptions pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(), ex);
+			return false;
 		} catch(Exception ex) {
 			if(MainUI.getCurrent().getEtudiant()!=null){
 				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}else{
 				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant ",ex);
 			}
+			return false;
 		}
 	}
 
