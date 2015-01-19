@@ -66,10 +66,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 	@Resource
 	private transient InscriptionController inscriptionController;
 
-	/**
-	 * Vrai si la récupération des données via le WS s'est bien passée
-	 */
-	private boolean recuperationWsOk;
 
 
 	/**
@@ -94,17 +90,14 @@ public class InscriptionsView extends VerticalLayout implements View {
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
 
-		recuperationWsOk=false;
-
 		//Si les informations sur les inscriptions n'ont pas déjà été récupérées, on les récupère
 		if(MainUI.getCurrent().getEtudiant().getLibEtablissement()==null){
-			recuperationWsOk = etudiantController.recupererInscriptions();
-		}else{
-			recuperationWsOk=true;
+			etudiantController.recupererInscriptions();
 		}
 
-
-		if(recuperationWsOk){
+		//Test si la récupération des inscriptions via le WS s'est bien passée
+		if(MainUI.getCurrent().isRecuperationWsInscriptionsOk()){
+			
 			//Tout c'est bien passé lors de la récupération des infos via le WS
 			
 			Panel panelInscription= new Panel(MainUI.getCurrent().getEtudiant().getLibEtablissement());

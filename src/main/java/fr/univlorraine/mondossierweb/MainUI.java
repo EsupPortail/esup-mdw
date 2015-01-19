@@ -221,6 +221,11 @@ public class MainUI extends UI {
 	
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
+	
+	//Vrai si on a réussi à récupérer les inscriptions via le WS.
+	@Setter
+	@Getter
+	private boolean recuperationWsInscriptionsOk;
 
 
 	/* Composants */
