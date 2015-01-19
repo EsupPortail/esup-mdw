@@ -57,6 +57,7 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.controllers.AdresseController;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
@@ -68,6 +69,7 @@ import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
@@ -96,7 +98,7 @@ import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 @StyleSheet("mainView.css")
 public class MainUI extends UI {
 	private static final long serialVersionUID = -4633936971448921781L;
-	
+
 	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	/* Redirige java.util.logging vers SLF4j */
@@ -123,12 +125,14 @@ public class MainUI extends UI {
 	private transient ListeInscritsController listeInscritsController;
 	@Resource
 	private transient FavorisController favorisController;
+	@Resource
+	private transient ConfigController configController;
 
 
 
 	@Resource
 	private AdminView adminView;
-	
+
 	@Resource
 	private RechercheRapideView rechercheRapideView;
 
@@ -216,13 +220,13 @@ public class MainUI extends UI {
 	@Setter
 	@Getter
 	private String groupeInscrits;
-	
+
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
 	private int rangTabDossierEtudiant;
-	
+
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
-	
+
 	//Vrai si on a réussi à récupérer les inscriptions via le WS.
 	@Setter
 	@Getter
@@ -335,7 +339,7 @@ public class MainUI extends UI {
 		googleAnalyticsTracker.trackNavigator(navigator);
 
 		setContent(mainVerticalLayout);
-		
+
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
 
@@ -352,7 +356,7 @@ public class MainUI extends UI {
 			if(userController.isEnseignant()){
 				//On consultera les notes en vue enseignant
 				vueEnseignantNotesEtResultats=true;
-				
+
 				/* Construit le menu horizontal pour les enseignants */
 				tabSheetGlobal.setSizeFull();
 				tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
@@ -397,14 +401,14 @@ public class MainUI extends UI {
 			}
 
 			//setContent(layout);
-			
+
 
 
 
 			/* Contruit le menu */
 			//buildMainMenuEtudiant();
 
-		
+
 
 			/* Enregistre l'UI pour la réception de notifications */
 			uiController.registerUI(this);
@@ -414,31 +418,36 @@ public class MainUI extends UI {
 			//PROBLEME DU F5 : on passe ici que quand on reinitialise l'UI. 
 			//On ne peut donc pas rediriger vers des vu qui utilise des variables non initialisées (ex : Main.getCurrent.getEtudiant)
 			//if (fragment == null || fragment.isEmpty()) {
-			if(userController.isEnseignant()){
-				List<Favoris> lfav = favorisController.getFavoris();
-				if(lfav!=null && lfav.size()>0){
-					navigator.navigateTo(FavorisView.NAME);
-					navigateToFavoris();
-					afficherMessageIntroEnseignants();
-					
-				}else{
-					navigator.navigateTo(RechercheRapideView.NAME);
-					navigateToRechercheRapide();
-					afficherMessageIntroEnseignants();
-				}
+			if(!configController.isApplicationActive()){
+				displayViewFullScreen(AccesBloqueView.NAME);
 			}else{
-				if(userController.isEtudiant()){
-					navigator.navigateTo(EtatCivilView.NAME);
-					afficherMessageIntroEtudiants();
+
+				if(userController.isEnseignant()){
+					List<Favoris> lfav = favorisController.getFavoris();
+					if(lfav!=null && lfav.size()>0){
+						navigator.navigateTo(FavorisView.NAME);
+						navigateToFavoris();
+						afficherMessageIntroEnseignants();
+
+					}else{
+						navigator.navigateTo(RechercheRapideView.NAME);
+						navigateToRechercheRapide();
+						afficherMessageIntroEnseignants();
+					}
 				}else{
-					displayViewFullScreen(ErreurView.NAME);
+					if(userController.isEtudiant()){
+						navigator.navigateTo(EtatCivilView.NAME);
+						afficherMessageIntroEtudiants();
+					}else{
+						displayViewFullScreen(ErreurView.NAME);
+					}
 				}
 			}
 		}else{
 			displayViewFullScreen(AccesRefuseView.NAME);
 		}
 	}
-	
+
 	private void displayViewFullScreen(String view){
 		setContent(contentLayout);
 		navigator.navigateTo(view);
@@ -446,14 +455,14 @@ public class MainUI extends UI {
 
 	private void afficherMessageIntroEtudiants() {
 		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()));
-		
+
 	}
 
 	private void afficherMessageIntroEnseignants() {
 		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.enseignant", null, getLocale()));
-		
+
 	}
-	
+
 	private void afficherMessageIntro(String text){
 		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
 		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE);
@@ -522,7 +531,7 @@ public class MainUI extends UI {
 		layoutOngletRecherche.setExpandRatio(tabSheetEnseignant, 1);
 
 	}
-	
+
 
 
 
