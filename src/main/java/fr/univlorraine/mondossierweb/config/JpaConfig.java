@@ -19,8 +19,8 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import fr.univlorraine.mondossierweb.entities.Structure;
-import fr.univlorraine.mondossierweb.repositories.StructureRepository;
+import fr.univlorraine.mondossierweb.entities.Favoris;
+import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
 
 /**
  * Configuration JPA
@@ -33,7 +33,7 @@ import fr.univlorraine.mondossierweb.repositories.StructureRepository;
 /*
 @EnableJpaRepositories(basePackageClasses={StructureRepository.class, SecurityProfilRepository.class})
 */
-@EnableJpaRepositories(basePackageClasses=StructureRepository.class,transactionManagerRef="transactionManager", entityManagerFactoryRef="entityManagerFactory")
+@EnableJpaRepositories(basePackageClasses=FavorisRepository.class,transactionManagerRef="transactionManager", entityManagerFactoryRef="entityManagerFactory")
 public class JpaConfig {
 
 	public final static String PERSISTENCE_UNIT_NAME = "pun-jpa";
@@ -86,7 +86,7 @@ public class JpaConfig {
 		/*
 		localContainerEntityManagerFactoryBean.setPackagesToScan(Structure.class.getPackage().getName(), SecurityProfil.class.getPackage().getName());
 		*/
-		localContainerEntityManagerFactoryBean.setPackagesToScan(Structure.class.getPackage().getName());
+		localContainerEntityManagerFactoryBean.setPackagesToScan(Favoris.class.getPackage().getName());
 		localContainerEntityManagerFactoryBean.setDataSource(dataSource());
 		localContainerEntityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
 
