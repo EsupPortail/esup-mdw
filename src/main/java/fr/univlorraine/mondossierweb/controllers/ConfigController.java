@@ -42,6 +42,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("certScolAutorisePersonnel");
 	}
 	
+	public boolean isApplicationActive() {
+		return getBooleanValueForParameter("applicationActive");
+	}
+	
 	public List<String> getListeCertScolTypDiplomeDesactive() {
 		return getListValeurForParameter("certScolTypDiplomeDesactive");
 		

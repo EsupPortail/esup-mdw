@@ -68,6 +68,7 @@ import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
@@ -229,7 +230,7 @@ public class MainUI extends UI {
 
 
 	/* Composants */
-	private VerticalLayout mainVerticalLayout;
+	private VerticalLayout mainVerticalLayout=new VerticalLayout();
 	private CssLayout mainMenu = new CssLayout();
 	private CssLayout menuLayout = new CssLayout(mainMenu);
 	private CssLayout contentLayout = new CssLayout();
@@ -281,7 +282,7 @@ public class MainUI extends UI {
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
-					navigator.navigateTo(ErreurView.NAME);
+					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
 				cause = cause.getCause();
@@ -304,9 +305,37 @@ public class MainUI extends UI {
 			LOG.debug("device : normal");*/
 
 
-		mainVerticalLayout=new VerticalLayout();
+
+		/* Construit le gestionnaire de vues */
+		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
+		navigator.addViewChangeListener(new ViewChangeListener() {
+			private static final long serialVersionUID = 7905379446201794289L;
+
+			private static final String SELECTED_ITEM = "selected";
+
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
+				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+				Button button = viewButtons.get(event.getViewName());
+				if (button instanceof Button) {
+					button.addStyleName(SELECTED_ITEM);
+				}
+			}
+		});
 
 
+		/* Initialise Google Analytics */
+		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
+		/* Suis les changements de vue du navigator */
+		googleAnalyticsTracker.trackNavigator(navigator);
+
+		setContent(mainVerticalLayout);
+		
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
 
@@ -368,40 +397,14 @@ public class MainUI extends UI {
 			}
 
 			//setContent(layout);
-			setContent(mainVerticalLayout);
+			
 
 
 
 			/* Contruit le menu */
 			//buildMainMenuEtudiant();
 
-			/* Construit le gestionnaire de vues */
-			navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
-			navigator.addViewChangeListener(new ViewChangeListener() {
-				private static final long serialVersionUID = 7905379446201794289L;
-
-				private static final String SELECTED_ITEM = "selected";
-
-				@Override
-				public boolean beforeViewChange(ViewChangeEvent event) {
-					viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
-					return true;
-				}
-
-				@Override
-				public void afterViewChange(ViewChangeEvent event) {
-					Button button = viewButtons.get(event.getViewName());
-					if (button instanceof Button) {
-						button.addStyleName(SELECTED_ITEM);
-					}
-				}
-			});
-
-
-			/* Initialise Google Analytics */
-			googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
-			/* Suis les changements de vue du navigator */
-			googleAnalyticsTracker.trackNavigator(navigator);
+		
 
 			/* Enregistre l'UI pour la réception de notifications */
 			uiController.registerUI(this);
@@ -412,12 +415,10 @@ public class MainUI extends UI {
 			//On ne peut donc pas rediriger vers des vu qui utilise des variables non initialisées (ex : Main.getCurrent.getEtudiant)
 			//if (fragment == null || fragment.isEmpty()) {
 			if(userController.isEnseignant()){
-				//navigator.navigateTo(ErreurView.NAME);
 				List<Favoris> lfav = favorisController.getFavoris();
 				if(lfav!=null && lfav.size()>0){
 					navigator.navigateTo(FavorisView.NAME);
 					navigateToFavoris();
-					
 					afficherMessageIntroEnseignants();
 					
 				}else{
@@ -430,10 +431,17 @@ public class MainUI extends UI {
 					navigator.navigateTo(EtatCivilView.NAME);
 					afficherMessageIntroEtudiants();
 				}else{
-					navigator.navigateTo(ErreurView.NAME);
+					displayViewFullScreen(ErreurView.NAME);
 				}
 			}
+		}else{
+			displayViewFullScreen(AccesRefuseView.NAME);
 		}
+	}
+	
+	private void displayViewFullScreen(String view){
+		setContent(contentLayout);
+		navigator.navigateTo(view);
 	}
 
 	private void afficherMessageIntroEtudiants() {
@@ -507,10 +515,6 @@ public class MainUI extends UI {
 
 		addTabListeInscrits();
 
-		//Par defaut, la vue RechercheRapide
-		//navigatorEnseignant.navigateTo(rechercheRapideView.NAME);
-
-		//navigator.addView("rechercheArborescenteView/", rechercheArborescenteView);
 
 		tabSheetEnseignant.addStyleName("left-aligned-tabs");
 		layoutOngletRecherche.addComponent(tabSheetEnseignant);
@@ -550,42 +554,6 @@ public class MainUI extends UI {
 
 			mainMenu.setPrimaryStyleName(ValoTheme.MENU_PART);
 			mainMenu.setWidth("233px");
-
-
-
-
-			//Label versionLabel = new Label("v" + environment.getRequiredProperty("app.version"));
-			//versionLabel.addStyleName(ValoTheme.LABEL_TINY);
-
-			//VerticalLayout appTitleLayout = new VerticalLayout(title, versionLabel);
-			/*VerticalLayout buttonGroupLayout = new VerticalLayout();
-			Button boutonInfo = new Button("", FontAwesome.GRADUATION_CAP);
-			boutonInfo.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			boutonInfo.setDescription("Inscrit pour l'année en cours");
-			boutonInfo.setWidth("46px");
-			//boutonInfo.addClickListener(e -> navigator.navigateTo(AssistanceView.NAME));
-			//boutonInfo.addClickListener(e -> {UI.getCurrent().addWindow(new InformationsAnnuellesWindow(null,null));});
-			Button boutonAide = new Button("", FontAwesome.SUPPORT);
-			//boutonAide.setPrimaryStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-			boutonAide.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-			boutonAide.setDescription("Assistance");
-			boutonAide.setWidth("46px");
-			boutonAide.addClickListener(e -> {UI.getCurrent().addWindow(new HelpWindow(null,null));});
-
-			Button boutonDeconnecter = new Button("", FontAwesome.SIGN_OUT);
-			boutonDeconnecter.addStyleName(ValoTheme.BUTTON_DANGER);
-			boutonDeconnecter.setWidth("46px");
-			boutonDeconnecter.setDescription("Déconnexion");
-			boutonDeconnecter.addClickListener(e -> getUI().getPage().setLocation("j_spring_security_logout"));
-			buttonGroupLayout.addStyleName("v-component-group");
-			buttonGroupLayout.setHeight("111px");
-			buttonGroupLayout.addComponent(boutonInfo);
-			buttonGroupLayout.addComponent(boutonAide);
-			buttonGroupLayout.addComponent(boutonDeconnecter);
-			buttonGroupLayout.setComponentAlignment(boutonAide, Alignment.MIDDLE_RIGHT);
-			buttonGroupLayout.setComponentAlignment(boutonInfo, Alignment.MIDDLE_RIGHT);
-			buttonGroupLayout.setComponentAlignment(boutonDeconnecter, Alignment.MIDDLE_RIGHT);
-			 */
 
 
 			HorizontalLayout fotoLayout = new HorizontalLayout();
@@ -669,11 +637,6 @@ public class MainUI extends UI {
 				mainMenu.addComponent(btnSwitchUserBack);
 			}
 
-			/* Titre: Structures */
-			/*Label structureLabel = new Label(applicationContext.getMessage("menu.structure", null, getLocale()));
-		structureLabel.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
-		structureLabel.setSizeUndefined();
-		mainMenu.addComponent(structureLabel);*/
 
 
 
