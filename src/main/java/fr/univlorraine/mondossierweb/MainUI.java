@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -292,7 +293,8 @@ public class MainUI extends UI {
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
-			DefaultErrorHandler.doDefault(e);
+			displayViewFullScreen(ErreurView.NAME);
+			//DefaultErrorHandler.doDefault(e);
 		});
 
 		/* Affiche le nom de l'application dans l'onglet du navigateur */
