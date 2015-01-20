@@ -456,7 +456,13 @@
 
 	<dependencies>
 	
-		<!-- Vaadin -->
+		<!-- Vaadin dependencies -->
+		<dependency>
+			<groupId>com.vaadin.addon</groupId>
+			<artifactId>vaadin-touchkit-agpl</artifactId>
+			<version>3.0.0</version>
+			<type>jar</type>
+		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
