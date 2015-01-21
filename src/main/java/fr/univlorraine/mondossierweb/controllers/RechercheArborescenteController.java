@@ -78,7 +78,7 @@ public class RechercheArborescenteController {
 			Etape e = new Etape();
 			e.setCode(code.split("/")[0]);
 			e.setVersion(code.split("/")[1]);
-			annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours()));
+			annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent())));
 
 		}
 		return annees;

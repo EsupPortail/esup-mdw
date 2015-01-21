@@ -240,10 +240,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						parameterMap.put("type",typeFavori);
 						//récupération de la nouvelle liste
 						if(typeIsVet()){
-							listeInscritsController.recupererLaListeDesInscrits(parameterMap, selectedValue);
+							listeInscritsController.recupererLaListeDesInscrits(parameterMap, selectedValue,MainUI.getCurrent());
 						}
 						if(typeIsElp()){
-							listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, selectedValue);
+							listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, selectedValue,MainUI.getCurrent());
 						}
 						//update de l'affichage
 						initListe();

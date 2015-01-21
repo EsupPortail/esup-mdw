@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,9 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
-import lombok.Getter;
-import lombok.Setter;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -31,7 +27,6 @@ import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -40,7 +35,6 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.HeaderFooter;
@@ -52,32 +46,28 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.vaadin.server.StreamResource;
 
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Groupe;
-import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
-import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterfaceProxy;
+import gouv.education.apogee.commun.servicesmetiers.OffreFormationMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO3;
 import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO2;
 import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO2;
 import gouv.education.apogee.commun.transverse.dto.scolarite.RecupererGroupeDTO2;
-import gouv.education.apogee.commun.servicesmetiers.OffreFormationMetierServiceInterface;
-import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterfaceProxy;
 
 /**
  * Gestion de l'affichage de la liste des inscrits
@@ -152,14 +142,14 @@ public class ListeInscritsController {
 	 * @param parameterMap
 	 * @param annee
 	 */
-	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee){
+	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee, GenericUI ui){
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
 		
 		if (type.equals(Utils.VET)) {
 
 
-			initMainUIAttributesValues(code, type,annee);
+			initMainUIAttributesValues(code, type,annee, ui);
 
 			List<Inscrit> listeInscrits = null;
 
@@ -168,27 +158,27 @@ public class ListeInscritsController {
 			if(annee==null){
 				e.setCode(code.split("/")[0]);
 				e.setVersion(code.split("/")[1]);
-				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours()));
-				MainUI.getCurrent().setListeAnneeInscrits(annees);
+				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours(ui)));
+				ui.setListeAnneeInscrits(annees);
 				//On prend l'année la plus récente (la premiere de la liste)
 				e.setAnnee(annees.get(0));
-				MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
+				ui.setAnneeInscrits(e.getAnnee());
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
-				MainUI.getCurrent().setEtapeListeInscrits(e);
+				ui.setEtapeListeInscrits(e);
 			}else{
-				e = MainUI.getCurrent().getEtapeListeInscrits();
+				e = ui.getEtapeListeInscrits();
 				e.setAnnee(annee);
-				MainUI.getCurrent().setEtapeListeInscrits(e);
-				MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
+				ui.setEtapeListeInscrits(e);
+				ui.setAnneeInscrits(e.getAnnee());
 			}
 
 
 			listeInscrits = (List<Inscrit>) multipleApogeeService.getInscritsEtapeJuinSep(e);
 
-			finaliserListeInscrits(listeInscrits, null,annee);
+			finaliserListeInscrits(listeInscrits, null,annee, ui);
 
 		} else {
-			recupererLaListeDesInscritsELP(parameterMap, annee);
+			recupererLaListeDesInscritsELP(parameterMap, annee,ui);
 
 		}
 
@@ -203,12 +193,12 @@ public class ListeInscritsController {
 	 * @param etape
 	 * @param groupe
 	 */
-	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee) {
+	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee, GenericUI ui) {
 
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
 
-		initMainUIAttributesValues(code, type,annee);
+		initMainUIAttributesValues(code, type,annee, ui);
 
 		List<Inscrit> listeInscrits = null;
 
@@ -217,18 +207,18 @@ public class ListeInscritsController {
 		if(annee==null){
 			e.setCode(code);
 			List<String> annees = multipleApogeeService.getDixDernieresAnneesUniversitaires();
-			MainUI.getCurrent().setListeAnneeInscrits(annees);
+			ui.setListeAnneeInscrits(annees);
 			//On prend l'année la plus récente (la premiere de la liste)
 			annee = annees.get(0);
 			e.setAnnee(annees.get(0));
-			MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
+			ui.setAnneeInscrits(e.getAnnee());
 			e.setLibelle(elementPedagogiqueService.getLibelleElp(code));
-			MainUI.getCurrent().setElpListeInscrits(e);
+			ui.setElpListeInscrits(e);
 		}else{
-			e = MainUI.getCurrent().getElpListeInscrits();
+			e = ui.getElpListeInscrits();
 			e.setAnnee(annee);
-			MainUI.getCurrent().setElpListeInscrits(e);
-			MainUI.getCurrent().setAnneeInscrits(e.getAnnee());
+			ui.setElpListeInscrits(e);
+			ui.setAnneeInscrits(e.getAnnee());
 		}
 
 		//Récupération de tous les inscrit à l'ELP quelque soit l'étape d'appartenance choisie dans la vue ListeInscritView
@@ -255,17 +245,17 @@ public class ListeInscritsController {
 				}
 			}
 		}
-		MainUI.getCurrent().setListeEtapesInscrits(letape);
-		MainUI.getCurrent().setEtapeInscrits(null);
+		ui.setListeEtapesInscrits(letape);
+		ui.setEtapeInscrits(null);
 
 
 		//Récupération des groupes
 		List<ElpDeCollection> listeGroupes = recupererGroupes(annee, code);
 		if(listeGroupes!=null && listeGroupes.size()>0){
-			MainUI.getCurrent().setListeGroupesInscrits(listeGroupes);
+			ui.setListeGroupesInscrits(listeGroupes);
 		}
 
-		finaliserListeInscrits(listeInscrits,listeGroupes,annee);
+		finaliserListeInscrits(listeInscrits,listeGroupes,annee,ui);
 
 	}
 
@@ -275,24 +265,24 @@ public class ListeInscritsController {
 	 * @param type
 	 * @param annee
 	 */
-	private void initMainUIAttributesValues(String code, String type, String annee) {
-		if(MainUI.getCurrent().getListeInscrits()!=null){
-			MainUI.getCurrent().getListeInscrits().clear();
+	private void initMainUIAttributesValues(String code, String type, String annee, GenericUI ui) {
+		if(ui.getListeInscrits()!=null){
+			ui.getListeInscrits().clear();
 		}
 
 		if(annee==null){
-			MainUI.getCurrent().setAnneeInscrits(null);
-			MainUI.getCurrent().setListeAnneeInscrits(null);
-			MainUI.getCurrent().setEtapeListeInscrits(null);
+			ui.setAnneeInscrits(null);
+			ui.setListeAnneeInscrits(null);
+			ui.setEtapeListeInscrits(null);
 		}
 		
-		MainUI.getCurrent().setEtapeInscrits(null);
-		MainUI.getCurrent().setGroupeInscrits(null);
-		MainUI.getCurrent().setListeEtapesInscrits(null);
-		MainUI.getCurrent().setListeGroupesInscrits(null);
+		ui.setEtapeInscrits(null);
+		ui.setGroupeInscrits(null);
+		ui.setListeEtapesInscrits(null);
+		ui.setListeGroupesInscrits(null);
 
-		MainUI.getCurrent().setCodeObjListInscrits(code);
-		MainUI.getCurrent().setTypeObjListInscrits(type);
+		ui.setCodeObjListInscrits(code);
+		ui.setTypeObjListInscrits(type);
 
 	}
 
@@ -311,7 +301,7 @@ public class ListeInscritsController {
 	 * Finalise une liste d'inscrits pour affichage dans la vue listeInscritsView
 	 * @param listeInscrits
 	 */
-	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee) {
+	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee, GenericUI ui) {
 
 		if(listeInscrits!=null && listeInscrits.size()>0){
 			//setLoginInscrits(listeInscrits);
@@ -353,7 +343,7 @@ public class ListeInscritsController {
 			}
 		}
 
-		MainUI.getCurrent().setListeInscrits(listeInscrits);
+		ui.setListeInscrits(listeInscrits);
 
 	}
 

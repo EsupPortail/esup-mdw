@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
@@ -308,7 +309,7 @@ public class EtudiantController {
 				}
 
 				//On recupere les numeros d'anonymat
-				MainUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(MainUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours()));
+				MainUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(MainUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(MainUI.getCurrent())));
 				
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
@@ -571,18 +572,18 @@ public class EtudiantController {
 	}
 
 
-	public String getAnneeUnivEnCours() {
-		if(MainUI.getCurrent()!=null){
-			if(MainUI.getCurrent().getAnneeUnivEnCours()==null){
-				MainUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
+	public String getAnneeUnivEnCours(GenericUI ui) {
+		if(ui!=null){
+			if(ui.getAnneeUnivEnCours()==null){
+				ui.setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
 			}
-			return MainUI.getCurrent().getAnneeUnivEnCours();
+			return ui.getAnneeUnivEnCours();
 		}
 		return multipleApogeeService.getAnneeEnCours();
 	}
 	
-	public String getAnneeUnivEnCoursToDisplay() {
-		int annee = Integer.parseInt(getAnneeUnivEnCours());
+	public String getAnneeUnivEnCoursToDisplay(GenericUI ui) {
+		int annee = Integer.parseInt(getAnneeUnivEnCours(ui));
 		return annee+"/"+(annee+1);
 		
 	}
@@ -622,7 +623,7 @@ public class EtudiantController {
 				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 				temoin=null;
 				sourceResultat="Apogee-extraction";
-				String annee = getAnneeUnivEnCours();
+				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
 				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
 				try {
 					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
@@ -696,7 +697,7 @@ public class EtudiantController {
 				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 				temoin=null;
 				sourceResultat="Apogee-extraction";
-				String annee = getAnneeUnivEnCours();
+				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
 				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
 				try {
 					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
@@ -1529,7 +1530,7 @@ public class EtudiantController {
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				String annee = getAnneeUnivEnCours();
+				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
 				if (et.getAnnee().substring(0, 4).compareTo(annee)==0) {
 					sourceResultat="Apogee-extraction";
 					temoin=null;
@@ -1589,7 +1590,7 @@ public class EtudiantController {
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				String annee = getAnneeUnivEnCours();
+				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
 				if (et.getAnnee().substring(0, 4).compareTo(annee)==0) {
 					sourceResultat="Apogee-extraction";
 					temoin=null;
@@ -1832,7 +1833,7 @@ public class EtudiantController {
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
 		// autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
-		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours())) {
+		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours(MainUI.getCurrent()))) {
 			return false;
 		}
 		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();

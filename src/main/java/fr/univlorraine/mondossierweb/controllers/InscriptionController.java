@@ -263,7 +263,7 @@ public class InscriptionController {
 				document.add(pLieuNaissance);
 			}
 
-			String anneeEnCours = etudiantController.getAnneeUnivEnCoursToDisplay();
+			String anneeEnCours = etudiantController.getAnneeUnivEnCoursToDisplay(MainUI.getCurrent());
 			String inscritCertif = "";
 			if (inscription.getCod_anu().equals(anneeEnCours)) {
 				inscritCertif = applicationContext.getMessage("pdf.certificat.inscrit", null, Locale.getDefault());

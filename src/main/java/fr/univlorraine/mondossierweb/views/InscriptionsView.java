@@ -225,7 +225,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 
 			//Si c'est une inscription sur l'année en cours
-			if(inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours())){
+			if(inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent()))){
 				//On affiche le bouton pour voir de le détail de l'inscription
 				Button bDetailInscription=new Button();
 				bDetailInscription.setIcon(FontAwesome.SEARCH);

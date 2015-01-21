@@ -20,3 +20,7 @@ height: 100%;
 .valo-ul .v-panel-caption-centertitle-panel {
 text-align: center;
 }
+
+.valo-ul .label-centre {
+	text-align: center;
+}

@@ -97,7 +97,7 @@ import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 @Component @Scope("prototype")
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
-public class MainUI extends UI {
+public class MainUI extends GenericUI {
 	private static final long serialVersionUID = -4633936971448921781L;
 
 	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
@@ -162,7 +162,7 @@ public class MainUI extends UI {
 	@Getter
 	private boolean vueEnseignantNotesEtResultats;
 
-	//annee universitaire en cours
+	/*//annee universitaire en cours
 	@Setter
 	@Getter
 	private String anneeUnivEnCours;
@@ -180,34 +180,34 @@ public class MainUI extends UI {
 	//la liste des inscrits.
 	@Setter
 	@Getter
-	private List<Inscrit> listeInscrits;
+	private List<Inscrit> listeInscrits;*/
 
 	//l'étape correspondant à la liste des inscrits si c'est une liste d'inscrits à une étape.
-	@Setter
+	/*@Setter
 	@Getter
-	private Etape etapeListeInscrits;
+	private Etape etapeListeInscrits;*/
 
-	//l'elp correspondant à la liste des inscrits si c'est une liste d'inscrits à un elp
+	/*//l'elp correspondant à la liste des inscrits si c'est une liste d'inscrits à un elp
 	@Setter
 	@Getter
-	private ElementPedagogique elpListeInscrits;
+	private ElementPedagogique elpListeInscrits;*/
 
 	//la liste des années disponible pour la liste des inscrits en cours.
-	@Setter
+	/*@Setter
 	@Getter
-	private List<String> ListeAnneeInscrits;
+	private List<String> ListeAnneeInscrits;*/
 
 	//l'année correspondant à liste des inscrits en cours.
+	/*@Setter
+	@Getter
+	private String anneeInscrits;*/
+
+	/*//la liste des étapes affichées dans la liste des inscrits quand on consulte les inscrits à un ELP
 	@Setter
 	@Getter
-	private String anneeInscrits;
+	private List<VersionEtape> listeEtapesInscrits;*/
 
-	//la liste des étapes affichées dans la liste des inscrits quand on consulte les inscrits à un ELP
-	@Setter
-	@Getter
-	private List<VersionEtape> listeEtapesInscrits;
-
-	//l'identifiant de l'étape sélectionnée dans la liste des inscrits quand on consulte les inscrits à un ELP
+	/*//l'identifiant de l'étape sélectionnée dans la liste des inscrits quand on consulte les inscrits à un ELP
 	@Setter
 	@Getter
 	private String etapeInscrits;
@@ -220,7 +220,7 @@ public class MainUI extends UI {
 	//l'identifiant du groupe sélectionné dans la liste des inscrits quand on consulte les inscrits à un ELP
 	@Setter
 	@Getter
-	private String groupeInscrits;
+	private String groupeInscrits;*/
 
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
 	private int rangTabDossierEtudiant;
@@ -570,10 +570,10 @@ public class MainUI extends UI {
 			Button etuInscritBtn = new Button("", FontAwesome.CHECK_CIRCLE);
 			etuInscritBtn.setPrimaryStyleName(ValoTheme.BUTTON_BORDERLESS);
 			if(etudiant.isInscritPourAnneeEnCours()){
-				etuInscritBtn.setDescription("Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours()));
+				etuInscritBtn.setDescription("Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
 			}else{
 				etuInscritBtn.setIcon(FontAwesome.EXCLAMATION_CIRCLE);
-				etuInscritBtn.setDescription("Non Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours()));
+				etuInscritBtn.setDescription("Non Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
 			}
 
 			fotoLayout.addComponent(new HorizontalLayout());
@@ -705,7 +705,7 @@ public class MainUI extends UI {
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 		if(parameterMap!=null){
-			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null);
+			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
 			listeInscritsView.initListe();
 		}
 		//Si l'onglet a été closed

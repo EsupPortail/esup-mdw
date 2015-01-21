@@ -111,6 +111,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		//Label iconeLabel = new Label();
 		//iconeLabel.setIcon(FontAwesome.INFO_CIRCLE);
 		//labelLayout.addComponent(iconeLabel);
+		System.out.println("fav getLocale() : "+getLocale());
 		Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
 		infoLabel.setIcon(FontAwesome.INFO_CIRCLE);
 		//infoLabel.setSizeFull();
@@ -194,6 +195,10 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						codeButton.setStyleName("link"); 
 						codeButton.addStyleName("v-link");
 						codeButton.setWidth("90px");
+						codeButton.addClickListener(e->{
+							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
+						});
+						
 						Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
 						libButton.setStyleName("v-button-multiline");
 						libButton.addStyleName("link"); 
@@ -201,7 +206,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						libButton.setHeight("100%");
 						libButton.setWidth("100%");
 						libButton.addClickListener(e->{
-							rechercheController.accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
+							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 						});
 						
 						favElpLayout.addComponent(codeButton);

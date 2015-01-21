@@ -53,7 +53,7 @@ import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 @Component @Scope("prototype")
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
-public class MdwTouchkitUI extends UI{
+public class MdwTouchkitUI extends GenericUI{
 
 	private static final long serialVersionUID = 1440138826041756551L;
 	
@@ -85,8 +85,6 @@ public class MdwTouchkitUI extends UI{
 	@Resource
 	private transient ConfigController configController;
 	
-	@Resource
-	private ListeInscritsMobileView listeInscritsMobileView;
 
 	//vrai si on consulte les notes en vue enseignant
 	@Setter
@@ -129,6 +127,7 @@ public class MdwTouchkitUI extends UI{
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
+			LOG.error(e.getThrowable().getCause().toString(), e.getThrowable());
 			displayViewFullScreen(ErreurView.NAME);
 		});
 
@@ -222,12 +221,13 @@ public class MdwTouchkitUI extends UI{
 
 	
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
-		
+		System.out.println("--navigateToListeInscrits0--");
 		if(parameterMap!=null){
-			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null);
-			listeInscritsMobileView.initListe();
+			System.out.println("--navigateToListeInscrits1--");
+			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
 		}
-		navigator.navigateTo(listeInscritsMobileView.NAME);
+		System.out.println("--navigateToListeInscrits2--");
+		displayViewFullScreen(ListeInscritsMobileView.NAME);
 	}
 
     

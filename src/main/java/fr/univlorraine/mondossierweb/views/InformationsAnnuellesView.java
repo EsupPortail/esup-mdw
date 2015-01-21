@@ -66,7 +66,7 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
 
-		Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours()));
+		Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent())));
 
 		FormLayout formInfosLayout = new FormLayout();
 		formInfosLayout.setSpacing(true);

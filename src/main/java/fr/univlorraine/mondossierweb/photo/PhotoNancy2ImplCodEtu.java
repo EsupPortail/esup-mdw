@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 
 import com.vaadin.server.WebBrowser;
 
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univnancy2.PhotoClient.beans.Category;
 import fr.univnancy2.PhotoClient.beans.PhotoClient;
@@ -257,11 +259,24 @@ public void init(String loginUser) {
  * @return l'adresse ip de l'utilisateur
  */
 public String getRemoteAdresse() {
+	WebBrowser browser;
 		//Recuperation de l'IP
+	if(GenericUI.getCurrent() instanceof MainUI){
 		MainUI mainUI = MainUI.getCurrent();
-		WebBrowser browser = mainUI.getPage().getWebBrowser();
-		LOG.info("IP client : "+browser.getAddress());
+		browser = mainUI.getPage().getWebBrowser();
+		LOG.info("IP client MainUI : "+browser.getAddress());
 		return browser.getAddress();
+		
+	}
+	if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
+		MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
+		browser = mdwTouchkitUI.getPage().getWebBrowser();
+		LOG.info("IP client MdwTouchkitUI : "+browser.getAddress());
+		return browser.getAddress();
+		
+	}
+	
+	return null;
 }
 
 /**
