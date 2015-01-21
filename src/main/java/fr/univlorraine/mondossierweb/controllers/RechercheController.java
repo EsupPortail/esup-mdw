@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
@@ -72,6 +73,26 @@ public class RechercheController {
 		}
 	}
 
+	public void accessToMobileDetail(String code, String type) {
+		Map<String, String> parameterMap = new HashMap<>();
+		parameterMap.put("code",code);
+		parameterMap.put("type",type);
+		
+		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
+				if(type.equals(Utils.TYPE_VET))
+					parameterMap.replace("type",Utils.VET);
+				if(type.equals(Utils.TYPE_ELP))
+						parameterMap.replace("type",Utils.ELP);
+				MdwTouchkitUI.getCurrent().navigateToListeInscrits(parameterMap);	
+		}
+		
+		/*if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
+				parameterMap.replace("type",Utils.ETU);
+				MainUI.getCurrent().setEtudiant(new Etudiant(code));
+				etudiantController.recupererEtatCivil();
+				MdwTouchkitUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+		}*/
+	}
 	
 	
 }

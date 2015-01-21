@@ -112,13 +112,14 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");
 		/* Défini le bean UI */
-		springVaadinServlet.setInitParameter("beanName", "mainUI");
+		//springVaadinServlet.setInitParameter("beanName", "mainUI");
+		springVaadinServlet.setInitParameter("UIProvider", "fr.univlorraine.mondossierweb.MdwUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(15));
 		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "com.vaadin.DefaultWidgetSet");
-		springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 		//springVaadinServlet.setInitParameter(Constants.DEFAULT_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 		//springVaadinServlet.setInitParameter(Constants.WIDGETSET_DIR_PATH, "VAADIN/widgetsets");
 		
@@ -130,6 +131,34 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setAsyncSupported(true);
 		/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
 		springVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
+	
+	
+		/* Spring-Vaadin Touchkit Servlet  */
+		ServletRegistration.Dynamic springTouchkitVaadinServlet = servletContext.addServlet("springTouchkitVaadin", MDWTouchkitServlet.class);
+		//springTouchkitVaadinServlet.setLoadOnStartup(1);
+		springTouchkitVaadinServlet.addMapping("/m/*");
+		/* Défini le bean UI */
+		//springTouchkitVaadinServlet.setInitParameter("beanName", "mdwFallbackTouchkitUI");
+		springVaadinServlet.setInitParameter("UIProvider", "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
+		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
+		springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
+		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
+		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(15));
+		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "com.vaadin.DefaultWidgetSet");
+		springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+		//springTouchkitVaadinServlet.setInitParameter(Constants.DEFAULT_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+		//springTouchkitVaadinServlet.setInitParameter(Constants.WIDGETSET_DIR_PATH, "VAADIN/widgetsets");
+		
+		/* Configure le Push */
+	//	springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
+		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
+		springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
+		/* Active le support des requêtes asynchrones */
+		springTouchkitVaadinServlet.setAsyncSupported(true);
+		/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
+		springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
+	
+	
 	}
 	
 

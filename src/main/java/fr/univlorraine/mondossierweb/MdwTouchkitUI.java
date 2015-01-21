@@ -1,0 +1,234 @@
+package fr.univlorraine.mondossierweb;
+
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Component;
+
+import ru.xpoft.vaadin.DiscoveryNavigator;
+
+import com.vaadin.addon.touchkit.ui.TabBarView;
+import com.vaadin.annotations.StyleSheet;
+import com.vaadin.annotations.Theme;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.UiController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
+import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.ErreurView;
+import fr.univlorraine.mondossierweb.views.FavorisMobileView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
+import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
+
+@Component @Scope("prototype")
+@Theme("valo-ul")
+@StyleSheet("mobileView.css")
+public class MdwTouchkitUI extends UI{
+
+	private static final long serialVersionUID = 1440138826041756551L;
+	
+	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
+
+	/* Redirige java.util.logging vers SLF4j */
+	static {
+		SLF4JBridgeHandler.install();
+	}
+	/* Injections */
+	@Resource
+	private transient ApplicationContext applicationContext;
+	@Resource
+	private transient Environment environment;
+	@Resource
+	private transient UserController userController;
+	@Resource
+	private transient UiController uiController;
+	@Resource
+	private transient RechercheArborescenteController rechercheArborescenteController;
+	@Resource
+	private transient EtudiantController etudiantController;
+	@Resource(name="codetuFromLoginDao")
+	private transient IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
+	@Resource
+	private transient ListeInscritsController listeInscritsController;
+	@Resource
+	private transient FavorisController favorisController;
+	@Resource
+	private transient ConfigController configController;
+	
+	@Resource
+	private ListeInscritsMobileView listeInscritsMobileView;
+
+	//vrai si on consulte les notes en vue enseignant
+	@Setter
+	@Getter
+	private boolean vueEnseignantNotesEtResultats;
+
+    private VerticalLayout mainLayout= new VerticalLayout();
+	private CssLayout menuLayout = new CssLayout();
+	private CssLayout contentLayout = new CssLayout();
+	private TabBarView menuEnseignant;
+
+	/** Tracker Google Analytics */
+	@Getter
+	private GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
+
+	/** Gestionnaire de vues étudiant*/
+	@Getter
+	private DiscoveryNavigator navigator = new DiscoveryNavigator(this, contentLayout);
+	
+	/**
+	 * @see com.vaadin.ui.UI#getCurrent()
+	 */
+	public static MdwTouchkitUI getCurrent() {
+		return (MdwTouchkitUI) UI.getCurrent();
+	}
+	
+    @Override
+    protected void init(VaadinRequest request) {
+
+
+    	VaadinSession.getCurrent().setErrorHandler(e -> {
+			Throwable cause = e.getThrowable();
+			while (cause instanceof Throwable) {
+				/* Gère les accès non autorisés */
+				if (cause instanceof AccessDeniedException) {
+					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+					displayViewFullScreen(AccesRefuseView.NAME);
+					return;
+				}
+				cause = cause.getCause();
+			}
+			/* Traite les autres erreurs normalement */
+			displayViewFullScreen(ErreurView.NAME);
+		});
+
+    	
+		/* Affiche le nom de l'application dans l'onglet du navigateur */
+		getPage().setTitle(environment.getRequiredProperty("app.name"));
+
+
+		/* Device Detection */
+		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) request);
+		if(currentDevice.isMobile())
+			LOG.debug("device : mobile");
+		if(currentDevice.isTablet())
+			LOG.debug("device : tablet");
+		if(currentDevice.isNormal())
+			LOG.debug("device : normal");
+        
+		/* Construit le gestionnaire de vues */
+		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
+
+
+		/* Initialise Google Analytics */
+		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
+		/* Suis les changements de vue du navigator */
+		googleAnalyticsTracker.trackNavigator(navigator);
+
+		setContent(mainLayout);
+		
+		
+		if(userController.isEnseignant() || userController.isEtudiant()){
+			
+			mainLayout.setSizeFull();
+			mainLayout.addComponent(contentLayout);
+			mainLayout.addComponent(menuLayout);
+			mainLayout.setExpandRatio(contentLayout, 1);
+			
+			if(userController.isEnseignant()){
+				
+				//On consultera les notes en vue enseignant
+				vueEnseignantNotesEtResultats=true;
+				
+				buildMainMenuEnseignant();
+				
+			}else{
+				
+				
+			}
+			
+		}else{
+			displayViewFullScreen(AccesRefuseView.NAME);
+		}
+       
+        
+      
+
+    }
+    
+   
+    private void buildMainMenuEnseignant() {
+		menuLayout.removeAllComponents();
+		if(menuEnseignant==null){
+			menuEnseignant=new TabBarView();
+		}
+		Label label = new Label();
+		Tab tabFavoris = menuEnseignant.addTab(label);
+
+		//Set tab name and/or icon
+		//tabFavoris.setCaption("Favoris");
+		tabFavoris.setIcon(FontAwesome.BOOKMARK);
+		
+		
+		Label label2 = new Label();
+		Tab tabSearch = menuEnseignant.addTab(label2);
+
+		//Set tab name and/or icon
+		//tabSearch.setCaption("Recherche");
+		tabSearch.setIcon(FontAwesome.SEARCH);
+
+		//Programmatically modify tab bar
+		menuEnseignant.setSelectedTab(tabFavoris); //same as user clicking the tab
+		menuLayout.addComponent(menuEnseignant);
+		navigator.navigateTo(FavorisMobileView.NAME);
+		
+	}
+
+
+	private void displayViewFullScreen(String view){
+		setContent(contentLayout);
+		navigator.navigateTo(view);
+	}
+
+	
+	public void navigateToListeInscrits(Map<String, String> parameterMap) {
+		
+		if(parameterMap!=null){
+			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null);
+			listeInscritsMobileView.initListe();
+		}
+		navigator.navigateTo(listeInscritsMobileView.NAME);
+	}
+
+    
+}

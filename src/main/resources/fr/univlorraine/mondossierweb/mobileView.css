@@ -1,0 +1,22 @@
+
+.valo-ul .v-horizontallayout-v-layout-multiline {
+height: 100%;
+}
+
+.valo-ul .v-button-multiline {
+height: 100%;
+}
+
+.valo-ul .line-separator{
+border-top: 1px solid #d5d5d5;
+}
+
+.valo-ul .v-button-multiline .v-button-wrap .v-button-caption {
+line-height: normal;
+white-space: normal;
+height: 100%;
+}
+
+.valo-ul .v-panel-caption-centertitle-panel {
+text-align: center;
+}

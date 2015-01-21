@@ -301,15 +301,6 @@ public class MainUI extends UI {
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
 
-		/* Device Detection */
-		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) request);
-		/*if(currentDevice.isMobile())
-			LOG.debug("device : mobile");
-		if(currentDevice.isTablet())
-			LOG.debug("device : tablet");
-		if(currentDevice.isNormal())
-			LOG.debug("device : normal");*/
-
 
 
 		/* Construit le gestionnaire de vues */
