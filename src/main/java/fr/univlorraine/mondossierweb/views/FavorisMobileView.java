@@ -83,12 +83,10 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 		removeAllComponents();
-		
-		((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsDisplayed();
-		
+
+		//((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsDisplayed();
+
 		/* Style */
-		setMargin(true);
-		setSpacing(true);
 		setSizeFull();
 
 		liste_types_inscrits= new LinkedList<String>();
@@ -106,9 +104,36 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 		List<Favoris> lfav = favorisController.getFavoris();
 
+
+		//NAVBAR
+		HorizontalLayout navbar=new HorizontalLayout();
+		navbar.setSizeFull();
+		navbar.setHeight("40px");
+		navbar.setStyleName("navigation-bar");
+
+		//Title
+		Label labelFav = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
+		labelFav.setStyleName("v-label-navbar");
+		navbar.addComponent(labelFav);
+		navbar.setComponentAlignment(labelFav, Alignment.MIDDLE_CENTER);
+
+		//Bouton Search
+		Button searchButton = new Button();
+		searchButton.setIcon(FontAwesome.SEARCH);
+		//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+		searchButton.setStyleName("v-nav-button");
+		navbar.addComponent(searchButton);
+		navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
+
+		navbar.setExpandRatio(labelFav, 1);
+		addComponent(navbar);
+
+
+
 		VerticalLayout globalLayout = new VerticalLayout();
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
+		globalLayout.setMargin(true);
 
 		FormLayout labelLayout = new FormLayout();
 		labelLayout.setSizeFull();
@@ -119,6 +144,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		//labelLayout.addComponent(iconeLabel);
 		System.out.println("fav getLocale() : "+getLocale());
 		Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
+		infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
 		infoLabel.setIcon(FontAwesome.INFO_CIRCLE);
 		//infoLabel.setSizeFull();
 		labelLayout.addComponent(infoLabel);
@@ -126,25 +152,27 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 		if(lfav!=null && lfav.size()>0){
 			if(favorisContientVet(lfav)){
-				
+
 				Panel vetPanel = new Panel(applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
 				vetPanel.setStyleName("centertitle-panel");
 				vetPanel.setSizeFull();
-				
+
 				VerticalLayout vetLayout = new VerticalLayout();
 				vetLayout.setSizeFull();
 				int i=0;
 				for(Favoris fav :  lfav){
 					if(fav.getId().getTypfav().equals(Utils.VET)){
 						i++;
-						
+
 						HorizontalLayout favVetLayout = new HorizontalLayout();
+						favVetLayout.setMargin(true);
 						favVetLayout.setSpacing(true);
-						
+						favVetLayout.setSpacing(true);
+
 						favVetLayout.setStyleName("v-layout-multiline");
 						favVetLayout.setWidth("100%");
 						favVetLayout.setHeight("100%");
-						
+
 						Button codeButton = new Button(fav.getId().getIdfav());
 						codeButton.setStyleName("link"); 
 						codeButton.addStyleName("v-link");
@@ -152,8 +180,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						codeButton.addClickListener(e->{
 							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 						});
-						
-						
+
+
 						Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
 						libButton.setStyleName("v-button-multiline");
 						libButton.addStyleName("link"); 
@@ -163,7 +191,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						libButton.addClickListener(e->{
 							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 						});
-						
+
 						favVetLayout.addComponent(codeButton);
 						favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
 						favVetLayout.addComponent(libButton);
@@ -179,13 +207,13 @@ public class FavorisMobileView extends VerticalLayout implements View {
 				}
 				vetPanel.setContent(vetLayout);
 				globalLayout.addComponent(vetPanel);
-				
+
 			}
 
 			if(favorisContientElp(lfav)){
 				Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
 				elpPanel.setStyleName("centertitle-panel");
-				
+
 				VerticalLayout elpLayout = new VerticalLayout();
 				int i=0;
 				for(Favoris fav :  lfav){
@@ -196,7 +224,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						favElpLayout.setSpacing(true);
 						favElpLayout.setWidth("100%");
 						favElpLayout.setHeight("100%");
-						
+
 						Button codeButton = new Button(fav.getId().getIdfav());
 						codeButton.setStyleName("link"); 
 						codeButton.addStyleName("v-link");
@@ -204,7 +232,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						codeButton.addClickListener(e->{
 							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 						});
-						
+
 						Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
 						libButton.setStyleName("v-button-multiline");
 						libButton.addStyleName("link"); 
@@ -214,7 +242,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						libButton.addClickListener(e->{
 							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 						});
-						
+
 						favElpLayout.addComponent(codeButton);
 						favElpLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
 						favElpLayout.addComponent(libButton);
@@ -229,8 +257,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 				elpPanel.setContent(elpLayout);
 				globalLayout.addComponent(elpPanel);
 			}
-			
-		
+
+
 
 		}
 
@@ -251,12 +279,13 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		//addComponent(globalLayout);
 		contentLayout.addComponent(globalLayout);
 		addComponent(contentLayout);
-		
-		
+		setExpandRatio(contentLayout, 1);
+
+
 	}
 
 
-	
+
 	private boolean favorisContientVet(List<Favoris> lfav) {
 		for(Favoris fav :  lfav){
 			if(fav.getId().getTypfav().equals(Utils.VET)){
@@ -265,7 +294,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		}
 		return false;
 	}
-	
+
 	private boolean favorisContientElp(List<Favoris> lfav) {
 		for(Favoris fav :  lfav){
 			if(fav.getId().getTypfav().equals(Utils.ELP)){
@@ -283,7 +312,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		//LOG.debug("ENTER FAVORIS VIEW");
 	}
 
-	
+
 
 
 }

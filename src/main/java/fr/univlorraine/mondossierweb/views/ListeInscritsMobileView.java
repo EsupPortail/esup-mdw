@@ -6,13 +6,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.jfree.util.Log;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.addon.touchkit.ui.NavigationButton;
+import com.vaadin.addon.touchkit.ui.NavigationView;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -25,6 +26,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -63,7 +65,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	
 	private String libelleObj;
 	
-	private Label infoNbInscrit;
+	private Label infoLibelleObj;
 	
 	//liste contenant tous les codind à afficher (apres application du filtre)
 	private List<String> listecodind;
@@ -82,14 +84,22 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	
 	private Button filterButton;
 	
+
+	
 	/**
 	 * Initialise la vue
 	 */
 	@PostConstruct
 	public void init() {
+
 		removeAllComponents();
 		
-		((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsNotDisplayed();
+
+
+		
+		
+		
+	//	((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsNotDisplayed();
 
 		/* Style */
 		//setMargin(true);
@@ -106,7 +116,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		if(typeIsElp() && MdwTouchkitUI.getCurrent().getElpListeInscrits()!=null){
 			libelleObj = MdwTouchkitUI.getCurrent().getElpListeInscrits().getLibelle();
 		}
-
+		
 		
 		//Récupération de la liste des inscrits
 		List<Inscrit> linscrits = MdwTouchkitUI.getCurrent().getListeInscrits();
@@ -118,21 +128,30 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		navbar.setSizeFull();
 		navbar.setHeight("40px");
 		navbar.setStyleName("navigation-bar");
+		
 		//Bouton retour
 		returnButton = new Button();
 		returnButton.setIcon(FontAwesome.ARROW_LEFT);
-		returnButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-		returnButton.addStyleName("v-nav-button");
-
+		//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+		returnButton.setStyleName("v-nav-button");
 		navbar.addComponent(returnButton);
 		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+		
+		//Title
+		Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
+		labelTrombi.setStyleName("v-label-navbar");
+		navbar.addComponent(labelTrombi);
+		navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
+		
 		//Bouton Filtre
 		filterButton = new Button();
-		filterButton.setIcon(FontAwesome.SEARCH_MINUS);
-		filterButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-		filterButton.addStyleName("v-nav-button");
+		filterButton.setIcon(FontAwesome.ELLIPSIS_V);
+		//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+		filterButton.setStyleName("v-nav-button");
 		navbar.addComponent(filterButton);
 		navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+		
+		navbar.setExpandRatio(labelTrombi, 1);
 		addComponent(navbar);
 		
 		//Test si la liste contient des étudiants
@@ -142,21 +161,18 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			infoLayout.setMargin(true);
 			infoLayout.setSpacing(true);
 			infoLayout.addStyleName("v-scrollableelement");
-			//Layout avec le nb d'inscrit, le bouton trombinoscope et le bouton d'export
-			/*HorizontalLayout resumeLayout=new HorizontalLayout();
-			resumeLayout.setWidth("100%");
-			resumeLayout.setHeight("50px");
 			
+			//Layout avec le Libelle
+			HorizontalLayout resumeLayout=new HorizontalLayout();
+			resumeLayout.setWidth("100%");
+			resumeLayout.setHeight("20px");
 			//Label affichant le nb d'inscrits
-			System.out.println("ins getLocale() : "+getLocale());
-			infoNbInscrit = new Label(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+linscrits.size());
-			leftResumeLayout= new HorizontalLayout();
-			leftResumeLayout.addComponent(infoNbInscrit);
-			leftResumeLayout.setComponentAlignment(infoNbInscrit, Alignment.MIDDLE_LEFT);
-
-			resumeLayout.addComponent(leftResumeLayout);
-
-			infoLayout.addComponent(resumeLayout);*/
+			infoLibelleObj = new Label(libelleObj);
+			infoLibelleObj.setStyleName(ValoTheme.LABEL_SMALL);
+			infoLibelleObj.setSizeFull();
+			resumeLayout.addComponent(infoLibelleObj);
+			resumeLayout.setComponentAlignment(infoLibelleObj, Alignment.TOP_CENTER);
+			infoLayout.addComponent(resumeLayout);
 			
 			
 			
@@ -183,16 +199,24 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			
 			infoLayout.addComponent(dataLayout);
 			infoLayout.setExpandRatio(dataLayout, 1);
+			
 			addComponent(infoLayout);
+
+			
 			setExpandRatio(infoLayout, 1);
 		}else{
 			Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
 			infoAucuninscrit.setSizeFull();
+			
 			addComponent(infoAucuninscrit);
+
+			
 			//setComponentAlignment(infoAucuninscrit, Alignment.TOP_CENTER);
 			setExpandRatio(infoAucuninscrit, 1);
 			System.out.println("Aucun inscrit");
 		}
+		
+
 		
 	}
 
@@ -211,6 +235,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 		for(Inscrit inscrit : linscrits){
 			if(listecodind.contains(inscrit.getCod_ind())){
+				Panel etuPanel = new Panel();
 				HorizontalLayout photoLayout = new HorizontalLayout();
 				photoLayout.setId(inscrit.getCod_ind());
 				photoLayout.setSizeFull();
@@ -257,8 +282,9 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				photoLayout.addComponent(nomCodeLayout);
 				photoLayout.setComponentAlignment(nomCodeLayout, Alignment.MIDDLE_CENTER);
 
-				trombiLayout.addComponent(photoLayout);
-				trombiLayout.setComponentAlignment(photoLayout, Alignment.MIDDLE_CENTER);
+				etuPanel.setContent(photoLayout);
+				trombiLayout.addComponent(etuPanel);
+				trombiLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);
 			}
 		}
 

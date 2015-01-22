@@ -92,10 +92,10 @@ public class MdwTouchkitUI extends GenericUI{
 	@Getter
 	private boolean vueEnseignantNotesEtResultats;
 
-    private VerticalLayout mainLayout= new VerticalLayout();
-	private CssLayout menuLayout = new CssLayout();
+   // private VerticalLayout mainLayout= new VerticalLayout();
+	//private CssLayout menuLayout = new CssLayout();
 	private CssLayout contentLayout = new CssLayout();
-	private TabBarView menuEnseignant;
+	//private TabBarView menuEnseignant;
 
 	/** Tracker Google Analytics */
 	@Getter
@@ -177,24 +177,24 @@ public class MdwTouchkitUI extends GenericUI{
 		/* Suis les changements de vue du navigator */
 		googleAnalyticsTracker.trackNavigator(navigator);
 
-		setContent(mainLayout);
+		setContent(contentLayout);
 		
 		
 		
 		if(userController.isEnseignant() || userController.isEtudiant()){
 			
-			mainLayout.setSizeFull();
+			/*mainLayout.setSizeFull();
 			
 			mainLayout.addComponent(contentLayout);
 			mainLayout.addComponent(menuLayout);
-			mainLayout.setExpandRatio(contentLayout, 1);
+			mainLayout.setExpandRatio(contentLayout, 1);*/
 			
 			if(userController.isEnseignant()){
 				
 				//On consultera les notes en vue enseignant
 				vueEnseignantNotesEtResultats=true;
-				
-				buildMainMenuEnseignant();
+				navigator.navigateTo(FavorisMobileView.NAME);
+				//buildMainMenuEnseignant();
 				
 			}else{
 				
@@ -212,7 +212,7 @@ public class MdwTouchkitUI extends GenericUI{
     }
     
    
-    private void buildMainMenuEnseignant() {
+   /* private void buildMainMenuEnseignant() {
 		menuLayout.removeAllComponents();
 		if(menuEnseignant==null){
 			menuEnseignant=new TabBarView();
@@ -240,7 +240,7 @@ public class MdwTouchkitUI extends GenericUI{
 		navigator.navigateTo(FavorisMobileView.NAME);
 		
 		
-	}
+	}*/
 
 
 	/*private void displayViewFullScreen(String view){
@@ -264,19 +264,19 @@ public class MdwTouchkitUI extends GenericUI{
 		navigator.navigateTo(ListeInscritsMobileView.NAME);
 	}
 	
-	public void checkMenuIsNotDisplayed() {
+	/*public void checkMenuIsNotDisplayed() {
 		this.setContent(contentLayout);
 		
-	}
+	}*/
 
-	public void checkMenuIsDisplayed() {
+	/*public void checkMenuIsDisplayed() {
 		mainLayout.setSizeFull();
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(menuLayout);
 		mainLayout.setExpandRatio(contentLayout, 1);
 		this.setContent(mainLayout);
 		
-	}
+	}*/
 
     
 }

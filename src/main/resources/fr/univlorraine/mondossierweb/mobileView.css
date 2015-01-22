@@ -42,10 +42,25 @@ overflow-x: hidden;
 
 .valo-ul .v-nav-button {
 	padding: 0 0px;
+	border: none;
+	background-image: none;
+	background-color : transparent;
+	border-radius: 0;
+}
+
+.valo-ul .v-nav-button .v-button-wrap {
+	background-image: none;
+	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0);
 }
 
 
 .valo-ul .v-nav-button:before {
 content: none;
 
+}
+
+
+.valo-ul .v-label-navbar {
+color: #FFFFFF;
+text-align: center;
 }
