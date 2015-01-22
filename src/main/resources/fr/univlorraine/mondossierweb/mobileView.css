@@ -54,13 +54,34 @@ overflow-x: hidden;
 }
 
 
-.valo-ul .v-nav-button:before {
+.valo-ul .v-popover-button:before {
 content: none;
 
 }
 
 
+.valo-ul .v-popover-button .v-button-wrap {
+	background-image: none;
+	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0);
+}
+
+
+.valo-ul .v-nav-button:before {
+content: none;
+
+}
+
+.valo-ul .v-popover-blank {
+	background-color: white;
+	background-image: none;
+}
+
 .valo-ul .v-label-navbar {
 color: #FFFFFF;
 text-align: center;
+}
+
+
+.valo-ul .v-window-header {
+ line-height: normal;
 }

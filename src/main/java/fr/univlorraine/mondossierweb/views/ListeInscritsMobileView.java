@@ -27,6 +27,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -35,6 +36,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
 
 
 /**
@@ -154,6 +156,17 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		filterButton.setIcon(FontAwesome.ELLIPSIS_V);
 		//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		filterButton.setStyleName("v-nav-button");
+		filterButton.addClickListener(e->{
+			/*FiltreInscritsMobilePopover popover = new FiltreInscritsMobilePopover();
+			 popover.showRelativeTo(filterButton);*/
+			FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
+			/*w.addCloseListener(g->{
+				boolean choix = w.getCheckBox().getValue();
+				
+			});*/
+			UI.getCurrent().addWindow(w);
+			
+		});
 		navbar.addComponent(filterButton);
 		navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
 		
