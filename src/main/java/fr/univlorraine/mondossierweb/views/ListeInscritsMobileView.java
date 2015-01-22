@@ -134,6 +134,12 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		returnButton.setIcon(FontAwesome.ARROW_LEFT);
 		//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		returnButton.setStyleName("v-nav-button");
+		returnButton.addClickListener(e->{
+			if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
+					MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(FavorisMobileView.NAME)){
+				MdwTouchkitUI.getCurrent().navigateTofavoris();
+			}
+		});
 		navbar.addComponent(returnButton);
 		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
 		
@@ -205,15 +211,18 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			
 			setExpandRatio(infoLayout, 1);
 		}else{
+			infoLayout= new VerticalLayout();
+			infoLayout.setMargin(true);
+			infoLayout.setSpacing(true);
+			
 			Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
 			infoAucuninscrit.setSizeFull();
 			
-			addComponent(infoAucuninscrit);
+			infoLayout.addComponent(infoAucuninscrit);
+			addComponent(infoLayout);
 
-			
 			//setComponentAlignment(infoAucuninscrit, Alignment.TOP_CENTER);
-			setExpandRatio(infoAucuninscrit, 1);
-			System.out.println("Aucun inscrit");
+			setExpandRatio(infoLayout, 1);
 		}
 		
 

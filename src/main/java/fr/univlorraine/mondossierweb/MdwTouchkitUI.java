@@ -86,6 +86,8 @@ public class MdwTouchkitUI extends GenericUI{
 	@Resource
 	private transient ConfigController configController;
 	
+	@Getter
+	private String trombinoscopeFromView;
 
 	//vrai si on consulte les notes en vue enseignant
 	@Setter
@@ -251,17 +253,22 @@ public class MdwTouchkitUI extends GenericUI{
 	*/
 
 
-	
+    public void navigateToListeInscritsFromFavoris(Map<String, String> parameterMap) {
+    	trombinoscopeFromView = FavorisMobileView.NAME;
+    	navigateToListeInscrits( parameterMap);
+	}
+    
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
-		System.out.println("--navigateToListeInscrits0--");
 		if(parameterMap!=null){
-			System.out.println("--navigateToListeInscrits1--");
 			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
 		}
-		System.out.println("--navigateToListeInscrits2--");
 		
 		//displayViewFullScreen(ListeInscritsMobileView.NAME);
 		navigator.navigateTo(ListeInscritsMobileView.NAME);
+	}
+
+	public void navigateTofavoris() {
+		navigator.navigateTo(FavorisMobileView.NAME);
 	}
 	
 	/*public void checkMenuIsNotDisplayed() {

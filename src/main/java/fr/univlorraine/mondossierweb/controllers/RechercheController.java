@@ -83,7 +83,7 @@ public class RechercheController {
 					parameterMap.replace("type",Utils.VET);
 				if(type.equals(Utils.TYPE_ELP))
 						parameterMap.replace("type",Utils.ELP);
-				MdwTouchkitUI.getCurrent().navigateToListeInscrits(parameterMap);	
+				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
 		}
 		
 		/*if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
