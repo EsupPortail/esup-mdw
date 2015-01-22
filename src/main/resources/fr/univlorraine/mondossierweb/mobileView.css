@@ -11,6 +11,10 @@ height: 100%;
 border-top: 1px solid #d5d5d5;
 }
 
+.valo-ul .navigation-bar{
+background-color: rgb(85,96,164);;
+}
+
 .valo-ul .v-button-multiline .v-button-wrap .v-button-caption {
 line-height: normal;
 white-space: normal;
@@ -23,4 +27,25 @@ text-align: center;
 
 .valo-ul .label-centre {
 	text-align: center;
+}
+
+.valo-ul .v-scrollableelement{
+overflow-y: auto;
+overflow-x: hidden;
+}
+
+.valo-ul .v-noscrollableelement{
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+
+.valo-ul .v-nav-button {
+	padding: 0 0px;
+}
+
+
+.valo-ul .v-nav-button:before {
+content: none;
+
 }

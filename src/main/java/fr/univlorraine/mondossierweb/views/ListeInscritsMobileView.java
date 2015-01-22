@@ -12,18 +12,19 @@ import org.springframework.stereotype.Component;
 
 import ru.xpoft.vaadin.VaadinView;
 
+import com.vaadin.addon.touchkit.ui.NavigationButton;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
+
+
 import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -32,7 +33,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
+
 
 /**
  * ListeInscrits sur mobile
@@ -77,6 +78,10 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	
 	private VerticalLayout trombiLayout;
 	
+	private Button returnButton;
+	
+	private Button filterButton;
+	
 	/**
 	 * Initialise la vue
 	 */
@@ -84,13 +89,13 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	public void init() {
 		removeAllComponents();
 		
-
-
+		((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsNotDisplayed();
 
 		/* Style */
-		setMargin(true);
-		setSpacing(true);
+		//setMargin(true);
+		//setSpacing(true);
 		setSizeFull();
+		addStyleName("v-noscrollableelement");
 
 		code = MdwTouchkitUI.getCurrent().getCodeObjListInscrits();
 		typeFavori = MdwTouchkitUI.getCurrent().getTypeObjListInscrits();
@@ -108,30 +113,53 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 		refreshListeCodind(new BeanItemContainer<>(Inscrit.class, linscrits));
 		
+		//NAVBAR
+		HorizontalLayout navbar=new HorizontalLayout();
+		navbar.setSizeFull();
+		navbar.setHeight("40px");
+		navbar.setStyleName("navigation-bar");
+		//Bouton retour
+		returnButton = new Button();
+		returnButton.setIcon(FontAwesome.ARROW_LEFT);
+		returnButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+		returnButton.addStyleName("v-nav-button");
+
+		navbar.addComponent(returnButton);
+		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+		//Bouton Filtre
+		filterButton = new Button();
+		filterButton.setIcon(FontAwesome.SEARCH_MINUS);
+		filterButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+		filterButton.addStyleName("v-nav-button");
+		navbar.addComponent(filterButton);
+		navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+		addComponent(navbar);
+		
 		//Test si la liste contient des étudiants
 		if(linscrits!=null && linscrits.size()>0 && listecodind!=null && listecodind.size()>0){
 			infoLayout= new VerticalLayout();
 			infoLayout.setSizeFull();
+			infoLayout.setMargin(true);
+			infoLayout.setSpacing(true);
+			infoLayout.addStyleName("v-scrollableelement");
 			//Layout avec le nb d'inscrit, le bouton trombinoscope et le bouton d'export
-			HorizontalLayout resumeLayout=new HorizontalLayout();
+			/*HorizontalLayout resumeLayout=new HorizontalLayout();
 			resumeLayout.setWidth("100%");
 			resumeLayout.setHeight("50px");
+			
 			//Label affichant le nb d'inscrits
 			System.out.println("ins getLocale() : "+getLocale());
 			infoNbInscrit = new Label(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+linscrits.size());
-
 			leftResumeLayout= new HorizontalLayout();
 			leftResumeLayout.addComponent(infoNbInscrit);
 			leftResumeLayout.setComponentAlignment(infoNbInscrit, Alignment.MIDDLE_LEFT);
 
-
 			resumeLayout.addComponent(leftResumeLayout);
 
-
-
-
-			infoLayout.addComponent(resumeLayout);
-
+			infoLayout.addComponent(resumeLayout);*/
+			
+			
+			
 			//Layout qui contient la liste des inscrits et le trombinoscope
 			dataLayout = new VerticalLayout();
 			dataLayout.setSizeFull();
@@ -193,7 +221,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					fotoEtudiant.setHeight("153px");
 					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
 					fotoEtudiant.addClickListener(e->{
-						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+						rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
 					});
 
 					photoLayout.addComponent(fotoEtudiant);
@@ -214,7 +242,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				btnNomEtudiant.addStyleName("v-button-multiline");
 				nomCodeLayout.addComponent(btnNomEtudiant);
 				btnNomEtudiant.addClickListener(e->{
-					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+					rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
 				nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);

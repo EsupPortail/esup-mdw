@@ -25,6 +25,7 @@ import com.vaadin.addon.touchkit.ui.TabBarView;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.CssLayout;
@@ -121,16 +122,23 @@ public class MdwTouchkitUI extends GenericUI{
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
-					displayViewFullScreen(AccesRefuseView.NAME);
+					//displayViewFullScreen(AccesRefuseView.NAME);
+					navigator.navigateTo(AccesRefuseView.NAME);
+					//navigator.navigateTo(AccesRefuseView.NAME);
 					return;
 				}
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
 			LOG.error(e.getThrowable().getCause().toString(), e.getThrowable());
-			displayViewFullScreen(ErreurView.NAME);
+			//displayViewFullScreen(ErreurView.NAME);
+			navigator.navigateTo(ErreurView.NAME);
+			//navigator.navigateTo(ErreurView.NAME);
 		});
 
+    	setStyleName("v-noscrollableelement");
+    	
+    	contentLayout.setSizeFull();
     	
 		/* Affiche le nom de l'application dans l'onglet du navigateur */
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
@@ -148,6 +156,21 @@ public class MdwTouchkitUI extends GenericUI{
 		/* Construit le gestionnaire de vues */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
 
+		/* Résout la vue à afficher */
+		/*String fragment = Page.getCurrent().getUriFragment();
+		System.out.println("fragment : "+fragment);
+		if (fragment != null && !fragment.isEmpty()) {
+			if(fragment.contains(FavorisMobileView.NAME)){
+				contentLayout.setSizeUndefined();
+				setContent(mainLayout);
+			}
+			if(fragment.contains(ListeInscritsMobileView.NAME) ||
+					fragment.contains(AccesRefuseView.NAME) ||
+					fragment.contains(ErreurView.NAME)){
+				contentLayout.setSizeFull();
+				setContent(contentLayout);
+			}
+		}*/
 
 		/* Initialise Google Analytics */
 		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
@@ -157,9 +180,11 @@ public class MdwTouchkitUI extends GenericUI{
 		setContent(mainLayout);
 		
 		
+		
 		if(userController.isEnseignant() || userController.isEtudiant()){
 			
 			mainLayout.setSizeFull();
+			
 			mainLayout.addComponent(contentLayout);
 			mainLayout.addComponent(menuLayout);
 			mainLayout.setExpandRatio(contentLayout, 1);
@@ -177,7 +202,8 @@ public class MdwTouchkitUI extends GenericUI{
 			}
 			
 		}else{
-			displayViewFullScreen(AccesRefuseView.NAME);
+			//displayViewFullScreen(AccesRefuseView.NAME);
+			navigator.navigateTo(AccesRefuseView.NAME);
 		}
        
         
@@ -209,15 +235,21 @@ public class MdwTouchkitUI extends GenericUI{
 		//Programmatically modify tab bar
 		menuEnseignant.setSelectedTab(tabFavoris); //same as user clicking the tab
 		menuLayout.addComponent(menuEnseignant);
+
+		
 		navigator.navigateTo(FavorisMobileView.NAME);
+		
 		
 	}
 
 
-	private void displayViewFullScreen(String view){
-		setContent(contentLayout);
+	/*private void displayViewFullScreen(String view){
+		//contentLayout.setSizeFull();
+		//checkMenuIsNotDisplayed();
 		navigator.navigateTo(view);
 	}
+	*/
+
 
 	
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
@@ -227,7 +259,23 @@ public class MdwTouchkitUI extends GenericUI{
 			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
 		}
 		System.out.println("--navigateToListeInscrits2--");
-		displayViewFullScreen(ListeInscritsMobileView.NAME);
+		
+		//displayViewFullScreen(ListeInscritsMobileView.NAME);
+		navigator.navigateTo(ListeInscritsMobileView.NAME);
+	}
+	
+	public void checkMenuIsNotDisplayed() {
+		this.setContent(contentLayout);
+		
+	}
+
+	public void checkMenuIsDisplayed() {
+		mainLayout.setSizeFull();
+		mainLayout.addComponent(contentLayout);
+		mainLayout.addComponent(menuLayout);
+		mainLayout.setExpandRatio(contentLayout, 1);
+		this.setContent(mainLayout);
+		
 	}
 
     

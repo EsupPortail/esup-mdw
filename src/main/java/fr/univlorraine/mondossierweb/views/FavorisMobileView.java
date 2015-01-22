@@ -20,6 +20,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -31,6 +32,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
@@ -69,6 +71,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 	private List<String> liste_type_arbo;
 
+	private CssLayout contentLayout = new CssLayout();
 
 	private BeanItemContainer<Favoris> bic;
 
@@ -80,6 +83,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 		removeAllComponents();
+		
+		((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsDisplayed();
+		
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
@@ -242,8 +248,11 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelAucunFavoriLayout.setVisible(true);
 		}
 
-
-		addComponent(globalLayout);
+		//addComponent(globalLayout);
+		contentLayout.addComponent(globalLayout);
+		addComponent(contentLayout);
+		
+		
 	}
 
 
