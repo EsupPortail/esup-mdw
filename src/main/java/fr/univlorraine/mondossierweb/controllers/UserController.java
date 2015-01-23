@@ -245,7 +245,7 @@ public class UserController {
 		if (StringUtils.hasText(PropertyUtils.getTypeEtudiantLdap()) && type!=null &&
 				type.contains(PropertyUtils.getTypeEtudiantLdap())) { 
 			MainUI.getCurrent().setTypeUser(STUDENT_USER);
-			MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant");
+			MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant","Authentification d'un étudiant");
 		} else {
 
 			//on cherche a savoir si l'employé a acces (ex: c'est un enseignant)
@@ -294,12 +294,12 @@ public class UserController {
 				//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
 				LOG.info("USER "+getCurrentUserName()+" ENSEIGNANT VIA UPORTAL");
 				MainUI.getCurrent().setTypeUser(TEACHER_USER);
-				MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant");
+				MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
 
 
 			} else {
 				//va voir dans apogée
-				LOG.debug("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
+				LOG.info("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
 
 
 				//On test si on doit chercher l'utilisateur dans Apogee
@@ -310,8 +310,9 @@ public class UserController {
 						Utilisateur uti = utilisateurService.findUtilisateur(getCurrentUserName().toUpperCase());
 
 						if (uti != null) {
+							LOG.info("USER "+getCurrentUserName()+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
 							MainUI.getCurrent().setTypeUser(TEACHER_USER);
-							MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant");
+							MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant","Authentification d'un enseignant");
 						} else {
 							MainUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
 							LOG.info("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
@@ -388,6 +389,7 @@ public class UserController {
 		String login = getCurrentUserName();
 		Administrateurs adm = administrateursRepository.findOne(login);
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
+			MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
 			return true;
 		}
 		return false;
