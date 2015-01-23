@@ -146,10 +146,7 @@ public class MainUI extends GenericUI {
 	@Resource
 	private FavorisView favorisView;
 
-	//Type (rôle) de l'utilisateur connecté
-	@Setter
-	@Getter
-	private String typeUser;
+
 
 
 	//Etudiant dont on consulte le dossier
@@ -245,9 +242,7 @@ public class MainUI extends GenericUI {
 	private TabSheet tabSheetEnseignant= new TabSheet();
 	//private CssLayout contentTabSheetEnseignantLayout = new CssLayout();
 
-	/** Tracker Google Analytics */
-	@Getter
-	private GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
+
 
 	/** Gestionnaire de vues étudiant*/
 	@Getter

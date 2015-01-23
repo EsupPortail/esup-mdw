@@ -132,7 +132,8 @@ public class MdwTouchkitUI extends GenericUI{
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
-			LOG.error(e.getThrowable().getCause().toString(), e.getThrowable());
+			LOG.error(e.getThrowable().toString(), e.getThrowable());
+			//LOG.error(e.getThrowable().getCause().toString(), e.getThrowable());
 			//displayViewFullScreen(ErreurView.NAME);
 			navigator.navigateTo(ErreurView.NAME);
 			//navigator.navigateTo(ErreurView.NAME);

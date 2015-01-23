@@ -85,3 +85,18 @@ text-align: center;
 .valo-ul .v-window-header {
  line-height: normal;
 }
+
+
+
+.valo-ul .v-window-modalitycurtain {
+-webkit-animation: none;
+-moz-animation: none;
+animation: none;
+}
+
+
+.valo-ul .v-window {
+-webkit-transition: none;
+-moz-transition: none;
+transition: none;
+}

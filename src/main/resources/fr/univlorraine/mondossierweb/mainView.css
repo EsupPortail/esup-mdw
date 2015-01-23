@@ -157,3 +157,16 @@ color: red;
 content: "\f05e";
 color: red;
 }*/
+
+.valo-ul .v-window-modalitycurtain {
+-webkit-animation: none;
+-moz-animation: none;
+animation: none;
+}
+
+
+.valo-ul .v-window {
+-webkit-transition: none;
+-moz-transition: none;
+transition: none;
+}

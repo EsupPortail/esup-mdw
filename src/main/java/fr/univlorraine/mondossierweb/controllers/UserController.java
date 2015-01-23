@@ -43,6 +43,7 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.Administrateurs;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateur;
@@ -214,20 +215,20 @@ public class UserController {
 		if(isAdmin()){
 			return true;
 		}
-		if(MainUI.getCurrent().getTypeUser()==null){
+		if(GenericUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
-		if(MainUI.getCurrent().getTypeUser()!=null && MainUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
+		if(GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
 			return true;
 		}
 		return false;
 	}
 
 	public boolean isEtudiant() {
-		if(MainUI.getCurrent().getTypeUser()==null){
+		if(GenericUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
-		if(MainUI.getCurrent().getTypeUser()!=null && MainUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
+		if(GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
 			return true;
 		}
 		return false;
@@ -238,14 +239,14 @@ public class UserController {
 
 	public void determineTypeUser() {
 
-		MainUI.getCurrent().setTypeUser(null);
+		GenericUI.getCurrent().setTypeUser(null);
 		
 		List<String> type = typeLdap(getCurrentUserName());
 
 		if (StringUtils.hasText(PropertyUtils.getTypeEtudiantLdap()) && type!=null &&
 				type.contains(PropertyUtils.getTypeEtudiantLdap())) { 
-			MainUI.getCurrent().setTypeUser(STUDENT_USER);
-			MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant","Authentification d'un étudiant");
+			GenericUI.getCurrent().setTypeUser(STUDENT_USER);
+			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant","Authentification d'un étudiant");
 		} else {
 
 			//on cherche a savoir si l'employé a acces (ex: c'est un enseignant)
@@ -293,8 +294,8 @@ public class UserController {
 			if (useruportal) {
 				//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
 				LOG.info("USER "+getCurrentUserName()+" ENSEIGNANT VIA UPORTAL");
-				MainUI.getCurrent().setTypeUser(TEACHER_USER);
-				MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
+				GenericUI.getCurrent().setTypeUser(TEACHER_USER);
+				GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
 
 
 			} else {
@@ -311,10 +312,10 @@ public class UserController {
 
 						if (uti != null) {
 							LOG.info("USER "+getCurrentUserName()+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
-							MainUI.getCurrent().setTypeUser(TEACHER_USER);
-							MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant","Authentification d'un enseignant");
+							GenericUI.getCurrent().setTypeUser(TEACHER_USER);
+							GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant","Authentification d'un enseignant");
 						} else {
-							MainUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
+							GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
 							LOG.info("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
 
 						}
@@ -322,7 +323,7 @@ public class UserController {
 						LOG.error("Probleme lors de la vérification de l'existence de l'utilisateur dans la table Utilisateur de Apogee",ex);
 					}
 				}else{
-					MainUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
+					GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
 					LOG.info("Utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal -> UTILISATEUR NON AUTORISE !");
 				}
 
@@ -389,7 +390,7 @@ public class UserController {
 		String login = getCurrentUserName();
 		Administrateurs adm = administrateursRepository.findOne(login);
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
-			MainUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
+			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
 			return true;
 		}
 		return false;

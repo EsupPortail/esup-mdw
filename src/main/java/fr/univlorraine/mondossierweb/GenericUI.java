@@ -13,6 +13,7 @@ import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
+import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 
 public class GenericUI  extends UI {
 
@@ -78,10 +79,27 @@ public class GenericUI  extends UI {
 	@Getter
 	private List<Inscrit> listeInscrits;
 
+	/** Tracker Google Analytics */
+	@Getter
+	@Setter
+	protected GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
+	
+	//Type (rôle) de l'utilisateur connecté
+	@Setter
+	@Getter
+	protected String typeUser;
+	
 	@Override
 	protected void init(VaadinRequest request) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/**
+	 * @see com.vaadin.ui.UI#getCurrent()
+	 */
+	public static GenericUI getCurrent() {
+		return (GenericUI) UI.getCurrent();
 	}
 
 }
