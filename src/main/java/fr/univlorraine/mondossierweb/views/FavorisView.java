@@ -33,7 +33,9 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.MyColumnGenerator;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.ActionsColumnGenerator;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.DisplayTypeColumnGenerator;
 
 /**
  * Favoris
@@ -45,7 +47,8 @@ public class FavorisView extends VerticalLayout implements View {
 
 	public static final String NAME = "favorisView";
 
-	public static final String[] FAV_FIELDS_ORDER = {"id.typfav", "id.idfav"};
+	
+	public static final String[] FAV_FIELDS_ORDER = {"Type","id", "Libelle", "Actions"};
 
 
 
@@ -107,12 +110,17 @@ public class FavorisView extends VerticalLayout implements View {
 			bic.addNestedContainerProperty("id.idfav");
 			favorisTable = new Table(null, bic);
 			favorisTable.setWidth("100%");
-			favorisTable.setVisibleColumns((Object[]) FAV_FIELDS_ORDER);
-			for (String fieldName : FAV_FIELDS_ORDER) {
-				favorisTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
-			}
+
+			favorisTable.addGeneratedColumn("Type", new DisplayTypeColumnGenerator());
+			favorisTable.setColumnHeader("Type", applicationContext.getMessage(NAME+".table.id.typfav", null, getLocale()));
+			
+			favorisTable.addGeneratedColumn("id", new DisplayIdColumnGenerator());
+			favorisTable.setColumnHeader("id", applicationContext.getMessage(NAME+".table.id.idfav", null, getLocale()));
+			
 			favorisTable.addGeneratedColumn("Libelle", new MyLibelleColumnGenerator());
 			favorisTable.addGeneratedColumn("Actions", new MyActionsColumnGenerator());
+			
+			favorisTable.setVisibleColumns((Object[]) FAV_FIELDS_ORDER);
 			favorisTable.setColumnCollapsingAllowed(true);
 			favorisTable.setColumnReorderingAllowed(true);
 			favorisTable.setSelectable(true);
@@ -149,6 +157,30 @@ public class FavorisView extends VerticalLayout implements View {
 		//LOG.debug("ENTER FAVORIS VIEW");
 	}
 
+	class DisplayIdColumnGenerator implements Table.ColumnGenerator {
+
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+			String idObj = (String)item.getItemProperty("id.idfav").getValue();
+			//On converti le type pour un affichage lisible
+			return idObj;
+		}
+	}
+	
+	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
+
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+			String typeObj = (String)item.getItemProperty("id.typfav").getValue();
+			//On converti le type pour un affichage lisible
+			return Utils.convertTypeToDisplay(typeObj);
+		}
+	}
+	
 	/** Formats the position in a column containing Date objects. */
 	class MyActionsColumnGenerator implements Table.ColumnGenerator {
 		/**

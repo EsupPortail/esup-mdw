@@ -437,8 +437,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER);
 			table.setColumnHeader(LIBELLE_PROPERTY, applicationContext.getMessage(NAME+".table.libelle", null, getLocale()));
 			table.setColumnHeader(TRUE_ID_PROPERTY, applicationContext.getMessage(NAME+".table.trueObjectId", null, getLocale()));
+			table.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
 			table.setColumnHeader("type", applicationContext.getMessage(NAME+".table.type", null, getLocale()));
-			table.addGeneratedColumn("actions", new MyColumnGenerator());
+			table.addGeneratedColumn("actions", new ActionsColumnGenerator());
 			table.setColumnHeader("actions", applicationContext.getMessage(NAME+".table.actions", null, getLocale()));
 			initEffectue=true;
 		}else{
@@ -475,9 +476,21 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 		//LOG.debug("enter");
 	}
+	
+	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
+
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+			String typeObj = (String)item.getItemProperty(TYPE_PROPERTY).getValue();
+			//On converti le type pour un affichage lisible
+			return Utils.convertTypeToDisplay(typeObj);
+		}
+	}
 
 	/** Formats the position in a column containing Date objects. */
-	class MyColumnGenerator implements Table.ColumnGenerator {
+	class ActionsColumnGenerator implements Table.ColumnGenerator {
 		/**
 		 * Generates the cell containing the value. The column is
 		 * irrelevant in this use case.

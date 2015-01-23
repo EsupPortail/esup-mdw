@@ -40,7 +40,7 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.MyColumnGenerator;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.ActionsColumnGenerator;
 
 /**
  * Favoris sur mobile

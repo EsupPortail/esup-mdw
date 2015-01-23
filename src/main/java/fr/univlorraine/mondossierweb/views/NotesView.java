@@ -49,7 +49,7 @@ import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.MyColumnGenerator;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.ActionsColumnGenerator;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 
