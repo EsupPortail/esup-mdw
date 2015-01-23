@@ -6,10 +6,13 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import lombok.Getter;
+
 import org.jfree.util.Log;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
@@ -37,6 +40,7 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
+import groovy.util.slurpersupport.GPathResult;
 
 
 /**
@@ -64,30 +68,36 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private String code;
 
 	private String typeFavori;
-	
-	private String libelleObj;
-	
-	private Label infoLibelleObj;
-	
-	//liste contenant tous les codind à afficher (apres application du filtre)
-	private List<String> listecodind;
-	
-	private VerticalLayout infoLayout;
-	
-	private HorizontalLayout leftResumeLayout;
-	
-	private VerticalLayout dataLayout;
-	
-	private VerticalLayout verticalLayoutForTrombi;
-	
-	private VerticalLayout trombiLayout;
-	
-	private Button returnButton;
-	
-	private Button filterButton;
-	
 
-	
+	private String libelleObj;
+
+	private Label infoLibelleObj;
+
+	//liste contenant tous les codind à afficher (apres application du filtre)
+	//private List<String> listecodind;
+
+	private VerticalLayout infoLayout;
+
+	private HorizontalLayout leftResumeLayout;
+
+	private VerticalLayout dataLayout;
+
+	private VerticalLayout verticalLayoutForTrombi;
+
+	private VerticalLayout trombiLayout;
+
+	private Button returnButton;
+
+	private Button filterButton;
+
+
+	private String vetSelectionnee;
+
+
+	private String groupeSelectionne;
+
+
+
 	/**
 	 * Initialise la vue
 	 */
@@ -95,13 +105,13 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	public void init() {
 
 		removeAllComponents();
-		
 
 
-		
-		
-		
-	//	((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsNotDisplayed();
+
+
+
+
+		//	((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsNotDisplayed();
 
 		/* Style */
 		//setMargin(true);
@@ -118,19 +128,19 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		if(typeIsElp() && MdwTouchkitUI.getCurrent().getElpListeInscrits()!=null){
 			libelleObj = MdwTouchkitUI.getCurrent().getElpListeInscrits().getLibelle();
 		}
-		
-		
+
+
 		//Récupération de la liste des inscrits
 		List<Inscrit> linscrits = MdwTouchkitUI.getCurrent().getListeInscrits();
 
-		refreshListeCodind(new BeanItemContainer<>(Inscrit.class, linscrits));
-		
+
+
 		//NAVBAR
 		HorizontalLayout navbar=new HorizontalLayout();
 		navbar.setSizeFull();
 		navbar.setHeight("40px");
 		navbar.setStyleName("navigation-bar");
-		
+
 		//Bouton retour
 		returnButton = new Button();
 		returnButton.setIcon(FontAwesome.ARROW_LEFT);
@@ -144,43 +154,50 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		});
 		navbar.addComponent(returnButton);
 		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
-		
+
 		//Title
 		Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
 		labelTrombi.setStyleName("v-label-navbar");
 		navbar.addComponent(labelTrombi);
 		navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
-		
+
 		//Bouton Filtre
-		filterButton = new Button();
-		filterButton.setIcon(FontAwesome.ELLIPSIS_V);
-		//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		filterButton.setStyleName("v-nav-button");
-		filterButton.addClickListener(e->{
-			/*FiltreInscritsMobilePopover popover = new FiltreInscritsMobilePopover();
+		//On a la possibilité de filtrer le trombinoscope que si on est positionné sur un ELP
+		if(typeIsElp()){
+			filterButton = new Button();
+			filterButton.setIcon(FontAwesome.ELLIPSIS_V);
+			//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+			filterButton.setStyleName("v-nav-button");
+			filterButton.addClickListener(e->{
+				/*FiltreInscritsMobilePopover popover = new FiltreInscritsMobilePopover();
 			 popover.showRelativeTo(filterButton);*/
-			FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
-			/*w.addCloseListener(g->{
-				boolean choix = w.getCheckBox().getValue();
-				
-			});*/
-			UI.getCurrent().addWindow(w);
-			
-		});
-		navbar.addComponent(filterButton);
-		navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
-		
+				FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
+				w.addCloseListener(f->{
+					//Si la personne a fermé la popup en appuyant sur le bouton FILTRER
+					if(w.isDemandeFiltrage()){
+						vetSelectionnee = w.getVetSelectionnee();
+						groupeSelectionne = w.getGroupeSelectionne();
+						displayTrombinoscope();
+					}
+				});
+				UI.getCurrent().addWindow(w);
+
+			});
+			navbar.addComponent(filterButton);
+			navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+		}
+
 		navbar.setExpandRatio(labelTrombi, 1);
 		addComponent(navbar);
-		
+
 		//Test si la liste contient des étudiants
-		if(linscrits!=null && linscrits.size()>0 && listecodind!=null && listecodind.size()>0){
+		if(linscrits!=null && linscrits.size()>0){
 			infoLayout= new VerticalLayout();
 			infoLayout.setSizeFull();
 			infoLayout.setMargin(true);
 			infoLayout.setSpacing(true);
 			infoLayout.addStyleName("v-scrollableelement");
-			
+
 			//Layout avec le Libelle
 			HorizontalLayout resumeLayout=new HorizontalLayout();
 			resumeLayout.setWidth("100%");
@@ -192,9 +209,9 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			resumeLayout.addComponent(infoLibelleObj);
 			resumeLayout.setComponentAlignment(infoLibelleObj, Alignment.TOP_CENTER);
 			infoLayout.addComponent(resumeLayout);
-			
-			
-			
+
+
+
 			//Layout qui contient la liste des inscrits et le trombinoscope
 			dataLayout = new VerticalLayout();
 			dataLayout.setSizeFull();
@@ -215,31 +232,31 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 			//Le layout contient le trombi à afficher
 			dataLayout.addComponent(verticalLayoutForTrombi);
-			
+
 			infoLayout.addComponent(dataLayout);
 			infoLayout.setExpandRatio(dataLayout, 1);
-			
+
 			addComponent(infoLayout);
 
-			
+
 			setExpandRatio(infoLayout, 1);
 		}else{
 			infoLayout= new VerticalLayout();
 			infoLayout.setMargin(true);
 			infoLayout.setSpacing(true);
-			
+
 			Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
 			infoAucuninscrit.setSizeFull();
-			
+
 			infoLayout.addComponent(infoAucuninscrit);
 			addComponent(infoLayout);
 
 			//setComponentAlignment(infoAucuninscrit, Alignment.TOP_CENTER);
 			setExpandRatio(infoLayout, 1);
 		}
-		
 
-		
+
+
 	}
 
 
@@ -256,7 +273,20 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 
 		for(Inscrit inscrit : linscrits){
-			if(listecodind.contains(inscrit.getCod_ind())){
+
+			boolean afficherEtudiant= true;
+
+
+			if(StringUtils.hasText(vetSelectionnee) && (inscrit.getId_etp()==null || !inscrit.getId_etp().contains(vetSelectionnee))){
+				afficherEtudiant=false;
+
+			}
+			if(StringUtils.hasText(groupeSelectionne) && (inscrit.getCodes_groupes()==null ||!inscrit.getCodes_groupes().contains(groupeSelectionne))){
+				afficherEtudiant=false;
+			}
+
+
+			if(afficherEtudiant){
 				Panel etuPanel = new Panel();
 				HorizontalLayout photoLayout = new HorizontalLayout();
 				photoLayout.setId(inscrit.getCod_ind());
@@ -319,8 +349,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 		//LOG.debug("enter listeInscritsMobileView");
 	}
-	
-	
+
+
 	private boolean typeIsVet(){
 		return (typeFavori!=null && typeFavori.equals(Utils.VET));
 	}
@@ -329,15 +359,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		return (typeFavori!=null && typeFavori.equals(Utils.ELP));
 	}
 
-	private void refreshListeCodind(BeanItemContainer<Inscrit> ic) {
-		if(listecodind!=null){
-			listecodind.clear();
-		}else{
-			listecodind = new LinkedList<String>();
-		}
-		for(Inscrit inscrit : ic.getItemIds()){
-			listecodind.add(inscrit.getCod_ind());
-		}
-	}
+
 
 }

@@ -289,7 +289,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		casesAcocherComposantes.setValue(true);
 		casesAcocherComposantes.setStyleName(ValoTheme.CHECKBOX_SMALL);
 		casesAcocherComposantes.addValueChangeListener(e -> tuneSearch());
-		casesAcocherVet= new CheckBox("Versions d'étapes");
+		casesAcocherVet= new CheckBox("Etapes");
 		casesAcocherVet.setValue(true);
 		casesAcocherVet.setStyleName(ValoTheme.CHECKBOX_SMALL);
 		casesAcocherVet.addValueChangeListener(e -> tuneSearch());
@@ -328,6 +328,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			etuColumnHeaders[fieldIndex] = applicationContext.getMessage("result.table." + ETU_FIELDS_ORDER[fieldIndex], null, Locale.getDefault());
 		}
 		tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
+		tableResultats.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
 		tableResultats.setContainerDataSource(rrContainer);
 		tableResultats.setVisibleColumns(ETU_FIELDS_ORDER);
 		tableResultats.setColumnHeaders(etuColumnHeaders);
@@ -378,16 +379,16 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			//Liste des types autorisés
 			LinkedList<String> listeTypeAutorise=new LinkedList();
 			if(casesAcocherComposantes.getValue()){
-				listeTypeAutorise.add("CMP");
+				listeTypeAutorise.add(Utils.CMP);
 			}
 			if(casesAcocherVet.getValue()){
-				listeTypeAutorise.add("VET");
+				listeTypeAutorise.add(Utils.VET);
 			}
 			if(casesAcocherElp.getValue()){
-				listeTypeAutorise.add("ELP");
+				listeTypeAutorise.add(Utils.ELP);
 			}
 			if(casesAcocherEtudiant.getValue()){
-				listeTypeAutorise.add("ETU");
+				listeTypeAutorise.add(Utils.ETU);
 			}
 
 
@@ -518,18 +519,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 							//En search, on prend le libelle et non pas la description, à la différence du quickSearch
 							i.getItemProperty("lib").setValue(rr.getLib());
 							i.getItemProperty("code").setValue(rr.getCode());
-							if(rr.type.equals("ELP"))
-								i.getItemProperty("type").setValue(Utils.TYPE_ELP);
-							if(rr.type.equals("CMP"))
-								i.getItemProperty("type").setValue(Utils.TYPE_CMP);
-							if(rr.type.equals("VDI"))
-								i.getItemProperty("type").setValue(Utils.TYPE_VDI);
-							if(rr.type.equals("VET"))
-								i.getItemProperty("type").setValue(Utils.TYPE_VET);
-							if(rr.type.equals("ETU"))
-								i.getItemProperty("type").setValue(Utils.TYPE_ETU);
-
-
+							i.getItemProperty("type").setValue(rr.type);
 							rrContainer.setChildrenAllowed(rr, false);
 						}
 
@@ -554,6 +544,16 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	}
 
 
+	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
+
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+			//On converti le type pour un affichage lisible
+			return Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString());
+		}
+	}
 
 	class DisplayNameColumnGenerator implements Table.ColumnGenerator {
 
@@ -588,19 +588,19 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			SimpleStringFilter etuFilter;
 
 			if(casesAcocherComposantes.getValue()){
-				compFilter = new SimpleStringFilter("type",Utils.TYPE_CMP, true, false);
+				compFilter = new SimpleStringFilter("type",Utils.CMP, true, false);
 				filterStringToSearch = compFilter;
 			}
 			if(casesAcocherVet.getValue()){
-				vetFilter = new SimpleStringFilter("type",Utils.TYPE_VET, true, false);
+				vetFilter = new SimpleStringFilter("type",Utils.VET, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,vetFilter);
 			}
 			if(casesAcocherElp.getValue()){
-				elpFilter = new SimpleStringFilter("type",Utils.TYPE_ELP, true, false);
+				elpFilter = new SimpleStringFilter("type",Utils.ELP, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,elpFilter);
 			}
 			if(casesAcocherEtudiant.getValue()){
-				etuFilter = new SimpleStringFilter("type",Utils.TYPE_ETU, true, false);
+				etuFilter = new SimpleStringFilter("type",Utils.ETU, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,etuFilter);
 			}
 
