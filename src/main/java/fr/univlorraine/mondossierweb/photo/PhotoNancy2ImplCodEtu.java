@@ -264,31 +264,34 @@ public void init(String loginUser) {
 public String getRemoteAdresse() {
 	WebBrowser browser;
 	String ip =  getIpAddr();
-	System.out.println("IP client : "+ip);
-	return ip;
-		//Recuperation de l'IP
-	/*if(GenericUI.getCurrent() instanceof MainUI){
+	LOG.info("IP client via VaadinService Headers : "+ip);
+	
+	//Recuperation de l'IP pour info
+	if(GenericUI.getCurrent() instanceof MainUI){
 		MainUI mainUI = MainUI.getCurrent();
 		browser = mainUI.getPage().getWebBrowser();
-		LOG.info("IP client MainUI : "+browser.getAddress());
-		return browser.getAddress();
+		LOG.info("browser IP client MainUI : "+browser.getAddress());
+		//return browser.getAddress();
 		
 	}
 	if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
 		MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
 		browser = mdwTouchkitUI.getPage().getWebBrowser();
-		LOG.info("IP client MdwTouchkitUI : "+browser.getAddress());
-		return browser.getAddress();
+		LOG.info("browser IP client MdwTouchkitUI : "+browser.getAddress());
+		//return browser.getAddress();
 		
 	}
 	
-	return null;*/
+	return ip;
 }
 
 public String getIpAddr() {      
 	VaadinRequest vr = VaadinService.getCurrentRequest();
 
-	   String ip = vr.getHeader("x-forwarded-for");      
+	   String ip = vr.getHeader("x-forwarded-for");    
+	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+	       ip = vr.getHeader("X_FORWARDED_FOR");      
+	   }  
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("Proxy-Client-IP");      
 	   }      
