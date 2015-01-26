@@ -86,12 +86,12 @@ public class RechercheController {
 				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
 		}
 		
-		/*if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
+		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 				parameterMap.replace("type",Utils.ETU);
-				MainUI.getCurrent().setEtudiant(new Etudiant(code));
+				MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
 				MdwTouchkitUI.getCurrent().navigateToDossierEtudiant(parameterMap);
-		}*/
+		}
 	}
 	
 	

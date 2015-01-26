@@ -150,14 +150,14 @@ public class MainUI extends GenericUI {
 
 
 	//Etudiant dont on consulte le dossier
-	@Setter
+	/*@Setter
 	@Getter
-	private Etudiant etudiant;
+	private Etudiant etudiant;*/
 
 	//vrai si on consulte les notes en vue enseignant
-	@Setter
+	/*@Setter
 	@Getter
-	private boolean vueEnseignantNotesEtResultats;
+	private boolean vueEnseignantNotesEtResultats;*/
 
 	/*//annee universitaire en cours
 	@Setter
@@ -226,9 +226,9 @@ public class MainUI extends GenericUI {
 	private int rangTabRecherche;
 
 	//Vrai si on a réussi à récupérer les inscriptions via le WS.
-	@Setter
+	/*@Setter
 	@Getter
-	private boolean recuperationWsInscriptionsOk;
+	private boolean recuperationWsInscriptionsOk;*/
 
 
 	/* Composants */

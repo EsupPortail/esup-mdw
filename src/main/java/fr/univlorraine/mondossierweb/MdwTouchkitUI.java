@@ -47,6 +47,7 @@ import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
+import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
@@ -257,6 +258,10 @@ public class MdwTouchkitUI extends GenericUI{
     public void navigateToListeInscritsFromFavoris(Map<String, String> parameterMap) {
     	trombinoscopeFromView = FavorisMobileView.NAME;
     	navigateToListeInscrits( parameterMap);
+	}
+    
+    public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
+    	navigator.navigateTo(InformationsAnnuellesMobileView.NAME);
 	}
     
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {

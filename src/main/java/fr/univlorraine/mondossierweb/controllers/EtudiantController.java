@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
 import fr.univlorraine.mondossierweb.beans.CacheResultatsElpEpr;
@@ -141,7 +141,7 @@ public class EtudiantController {
 
 	public void recupererEtatCivil() {
 
-		if(MainUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(MainUI.getCurrent().getEtudiant().getCod_etu())){
+		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
 			if(monProxyEtu==null)
 				monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
 			if(monProxyAdministratif==null)
@@ -151,102 +151,102 @@ public class EtudiantController {
 				IdentifiantsEtudiantDTO idetu;
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
-					idetu = monProxyEtu.recupererIdentifiantsEtudiant(MainUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, null, "N");
+					idetu = monProxyEtu.recupererIdentifiantsEtudiant(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, null, "N");
 				} else {
-					idetu = monProxyEtu.recupererIdentifiantsEtudiant(MainUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, null, "O");
+					idetu = monProxyEtu.recupererIdentifiantsEtudiant(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, null, "O");
 				}
 
-				MainUI.getCurrent().getEtudiant().setCod_ind(idetu.getCodInd().toString());
+				GenericUI.getCurrent().getEtudiant().setCod_ind(idetu.getCodInd().toString());
 
 				//Gestion des codine null
 				if(idetu.getNumeroINE() != null && idetu.getCleINE() != null ){
-					MainUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE() + idetu.getCleINE());
+					GenericUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE() + idetu.getCleINE());
 				}else{
-					MainUI.getCurrent().getEtudiant().setCod_nne("");
+					GenericUI.getCurrent().getEtudiant().setCod_nne("");
 				}
 
 				//Pour ne renseigner la photo que si elle n'est pas renseignée.
-				MainUI.getCurrent().getEtudiant().setPhoto(photo.getUrlPhoto(MainUI.getCurrent().getEtudiant().getCod_ind(),MainUI.getCurrent().getEtudiant().getCod_etu()));
+				GenericUI.getCurrent().getEtudiant().setPhoto(photo.getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu()));
 
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
 					// on passe par iBATIS pour récupérer l'e-mail.
-					MainUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail("",MainUI.getCurrent().getEtudiant().getCod_etu()));
+					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail("",GenericUI.getCurrent().getEtudiant().getCod_etu()));
 				} else {
 					//on récupérer l'e-mail grâce au WS.
-					MainUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
+					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
-				InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(MainUI.getCurrent().getEtudiant().getCod_etu());
+				InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 				//MODIF POUR UTILISER LE NOM USUEL SI RENSEIGNE 19/09/2012
 				if (iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
-					MainUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
+					GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
 				}else{
-					MainUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
+					GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
 				}
 
 				if (iaetu.getNumBoursier() != null ){
-					MainUI.getCurrent().getEtudiant().setNumBoursier(iaetu.getNumBoursier());
+					GenericUI.getCurrent().getEtudiant().setNumBoursier(iaetu.getNumBoursier());
 				}
 
 
 				//informations sur la naissance :
 				//la nationalité:
 				if (iaetu.getNationaliteDTO() != null) {
-					MainUI.getCurrent().getEtudiant().setNationalite(iaetu.getNationaliteDTO().getLibNationalite());
+					GenericUI.getCurrent().getEtudiant().setNationalite(iaetu.getNationaliteDTO().getLibNationalite());
 				} else {
-					MainUI.getCurrent().getEtudiant().setNationalite("");
+					GenericUI.getCurrent().getEtudiant().setNationalite("");
 				}
 				//la date de naissance:
 				if (iaetu.getDateNaissance() != null) {
 					Date d = iaetu.getDateNaissance();
-					MainUI.getCurrent().getEtudiant().setDatenaissance(Utils.formatDateToString(d));
+					GenericUI.getCurrent().getEtudiant().setDatenaissance(Utils.formatDateToString(d));
 				} else {
-					MainUI.getCurrent().getEtudiant().setDatenaissance("");
+					GenericUI.getCurrent().getEtudiant().setDatenaissance("");
 				}
 				//la ville de naissance:
-				MainUI.getCurrent().getEtudiant().setLieunaissance(iaetu.getLibVilleNaissance());
+				GenericUI.getCurrent().getEtudiant().setLieunaissance(iaetu.getLibVilleNaissance());
 
 				//récupération du département ou du pays de naissance:
 				if (iaetu.getDepartementNaissance() != null ) {
-					MainUI.getCurrent().getEtudiant().setDepartementnaissance(iaetu.getDepartementNaissance().getLibDept());
+					GenericUI.getCurrent().getEtudiant().setDepartementnaissance(iaetu.getDepartementNaissance().getLibDept());
 				} else {
 					if (iaetu.getPaysNaissance() != null) {
-						MainUI.getCurrent().getEtudiant().setDepartementnaissance(iaetu.getPaysNaissance().getLibPay());
+						GenericUI.getCurrent().getEtudiant().setDepartementnaissance(iaetu.getPaysNaissance().getLibPay());
 					} else {
-						MainUI.getCurrent().getEtudiant().setDepartementnaissance("");
+						GenericUI.getCurrent().getEtudiant().setDepartementnaissance("");
 					}
 				}
 
 				//informations sur l'inscription universitaire :
-				MainUI.getCurrent().getEtudiant().setAnneeInscriptionUniversitaire(iaetu.getAnneePremiereInscEnsSup());
+				GenericUI.getCurrent().getEtudiant().setAnneeInscriptionUniversitaire(iaetu.getAnneePremiereInscEnsSup());
 
 				if (iaetu.getEtbPremiereInscUniv() != null) {
-					MainUI.getCurrent().getEtudiant().setEtablissement(iaetu.getEtbPremiereInscUniv().getLibEtb());
+					GenericUI.getCurrent().getEtudiant().setEtablissement(iaetu.getEtbPremiereInscUniv().getLibEtb());
 				} else {
-					MainUI.getCurrent().getEtudiant().setEtablissement("");
+					GenericUI.getCurrent().getEtudiant().setEtablissement("");
 				}
 
 
 				//informations sur le(s) bac(s) :
-				if (MainUI.getCurrent().getEtudiant().getListeBac() != null && MainUI.getCurrent().getEtudiant().getListeBac().size() > 0) {
-					MainUI.getCurrent().getEtudiant().getListeBac().clear();
+				if (GenericUI.getCurrent().getEtudiant().getListeBac() != null && GenericUI.getCurrent().getEtudiant().getListeBac().size() > 0) {
+					GenericUI.getCurrent().getEtudiant().getListeBac().clear();
 				} else {
-					MainUI.getCurrent().getEtudiant().setListeBac(new ArrayList<BacEtatCivil>());
+					GenericUI.getCurrent().getEtudiant().setListeBac(new ArrayList<BacEtatCivil>());
 				}
 
-				MainUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
-				LOG.info("anneeUnivEnCours : "+MainUI.getCurrent().getAnneeUnivEnCours());
+				GenericUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
+				LOG.info("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				try{
-					InsAdmAnuDTO2[] iaad2 = monProxyAdministratif.recupererIAAnnuelles_v2(MainUI.getCurrent().getEtudiant().getCod_etu(), MainUI.getCurrent().getAnneeUnivEnCours(), "ARE");
+					InsAdmAnuDTO2[] iaad2 = monProxyAdministratif.recupererIAAnnuelles_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), GenericUI.getCurrent().getAnneeUnivEnCours(), "ARE");
 					if(iaad2!=null){
-						MainUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
+						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 						LOG.debug("nb ia pour annee en cours : "+iaad2.length);
 						InsAdmAnuDTO2 iaad = iaad2[0];
 						//Si témoin aménagement d'étude valué à O
 						if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
-							MainUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
+							GenericUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
 						}
 						//Si catégorie socio-professionnelle renseignée
 						if(iaad.getCatSocProfEtu()!=null && iaad.getCatSocProfEtu().getCodeCategorie()!=null){
@@ -255,16 +255,16 @@ public class EtudiantController {
 							if(!codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
 									!codeCatSocPro.equals("99") &&
 									!codeCatSocPro.equals("A") ){
-								MainUI.getCurrent().getEtudiant().setTemSalarie(true);
+								GenericUI.getCurrent().getEtudiant().setTemSalarie(true);
 							}
 
 						}
 					}else{
-						MainUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
+						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 					}
 				} catch (WebBaseException ex) {
-					MainUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
-					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+MainUI.getCurrent().getAnneeUnivEnCours());
+					GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
+					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				}
 
 				IndBacDTO[] bacvo = iaetu.getListeBacs();
@@ -298,26 +298,26 @@ public class EtudiantController {
 							} else {
 								bec.setCod_etb("");
 							}
-							MainUI.getCurrent().getEtudiant().getListeBac().add(bec);
+							GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
 						}
 					}
 				} else {
-					LOG.error("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu());
+					LOG.error("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 					BacEtatCivil bec = new BacEtatCivil();
 					bec.setLib_bac("/");
-					MainUI.getCurrent().getEtudiant().getListeBac().add(bec);
+					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
 				}
 
 				//On recupere les numeros d'anonymat
-				MainUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(MainUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(MainUI.getCurrent())));
+				GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
 				
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
 
 			} catch (WebBaseException ex) {
-				LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			} catch (Exception ex) {
-				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}
 		}
 
@@ -326,11 +326,11 @@ public class EtudiantController {
 
 	public void recupererAdresses() {
 
-		if(MainUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(MainUI.getCurrent().getEtudiant().getCod_etu())){
+		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
 			if(monProxyAdministratif==null)
 				monProxyAdministratif = new AdministratifMetierServiceInterfaceProxy();
 			try{
-				String[] annees =  monProxyAdministratif.recupererAnneesIa(MainUI.getCurrent().getEtudiant().getCod_etu(), null);
+				String[] annees =  monProxyAdministratif.recupererAnneesIa(GenericUI.getCurrent().getEtudiant().getCod_etu(), null);
 
 				//récupération de l'année la plus récente
 				String annee = "0";
@@ -341,12 +341,12 @@ public class EtudiantController {
 				}
 
 				//récupération des coordonnées :
-				CoordonneesDTO2 cdto = monProxyEtu.recupererAdressesEtudiant_v2(MainUI.getCurrent().getEtudiant().getCod_etu(), annee, "N");
+				CoordonneesDTO2 cdto = monProxyEtu.recupererAdressesEtudiant_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), annee, "N");
 
 				//récupération des adresses, annuelle et fixe :
 				annee = cdto.getAnnee();
-				MainUI.getCurrent().getEtudiant().setEmailPerso(cdto.getEmail());
-				MainUI.getCurrent().getEtudiant().setTelPortable(cdto.getNumTelPortable());
+				GenericUI.getCurrent().getEtudiant().setEmailPerso(cdto.getEmail());
+				GenericUI.getCurrent().getEtudiant().setTelPortable(cdto.getNumTelPortable());
 
 
 				AdresseDTO2 ada = cdto.getAdresseAnnuelle();
@@ -392,7 +392,7 @@ public class EtudiantController {
 						adresseAnnuelle.setPays("");
 					}
 
-					MainUI.getCurrent().getEtudiant().setAdresseAnnuelle(adresseAnnuelle);
+					GenericUI.getCurrent().getEtudiant().setAdresseAnnuelle(adresseAnnuelle);
 				}
 				if (adf != null) {
 
@@ -425,13 +425,13 @@ public class EtudiantController {
 						adresseFixe.setPays("");
 					}
 
-					MainUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
+					GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
 				}
 
 			} catch (WebBaseException ex) {
-				LOG.error("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				LOG.error("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			} catch (Exception ex) {
-				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}
 
 		}
@@ -444,26 +444,26 @@ public class EtudiantController {
 	 */
 	public void recupererInscriptions() {
 		try {
-			if(MainUI.getCurrent().getEtudiant().getLinsciae()!=null){
-				MainUI.getCurrent().getEtudiant().getLinsciae().clear();
+			if(GenericUI.getCurrent().getEtudiant().getLinsciae()!=null){
+				GenericUI.getCurrent().getEtudiant().getLinsciae().clear();
 			}else{
-				MainUI.getCurrent().getEtudiant().setLinsciae(new LinkedList<Inscription>());
+				GenericUI.getCurrent().getEtudiant().setLinsciae(new LinkedList<Inscription>());
 			}
 
-			if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null){
-				MainUI.getCurrent().getEtudiant().getLinscdac().clear();
+			if(GenericUI.getCurrent().getEtudiant().getLinscdac()!=null){
+				GenericUI.getCurrent().getEtudiant().getLinscdac().clear();
 			}else{
-				MainUI.getCurrent().getEtudiant().setLinscdac(new LinkedList<Inscription>());
+				GenericUI.getCurrent().getEtudiant().setLinscdac(new LinkedList<Inscription>());
 			}
 
 
 
 
-			MainUI.getCurrent().getEtudiant().setLibEtablissement(multipleApogeeService.getLibEtablissementDef());
+			GenericUI.getCurrent().getEtudiant().setLibEtablissement(multipleApogeeService.getLibEtablissementDef());
 
 			//cursus au sein de l'université:
 
-			InsAdmEtpDTO2[] insdtotab = monProxyAdministratif.recupererIAEtapes_v2(MainUI.getCurrent().getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
+			InsAdmEtpDTO2[] insdtotab = monProxyAdministratif.recupererIAEtapes_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
 
 			for (int i = 0; i < insdtotab.length; i++) {
 				Inscription insc = new Inscription();
@@ -500,14 +500,14 @@ public class EtudiantController {
 					}
 
 					//ajout de l'inscription à la liste
-					MainUI.getCurrent().getEtudiant().getLinsciae().add(0, insc);
+					GenericUI.getCurrent().getEtudiant().getLinsciae().add(0, insc);
 				}
 			}
 
 
 			//Autres cursus : 
 
-			CursusExternesEtTransfertsDTO ctdto = monProxyAdministratif.recupererCursusExterne(MainUI.getCurrent().getEtudiant().getCod_etu());
+			CursusExternesEtTransfertsDTO ctdto = monProxyAdministratif.recupererCursusExterne(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 			if (ctdto != null) {
 				CursusExterneDTO[] listeCursusExt = ctdto.getListeCursusExternes();
@@ -532,30 +532,30 @@ public class EtudiantController {
 							insc.setRes("OBTENU");
 						}
 
-						MainUI.getCurrent().getEtudiant().getLinscdac().add(0, insc);
+						GenericUI.getCurrent().getEtudiant().getLinscdac().add(0, insc);
 					}
 				}
 			}
 
 
 			//première inscription universitaire : 
-			InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(MainUI.getCurrent().getEtudiant().getCod_etu());
+			InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 			if (iaetu != null) {
-				MainUI.getCurrent().getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
-				MainUI.getCurrent().getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
+				GenericUI.getCurrent().getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
+				GenericUI.getCurrent().getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
 			}
 
-			MainUI.getCurrent().setRecuperationWsInscriptionsOk(true);
+			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(true);
 		} catch (WebBaseException ex) {
-			LOG.error("Probleme avec le WS lors de la recherche des inscriptions pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(), ex);
-			MainUI.getCurrent().setRecuperationWsInscriptionsOk(false);
+			LOG.error("Probleme avec le WS lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(), ex);
+			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(false);
 		} catch(Exception ex) {
-			if(MainUI.getCurrent().getEtudiant()!=null){
-				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + MainUI.getCurrent().getEtudiant().getCod_etu(),ex);
+			if(GenericUI.getCurrent().getEtudiant()!=null){
+				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}else{
 				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant ",ex);
 			}
-			MainUI.getCurrent().setRecuperationWsInscriptionsOk(false);
+			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(false);
 		}
 	}
 
@@ -567,8 +567,8 @@ public class EtudiantController {
 	 * va chercher et renseigne les informations concernant le calendrier des examens
 	 */
 	public void recupererCalendrierExamens() {
-		MainUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(MainUI.getCurrent().getEtudiant().getCod_ind()));
-		MainUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
+		GenericUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(GenericUI.getCurrent().getEtudiant().getCod_ind()));
+		GenericUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
 	}
 
 
@@ -623,7 +623,7 @@ public class EtudiantController {
 				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 				temoin=null;
 				sourceResultat="Apogee-extraction";
-				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
+				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
 				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
 				try {
 					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
@@ -697,7 +697,7 @@ public class EtudiantController {
 				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 				temoin=null;
 				sourceResultat="Apogee-extraction";
-				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
+				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
 				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
 				try {
 					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
@@ -1530,7 +1530,7 @@ public class EtudiantController {
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
+				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
 				if (et.getAnnee().substring(0, 4).compareTo(annee)==0) {
 					sourceResultat="Apogee-extraction";
 					temoin=null;
@@ -1590,7 +1590,7 @@ public class EtudiantController {
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				String annee = getAnneeUnivEnCours(MainUI.getCurrent());
+				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
 				if (et.getAnnee().substring(0, 4).compareTo(annee)==0) {
 					sourceResultat="Apogee-extraction";
 					temoin=null;
@@ -1651,28 +1651,28 @@ public class EtudiantController {
 
 	public void renseigneDetailNotesEtResultats(Etape etape) {
 		//On regarde si on a pas déjà les infos dans le cache:
-		String rang = getRangDetailNotesEtResultatsEnCache(etape,true,MainUI.getCurrent().getEtudiant());
+		String rang = getRangDetailNotesEtResultatsEnCache(etape,true,GenericUI.getCurrent().getEtudiant());
 
 		if(rang == null){
-			recupererDetailNotesEtResultats(MainUI.getCurrent().getEtudiant(),etape);
+			recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape);
 			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
-			ajouterCacheDetailNotesEtResultats(etape,true,MainUI.getCurrent().getEtudiant());
+			ajouterCacheDetailNotesEtResultats(etape,true,GenericUI.getCurrent().getEtudiant());
 		}else{
 			//on récupére les infos du cache grace au rang :
-			recupererCacheDetailNotesEtResultats(new Integer(rang),MainUI.getCurrent().getEtudiant());
+			recupererCacheDetailNotesEtResultats(new Integer(rang),GenericUI.getCurrent().getEtudiant());
 		}
 	}
 
 	public void renseigneDetailNotesEtResultatsEnseignant(Etape etape) {
 		//On regarde si on a pas déjà les infos dans le cache:
-		String rang = getRangDetailNotesEtResultatsEnCache(etape,false,MainUI.getCurrent().getEtudiant());
+		String rang = getRangDetailNotesEtResultatsEnCache(etape,false,GenericUI.getCurrent().getEtudiant());
 		if(rang == null){
-			recupererDetailNotesEtResultatsEnseignant(MainUI.getCurrent().getEtudiant(),etape);
+			recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape);
 			//AJOUT DES INFOS recupérées dans le cache. false car on est en vue Enseignant
-			ajouterCacheDetailNotesEtResultats(etape,false,MainUI.getCurrent().getEtudiant());
+			ajouterCacheDetailNotesEtResultats(etape,false,GenericUI.getCurrent().getEtudiant());
 		}else{
 			//on récupére les infos du cache grace au rang :
-			recupererCacheDetailNotesEtResultats(new Integer(rang),MainUI.getCurrent().getEtudiant());
+			recupererCacheDetailNotesEtResultats(new Integer(rang),GenericUI.getCurrent().getEtudiant());
 		}
 	}
 
@@ -1813,10 +1813,10 @@ public class EtudiantController {
 
 
 	public void changerVueNotesEtResultats() {
-		if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
-			MainUI.getCurrent().setVueEnseignantNotesEtResultats(false);
+		if(GenericUI.getCurrent().isVueEnseignantNotesEtResultats()){
+			GenericUI.getCurrent().setVueEnseignantNotesEtResultats(false);
 		}else{
-			MainUI.getCurrent().setVueEnseignantNotesEtResultats(true);
+			GenericUI.getCurrent().setVueEnseignantNotesEtResultats(true);
 		}
 	}
 
@@ -1833,7 +1833,7 @@ public class EtudiantController {
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
 		// autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
-		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours(MainUI.getCurrent()))) {
+		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
 		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();
@@ -1890,7 +1890,7 @@ public class EtudiantController {
 
 
 	public boolean isAfficherRangElpEpr(){
-		List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
+		List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
 		if(lelp != null && lelp.size()>0){
 			List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
 			String codeEtpEnCours = lelp.get(0).getCode();
