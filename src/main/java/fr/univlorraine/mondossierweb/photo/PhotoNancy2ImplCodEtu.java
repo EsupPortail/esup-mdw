@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.WebBrowser;
 
 import fr.univlorraine.mondossierweb.GenericUI;
@@ -260,8 +263,11 @@ public void init(String loginUser) {
  */
 public String getRemoteAdresse() {
 	WebBrowser browser;
+	String ip =  getIpAddr();
+	System.out.println("IP client : "+ip);
+	return ip;
 		//Recuperation de l'IP
-	if(GenericUI.getCurrent() instanceof MainUI){
+	/*if(GenericUI.getCurrent() instanceof MainUI){
 		MainUI mainUI = MainUI.getCurrent();
 		browser = mainUI.getPage().getWebBrowser();
 		LOG.info("IP client MainUI : "+browser.getAddress());
@@ -276,8 +282,24 @@ public String getRemoteAdresse() {
 		
 	}
 	
-	return null;
+	return null;*/
 }
+
+public String getIpAddr() {      
+	VaadinRequest vr = VaadinService.getCurrentRequest();
+
+	   String ip = vr.getHeader("x-forwarded-for");      
+	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+	       ip = vr.getHeader("Proxy-Client-IP");      
+	   }      
+	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+	       ip = vr.getHeader("WL-Proxy-Client-IP");      
+	   }      
+	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+	       ip = vr.getRemoteAddr();      
+	   }      
+	   return ip;      
+	} 
 
 /**
  * getter pour l'url de la ressource renseign� dans domain.xml.
