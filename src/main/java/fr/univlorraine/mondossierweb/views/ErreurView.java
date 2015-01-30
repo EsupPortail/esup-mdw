@@ -46,6 +46,7 @@ public class ErreurView extends VerticalLayout implements View {
 
 		/* Texte */
 		addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
+		
 	}
 
 	/**

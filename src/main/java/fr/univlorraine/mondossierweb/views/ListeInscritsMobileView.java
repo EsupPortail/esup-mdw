@@ -169,8 +169,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 			filterButton.setStyleName("v-nav-button");
 			filterButton.addClickListener(e->{
-				/*FiltreInscritsMobilePopover popover = new FiltreInscritsMobilePopover();
-			 popover.showRelativeTo(filterButton);*/
 				FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
 				w.addCloseListener(f->{
 					//Si la personne a fermé la popup en appuyant sur le bouton FILTRER

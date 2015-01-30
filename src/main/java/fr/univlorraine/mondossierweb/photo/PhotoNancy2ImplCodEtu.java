@@ -293,6 +293,12 @@ public String getIpAddr() {
 	       ip = vr.getHeader("X_FORWARDED_FOR");      
 	   }  
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+	       ip = vr.getHeader("X-Forwarded-For");      
+	   } 
+	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+	       ip = vr.getHeader("HTTP_X_FORWARDED_FOR");      
+	   } 
+	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("Proxy-Client-IP");      
 	   }      
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      

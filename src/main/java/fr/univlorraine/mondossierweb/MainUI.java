@@ -146,89 +146,12 @@ public class MainUI extends GenericUI {
 	@Resource
 	private FavorisView favorisView;
 
-
-
-
-	//Etudiant dont on consulte le dossier
-	/*@Setter
-	@Getter
-	private Etudiant etudiant;*/
-
-	//vrai si on consulte les notes en vue enseignant
-	/*@Setter
-	@Getter
-	private boolean vueEnseignantNotesEtResultats;*/
-
-	/*//annee universitaire en cours
-	@Setter
-	@Getter
-	private String anneeUnivEnCours;
-
-	//code de l'obj dont on affiche la liste des inscrits
-	@Setter
-	@Getter
-	private String codeObjListInscrits;
-
-	//type de l'obj dont on affiche la liste des inscrits
-	@Setter
-	@Getter
-	private String typeObjListInscrits;
-
-	//la liste des inscrits.
-	@Setter
-	@Getter
-	private List<Inscrit> listeInscrits;*/
-
-	//l'étape correspondant à la liste des inscrits si c'est une liste d'inscrits à une étape.
-	/*@Setter
-	@Getter
-	private Etape etapeListeInscrits;*/
-
-	/*//l'elp correspondant à la liste des inscrits si c'est une liste d'inscrits à un elp
-	@Setter
-	@Getter
-	private ElementPedagogique elpListeInscrits;*/
-
-	//la liste des années disponible pour la liste des inscrits en cours.
-	/*@Setter
-	@Getter
-	private List<String> ListeAnneeInscrits;*/
-
-	//l'année correspondant à liste des inscrits en cours.
-	/*@Setter
-	@Getter
-	private String anneeInscrits;*/
-
-	/*//la liste des étapes affichées dans la liste des inscrits quand on consulte les inscrits à un ELP
-	@Setter
-	@Getter
-	private List<VersionEtape> listeEtapesInscrits;*/
-
-	/*//l'identifiant de l'étape sélectionnée dans la liste des inscrits quand on consulte les inscrits à un ELP
-	@Setter
-	@Getter
-	private String etapeInscrits;
-
-	//la liste des groupes affichés dans la liste des inscrits quand on consulte les inscrits à un ELP
-	@Setter
-	@Getter
-	private List<ElpDeCollection> listeGroupesInscrits;
-
-	//l'identifiant du groupe sélectionné dans la liste des inscrits quand on consulte les inscrits à un ELP
-	@Setter
-	@Getter
-	private String groupeInscrits;*/
-
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
 	private int rangTabDossierEtudiant;
 
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
 
-	//Vrai si on a réussi à récupérer les inscriptions via le WS.
-	/*@Setter
-	@Getter
-	private boolean recuperationWsInscriptionsOk;*/
 
 
 	/* Composants */

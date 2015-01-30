@@ -20,8 +20,8 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  */
 @Component
 public class RechercheController {
-	
-	
+
+
 
 	/* Injections */
 	@Resource
@@ -39,11 +39,11 @@ public class RechercheController {
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
 		if(type.equals(Utils.TYPE_CMP))
-				parameterMap.replace("type",Utils.CMP);	
+			parameterMap.replace("type",Utils.CMP);	
 		if(type.equals(Utils.TYPE_VET))
 			parameterMap.replace("type",Utils.VET);
 		if(type.equals(Utils.TYPE_ELP))
-				parameterMap.replace("type",Utils.ELP);
+			parameterMap.replace("type",Utils.ELP);
 		MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
 	}
 
@@ -53,23 +53,23 @@ public class RechercheController {
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
-				parameterMap.replace("type",Utils.CMP);
-				MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
+			parameterMap.replace("type",Utils.CMP);
+			MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
 		}
-		
+
 		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
-				if(type.equals(Utils.TYPE_VET))
-					parameterMap.replace("type",Utils.VET);
-				if(type.equals(Utils.TYPE_ELP))
-						parameterMap.replace("type",Utils.ELP);
-				MainUI.getCurrent().navigateToListeInscrits(parameterMap);	
+			if(type.equals(Utils.TYPE_VET))
+				parameterMap.replace("type",Utils.VET);
+			if(type.equals(Utils.TYPE_ELP))
+				parameterMap.replace("type",Utils.ELP);
+			MainUI.getCurrent().navigateToListeInscrits(parameterMap);	
 		}
-		
+
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
-				parameterMap.replace("type",Utils.ETU);
-				MainUI.getCurrent().setEtudiant(new Etudiant(code));
-				etudiantController.recupererEtatCivil();
-				MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+			parameterMap.replace("type",Utils.ETU);
+			MainUI.getCurrent().setEtudiant(new Etudiant(code));
+			etudiantController.recupererEtatCivil();
+			MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
 		}
 	}
 
@@ -77,22 +77,28 @@ public class RechercheController {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
-		
+
 		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
-				if(type.equals(Utils.TYPE_VET))
-					parameterMap.replace("type",Utils.VET);
-				if(type.equals(Utils.TYPE_ELP))
-						parameterMap.replace("type",Utils.ELP);
-				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
+			if(type.equals(Utils.TYPE_VET))
+				parameterMap.replace("type",Utils.VET);
+			if(type.equals(Utils.TYPE_ELP))
+				parameterMap.replace("type",Utils.ELP);
+			MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
 		}
-		
+
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
-				parameterMap.replace("type",Utils.ETU);
+			parameterMap.replace("type",Utils.ETU);
+
+			if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
 				MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
-				MdwTouchkitUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+				etudiantController.recupererCalendrierExamens();
+				etudiantController.recupererNotesEtResultatsEnseignant(MdwTouchkitUI.getCurrent().getEtudiant());
+			}
+
+			MdwTouchkitUI.getCurrent().navigateToDossierEtudiant();
 		}
 	}
-	
-	
+
+
 }

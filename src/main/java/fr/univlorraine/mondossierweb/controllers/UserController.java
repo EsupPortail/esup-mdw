@@ -390,7 +390,9 @@ public class UserController {
 		String login = getCurrentUserName();
 		Administrateurs adm = administrateursRepository.findOne(login);
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
-			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
+			
+			//GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
+			
 			return true;
 		}
 		return false;

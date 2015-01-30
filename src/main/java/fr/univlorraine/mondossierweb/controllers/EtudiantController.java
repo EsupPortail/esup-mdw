@@ -316,8 +316,10 @@ public class EtudiantController {
 
 			} catch (WebBaseException ex) {
 				LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				throw(ex);
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				throw(ex);
 			}
 		}
 

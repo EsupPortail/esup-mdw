@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
+import com.vaadin.addon.touchkit.ui.NavigationManager;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
@@ -25,6 +26,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -34,6 +36,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
 
 /**
  * Page d'accueil mobile de l'étudiant
@@ -54,24 +57,63 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 	private transient EtudiantController etudiantController;
 
 
+
+	private Button returnButton;
+
 	/**
 	 * Initialise la vue
 	 */
 	@PostConstruct
 	public void init() {
+	}
+	
+	public void refresh(){
+		removeAllComponents();
+		
 		/* Style */
-		setMargin(true);
-		setSpacing(true);
+		setMargin(false);
+		setSpacing(false);
+		setSizeFull();
+		
 
+		//NAVBAR
+		HorizontalLayout navbar=new HorizontalLayout();
+		navbar.setSizeFull();
+		navbar.setHeight("40px");
+		navbar.setStyleName("navigation-bar");
+
+		//Bouton retour
+		if(userController.isEnseignant()){
+			returnButton = new Button();
+			returnButton.setIcon(FontAwesome.ARROW_LEFT);
+			//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+			returnButton.setStyleName("v-nav-button");
+			returnButton.addClickListener(e->{
+					MdwTouchkitUI.getCurrent().navigateToListeInscrits();
+			});
+			navbar.addComponent(returnButton);
+			navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+		}
+
+		//Title
+		Label labelTrombi = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
+		labelTrombi.setStyleName("v-label-navbar");
+		navbar.addComponent(labelTrombi);
+		navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
+
+		navbar.setExpandRatio(labelTrombi, 1);
+		addComponent(navbar);
 
 		VerticalLayout globalLayout = new VerticalLayout();
-		globalLayout.setSizeFull();
+		//globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
+		globalLayout.setMargin(true);
+		globalLayout.setStyleName("v-scrollableelement");
 
-		
-		
-		
-		
+
+
+
+
 		Panel etuPanel = new Panel();
 		HorizontalLayout photoLayout = new HorizontalLayout();
 		photoLayout.setId(MdwTouchkitUI.getCurrent().getEtudiant().getCod_ind());
@@ -109,15 +151,16 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 		photoLayout.setComponentAlignment(nomCodeLayout, Alignment.MIDDLE_CENTER);
 
 		etuPanel.setContent(photoLayout);
-		
+
 		globalLayout.addComponent(etuPanel);
 		globalLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);
-		
-		
-		
+
+
+
 		Panel mailPanel = new Panel();
 		HorizontalLayout mailLayout = new HorizontalLayout();
 		mailLayout.setSizeFull();
+		mailLayout.setHeight("25px");
 		Label mailLabel = new Label();
 		String mail = MdwTouchkitUI.getCurrent().getEtudiant().getEmail();
 		if(StringUtils.hasText(mail)){
@@ -126,18 +169,20 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			mailLabel.setContentMode(ContentMode.HTML);
 		}
 		mailLabel.setSizeFull();
+		mailLabel.addStyleName("label-centre");
 		mailLayout.addComponent(mailLabel);
 		mailLayout.setComponentAlignment(mailLabel, Alignment.MIDDLE_CENTER);
 		mailPanel.setContent(mailLayout);
 		globalLayout.addComponent(mailPanel);
 		globalLayout.setComponentAlignment(mailPanel, Alignment.MIDDLE_CENTER);
-		
-		
-		
-		
-		
-		Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
 
+
+
+
+
+		Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
+		panelInfos.addStyleName("v-panel-caption-centertitle-panel");
+		
 		FormLayout formInfosLayout = new FormLayout();
 		formInfosLayout.setSpacing(true);
 		formInfosLayout.setMargin(true);
@@ -152,8 +197,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
 					TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
 					formatTextField(fieldNumAnonymat);
-					fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-					fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+					//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+					//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 					formInfosLayout.addComponent(fieldNumAnonymat);
 				}
 				//Si l'étudiant a plusieurs numéros d'anonymat
@@ -169,8 +214,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 						formatTextField(fieldNumAnonymat);
 						if(i==0){
 							//Pour le premier numéro affiché on affiche l'info bulle
-							fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-							fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+							//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+							//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 						}
 						formInfosLayout.addComponent(fieldNumAnonymat);
 						i++;
@@ -203,6 +248,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			globalLayout.addComponent(new VerticalLayout());
 		}*/
 		addComponent(globalLayout);
+		setExpandRatio(globalLayout, 1);
 
 
 	}
@@ -212,6 +258,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 		tf.setSizeFull();
 		tf.setNullRepresentation("");
 		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+		
 	}
 
 	/**
