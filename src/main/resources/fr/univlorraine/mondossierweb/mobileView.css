@@ -14,9 +14,31 @@ height: 100%;
 	border-bottom: 1px solid #d1d1ce;
 }
 
-.valo-ul .layout-level-indicator{
-	border-top: 2px solid #ff0000;
-	
+.valo-ul .bold-label{
+	font-weight: bold;
+}
+
+.valo-ul .main-layout-bottom-line-separator{
+	border-bottom: 1px solid #d1d1ce;
+	background-color: rgb(194, 197, 199);
+}
+
+.valo-ul .root-layout-bottom-line-separator{
+	border-bottom: 1px solid #d1d1ce;
+	background-color: rgb(67, 69, 69);
+	color: white;
+}
+
+.valo-ul .level-indicator-layout .v-spacing {
+	width: 5px;
+}
+
+.valo-ul .layout-level-blue-indicator{
+	border-top: 4px solid #3057ED;
+}
+
+.valo-ul .layout-level-green-indicator{
+	border-top: 4px solid #0DA50D;
 }
 
 .valo-ul .line-separator{

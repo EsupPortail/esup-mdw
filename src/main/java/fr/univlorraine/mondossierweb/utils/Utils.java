@@ -44,6 +44,8 @@ public class Utils {
 	public static final String SEPARATEUR_CODE_GROUPE = ";";
 
 	public static final String SHOW_MESSAGE_NOTES_PREFERENCE= "SHOW_MESSAGE_NOTES";
+	
+	public static final String SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE= "SHOW_MESSAGE_MOBILE_NOTES";
 
 	public static final String SHOW_MESSAGE_INTRO_PREFERENCE = "SHOW_MESSAGE_INTRO";
 

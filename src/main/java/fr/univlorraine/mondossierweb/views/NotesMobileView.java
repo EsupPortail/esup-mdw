@@ -278,7 +278,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			
 			
 			//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
-			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE);
+			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
 			boolean afficherMessage = true;
 			if(StringUtils.hasText(val)){
 				afficherMessage = Boolean.valueOf(val);
@@ -292,7 +292,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 					//Test si l'utilisateur a coché la case pour ne plus afficher le message
 					if(choix){
 						//mettre a jour dans la base de données
-						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE, "false");
+						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE, "false");
 					}
 				});
 				UI.getCurrent().addWindow(hbw);
