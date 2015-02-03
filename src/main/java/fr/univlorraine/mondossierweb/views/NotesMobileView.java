@@ -1,7 +1,6 @@
 package fr.univlorraine.mondossierweb.views;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -11,56 +10,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-
-
-
-
-
-
-
-
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
-import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Resultat;
-import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.entities.apogee.Examen;
-import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.NotesView.CodeEtapeColumnGenerator;
-import fr.univlorraine.mondossierweb.views.NotesView.LibelleEtapeColumnGenerator;
-import fr.univlorraine.mondossierweb.views.NotesView.MentionColumnGenerator;
-import fr.univlorraine.mondossierweb.views.NotesView.NoteColumnGenerator;
-import fr.univlorraine.mondossierweb.views.NotesView.RangColumnGenerator;
-import fr.univlorraine.mondossierweb.views.NotesView.ResultatColumnGenerator;
-import fr.univlorraine.mondossierweb.views.NotesView.SessionColumnGenerator;
-import fr.univlorraine.mondossierweb.views.windows.DetailNotesMobileWindow;
-import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
-import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
-import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
-import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 
 /**
@@ -86,6 +57,8 @@ public class NotesMobileView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient RechercheController rechercheController;
 
 	private Button returnButton;
 
@@ -273,7 +246,13 @@ public class NotesMobileView extends VerticalLayout implements View {
 	private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
 		//Appel de la window contenant le détail des notes
 		b.addClickListener(e->{
-			DetailNotesMobileWindow dnw = new DetailNotesMobileWindow(etape); 
+			
+			
+			rechercheController.accessToMobileNotesDetail(etape);
+			
+			
+			/*
+			 DetailNotesMobileWindow dnw = new DetailNotesMobileWindow(etape); 
 			UI.getCurrent().addWindow(dnw);
 			
 			
@@ -297,6 +276,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 				});
 				UI.getCurrent().addWindow(hbw);
 			}
+			*/
 		});
 	}
 

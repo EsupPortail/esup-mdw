@@ -18,6 +18,7 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.DiscoveryNavigator;
 
@@ -41,6 +42,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -50,14 +52,17 @@ import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
+import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
@@ -102,6 +107,8 @@ public class MdwTouchkitUI extends GenericUI{
 	private CalendrierMobileView calendrierMobileView;
 	@Resource
 	private NotesMobileView notesMobileView;
+	@Resource
+	private NotesDetailMobileView notesDetailMobileView;
 	
 
 
@@ -110,7 +117,7 @@ public class MdwTouchkitUI extends GenericUI{
 	private String trombinoscopeFromView;
 
 
-	//private NavigationManager etudiantNavigationManager;
+	private NavigationManager noteNavigationManager;
 
 	private TabBarView menuEtudiant;
 
@@ -119,6 +126,10 @@ public class MdwTouchkitUI extends GenericUI{
 	private Tab tabCalendrier;
 
 	private Tab tabNotes;
+	
+	@Setter
+	@Getter
+	private Etape etapeDetailNotes;
 	
 	//vrai si on consulte les notes en vue enseignant
 	@Setter
@@ -315,11 +326,7 @@ public class MdwTouchkitUI extends GenericUI{
 		calendrierMobileView.refresh();
 		notesMobileView.refresh();
 
-		/*if(etudiantNavigationManager==null){
-			etudiantNavigationManager= new NavigationManager();
-		}
-		etudiantNavigationManager.setCurrentComponent(informationsAnnuellesMobileView);
-		etudiantNavigationManager.setNextComponent(calendrierMobileView);*/
+		
 
 		if(menuEtudiant==null){
 			initMenuEtudiant();
@@ -343,7 +350,16 @@ public class MdwTouchkitUI extends GenericUI{
 		tabCalendrier = menuEtudiant.addTab(calendrierMobileView, "Calendrier", FontAwesome.CALENDAR);
 		tabCalendrier.setId("tabCalendrier");
 		
-		tabNotes = menuEtudiant.addTab(notesMobileView, "Résultats",  FontAwesome.LIST);
+		
+
+		if(noteNavigationManager==null){
+			noteNavigationManager= new NavigationManager();
+		}
+		noteNavigationManager.setCurrentComponent(notesMobileView);
+		noteNavigationManager.setNextComponent(notesDetailMobileView);
+		
+		//tabNotes = menuEtudiant.addTab(notesMobileView, "Résultats",  FontAwesome.LIST);
+		tabNotes = menuEtudiant.addTab(noteNavigationManager, "Résultats",  FontAwesome.LIST);
 		tabNotes.setId("tabNotes");
 
 
@@ -380,6 +396,25 @@ public class MdwTouchkitUI extends GenericUI{
 	public void navigateToListeInscrits() {
 		setContent(contentLayout);
 		navigator.navigateTo(ListeInscritsMobileView.NAME);
+	}
+	
+	public void navigateToResumeNotes() {
+
+		if(noteNavigationManager!=null){
+			noteNavigationManager.navigateBack();
+		}
+
+			
+	}
+	
+	public void navigateToDetailNotes(Etape etape) {
+
+		if(noteNavigationManager!=null){
+			notesDetailMobileView.refresh(etape, etudiant.getCod_etu());
+			noteNavigationManager.navigateTo(notesDetailMobileView);
+		}
+
+			
 	}
 
 	/*public void checkMenuIsNotDisplayed() {

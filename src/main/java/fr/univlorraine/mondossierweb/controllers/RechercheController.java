@@ -9,11 +9,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 
 /**
  * Gestion de la recherche
@@ -32,6 +37,8 @@ public class RechercheController {
 	private transient UserDetailsService userDetailsService;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient UserController userController;
 
 
 	public void accessToRechercheArborescente(String code, String type) {
@@ -98,6 +105,36 @@ public class RechercheController {
 
 			MdwTouchkitUI.getCurrent().navigateToDossierEtudiant();
 		}
+	}
+
+
+	public void accessToMobileNotesDetail(Etape etape) {
+		
+		
+		MdwTouchkitUI.getCurrent().navigateToDetailNotes(etape);
+		
+		
+		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+		String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
+		boolean afficherMessage = true;
+		if(StringUtils.hasText(val)){
+			afficherMessage = Boolean.valueOf(val);
+		}
+
+		if(afficherMessage){
+			String message =applicationContext.getMessage("notesDetailMobileView.window.message.info", null, null);
+			HelpMobileWindow hbw = new HelpMobileWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null));
+			hbw.addCloseListener(g->{
+				boolean choix = hbw.getCheckBox().getValue();
+				//Test si l'utilisateur a coché la case pour ne plus afficher le message
+				if(choix){
+					//mettre a jour dans la base de données
+					userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE, "false");
+				}
+			});
+			UI.getCurrent().addWindow(hbw);
+		}
+		
 	}
 
 

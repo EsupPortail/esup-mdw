@@ -12,6 +12,7 @@ height: 100%;
 
 .valo-ul .layout-bottom-line-separator{
 	border-bottom: 1px solid #d1d1ce;
+	background-color: white;
 }
 
 .valo-ul .bold-label{

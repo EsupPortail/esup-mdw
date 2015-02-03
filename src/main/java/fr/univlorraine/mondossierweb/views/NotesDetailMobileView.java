@@ -1,26 +1,34 @@
-package fr.univlorraine.mondossierweb.views.windows;
+package fr.univlorraine.mondossierweb.views;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import aj.org.objectweb.asm.Type;
+import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
@@ -30,18 +38,24 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 
 /**
- * Fenêtre du détail des notes sur mobile
+ * Page du détail des notes sur mobile
  */
-@Configurable(preConstruction=true)
-public class DetailNotesMobileWindow extends Window {
-	private static final long serialVersionUID = 1L;
+@Component @Scope("prototype")
+@VaadinView(NotesDetailMobileView.NAME)
+public class NotesDetailMobileView extends VerticalLayout implements View {
 
-	public static final String NAME = "notesMobileWindow";
+	private static final long serialVersionUID = 2295120253787356472L;
+
+	private Logger LOG = LoggerFactory.getLogger(NotesDetailMobileView.class);
+
+	public static final String NAME = "notesDetailMobileView";
 
 
 
+	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
@@ -53,8 +67,9 @@ public class DetailNotesMobileWindow extends Window {
 	@Resource
 	private transient ConfigController configController;
 
-
 	private Etape etape;
+	
+	private String codetu;
 
 	int compteurElp;
 
@@ -62,40 +77,101 @@ public class DetailNotesMobileWindow extends Window {
 
 	private Map<String,LinkedList<HorizontalLayout>> layoutList;
 
+
+	private Button returnButton;
+
+	private Button significationButton;
+
 	/**
-	 * Crée une fenêtre
+	 * Initialise la vue
 	 */
-	public DetailNotesMobileWindow(Etape et) {
-		super();
-		etape = et;
-		compteurElp=0;
-		init();
+	@PostConstruct
+	public void init() {
+
 	}
 
-	private void init() {
+	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
+
+		if(codetu==null || !codetuToDisplay.equals(codetu)){
+			codetu=null;
+		}
+		
+		compteurElp=0;
+
+		removeAllComponents();
 
 		/* Style */
-		setWidth(95, Unit.PERCENTAGE);
-		setHeight(95, Unit.PERCENTAGE);
-		setModal(true);
-		setResizable(false);
+		setMargin(false);
+		setSpacing(false);
+		setSizeFull();
+
+
+
+		//NAVBAR
+		HorizontalLayout navbar=new HorizontalLayout();
+		navbar.setSizeFull();
+		navbar.setHeight("40px");
+		navbar.setStyleName("navigation-bar");
+
+		//Bouton retour
+		returnButton = new Button();
+		returnButton.setIcon(FontAwesome.ARROW_LEFT);
+		//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+		returnButton.setStyleName("v-nav-button");
+		returnButton.addClickListener(e->{
+			MdwTouchkitUI.getCurrent().navigateToResumeNotes();
+		});
+		navbar.addComponent(returnButton);
+		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+
+		//Titre
+		Label labelNavBar = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
+		labelNavBar.setStyleName("v-label-navbar");
+		navbar.addComponent(labelNavBar);
+		navbar.setComponentAlignment(labelNavBar, Alignment.MIDDLE_CENTER);
+
+		navbar.setExpandRatio(labelNavBar, 1);
+
+		//Significations
+		if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
+			significationButton = new Button();
+			significationButton.setIcon(FontAwesome.INFO_CIRCLE);
+			significationButton.setStyleName("v-nav-button");
+			significationButton.addClickListener(e->{
+				//afficher les significations
+				SignificationsMobileWindow w = new SignificationsMobileWindow();
+				UI.getCurrent().addWindow(w);
+			});
+			navbar.addComponent(significationButton);
+			navbar.setComponentAlignment(significationButton, Alignment.MIDDLE_RIGHT);
+		}
+
+
+		addComponent(navbar);
+
 
 		layoutList = new  HashMap<String,LinkedList<HorizontalLayout>>();
 
-		//Test si user enseignant
-		if(userController.isEnseignant()){
-			//On recupere les notes pour un enseignant
-			etudiantController.renseigneDetailNotesEtResultatsEnseignant(etape);
-		}else{
-			//On récupère les notes pour un étudiant
-			etudiantController.renseigneDetailNotesEtResultats(etape);
+		//On va chercher les infos dans Apogée si ce n'est pas déjà fait
+		if(codetu==null || etape == null || !etapeToDisplay.getCode().equals(etape.getCode()) || !etapeToDisplay.getVersion().equals(etape.getVersion())){
+			//Test si user enseignant
+			if(userController.isEnseignant()){
+				//On recupere les notes pour un enseignant
+				etudiantController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
+			}else{
+				//On récupère les notes pour un étudiant
+				etudiantController.renseigneDetailNotesEtResultats(etapeToDisplay);
+			}
 		}
-
+		etape=etapeToDisplay;
+		codetu=codetuToDisplay;
+		
 		/* Layout */
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
 		layout.setMargin(true);
 		layout.setSpacing(true);
+		layout.setStyleName("v-scrollableelement");
 
 		/* Titre */
 		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
@@ -106,8 +182,8 @@ public class DetailNotesMobileWindow extends Window {
 
 
 		if(lelp!=null && lelp.size()>0){
-			Panel notesPanel = new Panel();
-			notesPanel.setSizeFull();
+			//Panel notesPanel = new Panel();
+			//notesPanel.setSizeFull();
 
 			VerticalLayout notesLayout = new VerticalLayout();
 			//notesLayout.setSpacing(true);
@@ -143,7 +219,7 @@ public class DetailNotesMobileWindow extends Window {
 					blueLevel = !blueLevel;
 				}
 				HorizontalLayout libElpLayout = new HorizontalLayout();
-				
+
 
 				if(compteurElp>1){
 					if(elp.getLevel()==1){
@@ -153,24 +229,24 @@ public class DetailNotesMobileWindow extends Window {
 						//ajout dans la hashMap
 						layoutList.put(elp.getCode(), new LinkedList<HorizontalLayout>());
 						elpPere = elp.getCode();
-						
+
 						libElpLayout.addListener(new LayoutClickListener() {
 							public void layoutClick(LayoutClickEvent event) {
-									if(layoutList.get(elp.getCode())==null || layoutList.get(elp.getCode()).size()==0){
-										Notification.show(applicationContext.getMessage(NAME+".message.aucunsouselement", null, getLocale()));
-									}else{
-										//On parcourt les layout des éléments fils de l'élément cliqué
-										for(HorizontalLayout hl : layoutList.get(elp.getCode())){
-											//Si le layout es visible
-											if(hl.isVisible()){
-												//On masque le layout
-												hl.setVisible(false);
-											}else{
-												//On affiche le layout
-												hl.setVisible(true);
-											}
+								if(layoutList.get(elp.getCode())==null || layoutList.get(elp.getCode()).size()==0){
+									Notification.show(applicationContext.getMessage(NAME+".message.aucunsouselement", null, getLocale()));
+								}else{
+									//On parcourt les layout des éléments fils de l'élément cliqué
+									for(HorizontalLayout hl : layoutList.get(elp.getCode())){
+										//Si le layout es visible
+										if(hl.isVisible()){
+											//On masque le layout
+											hl.setVisible(false);
+										}else{
+											//On affiche le layout
+											hl.setVisible(true);
 										}
 									}
+								}
 							}
 						});
 
@@ -268,9 +344,13 @@ public class DetailNotesMobileWindow extends Window {
 				}
 			}
 
-			notesPanel.setContent(notesLayout);
+			/*notesPanel.setContent(notesLayout);
 			layout.addComponent(notesPanel);
 			layout.setExpandRatio(notesPanel, 1);
+			*/
+			
+			layout.addComponent(notesLayout);
+			layout.setExpandRatio(notesLayout, 1);
 
 		}else{
 			setHeight(30, Unit.PERCENTAGE);
@@ -286,16 +366,18 @@ public class DetailNotesMobileWindow extends Window {
 
 
 
-		setContent(layout);
+		addComponent(layout);
 
-
-		/* Centre la fenêtre */
-		center();
-
+		setExpandRatio(layout, 1);
 
 
 	}
 
+	@Override
+	public void enter(ViewChangeEvent event) {
+		// TODO Auto-generated method stub
+
+	}
 
 
 
