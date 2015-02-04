@@ -104,21 +104,14 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
+		// On réinitialise la vue
 		removeAllComponents();
-
-
-
-
-
-
-		//	((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsNotDisplayed();
-
-		/* Style */
-		//setMargin(true);
-		//setSpacing(true);
+		
+		// Style
 		setSizeFull();
 		addStyleName("v-noscrollableelement");
 
+		// On récupère le favori à afficher
 		code = MdwTouchkitUI.getCurrent().getCodeObjListInscrits();
 		typeFavori = MdwTouchkitUI.getCurrent().getTypeObjListInscrits();
 		libelleObj = "";
@@ -144,7 +137,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		//Bouton retour
 		returnButton = new Button();
 		returnButton.setIcon(FontAwesome.ARROW_LEFT);
-		//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		returnButton.setStyleName("v-nav-button");
 		returnButton.addClickListener(e->{
 			if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
@@ -166,7 +158,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		if(typeIsElp()){
 			filterButton = new Button();
 			filterButton.setIcon(FontAwesome.ELLIPSIS_V);
-			//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 			filterButton.setStyleName("v-nav-button");
 			filterButton.addClickListener(e->{
 				FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
@@ -239,17 +230,18 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 			setExpandRatio(infoLayout, 1);
 		}else{
+			// Layout contenant le label du message indiquant aucun inscrit
 			infoLayout= new VerticalLayout();
 			infoLayout.setMargin(true);
 			infoLayout.setSpacing(true);
 
+			// Label du message indiquant aucun inscrit
 			Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
 			infoAucuninscrit.setSizeFull();
 
+			// Ajout du label au layout
 			infoLayout.addComponent(infoAucuninscrit);
 			addComponent(infoLayout);
-
-			//setComponentAlignment(infoAucuninscrit, Alignment.TOP_CENTER);
 			setExpandRatio(infoLayout, 1);
 		}
 
@@ -257,10 +249,15 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 	}
 
-
+	
+	/**
+	 * Affichage du trombinoscope
+	 */
 	private void displayTrombinoscope() {
+		// Récupération de la liste des inscrits
 		List<Inscrit> linscrits = MdwTouchkitUI.getCurrent().getListeInscrits();
 
+		// On réinitialise le layout contenant le trombinoscope
 		if(trombiLayout!=null){
 			trombiLayout.removeAllComponents();
 		}else{
@@ -269,69 +266,90 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			trombiLayout.setSpacing(true);
 		}
 
-
+		//Pour chaque inscrit
 		for(Inscrit inscrit : linscrits){
 
+			
 			boolean afficherEtudiant= true;
 
-
+			//Si l'étudiant n'est pas dans la VET sélectionnée, on ne l'affiche pas
 			if(StringUtils.hasText(vetSelectionnee) && (inscrit.getId_etp()==null || !inscrit.getId_etp().contains(vetSelectionnee))){
 				afficherEtudiant=false;
 
 			}
+			
+			// Si l'étudiant n'est pas dans le groupe sélectionné, on ne l'affiche pas
 			if(StringUtils.hasText(groupeSelectionne) && (inscrit.getCodes_groupes()==null ||!inscrit.getCodes_groupes().contains(groupeSelectionne))){
 				afficherEtudiant=false;
 			}
 
-
+			
+			// Si l'étudiant doit être affiché
 			if(afficherEtudiant){
+				
+				// Panel contenant l'étudiant
 				Panel etuPanel = new Panel();
+				
+				// Layout du Panel contenant l'étudiant
 				HorizontalLayout photoLayout = new HorizontalLayout();
+				// Ajout d'un id sur le layout
 				photoLayout.setId(inscrit.getCod_ind());
 				photoLayout.setSizeFull();
+				
+				// Si on a une url renseignée vers la photo de l'étudiant
 				if(inscrit.getUrlphoto()!=null){
-					//Button fotoEtu=new Button();
+
+					// Image contenant la photo de l'étudiant
 					Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));
 					fotoEtudiant.setWidth("120px");
 					fotoEtudiant.setHeight("153px");
 					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
+					// Gestion du clic sur la photo
 					fotoEtudiant.addClickListener(e->{
+						// Au clic sur la photo on redirige vers le contenu du dossier de l'étudiant dont la photo a été cliquée
 						rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
 					});
-
+					// Ajout de la photo au layout
 					photoLayout.addComponent(fotoEtudiant);
-					//photoLayout.addComponent(fotoEtu);
-					//photoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_RIGHT);
-					//photoLayout.setExpandRatio(fotoEtudiant, 1);
 
 				}
+				
+				// Layout contenant le nom, prénom et le codetu
 				VerticalLayout nomCodeLayout = new VerticalLayout();
 				nomCodeLayout.setSizeFull();
 				nomCodeLayout.setSpacing(false);
 
+				// Bouton contenant le nom/prénom
 				Button btnNomEtudiant = new Button(inscrit.getPrenom()+" "+inscrit.getNom());
 				btnNomEtudiant.setSizeFull();
 				btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
 				btnNomEtudiant.addStyleName("link"); 
 				btnNomEtudiant.addStyleName("v-link");
 				btnNomEtudiant.addStyleName("v-button-multiline");
+				// Ajout du bouton au layout
 				nomCodeLayout.addComponent(btnNomEtudiant);
+				//Gestion du clic sur le bouton
 				btnNomEtudiant.addClickListener(e->{
+					// Au clic sur le bouton on redirige vers le contenu du dossier de l'étudiant dont le nom a été cliqué
 					rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
 				nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
 
+				// Label contenant le codetu
 				Label codetuLabel = new Label(inscrit.getCod_etu());
 				codetuLabel.setSizeFull();
 				codetuLabel.setStyleName(ValoTheme.LABEL_TINY);
 				codetuLabel.addStyleName("label-centre");
+				// Ajout du label au layout
 				nomCodeLayout.addComponent(codetuLabel);	
 				nomCodeLayout.setComponentAlignment(codetuLabel, Alignment.MIDDLE_CENTER);
 
+				// Ajout du layout contenant nom, prénom et codetu au layout de la photo
 				photoLayout.addComponent(nomCodeLayout);
 				photoLayout.setComponentAlignment(nomCodeLayout, Alignment.MIDDLE_CENTER);
 
+				// Ajout du layout de la photo comme contenu du panel
 				etuPanel.setContent(photoLayout);
 				trombiLayout.addComponent(etuPanel);
 				trombiLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);

@@ -67,39 +67,40 @@ public class HelpMobileWindow extends Window {
 	 * @param titre
 	 */
 	public HelpMobileWindow(String message, String titre) {
-		/* Style */
+		// Style 
 		setWidth("90%");
 		setModal(true);
 		setResizable(false);
 		setClosable(false);
 
-		/* Layout */
+		// Layout 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 		layout.setSpacing(true);
 		setContent(layout);
 
-		/* Titre */
+		// Titre 
 		if (titre == null) {
 			titre = applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale());
 		}
 		setCaption(titre);
 
-		/* Texte */
+		// Texte 
 		Label textLabel = new Label(message,ContentMode.HTML);
 		layout.addComponent(textLabel);
 
-		/* Boutons */
+		// Boutons
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setSpacing(true);
 		layout.addComponent(buttonsLayout);
 
+		// Checkbox "ne plus afficher ce message"
 		checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.mobile.message", null, getLocale()));
 		buttonsLayout.addComponent(checkBox);
 		buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
 		
-		//btnFermer.setCaption(applicationContext.getMessage("helpWindow.btnFermer", null, getLocale()));
+		// Bouton "Fermer"
 		btnFermer.setIcon(FontAwesome.TIMES);
 		btnFermer.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		btnFermer.addStyleName("v-popover-button");
@@ -109,7 +110,7 @@ public class HelpMobileWindow extends Window {
 		buttonsLayout.setExpandRatio(checkBox, 1);
 
 
-		/* Centre la fenêtre */
+		// Centre la fenêtre 
 		center();
 	}
 
