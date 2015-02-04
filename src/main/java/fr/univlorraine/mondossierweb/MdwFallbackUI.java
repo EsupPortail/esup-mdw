@@ -1,9 +1,12 @@
 package fr.univlorraine.mondossierweb;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -14,12 +17,18 @@ import com.vaadin.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 @Component @Scope("prototype")
-@Theme("univ-lorraine")
+@Theme("valo-ul")
+@StyleSheet("mobileView.css")
 public class MdwFallbackUI extends UI {
 	
+
+	private static final long serialVersionUID = 3269956774322268418L;
+	
+	private Logger LOG = LoggerFactory.getLogger(MdwFallbackUI.class);
+	
 	// FIXME review message
-    private static final String MSG = "<h1>Ooops...</h1> <p>You accessed MonDossierWeb with a browser that is not supported WebKit</p>"+
-    		"<p> go to the <a href=\""+PropertyUtils.getAppUrl()+"\">desktop version</a> </p>";
+    private static final String MSG = "<h1>Oups...</h1> <p>Vous accédez à MonDossierWeb avec un navigateur qui ne supporte pas WebKit</p>"+
+    		"<p> Pour utiliser la <a href=\""+PropertyUtils.getAppUrl()+"\">version bureau</a> </p>";
 
     @Override
     protected void init(VaadinRequest request) {

@@ -2,6 +2,9 @@ package fr.univlorraine.mondossierweb;
 
 import javax.servlet.ServletException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.addon.touchkit.server.TouchKitServlet;
 import com.vaadin.addon.touchkit.settings.TouchKitSettings;
 import com.vaadin.server.ServiceException;
@@ -9,6 +12,8 @@ import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 
 public class MDWTouchkitServlet extends TouchKitServlet {
+	
+	private Logger LOG = LoggerFactory.getLogger(MDWTouchkitServlet.class);
 	
 	 private MdwTouchkitUIProvider uiProvider = new MdwTouchkitUIProvider();
 
@@ -19,7 +24,7 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 	        getService().addSessionInitListener(new SessionInitListener() {
 	            @Override
 	            public void sessionInit(SessionInitEvent event) throws ServiceException {
-	            	System.out.println("ui provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
+	            	LOG.debug("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
 	                event.getSession().addUIProvider(uiProvider);
 	            }
 	        });
@@ -28,7 +33,7 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 	        TouchKitSettings s = getTouchKitSettings();
 	        s.getWebAppSettings().setWebAppCapable(true);
 	        s.getWebAppSettings().setStatusBarStyle("black");
-	        String contextPath = getServletConfig().getServletContext().getContextPath();
+	       // String contextPath = getServletConfig().getServletContext().getContextPath();
 
 	        s.getApplicationCacheSettings().setCacheManifestEnabled(true);
 	        

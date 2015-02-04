@@ -1,6 +1,10 @@
 package fr.univlorraine.mondossierweb;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jfree.util.Log;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
 
 import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringUIProvider;
@@ -21,25 +25,17 @@ public class MdwUIProvider extends SpringUIProvider  {
 		//super.getUIClass(event);
 		
         String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-        System.out.println("UA : "+userAgent);
+        Log.debug("UA : "+userAgent);
         
-        // on teste webkit ET que la personne est sur un appareil mobile
-       //if(userAgent.contains("webkit") && (userAgent.contains("android") || userAgent.contains("windows phone") || userAgent.contains("iphone"))) {
-        
-        //on ne teste que le webkit pour pouvoir tester sur chrome sur PC desktop
-    // if(userAgent.contains("webkit") ) {
-        
-        //if(userAgent.contains("webkit") && (userAgent.contains("android") || userAgent.contains("windows phone") || userAgent.contains("iphone"))) {
-       /* if(userAgent.contains("webkit") ) {
-        	Log.debug("-Touckit UI provided ("+userAgent+")");
-        	System.out.println("-Touckit UI provided");
+        /* Device Detection */
+		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
+		if(currentDevice.isMobile() && userAgent.contains("webkit")){
+			Log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
             return MdwFallbackTouchkitUI.class;
-        } else {*/
+		}else{
         	Log.debug("-Fallback UI provided ("+userAgent+")");
-        	System.out.println("-Fallback UI provided");
             return MainUI.class;
-        	//return MainUI.class;
-       /* }*/
+		}
     }
 	
 	 @Override
@@ -54,15 +50,16 @@ public class MdwUIProvider extends SpringUIProvider  {
 	    public UI createInstance(UICreateEvent event) {
 	        String uiBeanNameObj = "";
 	        String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-	      /*  if(userAgent.contains("webkit") ) {
-	        	Log.debug("-uiBeanNameObj = mdwFallbackTouchkitUI");
-	        	System.out.println("-uiBeanNameObj = mdwFallbackTouchkitUI");
-	        	uiBeanNameObj = "mdwFallbackTouchkitUI";
-	        } else {*/
+	        
+	        /* Device Detection */
+			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
+			if(currentDevice.isMobile() && userAgent.contains("webkit")){
+				Log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
+				uiBeanNameObj = "mdwFallbackTouchkitUI";
+			}else{
 	        	Log.debug("-uiBeanNameObj = mainUI");
-	        	System.out.println("-uiBeanNameObj = mainUI");
 	        	uiBeanNameObj = "mainUI";
-	        /*}*/
+			}
 
 	        //Stored in VaadinSession to use it in
 	        // the ApplicationScope later to initialize vaadin application scope beans
