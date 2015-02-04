@@ -2,6 +2,10 @@
 background: #F0F0F0;
 }
 
+.valo-ul .v-touchkit-navpanel-container{
+	background: #F0F0F0;
+}
+
 .valo-ul .v-horizontallayout-v-layout-multiline {
 height: 100%;
 }

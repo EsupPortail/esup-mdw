@@ -115,7 +115,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			significationButton.setStyleName("v-nav-button");
 			significationButton.addClickListener(e->{
 				//afficher les significations
-				SignificationsMobileWindow w = new SignificationsMobileWindow();
+				SignificationsMobileWindow w = new SignificationsMobileWindow(false);
 				UI.getCurrent().addWindow(w);
 			});
 			navbar.addComponent(significationButton);
