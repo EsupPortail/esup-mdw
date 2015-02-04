@@ -15,6 +15,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -67,31 +68,33 @@ public class FiltreInscritsMobileWindow extends Window {
 	 * Crée une fenêtre
 	 */
 	public FiltreInscritsMobileWindow(){
-		setWidth("90%");
-        setHeight("260px");
+		setWidth("95%");
         setModal(true);
 		setResizable(false);
+		setClosable(false);
 
-        setCaption("Filtre");
+        setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
         setStyleName("v-popover-blank");
         
         typeFavori = MdwTouchkitUI.getCurrent().getTypeObjListInscrits();
         
-        VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
+        GridLayout layout = new GridLayout(1,2);
+        layout.setWidth("100%");
         layout.setSpacing(true);
         layout.setMargin(true);
+        setContent(layout);
         
         //Si on affiche la liste des inscrits à un ELP
 		//on doit affiche l'étape d'appartenance et éventuellement les groupes
 		//Affichage d'une liste déroulante contenant la liste des années
 		if(typeIsElp()){
 	        
+			//GESTION DES ETAPES
 			List<VersionEtape> letapes = MdwTouchkitUI.getCurrent().getListeEtapesInscrits();
 			if(letapes != null && letapes.size()>0){
 				
 				
-		        Label etapeLabel = new Label("Etape d'appartenance");
+		        Label etapeLabel = new Label(applicationContext.getMessage(NAME+".etape", null, getLocale()));
 		        layout.addComponent(etapeLabel);
 		        layout.setComponentAlignment(etapeLabel, Alignment.BOTTOM_LEFT);
 				listeEtapes = new NativeSelect();
@@ -137,19 +140,19 @@ public class FiltreInscritsMobileWindow extends Window {
 			}
 
 			
-			
+			//GESTION DES GROUPES
 			List<ElpDeCollection> lgroupes = MdwTouchkitUI.getCurrent().getListeGroupesInscrits();
 			if(lgroupes != null && lgroupes.size()>0){
 			     
+				// Label "GROUPE"
 		        HorizontalLayout gLayout = new HorizontalLayout();
 		        gLayout.setSizeFull();
-
-		        Label groupeLabel = new Label("Groupe");
+		        Label groupeLabel = new Label(applicationContext.getMessage(NAME+".groupe", null, getLocale()));
 		        gLayout.addComponent(groupeLabel);
 		        gLayout.setComponentAlignment(groupeLabel, Alignment.MIDDLE_LEFT);
-
 		        layout.addComponent(gLayout);
 		        
+		        //Liste déroulante pour choisir le groupe
 				listeGroupes = new NativeSelect();
 				listeGroupes.setNullSelectionAllowed(false);
 				listeGroupes.setRequired(false);
@@ -165,6 +168,7 @@ public class FiltreInscritsMobileWindow extends Window {
 						}
 					}
 				}
+				//On pré-remplie le groupe choisi si on en a déjà choisi un
 				if(MdwTouchkitUI.getCurrent().getGroupeInscrits()!=null){
 					listeGroupes.setValue( MdwTouchkitUI.getCurrent().getGroupeInscrits());
 				}else{
@@ -187,46 +191,35 @@ public class FiltreInscritsMobileWindow extends Window {
 							vetSelectionnee=null;
 						}
 						
-						//update de l'affichage
-						//initListe();
 					}
 				});
 
 
 				layout.addComponent(listeGroupes);
 
-	
-
 			}
 		}
 
 
-        this.setResizable(false);
         
 
-        // Have a close button
+        // Bouton "Filtrer"
         HorizontalLayout bLayout = new HorizontalLayout();
         bLayout.setSizeFull();
-  
-        Button closeButton = new Button("Filtrer");
+        Button closeButton = new Button(applicationContext.getMessage(NAME+".filtrerBtn", null, getLocale()));
         closeButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         closeButton.addStyleName("v-popover-button");
-        //closeButton.setHeight("40px");
         demandeFiltrage=false;
         closeButton.addClickListener(e->{
         	//retourner vetSelectionnee et groupeSelectionne;
         	demandeFiltrage = true;
         	close();
-        	
         });
-        
         bLayout.addComponent(closeButton);
         bLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_CENTER);
         layout.addComponent(bLayout);
 
 
-        setContent(layout);
-       
 	}
 
 

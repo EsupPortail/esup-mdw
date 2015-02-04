@@ -32,17 +32,17 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 
 		// on ne teste que le webkit pour pouvoir tester sur chrome sur PC desktop
-		//if(userAgent.contains("webkit") ) {
+		if(userAgent.contains("webkit") ) {
 		//if(userAgent.contains("webkit") && (userAgent.contains("android") || userAgent.contains("windows phone") || userAgent.contains("iphone"))) {
 			Log.debug("Touckit UI provided ("+userAgent+")");
 			System.out.println("Touckit UI provided");
 			return MdwTouchkitUI.class;
-		/*} else {
+		} else {
 			Log.debug("Fallback UI provided ("+userAgent+")");
 			System.out.println("Fallback UI provided");
 			return MdwFallbackUI.class;
 			//return MainUI.class;
-		}*/
+		}
 	}
 
 	@Override

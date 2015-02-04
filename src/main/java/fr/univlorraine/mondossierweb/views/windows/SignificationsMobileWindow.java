@@ -11,6 +11,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -39,45 +40,39 @@ public class SignificationsMobileWindow extends Window {
 	 */
 	public SignificationsMobileWindow(boolean afficherSignificationIndicateurProfondeur){
 		
-		
 		setWidth("95%");
-		
-		int height = 150;
-		if(afficherSignificationIndicateurProfondeur){
-			height = 390;
-		}
-		
-		
-		
-		setCaption("Aide");
+
+
+		setCaption(applicationContext.getMessage("significationsWindow.title", null, getLocale()));
         setModal(true);
 		setResizable(false);
 		setClosable(false);
-		
         setStyleName("v-popover-blank");
 
-        CssLayout layout = new CssLayout();
-        layout.setStyleName(ValoTheme.LAYOUT_WELL);
-        layout.setSizeFull();
-      
+        GridLayout layout = new GridLayout(1,2);
+        layout.setWidth("100%");
+        setContent(layout);
+        
+
         VerticalLayout panelLayout = new VerticalLayout();
         panelLayout.setWidth("100%");
     	panelLayout.setSpacing(true);
     	panelLayout.setMargin(true);
        
         if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
+        	
 			Panel panelSignificationResultats= new Panel();
 			panelSignificationResultats.setCaption(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 			panelSignificationResultats.addStyleName("significationpanel");
+			panelSignificationResultats.setWidth("100%");
 			
-
 			VerticalLayout significationLayout = new VerticalLayout();
+			significationLayout.setWidth("100%");
 			significationLayout.setMargin(true);
 			significationLayout.setSpacing(true);
 
 			Set<String> ss = MdwTouchkitUI.getCurrent().getEtudiant().getSignificationResultats().keySet();
 			for(String k : ss){
-				height += 67;
 				if(k != null && !k.equals("") && !k.equals(" ")){
 					HorizontalLayout signLayout = new HorizontalLayout();
 					signLayout.setSizeFull();
@@ -100,22 +95,21 @@ public class SignificationsMobileWindow extends Window {
         
         if(afficherSignificationIndicateurProfondeur){
         	
-        	
         	Panel panelSignificationIndicateurs= new Panel();
         	panelSignificationIndicateurs.setCaption(applicationContext.getMessage(NAME+".info.significations.indicateurs", null, getLocale()));
         	panelSignificationIndicateurs.addStyleName("significationpanel");
-			
+        	panelSignificationIndicateurs.setWidth("100%");
 
 			VerticalLayout significationLayout = new VerticalLayout();
 			significationLayout.setMargin(true);
 			significationLayout.setSpacing(true);
-			significationLayout.setSizeFull();
+			significationLayout.setWidth("100%");
 
 			//1er NIVEAU
 			HorizontalLayout levelLayout1 = new HorizontalLayout();
-			levelLayout1.setSizeFull();
+			levelLayout1.setWidth("100%");
 			HorizontalLayout levelMainLayout1 = new HorizontalLayout();
-			levelMainLayout1.setSizeFull();
+			levelMainLayout1.setWidth("100%");
 			levelMainLayout1.setSpacing(true);
 			levelMainLayout1.setStyleName("level-indicator-layout");
 			int k=0;
@@ -242,23 +236,18 @@ public class SignificationsMobileWindow extends Window {
 			
 			panelSignificationIndicateurs.setContent(significationLayout);
 			panelLayout.addComponent(panelSignificationIndicateurs);
-			//layout.addComponent(panelLayout);
+
         }
 
-        
-        setHeight(height, Unit.PIXELS);
-   
-		
-		
-       
-        
+                
 
-        // Have a close button
+        // close button
         HorizontalLayout bLayout = new HorizontalLayout();
         bLayout.setSizeFull();
         bLayout.setHeight("50px");
   
         Button closeButton = new Button();
+        closeButton.setCaption(applicationContext.getMessage("significationsWindow.btnFermer", null, getLocale()));
         closeButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         closeButton.addStyleName("v-popover-button");
         closeButton.setIcon(FontAwesome.TIMES);
@@ -272,7 +261,7 @@ public class SignificationsMobileWindow extends Window {
         layout.addComponent(bLayout);
 
 
-        setContent(layout);
+
        
 	}
 
