@@ -29,7 +29,9 @@ public class MdwUIProvider extends SpringUIProvider  {
         
         /* Device Detection */
 		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
-		if(currentDevice.isMobile() && userAgent.contains("webkit")){
+		if(currentDevice.isMobile() && (userAgent.contains("webkit")
+				|| userAgent.contains("windows phone 8")
+	            || userAgent.contains("windows phone 9"))){
 			Log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
             return MdwFallbackTouchkitUI.class;
 		}else{
@@ -53,7 +55,9 @@ public class MdwUIProvider extends SpringUIProvider  {
 	        
 	        /* Device Detection */
 			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
-			if(currentDevice.isMobile() && userAgent.contains("webkit")){
+			if(currentDevice.isMobile() && (userAgent.contains("webkit")
+					|| userAgent.contains("windows phone 8")
+		            || userAgent.contains("windows phone 9"))){
 				Log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 				uiBeanNameObj = "mdwFallbackTouchkitUI";
 			}else{

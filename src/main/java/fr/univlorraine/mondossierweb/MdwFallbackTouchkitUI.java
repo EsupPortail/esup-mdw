@@ -27,7 +27,7 @@ public class MdwFallbackTouchkitUI extends UI {
 	private Logger LOG = LoggerFactory.getLogger(MdwFallbackTouchkitUI.class);
 	
 	// FIXME review message
-    private static final String MSG = "<h1>Oups...</h1> <p>Vous accédez à MonDossierWeb depuis un mobile et avec un navigateur qui supporte WebKit</p>"+
+    private static final String MSG = "<h1>Oups...</h1> <p>Vous accédez à MonDossierWeb depuis un appareil mobile et avec un navigateur compatible avec la version mobile de l'application</p>"+
     		"<p> Pour utiliser la <a href=\""+PropertyUtils.getAppUrl()+"/m\">version mobile</a> </p>";
 
 

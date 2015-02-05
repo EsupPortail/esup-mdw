@@ -27,7 +27,7 @@ public class MdwFallbackUI extends UI {
 	private Logger LOG = LoggerFactory.getLogger(MdwFallbackUI.class);
 	
 	// FIXME review message
-    private static final String MSG = "<h1>Oups...</h1> <p>Vous accédez à MonDossierWeb avec un navigateur qui ne supporte pas WebKit</p>"+
+    private static final String MSG = "<h1>Oups...</h1> <p>Vous accédez à MonDossierWeb avec un navigateur non compatible avec la version mobile de l'application</p>"+
     		"<p> Pour utiliser la <a href=\""+PropertyUtils.getAppUrl()+"\">version bureau</a> </p>";
 
     @Override

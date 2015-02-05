@@ -22,7 +22,8 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		Log.debug("UA : "+userAgent);
 
 		// on ne teste que le webkit pour pouvoir tester sur chrome sur PC desktop
-		if(userAgent.contains("webkit") ) {
+		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
+	            || userAgent.contains("windows phone 9")) {
 		//if(userAgent.contains("webkit") && (userAgent.contains("android") || userAgent.contains("windows phone") || userAgent.contains("iphone"))) {
 			Log.debug("Touckit UI provided ("+userAgent+")");
 			return MdwTouchkitUI.class;
@@ -46,7 +47,8 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 	public UI createInstance(UICreateEvent event) {
 		String uiBeanNameObj = "";
 		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-		if(userAgent.contains("webkit") ) {
+		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
+	            || userAgent.contains("windows phone 9")) {
 			Log.debug("-uiBeanNameObj = mdwTouchkitUI");
 			uiBeanNameObj = "mdwTouchkitUI";
 		} else {
