@@ -291,22 +291,35 @@ public String getIpAddr() {
 	   String ip = vr.getHeader("x-forwarded-for");    
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("X_FORWARDED_FOR");      
-	   }  
+	   }else{
+		   LOG.info("IP client : "+ip+" recuperee dans le Header x-forwarded-for");
+	   }
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("X-Forwarded-For");      
-	   } 
+	   }else{
+		   LOG.info("IP client : "+ip+" recuperee dans le Header X_FORWARDED_FOR");
+	   }
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("HTTP_X_FORWARDED_FOR");      
-	   } 
+	   }else{
+		   LOG.info("IP client : "+ip+" recuperee dans le Header X-Forwarded-For");
+	   }
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("Proxy-Client-IP");      
-	   }      
+	   }else{
+		   LOG.info("IP client : "+ip+" recuperee dans le Header HTTP_X_FORWARDED_FOR");
+	   }   
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 	       ip = vr.getHeader("WL-Proxy-Client-IP");      
-	   }      
+	   }else{
+		   LOG.info("IP client : "+ip+" recuperee dans le Header Proxy-Client-IP");
+	   }   
 	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getRemoteAddr();      
-	   }      
+	       ip = vr.getRemoteAddr();     
+	       LOG.info("IP client : "+ip+" recuperee via getRemoteAddr");
+	   }else{
+		   LOG.info("IP client : "+ip+" recuperee dans le Header WL-Proxy-Client-IP");
+	   }   
 	   return ip;      
 	} 
 
