@@ -265,7 +265,8 @@ public String getRemoteAdresse() {
 	WebBrowser browser;
 	String ip =  getIpAddr();
 	LOG.info("IP client via VaadinService Headers : "+ip);
-	
+
+	LOG.info(""+getRemoteAddresses((HttpServletRequest) VaadinService.getCurrentRequest()));;
 	//Recuperation de l'IP pour info
 	if(GenericUI.getCurrent() instanceof MainUI){
 		MainUI mainUI = MainUI.getCurrent();
@@ -283,6 +284,19 @@ public String getRemoteAdresse() {
 	}
 	
 	return ip;
+}
+
+protected java.util.List<String> getRemoteAddresses(final HttpServletRequest request) {
+    final java.util.Set<String> addressList = new java.util.HashSet<String>(); 
+
+    for (final java.util.Enumeration vias = request.getHeaders("Via"); vias.hasMoreElements();) {
+        addressList.add((String) vias.nextElement());
+    }
+    for (final java.util.Enumeration vias = request.getHeaders("x-forwarded-for"); vias.hasMoreElements();) {
+        addressList.add((String) vias.nextElement());
+    }
+    addressList.add(request.getRemoteAddr());
+    return new java.util.ArrayList<String>(addressList); 
 }
 
 public String getIpAddr() {      
