@@ -73,9 +73,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 	private Label infoLibelleObj;
 
-	//liste contenant tous les codind à afficher (apres application du filtre)
-	//private List<String> listecodind;
-
 	private VerticalLayout infoLayout;
 
 	private HorizontalLayout leftResumeLayout;

@@ -18,6 +18,7 @@ public class Utils {
 
 	static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
+	public static final int NB_MAX_RESULT_QUICK_SEARCH=5;
 
 	public static final String TYPE_ELP = "Elément pédagogique";
 

@@ -6,7 +6,9 @@ import java.util.Map;
 import fr.univlorraine.mondossierweb.entities.solr.ObjSolr;
 
 
-public interface SolrService {
+public interface ElasticSearchService {
+	
+
 	
 	public abstract List<Map<String, Object>> findObj(String value, int maxResult, boolean quickSearch);
 	

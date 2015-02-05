@@ -61,6 +61,7 @@ import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
 import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
+import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
@@ -391,6 +392,10 @@ public class MdwTouchkitUI extends GenericUI{
 
 	public void navigateTofavoris() {
 		navigator.navigateTo(FavorisMobileView.NAME);
+	}
+	
+	public void navigateToRecherche() {
+		navigator.navigateTo(RechercheMobileView.NAME);
 	}
 
 	public void navigateToListeInscrits() {

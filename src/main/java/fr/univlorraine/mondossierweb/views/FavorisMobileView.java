@@ -124,7 +124,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		searchButton.setStyleName("v-nav-button");
 		navbar.addComponent(searchButton);
 		navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
-
+		searchButton.addClickListener(e->{
+			((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche();
+		});
 		navbar.setExpandRatio(labelFav, 1);
 		addComponent(navbar);
 

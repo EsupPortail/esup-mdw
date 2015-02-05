@@ -41,7 +41,7 @@ import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 
 @Component
 @Data
-public class SolrServiceImpl implements SolrService{
+public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 	//private String url = "http://ldn-dubois36.univ-lorraine.fr:8181/solr/apogee";
 	private HttpSolrServer server;
@@ -49,6 +49,8 @@ public class SolrServiceImpl implements SolrService{
 	private final static int MAX_RESULTS = 100;
 	private Client client;
 
+	
+	
 
 	@Override
 	public List<Map<String,Object>> findObj(String value, int maxResult, boolean quickSearck) {

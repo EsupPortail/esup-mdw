@@ -15,8 +15,6 @@ import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.annotations.StyleSheet;
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -24,56 +22,45 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.themes.ValoTheme;
-import com.zybnet.autocomplete.server.AutocompleteField;
-import com.zybnet.autocomplete.server.AutocompleteQueryListener;
-import com.zybnet.autocomplete.server.AutocompleteSuggestionPickedListener;
 
-import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.entities.solr.ObjSolr;
 import fr.univlorraine.mondossierweb.services.apogee.ElasticSearchServiceImpl;
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
+
 /**
- * Page d'accueil
+ * Recherche sur mobile
  */
 @Component @Scope("prototype")
-@VaadinView(RechercheRapideView.NAME)
-public class RechercheRapideView extends VerticalLayout implements View {
+@VaadinView(RechercheMobileView.NAME)
+public class RechercheMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 
-	public static final String NAME = "rechercheRapideView";
-
-	
+	public static final String NAME = "rechercheMobileView";
 
 	public static final String[] FIELDS_ORDER = {"lib","type"};
+
 
 	/* Injections */
 	@Resource
@@ -82,29 +69,26 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient RechercheController rechercheController;
-
-
-
-
 	/** {@link ElasticSearchServiceImpl} */
 	@Resource
 	private ElasticSearchServiceImpl ElasticSearchService;
 
-	private VerticalLayout mainVerticalLayout;
 
-	private HorizontalLayout champRechercheLayout;
-
-	private Button btnRecherche;
+	private Button returnButton;
 
 	private AutoComplete champRecherche;
 
+	private Button btnRecherche;
+
+	private HorizontalLayout champRechercheLayout;
+
+	private VerticalLayout mainVerticalLayout;
+	
 	private HierarchicalContainer rrContainer;
-
-	private TreeTable tableResultats;
-
+	
 	private String[] columnHeaders;
 
-	private CheckBox casesAcocherComposantes;
+	private TreeTable tableResultats;
 
 	private CheckBox casesAcocherVet;
 
@@ -112,53 +96,59 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	private CheckBox casesAcocherEtudiant;
 	
-	private Button resetButton;
-
 	/**
 	 * Initialise la vue
 	 */
 	@PostConstruct
 	public void init() {
-		/* Style */
-		setMargin(true);
-		setSpacing(true);
+
+		// On réinitialise la vue
+		removeAllComponents();
+
+		// Style
+		setSizeFull();
+		addStyleName("v-noscrollableelement");
 
 
-		mainVerticalLayout = new VerticalLayout();
-		champRechercheLayout = new HorizontalLayout();
-		mainVerticalLayout.setImmediate(true);
-		mainVerticalLayout.setSizeFull();
 
-		//CHAMP NEW RECHERCHE
-		/*AutocompleteField<String> search = new AutocompleteField<>();
-		search.addStyleName("v-textfield v-widget");
-		search.setWidth(450, Unit.PIXELS);
-		search.setEnabled(true);
-		search.setImmediate(true);
-		search.focus();
-		search.setQueryListener(new AutocompleteQueryListener<String>() {
-			  @Override
-			  public void handleUserQuery(AutocompleteField<String> field, String query) {
-			    for (String page : quickSearch(query)) {
-			      field.addSuggestion(page, page);
-			    }
-			  }
-			});
 
-			search.setSuggestionPickedListener(new AutocompleteSuggestionPickedListener<String>() {
-			  @Override
-			  public void onSuggestionPicked(String page) {
-				 LOG.debug("handleSuggestionSelection "+page);
-				  search(false, page);
-			  }
-			});*/
+		//NAVBAR
+		HorizontalLayout navbar=new HorizontalLayout();
+		navbar.setSizeFull();
+		navbar.setHeight("40px");
+		navbar.setStyleName("navigation-bar");
 
-		//mainVerticalLayout.addComponent(search);
+		//Bouton retour
+		returnButton = new Button();
+		returnButton.setIcon(FontAwesome.ARROW_LEFT);
+		returnButton.setStyleName("v-nav-button");
+		returnButton.addClickListener(e->{
+				MdwTouchkitUI.getCurrent().navigateTofavoris();
+		});
+		navbar.addComponent(returnButton);
+		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+
+		//Title
+		Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
+		labelTrombi.setStyleName("v-label-navbar");
+		navbar.addComponent(labelTrombi);
+		navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
+
+		navbar.setExpandRatio(labelTrombi, 1);
+		addComponent(navbar);
+
+
 
 
 		//CHAMP DE RECHERCHE
+		champRechercheLayout = new HorizontalLayout();
+		champRechercheLayout.setWidth("100%");
+		mainVerticalLayout = new VerticalLayout();
+		mainVerticalLayout.setImmediate(true);
+		mainVerticalLayout.setSizeFull();
+
 		champRecherche = new AutoComplete();
-		champRecherche.setWidth(700, Unit.PIXELS); //540
+		champRecherche.setWidth(100, Unit.PERCENTAGE); 
 		champRecherche.setEnabled(true);
 		champRecherche.setImmediate(true);
 		champRecherche.focus();
@@ -166,10 +156,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		champRecherche.addTextChangeListener(new TextChangeListener() {
 			@Override
 			public void textChange(TextChangeEvent event) {
-				if(event.getText()!=null){
+				/*if(event.getText()!=null){
 					resetButton.setIcon(FontAwesome.TIMES);
-				}
-				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout,false);
+				}*/
+				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, true);
 
 			}
 		});
@@ -220,48 +210,32 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			}
 		});
 
-		//champRecherche.addBlurListener(e -> champRecherche.getChoicesPopup().setVisible(false));
 
-		HorizontalLayout layoutBordure = new HorizontalLayout();
-		layoutBordure.setWidth("100px");
-		champRechercheLayout.addComponent(layoutBordure);
-		champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
+		/*HorizontalLayout layoutBordure = new HorizontalLayout();
+		layoutBordure.setWidth("10px");
+		champRechercheLayout.addComponent(layoutBordure);*/
+		//champRechercheLayout.addStyleName("v-layout-with-margin");
+		//champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
 		champRechercheLayout.addComponent(champRecherche);
 		champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
-
-		/*champRechercheLayout.addComponent(search);
-		champRechercheLayout.setComponentAlignment(search, Alignment.MIDDLE_CENTER);*/
-
-		//BOUTON RESET
-		champRecherche.addStyleName("textfield-resetable");
-		resetButton = new Button();
-		resetButton.setIcon(FontAwesome.TIMES);
-		resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		resetButton.addStyleName("btn-reset");
-		resetButton.addClickListener(e->{
-			champRecherche.setValue("");
-			resetButton.setIcon(FontAwesome.TIMES);
-		});
-		champRechercheLayout.addComponent(resetButton);
-		champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
 		
+
+
+
 		//BOUTON DE RECHERCHE
-		btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
+		btnRecherche = new Button();
 		btnRecherche.setIcon(FontAwesome.SEARCH);
+		btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		btnRecherche.addStyleName("v-popover-button");
 		btnRecherche.setEnabled(true);
-		//btnRecherche.addClickListener(e -> search(false, search.getText()));
 		btnRecherche.addClickListener(e -> search(false));
 		champRechercheLayout.addComponent(btnRecherche);
 		mainVerticalLayout.addComponent(champRechercheLayout);
 		mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
 		champRechercheLayout.setMargin(true);
+		champRechercheLayout.setExpandRatio(champRecherche, 1);
 
 
-
-		casesAcocherComposantes= new CheckBox("Composantes");
-		casesAcocherComposantes.setValue(true);
-		casesAcocherComposantes.setStyleName(ValoTheme.CHECKBOX_SMALL);
-		casesAcocherComposantes.addValueChangeListener(e -> tuneSearch());
 		casesAcocherVet= new CheckBox("Etapes");
 		casesAcocherVet.setValue(true);
 		casesAcocherVet.setStyleName(ValoTheme.CHECKBOX_SMALL);
@@ -278,7 +252,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		HorizontalLayout checkBoxLayout=new HorizontalLayout();
 		checkBoxLayout.setMargin(true);
 		checkBoxLayout.setSpacing(true);
-		checkBoxLayout.addComponent(casesAcocherComposantes);
 		checkBoxLayout.addComponent(casesAcocherVet);
 		checkBoxLayout.addComponent(casesAcocherElp);
 		checkBoxLayout.addComponent(casesAcocherEtudiant);
@@ -305,6 +278,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		tableResultats.setContainerDataSource(rrContainer);
 		tableResultats.setVisibleColumns(FIELDS_ORDER);
 		tableResultats.setColumnHeaders(columnHeaders);
+		tableResultats.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+		
 		/*mainVerticalLayout.addComponent(searchBoxFilter);
 		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
 		VerticalLayout tableVerticalLayout = new VerticalLayout();
@@ -317,10 +292,21 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 		addComponent(mainVerticalLayout);
-		setSizeFull();
+		setExpandRatio(mainVerticalLayout, 1);
+
 
 	}
 
+
+
+
+	/**
+	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+	 */
+	@Override
+	public void enter(ViewChangeEvent event) {
+		//LOG.debug("enter listeInscritsMobileView");
+	}
 
 
 	private List<ResultatDeRecherche> quickSearch(String valueString){
@@ -342,9 +328,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			//Liste des types autorisés
 			LinkedList<String> listeTypeAutorise=new LinkedList();
-			if(casesAcocherComposantes.getValue()){
-				listeTypeAutorise.add(Utils.CMP);
-			}
 			if(casesAcocherVet.getValue()){
 				listeTypeAutorise.add(Utils.VET);
 			}
@@ -467,53 +450,17 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	}
 
 
-	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
-
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			//On converti le type pour un affichage lisible
-			return Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString());
-		}
-	}
-
-	class DisplayNameColumnGenerator implements Table.ColumnGenerator {
-
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			Button b = new Button(item.getItemProperty("lib").getValue().toString());
-			b.setStyleName("link"); 
-			b.addStyleName("v-link");
-
-			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString()));
-
-
-			return b;
-		}
-	}
-
-
-
 	private void tuneSearch() {
 
 		if(rrContainer!=null){
 			rrContainer.removeAllContainerFilters();
 
 			Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
-			SimpleStringFilter compFilter;
 			SimpleStringFilter vetFilter;
 			SimpleStringFilter elpFilter;
 			SimpleStringFilter etuFilter;
 
-			if(casesAcocherComposantes.getValue()){
-				compFilter = new SimpleStringFilter("type",Utils.CMP, true, false);
-				filterStringToSearch = compFilter;
-			}
+
 			if(casesAcocherVet.getValue()){
 				vetFilter = new SimpleStringFilter("type",Utils.VET, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,vetFilter);
@@ -533,16 +480,62 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		}
 
 	}
+	
+
+	class DisplayNameColumnGenerator implements Table.ColumnGenerator {
+
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			String lib = item.getItemProperty("lib").getValue().toString();
+			if(lib.startsWith("[")){
+				String tab[]=lib.split("]");
+				lib=tab[1].trim();
+			}
+			Button b = new Button(lib);
+			b.setStyleName("link"); 
+			b.addStyleName("v-link");
+
+			//b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString()));
 
 
+			return b;
+		}
+	}
 
 
+	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
 
-	/**
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeEvent event) {
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+			
+			String code = item.getItemProperty("lib").getValue().toString();
+			if(code.startsWith("[")){
+				String tab[]=code.split("]");
+				code=tab[0].replaceFirst("\\[", "").trim();
+			}
+			
+			Label labelType = new Label(Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString()));
+			labelType.setWidth("100%");
+			labelType.setStyleName(ValoTheme.LABEL_SMALL);
+			labelType.addStyleName("label-centre");
+			
+			Label labelCode = new Label(code);
+			labelCode.setWidth("100%");
+			labelCode.setStyleName(ValoTheme.LABEL_SMALL);
+			labelCode.addStyleName("label-centre");
+			
+			VerticalLayout vl =new VerticalLayout();
+			vl.addComponent(labelType);
+			vl.addComponent(labelCode);
+			//On converti le type pour un affichage lisible
+			return vl;
+		}
 	}
 
 }

@@ -30,7 +30,7 @@ public class AutoComplete extends TextField{
 
 
 
-	public void showChoices(List<ResultatDeRecherche> text, Layout layout) {
+	public void showChoices(List<ResultatDeRecherche> text, Layout layout, boolean touchkitMobileDisplay) {
 
 
 
@@ -49,11 +49,13 @@ public class AutoComplete extends TextField{
 				choices.addContainerProperty("lib", String.class,  "");
 				choices.addContainerProperty("type", String.class,  "");
 				choices.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
-				choices.setWidth(getWidth(), Unit.PIXELS);
+				choices.setWidth(getWidth(), getWidthUnits());
 				choices.setStyleName("googletable");
+				if(!touchkitMobileDisplay){
 				choices.setColumnWidth("lib", 596);
 				choices.setColumnWidth("type", 100);
-
+				}
+			
 				choices.setImmediate(true);
 				choices.addItemClickListener(new ItemClickListener() {
 					@Override
@@ -86,7 +88,7 @@ public class AutoComplete extends TextField{
 				choicesPopup.setStyleName("googlepopupview");
 				layout.addComponent(choicesPopup);
 				//layout.setComponentAlignment(choicesPopup, Alignment.TOP_CENTER);
-				choicesPopup.setWidth(getWidth(), Unit.PIXELS);
+				choicesPopup.setWidth(getWidth(), getWidthUnits());
 				choices.setSelectable(true);
 				choices.setImmediate(true);
 				choicesPopup.addPopupVisibilityListener(new PopupVisibilityListener() {

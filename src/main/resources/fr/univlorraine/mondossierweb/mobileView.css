@@ -2,6 +2,42 @@
 background: #F0F0F0;
 }
 
+.valo-ul .v-slot-btn-reset {
+border-right: 1px solid #c5c5c5;
+border-left: 0px solid #c5c5c5;
+border-top: 1px solid #c5c5c5;
+border-bottom: 1px solid #c5c5c5;
+height: 35px !important;
+}
+
+.valo-ul .textfield-resetable {
+border-radius: 0px; 
+border-right: 0px;
+border-left: 1px solid #c5c5c5;
+border-top: 1px solid #c5c5c5;
+border-bottom: 1px solid #c5c5c5;
+}
+
+.valo-ul .v-popupview-popup-googlepopupview {
+	position: absolute;
+	left: 0px !important;
+	top: 87px !important;
+	width: 100%;
+	z-index: 2;
+}
+
+.valo-ul .v-table-googletable{
+	 width: 100% !important;
+    overflow-x: hidden;
+	overflow-y: hidden;
+}
+.valo-ul .v-table-body-googletable{
+     /*  overflow: hidden !important; */
+     width: 100% !important;
+    overflow-x: hidden;
+	overflow-y: hidden;
+}
+
 .valo-ul .v-touchkit-navpanel-container{
 	background: #F0F0F0;
 }
@@ -129,6 +165,7 @@ content: none;
 content: none;
 
 }
+
 
 .valo-ul .v-popover-blank {
 	background-color: white;
