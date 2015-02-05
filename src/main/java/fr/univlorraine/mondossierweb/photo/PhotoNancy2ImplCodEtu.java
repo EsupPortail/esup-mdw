@@ -5,6 +5,7 @@ package fr.univlorraine.mondossierweb.photo;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.WebBrowser;
 
 import fr.univlorraine.mondossierweb.GenericUI;
@@ -43,12 +45,12 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	 * Un logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(PhotoNancy2ImplCodEtu.class);
-	
-	
+
+
 	@Resource
 	private transient UserController userController;
-	
-	
+
+
 	/**
 	 * vrai si l'utilisateur est un enseignant.
 	 */
@@ -91,7 +93,7 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	public PhotoNancy2ImplCodEtu() {
 		super();
 		forserver = false;
-		
+
 
 	}
 
@@ -144,271 +146,267 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 				LOG.error("PhotoNancy2ImplCodEtu-Erreur getUrlPhotoTrombinoscopePdf cod_ind : "+cod_ind+", cod_etu:"+cod_etu,e);
 			}
 		}
-	
 
-	//on retourne la nouvelle url:
-	return url;
-}
 
-/**
- * @see org.esupportail.mondossierweb.web.photo.IPhoto#ticketBon(int)
- */
-public void checkTicket(final String cod_etu) {
+		//on retourne la nouvelle url:
+		return url;
+	}
 
-	if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
+	/**
+	 * @see org.esupportail.mondossierweb.web.photo.IPhoto#ticketBon(int)
+	 */
+	public void checkTicket(final String cod_etu) {
 
-		utilisateurEnseignant = userController.isEnseignant();
-		String loginUser = userController.getCurrentUserName();
+		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 
-		if (!utilisateurEnseignant) {
-			init(cod_etu, loginUser);
-		} else {
-			init(loginUser);
+			utilisateurEnseignant = userController.isEnseignant();
+			String loginUser = userController.getCurrentUserName();
+
+			if (!utilisateurEnseignant) {
+				init(cod_etu, loginUser);
+			} else {
+				init(loginUser);
+			}
+
 		}
 
 	}
 
-}
 
+	public void initForServer(String loginUser) {
 
-public void initForServer(String loginUser) {
-
-	String hostadress = "";
-	try {
-		hostadress = InetAddress.getLocalHost().getHostAddress();
-
-		tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
-				hostadress, "ID", "NONE", loginUser);
-
-
-	} catch (UnknownHostException e1) {
-		LOG.error("PhotoNancy2ImplCodEtu-Erreur initForServer loginUser:"+loginUser,e1);
-	} catch (PhotoClientException e) {
-		LOG.error("PhotoNancy2ImplCodEtu-Erreur initForServer loginUser:"+loginUser,e);
-		tc = null;
-
-	}
-	forserver = true;
-}
-/**
- * initialise un ticket pour la photo d'un étudiant.
- * @param cod_etu
- */
-public void init(final String cod_etu, String loginUser) {
-
-
-
-	
-	String remoteadress = getRemoteAdresse();
-	// Param�tres du client photos
-	if (photoClient == null) {
-		photoClient = new PhotoClient();
-		photoClient.setTicketURLPattern(getTicketurl());
-		photoClient.setRessourceURLPattern(getRessourceurl());
-		photoClient.setApplicationCode(getCodeapp());
-
-	}
-	// Demande d'un ticket au serveur de photos
-	if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
+		String hostadress = "";
 		try {
+			hostadress = InetAddress.getLocalHost().getHostAddress();
+
 			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
-					remoteadress, "ID", cod_etu, loginUser);
+					hostadress, "ID", "NONE", loginUser);
 
 
+		} catch (UnknownHostException e1) {
+			LOG.error("PhotoNancy2ImplCodEtu-Erreur initForServer loginUser:"+loginUser,e1);
 		} catch (PhotoClientException e) {
-			LOG.error("PhotoNancy2ImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser,e);
+			LOG.error("PhotoNancy2ImplCodEtu-Erreur initForServer loginUser:"+loginUser,e);
 			tc = null;
 
 		}
+		forserver = true;
 	}
-	forserver = false;
-
-}
-
-
-/**
- * initialise un ticket pour avoir accès à toutes les photos.
- */
-public void init(String loginUser) {
-
-	String remoteadress = getRemoteAdresse();
-
-	// Paramètres du client photos
-	if (photoClient == null) {
-		photoClient = new PhotoClient();
-		photoClient.setTicketURLPattern(getTicketurl());
-		photoClient.setRessourceURLPattern(getRessourceurl());
-		photoClient.setApplicationCode(getCodeapp());
-	}
-	// Demande d'un ticket au serveur de photos
-	if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
-		try {
-			
-			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
-					remoteadress, "ID", "NONE", loginUser);
+	/**
+	 * initialise un ticket pour la photo d'un étudiant.
+	 * @param cod_etu
+	 */
+	public void init(final String cod_etu, String loginUser) {
 
 
-		} catch (PhotoClientException e) {
-			LOG.error("PhotoNancy2ImplCodEtu-Erreur init loginUser:"+loginUser,e);
-			tc = null;
+
+
+		String remoteadress = getRemoteAdresse();
+		// Param�tres du client photos
+		if (photoClient == null) {
+			photoClient = new PhotoClient();
+			photoClient.setTicketURLPattern(getTicketurl());
+			photoClient.setRessourceURLPattern(getRessourceurl());
+			photoClient.setApplicationCode(getCodeapp());
 
 		}
+		// Demande d'un ticket au serveur de photos
+		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
+			try {
+				tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
+						remoteadress, "ID", cod_etu, loginUser);
+
+
+			} catch (PhotoClientException e) {
+				LOG.error("PhotoNancy2ImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser,e);
+				tc = null;
+
+			}
+		}
+		forserver = false;
+
 	}
-	forserver = false;
 
-}
 
-/**
- * @return l'adresse ip de l'utilisateur
- */
-public String getRemoteAdresse() {
-	WebBrowser browser;
-	String ip =  getIpAddr();
-	LOG.info("IP client via VaadinService Headers : "+ip);
+	/**
+	 * initialise un ticket pour avoir accès à toutes les photos.
+	 */
+	public void init(String loginUser) {
 
-	LOG.info(""+getRemoteAddresses((HttpServletRequest) VaadinService.getCurrentRequest()));;
-	//Recuperation de l'IP pour info
-	if(GenericUI.getCurrent() instanceof MainUI){
-		MainUI mainUI = MainUI.getCurrent();
-		browser = mainUI.getPage().getWebBrowser();
-		LOG.info("browser IP client MainUI : "+browser.getAddress());
-		//return browser.getAddress();
-		
+		String remoteadress = getRemoteAdresse();
+
+		// Paramètres du client photos
+		if (photoClient == null) {
+			photoClient = new PhotoClient();
+			photoClient.setTicketURLPattern(getTicketurl());
+			photoClient.setRessourceURLPattern(getRessourceurl());
+			photoClient.setApplicationCode(getCodeapp());
+		}
+		// Demande d'un ticket au serveur de photos
+		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
+			try {
+
+				tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
+						remoteadress, "ID", "NONE", loginUser);
+
+
+			} catch (PhotoClientException e) {
+				LOG.error("PhotoNancy2ImplCodEtu-Erreur init loginUser:"+loginUser,e);
+				tc = null;
+
+			}
+		}
+		forserver = false;
+
 	}
-	if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
-		MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
-		browser = mdwTouchkitUI.getPage().getWebBrowser();
-		LOG.info("browser IP client MdwTouchkitUI : "+browser.getAddress());
-		//return browser.getAddress();
-		
+
+	/**
+	 * @return l'adresse ip de l'utilisateur
+	 */
+	public String getRemoteAdresse() {
+		WebBrowser browser;
+		String ip =  getIpAddr();
+		LOG.info("IP client via VaadinService Headers : "+ip);
+
+
+		//Recuperation de l'IP pour info
+		if(GenericUI.getCurrent() instanceof MainUI){
+			MainUI mainUI = MainUI.getCurrent();
+			browser = mainUI.getPage().getWebBrowser();
+			LOG.info("browser IP client MainUI : "+browser.getAddress());
+			//return browser.getAddress();
+
+		}
+		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
+			MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
+			browser = mdwTouchkitUI.getPage().getWebBrowser();
+			LOG.info("browser IP client MdwTouchkitUI : "+browser.getAddress());
+			//return browser.getAddress();
+
+		}
+
+		return ip;
 	}
-	
-	return ip;
-}
 
-protected java.util.List<String> getRemoteAddresses(final HttpServletRequest request) {
-    final java.util.Set<String> addressList = new java.util.HashSet<String>(); 
 
-    for (final java.util.Enumeration vias = request.getHeaders("Via"); vias.hasMoreElements();) {
-        addressList.add((String) vias.nextElement());
-    }
-    for (final java.util.Enumeration vias = request.getHeaders("x-forwarded-for"); vias.hasMoreElements();) {
-        addressList.add((String) vias.nextElement());
-    }
-    addressList.add(request.getRemoteAddr());
-    return new java.util.ArrayList<String>(addressList); 
-}
 
-public String getIpAddr() {      
-	VaadinRequest vr = VaadinService.getCurrentRequest();
+	public String getIpAddr() {      
+		VaadinRequest vr = VaadinService.getCurrentRequest();
 
-	   String ip = vr.getHeader("x-forwarded-for");    
-	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getHeader("X_FORWARDED_FOR");      
-	   }else{
-		   LOG.info("IP client : "+ip+" recuperee dans le Header x-forwarded-for");
-	   }
-	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getHeader("X-Forwarded-For");      
-	   }else{
-		   LOG.info("IP client : "+ip+" recuperee dans le Header X_FORWARDED_FOR");
-	   }
-	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getHeader("HTTP_X_FORWARDED_FOR");      
-	   }else{
-		   LOG.info("IP client : "+ip+" recuperee dans le Header X-Forwarded-For");
-	   }
-	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getHeader("Proxy-Client-IP");      
-	   }else{
-		   LOG.info("IP client : "+ip+" recuperee dans le Header HTTP_X_FORWARDED_FOR");
-	   }   
-	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getHeader("WL-Proxy-Client-IP");      
-	   }else{
-		   LOG.info("IP client : "+ip+" recuperee dans le Header Proxy-Client-IP");
-	   }   
-	   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-	       ip = vr.getRemoteAddr();     
-	       LOG.info("IP client : "+ip+" recuperee via getRemoteAddr");
-	   }else{
-		   LOG.info("IP client : "+ip+" recuperee dans le Header WL-Proxy-Client-IP");
-	   }   
-	   return ip;      
+		VaadinServletRequest vsRequest = (VaadinServletRequest)vr;
+		HttpServletRequest hsRequest = vsRequest.getHttpServletRequest();
+
+		String ip = hsRequest.getHeader("x-forwarded-for");    
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("X_FORWARDED_FOR");      
+		}else{
+			//Si x-forwarded-for contient plusieurs IP, on prend la deuxième
+			if(ip.contains(",")){
+				ip = ip.split(",")[1];
+			}
+			LOG.info("IP client : "+ip+" recuperee dans le Header x-forwarded-for");
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("X-Forwarded-For");      
+		}else{
+			LOG.info("IP client : "+ip+" recuperee dans le Header X_FORWARDED_FOR");
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
+		}else{
+			LOG.info("IP client : "+ip+" recuperee dans le Header X-Forwarded-For");
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("Proxy-Client-IP");      
+		}else{
+			LOG.info("IP client : "+ip+" recuperee dans le Header HTTP_X_FORWARDED_FOR");
+		}   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("WL-Proxy-Client-IP");      
+		}else{
+			LOG.info("IP client : "+ip+" recuperee dans le Header Proxy-Client-IP");
+		}   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getRemoteAddr();     
+			LOG.info("IP client : "+ip+" recuperee via getRemoteAddr");
+		}else{
+			LOG.info("IP client : "+ip+" recuperee dans le Header WL-Proxy-Client-IP");
+		}   
+		return ip;      
 	} 
 
-/**
- * getter pour l'url de la ressource renseign� dans domain.xml.
- * @return l'url de la ressource.
- */
-public String getRessourceurl() {
-	if(ressourceurl==null){
-		ressourceurl = System.getProperty("context.param.photoserver.ressourceurl");
+	/**
+	 * getter pour l'url de la ressource renseign� dans domain.xml.
+	 * @return l'url de la ressource.
+	 */
+	public String getRessourceurl() {
+		if(ressourceurl==null){
+			ressourceurl = System.getProperty("context.param.photoserver.ressourceurl");
+		}
+		return ressourceurl;
 	}
-	return ressourceurl;
-}
 
-/**
- * setter pour l'url de la ressource renseign� dans domain.xml.
- * @param ressourceurl
- */
-public void setRessourceurl(final String ressourceurl) {
-	this.ressourceurl = ressourceurl;
-}
-
-/**
- * getter pour l'url de demande de ticket renseign� dans domain.xml.
- * @return l'url pour r�cup�rer le ticket.
- */
-public String getTicketurl() {
-	if(ticketurl==null){
-		ticketurl=System.getProperty("context.param.photoserver.ticketurl");
+	/**
+	 * setter pour l'url de la ressource renseign� dans domain.xml.
+	 * @param ressourceurl
+	 */
+	public void setRessourceurl(final String ressourceurl) {
+		this.ressourceurl = ressourceurl;
 	}
-	return ticketurl;
-}
 
-/**
- * setter pour l'url de demande de ticket renseign� dans domain.xml.
- * @param ticketurl
- */
-public void setTicketurl(final String ticketurl) {
-	this.ticketurl = ticketurl;
-}
-
-/**
- * @return photoClient
- */
-public PhotoClient getPhotoClient() {
-	return photoClient;
-}
-
-/**
- * @param photoClient
- */
-public void setPhotoClient(final PhotoClient photoClient) {
-	this.photoClient = photoClient;
-}
-
-public boolean isUtilisateurEnseignant() {
-	return utilisateurEnseignant;
-}
-
-public void setUtilisateurEnseignant(boolean utilisateurEnseignant) {
-	this.utilisateurEnseignant = utilisateurEnseignant;
-}
-
-public String getCodeapp() {
-	
-	if(codeapp==null){
-		codeapp=System.getProperty("context.param.photoserver.codeapp");
+	/**
+	 * getter pour l'url de demande de ticket renseign� dans domain.xml.
+	 * @return l'url pour r�cup�rer le ticket.
+	 */
+	public String getTicketurl() {
+		if(ticketurl==null){
+			ticketurl=System.getProperty("context.param.photoserver.ticketurl");
+		}
+		return ticketurl;
 	}
-		
-	return codeapp;
-}
 
-public void setCodeapp(String codeapp) {
-	this.codeapp = codeapp;
-}
+	/**
+	 * setter pour l'url de demande de ticket renseign� dans domain.xml.
+	 * @param ticketurl
+	 */
+	public void setTicketurl(final String ticketurl) {
+		this.ticketurl = ticketurl;
+	}
+
+	/**
+	 * @return photoClient
+	 */
+	public PhotoClient getPhotoClient() {
+		return photoClient;
+	}
+
+	/**
+	 * @param photoClient
+	 */
+	public void setPhotoClient(final PhotoClient photoClient) {
+		this.photoClient = photoClient;
+	}
+
+	public boolean isUtilisateurEnseignant() {
+		return utilisateurEnseignant;
+	}
+
+	public void setUtilisateurEnseignant(boolean utilisateurEnseignant) {
+		this.utilisateurEnseignant = utilisateurEnseignant;
+	}
+
+	public String getCodeapp() {
+
+		if(codeapp==null){
+			codeapp=System.getProperty("context.param.photoserver.codeapp");
+		}
+
+		return codeapp;
+	}
+
+	public void setCodeapp(String codeapp) {
+		this.codeapp = codeapp;
+	}
 
 
 
