@@ -94,7 +94,15 @@ public class NotesMobileView extends VerticalLayout implements View {
 			//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 			returnButton.setStyleName("v-nav-button");
 			returnButton.addClickListener(e->{
-				MdwTouchkitUI.getCurrent().navigateToListeInscrits();
+				if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
+						MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
+					MdwTouchkitUI.getCurrent().navigateToListeInscrits();
+				}
+				
+				if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
+						MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
+					MdwTouchkitUI.getCurrent().navigateToRecherche();
+				}
 			});
 			navbar.addComponent(returnButton);
 			navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);

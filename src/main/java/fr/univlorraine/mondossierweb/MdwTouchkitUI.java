@@ -116,6 +116,9 @@ public class MdwTouchkitUI extends GenericUI{
 
 	@Getter
 	private String trombinoscopeFromView;
+	
+	@Getter
+	private String dossierEtuFromView;
 
 
 	private NavigationManager noteNavigationManager;
@@ -312,12 +315,26 @@ public class MdwTouchkitUI extends GenericUI{
 	}
 	 */
 
+	public void navigateToListeInscritsFromSearch(Map<String, String> parameterMap) {
+		trombinoscopeFromView = RechercheMobileView.NAME;
+		navigateToListeInscrits( parameterMap);
+	}
 
 	public void navigateToListeInscritsFromFavoris(Map<String, String> parameterMap) {
 		trombinoscopeFromView = FavorisMobileView.NAME;
 		navigateToListeInscrits( parameterMap);
 	}
 
+	public void navigateToDossierEtudiantFromListeInscrits() {
+		dossierEtuFromView = ListeInscritsMobileView.NAME;
+		navigateToDossierEtudiant();
+	}
+	
+	public void navigateToDossierEtudiantFromSearch() {
+		dossierEtuFromView = RechercheMobileView.NAME;
+		navigateToDossierEtudiant();
+	}
+	
 	public void navigateToDossierEtudiant() {
 		//navigator.navigateTo(InformationsAnnuellesMobileView.NAME);
 		//navigator.navigateTo(EtudiantMobileView.NAME);
@@ -395,6 +412,7 @@ public class MdwTouchkitUI extends GenericUI{
 	}
 	
 	public void navigateToRecherche() {
+		setContent(contentLayout);
 		navigator.navigateTo(RechercheMobileView.NAME);
 	}
 

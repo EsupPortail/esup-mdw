@@ -105,7 +105,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	public void init() {
 
 		// On réinitialise la vue
-		removeAllComponents();
+		//removeAllComponents();
 
 		// Style
 		setSizeFull();
@@ -213,11 +213,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		});
 
 
-		/*HorizontalLayout layoutBordure = new HorizontalLayout();
-		layoutBordure.setWidth("10px");
-		champRechercheLayout.addComponent(layoutBordure);*/
-		//champRechercheLayout.addStyleName("v-layout-with-margin");
-		//champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
+	
 		champRechercheLayout.addComponent(champRecherche);
 		champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
 		
@@ -245,7 +241,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		checkBoxVetLayout.addComponent(etapeLabel);
 
 		HorizontalLayout checkBoxElpLayout = new HorizontalLayout();
-		Label elpLabel=new Label("Elements pédagogiques");
+		Label elpLabel=new Label("Eléments pédagogiques");
 		elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
 		checkBoxElpLayout.addComponent(elpLabel);
 		
@@ -255,7 +251,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		checkBoxEtuLayout.addComponent(etuLabel);
 		
 		checkBoxVetLayout.setSizeFull();
-		checkBoxVetLayout.setWidth("80px");
+		checkBoxVetLayout.setWidth("70px");
 		
 		checkBoxElpLayout.setSizeFull();
 		
@@ -581,7 +577,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			b.setHeight("100%");
 			b.setWidth("100%");
 			b.addClickListener(e->{
-				rechercheController.accessToMobileDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString());
+				rechercheController.accessToMobileDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(),true);
 			});
 
 			return b;

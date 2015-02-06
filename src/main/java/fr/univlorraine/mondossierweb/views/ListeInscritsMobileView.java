@@ -140,6 +140,10 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(FavorisMobileView.NAME)){
 				MdwTouchkitUI.getCurrent().navigateTofavoris();
 			}
+			if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
+					MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(RechercheMobileView.NAME)){
+				MdwTouchkitUI.getCurrent().navigateToRecherche();
+			}
 		});
 		navbar.addComponent(returnButton);
 		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
@@ -304,7 +308,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					// Gestion du clic sur la photo
 					fotoEtudiant.addClickListener(e->{
 						// Au clic sur la photo on redirige vers le contenu du dossier de l'étudiant dont la photo a été cliquée
-						rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+						rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,false);
 					});
 					// Ajout de la photo au layout
 					photoLayout.addComponent(fotoEtudiant);
@@ -328,7 +332,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Gestion du clic sur le bouton
 				btnNomEtudiant.addClickListener(e->{
 					// Au clic sur le bouton on redirige vers le contenu du dossier de l'étudiant dont le nom a été cliqué
-					rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+					rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,false);
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
 				nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);

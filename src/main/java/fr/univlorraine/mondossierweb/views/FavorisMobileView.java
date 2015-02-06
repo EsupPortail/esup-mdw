@@ -180,7 +180,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						codeButton.addStyleName("v-link");
 						codeButton.setWidth("90px");
 						codeButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
+							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
 						});
 
 
@@ -191,7 +191,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						libButton.setHeight("100%");
 						libButton.setWidth("100%");
 						libButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
+							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
 						});
 
 						favVetLayout.addComponent(codeButton);
@@ -232,7 +232,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						codeButton.addStyleName("v-link");
 						codeButton.setWidth("90px");
 						codeButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
+							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
 						});
 
 						Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
@@ -242,7 +242,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						libButton.setHeight("100%");
 						libButton.setWidth("100%");
 						libButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
+							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
 						});
 
 						favElpLayout.addComponent(codeButton);

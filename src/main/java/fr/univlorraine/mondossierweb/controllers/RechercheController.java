@@ -80,7 +80,7 @@ public class RechercheController {
 		}
 	}
 
-	public void accessToMobileDetail(String code, String type) {
+	public void accessToMobileDetail(String code, String type, boolean fromSearch) {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
@@ -90,7 +90,11 @@ public class RechercheController {
 				parameterMap.replace("type",Utils.VET);
 			if(type.equals(Utils.TYPE_ELP))
 				parameterMap.replace("type",Utils.ELP);
-			MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
+			if(fromSearch){
+				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromSearch(parameterMap);	
+			}else{
+				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
+			}
 		}
 
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
@@ -102,8 +106,11 @@ public class RechercheController {
 				etudiantController.recupererCalendrierExamens();
 				etudiantController.recupererNotesEtResultatsEnseignant(MdwTouchkitUI.getCurrent().getEtudiant());
 			}
-
-			MdwTouchkitUI.getCurrent().navigateToDossierEtudiant();
+			if(fromSearch){
+				MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();
+			}else{
+				MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
+			}
 		}
 	}
 
