@@ -3,11 +3,9 @@ package fr.univlorraine.mondossierweb.uicomponents;
 
 import java.util.List;
 
-import com.vaadin.client.ui.Action;
 import com.vaadin.data.Item;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
