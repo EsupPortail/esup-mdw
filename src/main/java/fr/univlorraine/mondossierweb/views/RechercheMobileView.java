@@ -99,7 +99,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	private boolean casesAcocherEtudiant=true;
 
 
-	private boolean init;
+
 
 	/**
 	 * Initialise la vue
@@ -108,13 +108,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	public void init() {
 
 		// On réinitialise la vue
-		//removeAllComponents();
-
-		System.out.println("toto : "+init);
-
-		if(!init){
-			init=true;
-
+				removeAllComponents();
 
 			// Style
 			setSizeFull();
@@ -245,27 +239,24 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 
 			HorizontalLayout checkBoxVetLayout = new HorizontalLayout();
-			Label etapeLabel=new Label("Etapes");
+			Label etapeLabel=new Label(applicationContext.getMessage(NAME+".etapes.checkbox", null, getLocale()));
 			etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			checkBoxVetLayout.addComponent(etapeLabel);
 
 			HorizontalLayout checkBoxElpLayout = new HorizontalLayout();
-			Label elpLabel=new Label("Eléments pédagogiques");
+			Label elpLabel=new Label(applicationContext.getMessage(NAME+".elps.checkbox", null, getLocale()));
 			elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			checkBoxElpLayout.addComponent(elpLabel);
 
 			HorizontalLayout checkBoxEtuLayout = new HorizontalLayout();
-			Label etuLabel=new Label("Etudiants");
+			Label etuLabel=new Label(applicationContext.getMessage(NAME+".etudiants.checkbox", null, getLocale()));
 			etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			checkBoxEtuLayout.addComponent(etuLabel);
 
 			checkBoxVetLayout.setSizeFull();
-			checkBoxVetLayout.setWidth("70px");
-
 			checkBoxElpLayout.setSizeFull();
-
 			checkBoxEtuLayout.setSizeFull();
-			checkBoxEtuLayout.setWidth("80px");
+		
 
 
 			if(casesAcocherVet){
@@ -335,7 +326,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			checkBoxLayout.addComponent(checkBoxVetLayout);
 			checkBoxLayout.addComponent(checkBoxElpLayout);
 			checkBoxLayout.addComponent(checkBoxEtuLayout);
-			checkBoxLayout.setExpandRatio(checkBoxElpLayout, 1);
+			
 
 
 			mainVerticalLayout.addComponent(checkBoxLayout);
@@ -378,7 +369,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			addComponent(mainVerticalLayout);
 			setExpandRatio(mainVerticalLayout, 1);
 
-		}
+		
 	}
 
 

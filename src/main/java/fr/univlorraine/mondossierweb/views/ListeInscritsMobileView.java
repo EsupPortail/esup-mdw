@@ -91,8 +91,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	public void init() {
 
 		
-		System.out.println("init Liste");
-		
 		// On réinitialise la vue
 		removeAllComponents();
 		
