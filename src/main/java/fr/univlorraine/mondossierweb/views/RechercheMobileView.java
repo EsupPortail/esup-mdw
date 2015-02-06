@@ -22,6 +22,8 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
@@ -59,7 +61,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 	public static final String NAME = "rechercheMobileView";
 
-	public static final String[] FIELDS_ORDER = {"lib","type"};
+	public static final String[] FIELDS_ORDER = {"type","lib"};
 
 
 	/* Injections */
@@ -90,11 +92,11 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 	private TreeTable tableResultats;
 
-	private CheckBox casesAcocherVet;
+	private boolean casesAcocherVet=true;
 
-	private CheckBox casesAcocherElp;
+	private boolean casesAcocherElp=true;
 
-	private CheckBox casesAcocherEtudiant;
+	private boolean casesAcocherEtudiant=true;
 	
 	/**
 	 * Initialise la vue
@@ -227,6 +229,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		btnRecherche.setIcon(FontAwesome.SEARCH);
 		btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		btnRecherche.addStyleName("v-popover-button");
+		btnRecherche.addStyleName("v-button-without-padding");
 		btnRecherche.setEnabled(true);
 		btnRecherche.addClickListener(e -> search(false));
 		champRechercheLayout.addComponent(btnRecherche);
@@ -235,26 +238,99 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		champRechercheLayout.setMargin(true);
 		champRechercheLayout.setExpandRatio(champRecherche, 1);
 
+		
+		HorizontalLayout checkBoxVetLayout = new HorizontalLayout();
+		Label etapeLabel=new Label("Etapes");
+		etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
+		checkBoxVetLayout.addComponent(etapeLabel);
 
-		casesAcocherVet= new CheckBox("Etapes");
-		casesAcocherVet.setValue(true);
-		casesAcocherVet.setStyleName(ValoTheme.CHECKBOX_SMALL);
-		casesAcocherVet.addValueChangeListener(e -> tuneSearch());
-		casesAcocherElp= new CheckBox("Eléments pédagogiques");
-		casesAcocherElp.setValue(true);
-		casesAcocherElp.setStyleName(ValoTheme.CHECKBOX_SMALL);
-		casesAcocherElp.addValueChangeListener(e -> tuneSearch());
-		casesAcocherEtudiant= new CheckBox("Etudiants");
-		casesAcocherEtudiant.setValue(true);
-		casesAcocherEtudiant.setStyleName(ValoTheme.CHECKBOX_SMALL);
-		casesAcocherEtudiant.addValueChangeListener(e -> tuneSearch());
+		HorizontalLayout checkBoxElpLayout = new HorizontalLayout();
+		Label elpLabel=new Label("Elements pédagogiques");
+		elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
+		checkBoxElpLayout.addComponent(elpLabel);
+		
+		HorizontalLayout checkBoxEtuLayout = new HorizontalLayout();
+		Label etuLabel=new Label("Etudiants");
+		etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
+		checkBoxEtuLayout.addComponent(etuLabel);
+		
+		checkBoxVetLayout.setSizeFull();
+		checkBoxVetLayout.setWidth("80px");
+		
+		checkBoxElpLayout.setSizeFull();
+		
+		checkBoxEtuLayout.setSizeFull();
+		checkBoxEtuLayout.setWidth("80px");
+		
+		
+		if(casesAcocherVet){
+			checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+		}else{
+			checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
+		}
+		
+		if(casesAcocherElp){
+			checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+		}else{
+			checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
+		}
+		
+		if(casesAcocherEtudiant){
+			checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+		}else{
+			checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
+		}
+		
+		checkBoxVetLayout.addListener(new LayoutClickListener() {
+			public void layoutClick(LayoutClickEvent event) {
+				if(casesAcocherVet){
+					casesAcocherVet=false;
+					checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
+				}else{
+					casesAcocherVet=true;
+					checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+				}
+				tuneSearch();
+			}
+		});
+		
+		checkBoxElpLayout.addListener(new LayoutClickListener() {
+			public void layoutClick(LayoutClickEvent event) {
+				if(casesAcocherElp){
+					casesAcocherElp=false;
+					checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
+				}else{
+					casesAcocherElp=true;
+					checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+				}
+				tuneSearch();
+			}
+		});
+		
+		checkBoxEtuLayout.addListener(new LayoutClickListener() {
+			public void layoutClick(LayoutClickEvent event) {
+				if(casesAcocherEtudiant){
+					casesAcocherEtudiant=false;
+					checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
+				}else{
+					casesAcocherEtudiant=true;
+					checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+				}
+				tuneSearch();
+			}
+		});
+
+		
 
 		HorizontalLayout checkBoxLayout=new HorizontalLayout();
+		checkBoxLayout.setWidth("100%");
+		checkBoxLayout.setHeight("50px");
 		checkBoxLayout.setMargin(true);
 		checkBoxLayout.setSpacing(true);
-		checkBoxLayout.addComponent(casesAcocherVet);
-		checkBoxLayout.addComponent(casesAcocherElp);
-		checkBoxLayout.addComponent(casesAcocherEtudiant);
+		checkBoxLayout.addComponent(checkBoxVetLayout);
+		checkBoxLayout.addComponent(checkBoxElpLayout);
+		checkBoxLayout.addComponent(checkBoxEtuLayout);
+		checkBoxLayout.setExpandRatio(checkBoxElpLayout, 1);
 
 
 		mainVerticalLayout.addComponent(checkBoxLayout);
@@ -265,7 +341,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		rrContainer.addContainerProperty("code", String.class, "");
 		rrContainer.addContainerProperty("type", String.class, "");
 		tableResultats = new TreeTable();
-		tableResultats.setSizeFull();
+		tableResultats.setWidth("100%");
 		tableResultats.setSelectable(false);
 		tableResultats.setMultiSelect(false);
 		tableResultats.setImmediate(true);
@@ -273,12 +349,15 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		for (int fieldIndex = 0; fieldIndex < FIELDS_ORDER.length; fieldIndex++){
 			columnHeaders[fieldIndex] = applicationContext.getMessage("result.table." + FIELDS_ORDER[fieldIndex], null, Locale.getDefault());
 		}
-		tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
+		
 		tableResultats.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
+		tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
 		tableResultats.setContainerDataSource(rrContainer);
 		tableResultats.setVisibleColumns(FIELDS_ORDER);
+		tableResultats.setStyleName("nohscrollabletable");
 		tableResultats.setColumnHeaders(columnHeaders);
 		tableResultats.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+		tableResultats.setColumnWidth("type", 90);
 		
 		/*mainVerticalLayout.addComponent(searchBoxFilter);
 		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
@@ -328,13 +407,13 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 			//Liste des types autorisés
 			LinkedList<String> listeTypeAutorise=new LinkedList();
-			if(casesAcocherVet.getValue()){
+			if(casesAcocherVet){
 				listeTypeAutorise.add(Utils.VET);
 			}
-			if(casesAcocherElp.getValue()){
+			if(casesAcocherElp){
 				listeTypeAutorise.add(Utils.ELP);
 			}
-			if(casesAcocherEtudiant.getValue()){
+			if(casesAcocherEtudiant){
 				listeTypeAutorise.add(Utils.ETU);
 			}
 
@@ -461,15 +540,15 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			SimpleStringFilter etuFilter;
 
 
-			if(casesAcocherVet.getValue()){
+			if(casesAcocherVet){
 				vetFilter = new SimpleStringFilter("type",Utils.VET, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,vetFilter);
 			}
-			if(casesAcocherElp.getValue()){
+			if(casesAcocherElp){
 				elpFilter = new SimpleStringFilter("type",Utils.ELP, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,elpFilter);
 			}
-			if(casesAcocherEtudiant.getValue()){
+			if(casesAcocherEtudiant){
 				etuFilter = new SimpleStringFilter("type",Utils.ETU, true, false);
 				filterStringToSearch = new Or(filterStringToSearch,etuFilter);
 			}
@@ -496,11 +575,14 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				lib=tab[1].trim();
 			}
 			Button b = new Button(lib);
-			b.setStyleName("link"); 
+			b.setStyleName("v-button-multiline");
+			b.addStyleName("link"); 
 			b.addStyleName("v-link");
-
-			//b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString()));
-
+			b.setHeight("100%");
+			b.setWidth("100%");
+			b.addClickListener(e->{
+				rechercheController.accessToMobileDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString());
+			});
 
 			return b;
 		}
@@ -523,7 +605,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			Label labelType = new Label(Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString()));
 			labelType.setWidth("100%");
 			labelType.setStyleName(ValoTheme.LABEL_SMALL);
-			labelType.addStyleName("label-centre");
+			labelType.addStyleName("label-centre-bold");
 			
 			Label labelCode = new Label(code);
 			labelCode.setWidth("100%");

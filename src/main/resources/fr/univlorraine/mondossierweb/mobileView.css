@@ -38,6 +38,18 @@ border-bottom: 1px solid #c5c5c5;
 	overflow-y: hidden;
 }
 
+.valo-ul .layout-checkbox-checked{
+	border-bottom: 4px solid rgb(85,96,164);
+	height: 50px;
+	text-align: center;
+}
+
+.valo-ul .layout-checkbox-unchecked{
+	border-bottom: 1px solid rgb(85,96,164);
+	height: 50px;
+	text-align: center;
+}
+
 .valo-ul .v-touchkit-navpanel-container{
 	background: #F0F0F0;
 }
@@ -92,7 +104,7 @@ border-top: 1px solid #d5d5d5;
 }
 
 .valo-ul .navigation-bar{
-background-color: rgb(85,96,164);;
+background-color: rgb(85,96,164);
 }
 
 .valo-ul .v-button-multiline .v-button-wrap .v-button-caption {
@@ -117,6 +129,25 @@ font-weight: bold;
 
 .valo-ul .label-centre {
 	text-align: center;
+}
+
+.valo-ul .label-centre-bold {
+	font-weight: bold;
+}
+
+.valo-ul .v-table-nohscrollabletable{
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.valo-ul .v-table-body-nohscrollabletable{
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.valo-ul .v-treetable [class*="cell-content"] {
+ padding-left: 0px !important; 
+ padding-right: 0px !important; 
 }
 
 .valo-ul .v-scrollableelement{
@@ -148,6 +179,10 @@ overflow-x: hidden;
 	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0);
 }
 
+
+.valo-ul .v-button-without-padding{
+	padding: 0 5px;
+}
 
 .valo-ul .v-popover-button:before {
 content: none;
