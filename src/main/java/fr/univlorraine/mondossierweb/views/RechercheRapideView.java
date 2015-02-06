@@ -71,7 +71,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	public static final String NAME = "rechercheRapideView";
 
-	
+
 
 	public static final String[] FIELDS_ORDER = {"lib","type"};
 
@@ -111,7 +111,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private CheckBox casesAcocherElp;
 
 	private CheckBox casesAcocherEtudiant;
-	
+
 	private Button resetButton;
 
 	/**
@@ -156,6 +156,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		//mainVerticalLayout.addComponent(search);
 
 
+		//BOUTON DE RECHERCHE
+		btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
+		btnRecherche.setIcon(FontAwesome.SEARCH);
+		btnRecherche.setEnabled(true);
+		btnRecherche.addClickListener(e -> search(false));
+
 		//CHAMP DE RECHERCHE
 		champRecherche = new AutoComplete();
 		champRecherche.setWidth(700, Unit.PIXELS); //540
@@ -169,7 +175,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				if(event.getText()!=null){
 					resetButton.setIcon(FontAwesome.TIMES);
 				}
-				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout,false);
+				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout,btnRecherche, false);
 
 			}
 		});
@@ -244,13 +250,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		});
 		champRechercheLayout.addComponent(resetButton);
 		champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
-		
-		//BOUTON DE RECHERCHE
-		btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
-		btnRecherche.setIcon(FontAwesome.SEARCH);
-		btnRecherche.setEnabled(true);
-		//btnRecherche.addClickListener(e -> search(false, search.getText()));
-		btnRecherche.addClickListener(e -> search(false));
+
+		//Ajout du bouton de recherche au layout
 		champRechercheLayout.addComponent(btnRecherche);
 		mainVerticalLayout.addComponent(champRechercheLayout);
 		mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
@@ -336,7 +337,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
-			
+
 			valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
@@ -434,7 +435,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 				for(Map<String,Object> obj : lobjresult){
 					if(obj != null){
-						
+
 						//GESTION DES TYPES D'OBJET AFFICHES
 						ResultatDeRecherche rr=new ResultatDeRecherche(obj);
 						Item i=rrContainer.addItem(rr);

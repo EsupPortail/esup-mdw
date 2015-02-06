@@ -3,9 +3,12 @@ package fr.univlorraine.mondossierweb.uicomponents;
 
 import java.util.List;
 
+import com.vaadin.client.ui.Action;
 import com.vaadin.data.Item;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.PopupView;
@@ -26,7 +29,7 @@ public class AutoComplete extends TextField{
 
 
 
-	public void showChoices(List<ResultatDeRecherche> text, Layout layout, boolean touchkitMobileDisplay) {
+	public void showChoices(List<ResultatDeRecherche> text, Layout layout, Button btnRecherche, boolean touchkitMobileDisplay) {
 
 
 		//Si du texte est saisi
@@ -69,8 +72,10 @@ public class AutoComplete extends TextField{
 					public void itemClick(ItemClickEvent event) {
 						Item i = event.getItem();
 						setValue(i.getItemProperty("lib").getValue().toString());
-
+						btnRecherche.click();
 					}
+					
+					
 				});
 
 

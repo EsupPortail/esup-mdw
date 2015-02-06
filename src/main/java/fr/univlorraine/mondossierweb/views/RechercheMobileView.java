@@ -143,7 +143,14 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			addComponent(navbar);
 
 
-
+			//BOUTON DE RECHERCHE
+			btnRecherche = new Button();
+			btnRecherche.setIcon(FontAwesome.SEARCH);
+			btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnRecherche.addStyleName("v-popover-button");
+			btnRecherche.addStyleName("v-button-without-padding");
+			btnRecherche.setEnabled(true);
+			btnRecherche.addClickListener(e -> search(false));
 
 			//CHAMP DE RECHERCHE
 			champRechercheLayout = new HorizontalLayout();
@@ -164,7 +171,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					/*if(event.getText()!=null){
 					resetButton.setIcon(FontAwesome.TIMES);
 				}*/
-					champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, true);
+					champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, btnRecherche,true);
 
 				}
 			});
@@ -223,14 +230,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 
 
-			//BOUTON DE RECHERCHE
-			btnRecherche = new Button();
-			btnRecherche.setIcon(FontAwesome.SEARCH);
-			btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			btnRecherche.addStyleName("v-popover-button");
-			btnRecherche.addStyleName("v-button-without-padding");
-			btnRecherche.setEnabled(true);
-			btnRecherche.addClickListener(e -> search(false));
+			//Ajout du bouton de recherche au layout
 			champRechercheLayout.addComponent(btnRecherche);
 			mainVerticalLayout.addComponent(champRechercheLayout);
 			mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
