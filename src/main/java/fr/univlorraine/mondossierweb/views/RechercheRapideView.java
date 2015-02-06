@@ -151,9 +151,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				 LOG.debug("handleSuggestionSelection "+page);
 				  search(false, page);
 			  }
-			});*/
+			});
 
-		//mainVerticalLayout.addComponent(search);
+		mainVerticalLayout.addComponent(search);*/
 
 
 		//BOUTON DE RECHERCHE
