@@ -32,7 +32,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -54,10 +53,11 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 /**
  * Recherche sur mobile
  */
-@Component @Scope("prototype")
+@Component @Scope("session")
 @VaadinView(RechercheMobileView.NAME)
 public class RechercheMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
+
+	private static final long serialVersionUID = -3389183877488162603L;
 
 	public static final String NAME = "rechercheMobileView";
 
@@ -85,9 +85,9 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	private HorizontalLayout champRechercheLayout;
 
 	private VerticalLayout mainVerticalLayout;
-	
+
 	private HierarchicalContainer rrContainer;
-	
+
 	private String[] columnHeaders;
 
 	private TreeTable tableResultats;
@@ -97,7 +97,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	private boolean casesAcocherElp=true;
 
 	private boolean casesAcocherEtudiant=true;
-	
+
+
+	private boolean init;
+
 	/**
 	 * Initialise la vue
 	 */
@@ -107,269 +110,275 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		// On réinitialise la vue
 		//removeAllComponents();
 
-		// Style
-		setSizeFull();
-		addStyleName("v-noscrollableelement");
+		System.out.println("toto : "+init);
+
+		if(!init){
+			init=true;
+
+
+			// Style
+			setSizeFull();
+			addStyleName("v-noscrollableelement");
 
 
 
 
-		//NAVBAR
-		HorizontalLayout navbar=new HorizontalLayout();
-		navbar.setSizeFull();
-		navbar.setHeight("40px");
-		navbar.setStyleName("navigation-bar");
+			//NAVBAR
+			HorizontalLayout navbar=new HorizontalLayout();
+			navbar.setSizeFull();
+			navbar.setHeight("40px");
+			navbar.setStyleName("navigation-bar");
 
-		//Bouton retour
-		returnButton = new Button();
-		returnButton.setIcon(FontAwesome.ARROW_LEFT);
-		returnButton.setStyleName("v-nav-button");
-		returnButton.addClickListener(e->{
+			//Bouton retour
+			returnButton = new Button();
+			returnButton.setIcon(FontAwesome.ARROW_LEFT);
+			returnButton.setStyleName("v-nav-button");
+			returnButton.addClickListener(e->{
 				MdwTouchkitUI.getCurrent().navigateTofavoris();
-		});
-		navbar.addComponent(returnButton);
-		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+			});
+			navbar.addComponent(returnButton);
+			navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
 
-		//Title
-		Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
-		labelTrombi.setStyleName("v-label-navbar");
-		navbar.addComponent(labelTrombi);
-		navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
+			//Title
+			Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
+			labelTrombi.setStyleName("v-label-navbar");
+			navbar.addComponent(labelTrombi);
+			navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
 
-		navbar.setExpandRatio(labelTrombi, 1);
-		addComponent(navbar);
-
-
+			navbar.setExpandRatio(labelTrombi, 1);
+			addComponent(navbar);
 
 
-		//CHAMP DE RECHERCHE
-		champRechercheLayout = new HorizontalLayout();
-		champRechercheLayout.setWidth("100%");
-		mainVerticalLayout = new VerticalLayout();
-		mainVerticalLayout.setImmediate(true);
-		mainVerticalLayout.setSizeFull();
 
-		champRecherche = new AutoComplete();
-		champRecherche.setWidth(100, Unit.PERCENTAGE); 
-		champRecherche.setEnabled(true);
-		champRecherche.setImmediate(true);
-		champRecherche.focus();
-		champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		champRecherche.addTextChangeListener(new TextChangeListener() {
-			@Override
-			public void textChange(TextChangeEvent event) {
-				/*if(event.getText()!=null){
+
+			//CHAMP DE RECHERCHE
+			champRechercheLayout = new HorizontalLayout();
+			champRechercheLayout.setWidth("100%");
+			mainVerticalLayout = new VerticalLayout();
+			mainVerticalLayout.setImmediate(true);
+			mainVerticalLayout.setSizeFull();
+
+			champRecherche = new AutoComplete();
+			champRecherche.setWidth(100, Unit.PERCENTAGE); 
+			champRecherche.setEnabled(true);
+			champRecherche.setImmediate(true);
+			champRecherche.focus();
+			champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
+			champRecherche.addTextChangeListener(new TextChangeListener() {
+				@Override
+				public void textChange(TextChangeEvent event) {
+					/*if(event.getText()!=null){
 					resetButton.setIcon(FontAwesome.TIMES);
 				}*/
-				champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, true);
+					champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, true);
 
-			}
-		});
-		champRecherche.setImmediate(true);
-		champRecherche.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
-			@Override
-			public void handleAction(Object sender, Object target) {
-				if(target==champRecherche){
-					//Si on était sur une ligne proposée sous le champ de recherche
-					if(champRecherche.getSelectedItem()>0){
-						//On remplie d'abord le champ avec la ligne sélectionnée
-						champRecherche.setValue(champRecherche.getChoices().getItem(champRecherche.getSelectedItem()).getItemProperty("lib").getValue().toString());
-					}
-					search(false);
 				}
-			}
-		});
-
-		champRecherche.addShortcutListener(new ShortcutListener("Bottom Arrow", ShortcutAction.KeyCode.ARROW_DOWN, null) {
-			@Override
-			public void handleAction(Object sender, Object target) {
-				if(target==champRecherche){
-					if(champRecherche.getChoices().getItemIds()!=null){
-						champRecherche.getChoicesPopup().setVisible(true);
-						champRecherche.getChoices().setValue(champRecherche.getNextItem());
-
-
-					}
-				}
-			}
-		});
-
-		champRecherche.addShortcutListener(new ShortcutListener("Top Arrow", ShortcutAction.KeyCode.ARROW_UP, null) {
-			@Override
-			public void handleAction(Object sender, Object target) {
-				if(target==champRecherche){
-					if(champRecherche.getChoices().getItemIds()!=null){
-						champRecherche.getChoicesPopup().setVisible(true);
-						Integer champSelectionne = champRecherche.getPreviousItem();
-						if(champSelectionne>0){
-							champRecherche.getChoices().setValue(champSelectionne);
-						}else{
-							champRecherche.getChoices().setValue(null);
+			});
+			champRecherche.setImmediate(true);
+			champRecherche.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
+				@Override
+				public void handleAction(Object sender, Object target) {
+					if(target==champRecherche){
+						//Si on était sur une ligne proposée sous le champ de recherche
+						if(champRecherche.getSelectedItem()>0){
+							//On remplie d'abord le champ avec la ligne sélectionnée
+							champRecherche.setValue(champRecherche.getChoices().getItem(champRecherche.getSelectedItem()).getItemProperty("lib").getValue().toString());
 						}
-
+						search(false);
 					}
 				}
-			}
-		});
+			});
+
+			champRecherche.addShortcutListener(new ShortcutListener("Bottom Arrow", ShortcutAction.KeyCode.ARROW_DOWN, null) {
+				@Override
+				public void handleAction(Object sender, Object target) {
+					if(target==champRecherche){
+						if(champRecherche.getChoices().getItemIds()!=null){
+							champRecherche.getChoicesPopup().setVisible(true);
+							champRecherche.getChoices().setValue(champRecherche.getNextItem());
 
 
-	
-		champRechercheLayout.addComponent(champRecherche);
-		champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
-		
-
-
-
-		//BOUTON DE RECHERCHE
-		btnRecherche = new Button();
-		btnRecherche.setIcon(FontAwesome.SEARCH);
-		btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnRecherche.addStyleName("v-popover-button");
-		btnRecherche.addStyleName("v-button-without-padding");
-		btnRecherche.setEnabled(true);
-		btnRecherche.addClickListener(e -> search(false));
-		champRechercheLayout.addComponent(btnRecherche);
-		mainVerticalLayout.addComponent(champRechercheLayout);
-		mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
-		champRechercheLayout.setMargin(true);
-		champRechercheLayout.setExpandRatio(champRecherche, 1);
-
-		
-		HorizontalLayout checkBoxVetLayout = new HorizontalLayout();
-		Label etapeLabel=new Label("Etapes");
-		etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
-		checkBoxVetLayout.addComponent(etapeLabel);
-
-		HorizontalLayout checkBoxElpLayout = new HorizontalLayout();
-		Label elpLabel=new Label("Eléments pédagogiques");
-		elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
-		checkBoxElpLayout.addComponent(elpLabel);
-		
-		HorizontalLayout checkBoxEtuLayout = new HorizontalLayout();
-		Label etuLabel=new Label("Etudiants");
-		etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
-		checkBoxEtuLayout.addComponent(etuLabel);
-		
-		checkBoxVetLayout.setSizeFull();
-		checkBoxVetLayout.setWidth("70px");
-		
-		checkBoxElpLayout.setSizeFull();
-		
-		checkBoxEtuLayout.setSizeFull();
-		checkBoxEtuLayout.setWidth("80px");
-		
-		
-		if(casesAcocherVet){
-			checkBoxVetLayout.setStyleName("layout-checkbox-checked");
-		}else{
-			checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
-		}
-		
-		if(casesAcocherElp){
-			checkBoxElpLayout.setStyleName("layout-checkbox-checked");
-		}else{
-			checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
-		}
-		
-		if(casesAcocherEtudiant){
-			checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
-		}else{
-			checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
-		}
-		
-		checkBoxVetLayout.addListener(new LayoutClickListener() {
-			public void layoutClick(LayoutClickEvent event) {
-				if(casesAcocherVet){
-					casesAcocherVet=false;
-					checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
-				}else{
-					casesAcocherVet=true;
-					checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+						}
+					}
 				}
-				tuneSearch();
-			}
-		});
-		
-		checkBoxElpLayout.addListener(new LayoutClickListener() {
-			public void layoutClick(LayoutClickEvent event) {
-				if(casesAcocherElp){
-					casesAcocherElp=false;
-					checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
-				}else{
-					casesAcocherElp=true;
-					checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+			});
+
+			champRecherche.addShortcutListener(new ShortcutListener("Top Arrow", ShortcutAction.KeyCode.ARROW_UP, null) {
+				@Override
+				public void handleAction(Object sender, Object target) {
+					if(target==champRecherche){
+						if(champRecherche.getChoices().getItemIds()!=null){
+							champRecherche.getChoicesPopup().setVisible(true);
+							Integer champSelectionne = champRecherche.getPreviousItem();
+							if(champSelectionne>0){
+								champRecherche.getChoices().setValue(champSelectionne);
+							}else{
+								champRecherche.getChoices().setValue(null);
+							}
+
+						}
+					}
 				}
-				tuneSearch();
+			});
+
+
+
+			champRechercheLayout.addComponent(champRecherche);
+			champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
+
+
+
+
+			//BOUTON DE RECHERCHE
+			btnRecherche = new Button();
+			btnRecherche.setIcon(FontAwesome.SEARCH);
+			btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnRecherche.addStyleName("v-popover-button");
+			btnRecherche.addStyleName("v-button-without-padding");
+			btnRecherche.setEnabled(true);
+			btnRecherche.addClickListener(e -> search(false));
+			champRechercheLayout.addComponent(btnRecherche);
+			mainVerticalLayout.addComponent(champRechercheLayout);
+			mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
+			champRechercheLayout.setMargin(true);
+			champRechercheLayout.setExpandRatio(champRecherche, 1);
+
+
+			HorizontalLayout checkBoxVetLayout = new HorizontalLayout();
+			Label etapeLabel=new Label("Etapes");
+			etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			checkBoxVetLayout.addComponent(etapeLabel);
+
+			HorizontalLayout checkBoxElpLayout = new HorizontalLayout();
+			Label elpLabel=new Label("Eléments pédagogiques");
+			elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			checkBoxElpLayout.addComponent(elpLabel);
+
+			HorizontalLayout checkBoxEtuLayout = new HorizontalLayout();
+			Label etuLabel=new Label("Etudiants");
+			etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			checkBoxEtuLayout.addComponent(etuLabel);
+
+			checkBoxVetLayout.setSizeFull();
+			checkBoxVetLayout.setWidth("70px");
+
+			checkBoxElpLayout.setSizeFull();
+
+			checkBoxEtuLayout.setSizeFull();
+			checkBoxEtuLayout.setWidth("80px");
+
+
+			if(casesAcocherVet){
+				checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+			}else{
+				checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
 			}
-		});
-		
-		checkBoxEtuLayout.addListener(new LayoutClickListener() {
-			public void layoutClick(LayoutClickEvent event) {
-				if(casesAcocherEtudiant){
-					casesAcocherEtudiant=false;
-					checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
-				}else{
-					casesAcocherEtudiant=true;
-					checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+
+			if(casesAcocherElp){
+				checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+			}else{
+				checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
+			}
+
+			if(casesAcocherEtudiant){
+				checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+			}else{
+				checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
+			}
+
+			checkBoxVetLayout.addListener(new LayoutClickListener() {
+				public void layoutClick(LayoutClickEvent event) {
+					if(casesAcocherVet){
+						casesAcocherVet=false;
+						checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
+					}else{
+						casesAcocherVet=true;
+						checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+					}
+					tuneSearch();
 				}
-				tuneSearch();
+			});
+
+			checkBoxElpLayout.addListener(new LayoutClickListener() {
+				public void layoutClick(LayoutClickEvent event) {
+					if(casesAcocherElp){
+						casesAcocherElp=false;
+						checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
+					}else{
+						casesAcocherElp=true;
+						checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+					}
+					tuneSearch();
+				}
+			});
+
+			checkBoxEtuLayout.addListener(new LayoutClickListener() {
+				public void layoutClick(LayoutClickEvent event) {
+					if(casesAcocherEtudiant){
+						casesAcocherEtudiant=false;
+						checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
+					}else{
+						casesAcocherEtudiant=true;
+						checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+					}
+					tuneSearch();
+				}
+			});
+
+
+
+			HorizontalLayout checkBoxLayout=new HorizontalLayout();
+			checkBoxLayout.setWidth("100%");
+			checkBoxLayout.setHeight("50px");
+			checkBoxLayout.setMargin(true);
+			checkBoxLayout.setSpacing(true);
+			checkBoxLayout.addComponent(checkBoxVetLayout);
+			checkBoxLayout.addComponent(checkBoxElpLayout);
+			checkBoxLayout.addComponent(checkBoxEtuLayout);
+			checkBoxLayout.setExpandRatio(checkBoxElpLayout, 1);
+
+
+			mainVerticalLayout.addComponent(checkBoxLayout);
+
+			//TABLE DE RESULTATS
+			rrContainer = new HierarchicalContainer();
+			rrContainer.addContainerProperty("lib", String.class, "");
+			rrContainer.addContainerProperty("code", String.class, "");
+			rrContainer.addContainerProperty("type", String.class, "");
+			tableResultats = new TreeTable();
+			tableResultats.setWidth("100%");
+			tableResultats.setSelectable(false);
+			tableResultats.setMultiSelect(false);
+			tableResultats.setImmediate(true);
+			columnHeaders = new String[FIELDS_ORDER.length];
+			for (int fieldIndex = 0; fieldIndex < FIELDS_ORDER.length; fieldIndex++){
+				columnHeaders[fieldIndex] = applicationContext.getMessage("result.table." + FIELDS_ORDER[fieldIndex], null, Locale.getDefault());
 			}
-		});
 
-		
+			tableResultats.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
+			tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
+			tableResultats.setContainerDataSource(rrContainer);
+			tableResultats.setVisibleColumns(FIELDS_ORDER);
+			tableResultats.setStyleName("nohscrollabletable");
+			tableResultats.setColumnHeaders(columnHeaders);
+			tableResultats.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+			tableResultats.setColumnWidth("type", 100);
 
-		HorizontalLayout checkBoxLayout=new HorizontalLayout();
-		checkBoxLayout.setWidth("100%");
-		checkBoxLayout.setHeight("50px");
-		checkBoxLayout.setMargin(true);
-		checkBoxLayout.setSpacing(true);
-		checkBoxLayout.addComponent(checkBoxVetLayout);
-		checkBoxLayout.addComponent(checkBoxElpLayout);
-		checkBoxLayout.addComponent(checkBoxEtuLayout);
-		checkBoxLayout.setExpandRatio(checkBoxElpLayout, 1);
-
-
-		mainVerticalLayout.addComponent(checkBoxLayout);
-
-		//TABLE DE RESULTATS
-		rrContainer = new HierarchicalContainer();
-		rrContainer.addContainerProperty("lib", String.class, "");
-		rrContainer.addContainerProperty("code", String.class, "");
-		rrContainer.addContainerProperty("type", String.class, "");
-		tableResultats = new TreeTable();
-		tableResultats.setWidth("100%");
-		tableResultats.setSelectable(false);
-		tableResultats.setMultiSelect(false);
-		tableResultats.setImmediate(true);
-		columnHeaders = new String[FIELDS_ORDER.length];
-		for (int fieldIndex = 0; fieldIndex < FIELDS_ORDER.length; fieldIndex++){
-			columnHeaders[fieldIndex] = applicationContext.getMessage("result.table." + FIELDS_ORDER[fieldIndex], null, Locale.getDefault());
-		}
-		
-		tableResultats.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
-		tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
-		tableResultats.setContainerDataSource(rrContainer);
-		tableResultats.setVisibleColumns(FIELDS_ORDER);
-		tableResultats.setStyleName("nohscrollabletable");
-		tableResultats.setColumnHeaders(columnHeaders);
-		tableResultats.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
-		tableResultats.setColumnWidth("type", 100);
-		
-		/*mainVerticalLayout.addComponent(searchBoxFilter);
+			/*mainVerticalLayout.addComponent(searchBoxFilter);
 		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
-		VerticalLayout tableVerticalLayout = new VerticalLayout();
-		tableVerticalLayout.setMargin(true);
-		tableVerticalLayout.setSizeFull();
-		tableVerticalLayout.addComponent(tableResultats);
-		mainVerticalLayout.addComponent(tableVerticalLayout);
-		mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
-		tableResultats.setVisible(false);
+			VerticalLayout tableVerticalLayout = new VerticalLayout();
+			tableVerticalLayout.setMargin(true);
+			tableVerticalLayout.setSizeFull();
+			tableVerticalLayout.addComponent(tableResultats);
+			mainVerticalLayout.addComponent(tableVerticalLayout);
+			mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
+			tableResultats.setVisible(false);
 
 
-		addComponent(mainVerticalLayout);
-		setExpandRatio(mainVerticalLayout, 1);
+			addComponent(mainVerticalLayout);
+			setExpandRatio(mainVerticalLayout, 1);
 
-
+		}
 	}
 
 
@@ -397,7 +406,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
-			
+
 			valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
@@ -492,7 +501,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 				for(Map<String,Object> obj : lobjresult){
 					if(obj != null){
-						
+
 						//GESTION DES TYPES D'OBJET AFFICHES
 						ResultatDeRecherche rr=new ResultatDeRecherche(obj);
 						Item i=rrContainer.addItem(rr);
@@ -555,7 +564,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		}
 
 	}
-	
+
 
 	class DisplayNameColumnGenerator implements Table.ColumnGenerator {
 
@@ -591,23 +600,23 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-			
+
 			String code = item.getItemProperty("lib").getValue().toString();
 			if(code.startsWith("[")){
 				String tab[]=code.split("]");
 				code=tab[0].replaceFirst("\\[", "").trim();
 			}
-			
+
 			Label labelType = new Label(Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString()));
 			labelType.setWidth("100%");
 			labelType.setStyleName(ValoTheme.LABEL_SMALL);
 			labelType.addStyleName("label-centre-bold");
-			
+
 			Label labelCode = new Label(code);
 			labelCode.setWidth("100%");
 			labelCode.setStyleName(ValoTheme.LABEL_SMALL);
 			labelCode.addStyleName("label-centre");
-			
+
 			VerticalLayout vl =new VerticalLayout();
 			vl.addComponent(labelType);
 			vl.addComponent(labelCode);

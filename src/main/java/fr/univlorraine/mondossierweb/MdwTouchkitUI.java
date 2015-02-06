@@ -111,6 +111,7 @@ public class MdwTouchkitUI extends GenericUI{
 	@Resource
 	private NotesDetailMobileView notesDetailMobileView;
 	
+	
 
 
 

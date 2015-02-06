@@ -1,14 +1,10 @@
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import lombok.Getter;
-
-import org.jfree.util.Log;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,15 +12,11 @@ import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.addon.touchkit.ui.NavigationView;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
-
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -40,7 +32,6 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
-import groovy.util.slurpersupport.GPathResult;
 
 
 /**
@@ -65,7 +56,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 
 
-	private String code;
+	
 
 	private String typeFavori;
 
@@ -74,8 +65,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private Label infoLibelleObj;
 
 	private VerticalLayout infoLayout;
-
-	private HorizontalLayout leftResumeLayout;
 
 	private VerticalLayout dataLayout;
 
@@ -101,6 +90,9 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
+		
+		System.out.println("init Liste");
+		
 		// On réinitialise la vue
 		removeAllComponents();
 		
@@ -109,7 +101,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		addStyleName("v-noscrollableelement");
 
 		// On récupère le favori à afficher
-		code = MdwTouchkitUI.getCurrent().getCodeObjListInscrits();
 		typeFavori = MdwTouchkitUI.getCurrent().getTypeObjListInscrits();
 		libelleObj = "";
 		if(typeIsVet() && MdwTouchkitUI.getCurrent().getEtapeListeInscrits()!=null){

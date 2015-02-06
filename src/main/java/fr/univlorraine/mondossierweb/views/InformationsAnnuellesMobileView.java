@@ -66,15 +66,15 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 	@PostConstruct
 	public void init() {
 	}
-	
+
 	public void refresh(){
 		removeAllComponents();
-		
+
 		/* Style */
 		setMargin(false);
 		setSpacing(false);
 		setSizeFull();
-		
+
 
 		//NAVBAR
 		HorizontalLayout navbar=new HorizontalLayout();
@@ -89,15 +89,16 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 			returnButton.setStyleName("v-nav-button");
 			returnButton.addClickListener(e->{
-					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
-							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
-						MdwTouchkitUI.getCurrent().navigateToListeInscrits();
-					}
-					
+				if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
+						MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
+					MdwTouchkitUI.getCurrent().navigateToListeInscrits();
+				}else{
+
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
 							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
 						MdwTouchkitUI.getCurrent().navigateToRecherche();
 					}
+				}
 			});
 			navbar.addComponent(returnButton);
 			navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
@@ -190,7 +191,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 		Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
 		panelInfos.addStyleName("v-panel-caption-centertitle-panel");
-		
+
 		FormLayout formInfosLayout = new FormLayout();
 		formInfosLayout.setSpacing(true);
 		formInfosLayout.setMargin(true);
@@ -266,7 +267,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 		tf.setSizeFull();
 		tf.setNullRepresentation("");
 		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
-		
+
 	}
 
 	/**
