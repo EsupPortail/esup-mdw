@@ -23,10 +23,13 @@ border-bottom: 1px solid #c5c5c5;
 	/* left:112px; */
 	/* top: 54px; */
 	 left:137px; 
-	 top: 70px;
+	 top: 66px;
 	z-index: 2;
 }
 
+.valo-ul .v-popupview-popup-googlepopupview {
+padding: 0px 0px !important;
+}
 
 .v-table-body-googletable{
      /*  overflow: hidden !important; */

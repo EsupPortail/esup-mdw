@@ -5,11 +5,7 @@ import java.util.List;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.PopupView;
@@ -17,9 +13,9 @@ import com.vaadin.ui.PopupView.PopupVisibilityEvent;
 import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 public class AutoComplete extends TextField{
 
@@ -33,30 +29,41 @@ public class AutoComplete extends TextField{
 	public void showChoices(List<ResultatDeRecherche> text, Layout layout, boolean touchkitMobileDisplay) {
 
 
-
+		//Si du texte est saisi
 		if(text.size()>0){
-			
 
+			//Si la popup est déjà instanciée, on la masque
 			if(choicesPopup!=null){
 				choicesPopup.setPopupVisible(false);
 
 			}
-		
-			
-			if(choices==null){
 
+
+			//Si c'est la première fois que l'on affiche la popup
+			if(choices==null){
+				//On créé la table contenant les propositions
 				choices = new Table();
+				//Ajout du libellé dans la table
 				choices.addContainerProperty("lib", String.class,  "");
-				choices.addContainerProperty("type", String.class,  "");
-				choices.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
-				choices.setWidth(getWidth(), getWidthUnits());
-				choices.setStyleName("googletable");
+				//Si on est en affichage bureau, on ajoute le type
 				if(!touchkitMobileDisplay){
-				choices.setColumnWidth("lib", 596);
-				choices.setColumnWidth("type", 100);
+					choices.addContainerProperty("type", String.class,  "");
 				}
-			
+				//On cache les headers des colonnes
+				choices.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+				//la table fait la même largeur que le composant textfield de saisie
+				choices.setWidth(getWidth(), getWidthUnits());
+				//Ajout du style css googletable
+				choices.setStyleName("googletable");
+				//Si on est en affichage bureau, on détermine à la main la taille des colonnes
+				if(!touchkitMobileDisplay){
+					choices.setColumnWidth("lib", 596);
+					choices.setColumnWidth("type", 100);
+				}
+
 				choices.setImmediate(true);
+				
+				//Gestion du clic sur une ligne de la table -> on met la valeut de la ligne dans le textField de saisie
 				choices.addItemClickListener(new ItemClickListener() {
 					@Override
 					public void itemClick(ItemClickEvent event) {
@@ -68,50 +75,63 @@ public class AutoComplete extends TextField{
 
 
 			}else{
+				//On vide simplement la table de son contenu précédent
 				choices.removeAllItems();
 			}
 
+			//On parcourt les résultats pour les ajouter à la table
 			int i =1;
 			for(ResultatDeRecherche r : text){
 				Item item = choices.addItem(i);
 				item.getItemProperty("lib").setValue(r.getLib());
-				item.getItemProperty("type").setValue(transcodeType(r.getType()));
+				//Si on est en affichage bureau, on ajoute le type
+				if(!touchkitMobileDisplay){
+					item.getItemProperty("type").setValue(transcodeType(r.getType()));
+				}
 				i++;
 			}
 			selectedItem=0;
+			//On fixe la hauteur de la table en fonction du nombre de résultats affichés
 			choices.setHeight(38 * text.size()+1, Unit.PIXELS);
-			choices.setWidth(getWidth(), Unit.PIXELS);
-			
-			// Show popup
+			//la table fait la même largeur que le composant textfield de saisie
+			choices.setWidth(getWidth(), getWidthUnits());
+
+			// Si on n'a encore jamais affiché la popup
 			if(choicesPopup==null){
+				//on créé la popup
 				choicesPopup = new PopupView(new PopupTextFieldContent());
+				//On lui ajoute le style css googlepopupview
 				choicesPopup.setStyleName("googlepopupview");
+				//On ajoute la popup au layout
 				layout.addComponent(choicesPopup);
-				//layout.setComponentAlignment(choicesPopup, Alignment.TOP_CENTER);
+				//la popup fait la même largeur que le composant textfield de saisie
 				choicesPopup.setWidth(getWidth(), getWidthUnits());
 				choices.setSelectable(true);
 				choices.setImmediate(true);
 				choicesPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
-	                @Override
-	                public void popupVisibilityChange(PopupVisibilityEvent event) {
-	                    if (!event.isPopupVisible()) {
-	                    	choicesPopup.setVisible(false);
-	                    }
-	                }
-	            });
+					@Override
+					public void popupVisibilityChange(PopupVisibilityEvent event) {
+						if (!event.isPopupVisible()) {
+							//On masque la popup quand on perd le focus sur le champ texte
+							choicesPopup.setVisible(false);
+						}
+					}
+				});
 
 			}
 
+			//On affiche la popup
 			choicesPopup.setVisible(true);
 			choicesPopup.setPopupVisible(true);
-			//choicesPopup.setHeight(40 * text.size(), Unit.PIXELS);
-			//choicesPopup.addStyleName("googlepopupview");
-			choicesPopup.setHeight(choices.getHeight(), Unit.PIXELS);
+			//La popup fait la même hauteur que la table qu'elle contient
+			choicesPopup.setHeight(choices.getHeight(), choices.getHeightUnits());
 
-		
+
 
 		}else{
+			//Aucun texte n'ai saisi
 			if(choicesPopup!=null){
+				//On masque la popup si elle est déjà instanciée
 				choicesPopup.setVisible(false);
 				choicesPopup.setPopupVisible(false);
 			}
@@ -122,17 +142,18 @@ public class AutoComplete extends TextField{
 	}
 
 	private Object transcodeType(String type) {
-		if(type.equals("ETU")){
-			return "ETUDIANT";
+		if(type.equals(Utils.ETU)){
+			return Utils.TYPE_ETU.toUpperCase();
 		}
-		if(type.equals("ELP")){
-			return "ELEMENT";
+		if(type.equals(Utils.ELP)){
+			String elpType = Utils.TYPE_ELP.toUpperCase();
+			return elpType.split(" ")[0];
 		}
-		if(type.equals("CMP")){
-			return "COMPOSANTE";
+		if(type.equals(Utils.CMP)){
+			return Utils.TYPE_CMP.toUpperCase();
 		}
-		if(type.equals("VET")){
-			return "ETAPE";
+		if(type.equals(Utils.VET)){
+			return Utils.TYPE_VET.toUpperCase();
 		}
 		return type;
 	}
@@ -179,7 +200,7 @@ public class AutoComplete extends TextField{
 		}
 		return this.selectedItem;
 	};
-	
+
 	public Integer getPreviousItem() {
 		if(this.selectedItem > 0){
 			this.selectedItem = this.selectedItem - 1;

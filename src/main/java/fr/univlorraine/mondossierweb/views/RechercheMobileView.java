@@ -353,7 +353,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		tableResultats.setStyleName("nohscrollabletable");
 		tableResultats.setColumnHeaders(columnHeaders);
 		tableResultats.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
-		tableResultats.setColumnWidth("type", 90);
+		tableResultats.setColumnWidth("type", 100);
 		
 		/*mainVerticalLayout.addComponent(searchBoxFilter);
 		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
