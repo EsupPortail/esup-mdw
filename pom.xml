@@ -557,7 +557,7 @@
 		<dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservicesclient</artifactId>
-			<version>4.50.lal</version>
+			<version>4.60.la</version>
 		</dependency>
 		
 		<!-- PhotoServer UL -->
