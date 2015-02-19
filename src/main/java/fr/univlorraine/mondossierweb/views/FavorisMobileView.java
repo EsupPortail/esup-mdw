@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -25,22 +23,15 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
-import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
-import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.ActionsColumnGenerator;
 
 /**
  * Favoris sur mobile
@@ -97,11 +88,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		liste_type_arbo.add("CMP");
 		liste_type_arbo.add("VET");
 
-		/* Titre */
-		/*Label title = new Label("Favoris");
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);*/
-
 		List<Favoris> lfav = favorisController.getFavoris();
 
 
@@ -120,7 +106,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		//Bouton Search
 		Button searchButton = new Button();
 		searchButton.setIcon(FontAwesome.SEARCH);
-		//filterButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		searchButton.setStyleName("v-nav-button");
 		navbar.addComponent(searchButton);
 		navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
@@ -136,19 +121,18 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
 		globalLayout.setMargin(true);
+		
 
 		FormLayout labelLayout = new FormLayout();
 		labelLayout.setSizeFull();
 		labelLayout.setMargin(false);
 		labelLayout.setSpacing(false);
-		//Label iconeLabel = new Label();
-		//iconeLabel.setIcon(FontAwesome.INFO_CIRCLE);
-		//labelLayout.addComponent(iconeLabel);
-		System.out.println("fav getLocale() : "+getLocale());
+
+	
 		Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
 		infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
 		infoLabel.setIcon(FontAwesome.INFO_CIRCLE);
-		//infoLabel.setSizeFull();
+
 		labelLayout.addComponent(infoLabel);
 		globalLayout.addComponent(labelLayout);
 
@@ -169,8 +153,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						HorizontalLayout favVetLayout = new HorizontalLayout();
 						favVetLayout.setMargin(true);
 						favVetLayout.setSpacing(true);
-						favVetLayout.setSpacing(true);
-
 						favVetLayout.setStyleName("v-layout-multiline");
 						favVetLayout.setWidth("100%");
 						favVetLayout.setHeight("100%");
@@ -198,8 +180,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
 						favVetLayout.addComponent(libButton);
 						favVetLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-						/*favVetLayout.addComponent(ta);
-						favVetLayout.setComponentAlignment(ta, Alignment.MIDDLE_CENTER);*/
 						favVetLayout.setExpandRatio(libButton, 1);
 						vetLayout.addComponent(favVetLayout);
 						if(i>1){
@@ -215,8 +195,10 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			if(favorisContientElp(lfav)){
 				Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
 				elpPanel.setStyleName("centertitle-panel");
-
+				elpPanel.setSizeFull();
+				
 				VerticalLayout elpLayout = new VerticalLayout();
+				elpLayout.setSizeFull();
 				int i=0;
 				for(Favoris fav :  lfav){
 					if(fav.getId().getTypfav().equals(Utils.ELP)){
@@ -224,8 +206,10 @@ public class FavorisMobileView extends VerticalLayout implements View {
 						HorizontalLayout favElpLayout = new HorizontalLayout();
 						favElpLayout.setMargin(true);
 						favElpLayout.setSpacing(true);
+						favElpLayout.setStyleName("v-layout-multiline");
 						favElpLayout.setWidth("100%");
 						favElpLayout.setHeight("100%");
+						
 
 						Button codeButton = new Button(fav.getId().getIdfav());
 						codeButton.setStyleName("link"); 
@@ -279,6 +263,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		}
 
 		//addComponent(globalLayout);
+		contentLayout.setStyleName("v-scrollableelement");
 		contentLayout.addComponent(globalLayout);
 		addComponent(contentLayout);
 		setExpandRatio(contentLayout, 1);

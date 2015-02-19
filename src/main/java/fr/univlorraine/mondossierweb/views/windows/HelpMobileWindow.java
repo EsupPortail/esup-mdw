@@ -101,7 +101,7 @@ public class HelpMobileWindow extends Window {
 		buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
 		
 		// Bouton "Fermer"
-		btnFermer.setIcon(FontAwesome.TIMES);
+		btnFermer.setIcon(FontAwesome.CHECK);
 		btnFermer.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		btnFermer.addStyleName("v-popover-button");
 		btnFermer.addClickListener(e -> close());

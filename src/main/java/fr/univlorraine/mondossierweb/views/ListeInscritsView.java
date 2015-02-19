@@ -192,7 +192,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		setSpacing(true);
 		setSizeFull();
 
-		// Récupération du favori
+		// Récupération de l'objet de la SE dont on doit afficher les inscrits
 		code = MainUI.getCurrent().getCodeObjListInscrits();
 		typeFavori = MainUI.getCurrent().getTypeObjListInscrits();
 		libelleObj = "";
@@ -203,7 +203,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			libelleObj = MainUI.getCurrent().getElpListeInscrits().getLibelle();
 		}
 
-		// Si le favori est renseigné
+		// Si l'objet est renseigné
 		if(code!=null && typeFavori!=null){
 
 			//Panel contenant les filtres d'affichage et le bouton de mise en favori

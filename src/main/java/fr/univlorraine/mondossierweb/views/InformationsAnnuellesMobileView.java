@@ -158,6 +158,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 		photoLayout.addComponent(nomCodeLayout);
 		photoLayout.setComponentAlignment(nomCodeLayout, Alignment.MIDDLE_CENTER);
+		photoLayout.setExpandRatio(nomCodeLayout, 1);
 
 		etuPanel.setContent(photoLayout);
 

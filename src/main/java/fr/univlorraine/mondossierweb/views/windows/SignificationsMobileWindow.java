@@ -41,6 +41,7 @@ public class SignificationsMobileWindow extends Window {
 	public SignificationsMobileWindow(boolean afficherSignificationIndicateurProfondeur){
 		
 		setWidth("95%");
+		setHeight("95%");
 
 
 		setCaption(applicationContext.getMessage("significationsWindow.title", null, getLocale()));
@@ -49,13 +50,14 @@ public class SignificationsMobileWindow extends Window {
 		setClosable(false);
         setStyleName("v-popover-blank");
 
-        GridLayout layout = new GridLayout(1,2);
-        layout.setWidth("100%");
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
         setContent(layout);
         
 
         VerticalLayout panelLayout = new VerticalLayout();
         panelLayout.setWidth("100%");
+        panelLayout.setStyleName("v-scrollableelement");
     	panelLayout.setSpacing(true);
     	panelLayout.setMargin(true);
        
@@ -90,7 +92,7 @@ public class SignificationsMobileWindow extends Window {
 			
 			panelSignificationResultats.setContent(significationLayout);
 			panelLayout.addComponent(panelSignificationResultats);
-			layout.addComponent(panelLayout);
+		
 		}
         
         if(afficherSignificationIndicateurProfondeur){
@@ -239,7 +241,8 @@ public class SignificationsMobileWindow extends Window {
 
         }
 
-                
+    	layout.addComponent(panelLayout);
+		    
 
         // close button
         HorizontalLayout bLayout = new HorizontalLayout();
@@ -250,7 +253,7 @@ public class SignificationsMobileWindow extends Window {
         closeButton.setCaption(applicationContext.getMessage("significationsWindow.btnFermer", null, getLocale()));
         closeButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         closeButton.addStyleName("v-popover-button");
-        closeButton.setIcon(FontAwesome.TIMES);
+        closeButton.setIcon(FontAwesome.CHECK);
         closeButton.addClickListener(e->{
         	close();
         	
@@ -260,6 +263,7 @@ public class SignificationsMobileWindow extends Window {
         bLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_CENTER);
         layout.addComponent(bLayout);
 
+        layout.setExpandRatio(panelLayout, 1);
 
 
        
