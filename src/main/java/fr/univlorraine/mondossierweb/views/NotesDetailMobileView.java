@@ -91,7 +91,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	}
 
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
-
 		if(codetu==null || !codetuToDisplay.equals(codetu)){
 			codetu=null;
 		}
