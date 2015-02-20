@@ -112,7 +112,7 @@ public class EtudiantController {
 
 	@Resource(name="emailConverter")
 	private transient EmailConverterInterface emailConverter;
-	
+
 
 
 	@Resource(name="photoProvider")
@@ -302,7 +302,7 @@ public class EtudiantController {
 						}
 					}
 				} else {
-					LOG.error("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					LOG.info("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 					BacEtatCivil bec = new BacEtatCivil();
 					bec.setLib_bac("/");
 					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
@@ -310,13 +310,17 @@ public class EtudiantController {
 
 				//On recupere les numeros d'anonymat
 				GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
-				
+
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
 
 			} catch (WebBaseException ex) {
-				LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
-				throw(ex);
+				//Si on est dans un cas d'erreur non expliqué
+				if (ex.getNature().equals("technical.ws.remoteerror.global")){
+					LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}else{
+					LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				throw(ex);
@@ -431,7 +435,12 @@ public class EtudiantController {
 				}
 
 			} catch (WebBaseException ex) {
-				LOG.error("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				//Si on est dans un cas d'erreur non expliqué
+				if (ex.getNature().equals("technical.ws.remoteerror.global")){
+					LOG.error("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}else{
+					LOG.info("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}
@@ -549,7 +558,12 @@ public class EtudiantController {
 
 			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(true);
 		} catch (WebBaseException ex) {
-			LOG.error("Probleme avec le WS lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(), ex);
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error("Probleme avec le WS lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(), ex);
+			}else{
+				LOG.info("Probleme avec le WS lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(), ex);
+			}
 			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(false);
 		} catch(Exception ex) {
 			if(GenericUI.getCurrent().getEtudiant()!=null){
@@ -583,11 +597,11 @@ public class EtudiantController {
 		}
 		return multipleApogeeService.getAnneeEnCours();
 	}
-	
+
 	public String getAnneeUnivEnCoursToDisplay(GenericUI ui) {
 		int annee = Integer.parseInt(getAnneeUnivEnCours(ui));
 		return annee+"/"+(annee+1);
-		
+
 	}
 
 
@@ -658,8 +672,12 @@ public class EtudiantController {
 
 
 		} catch (WebBaseException ex) {
-			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
-			LOG.error(ex.getLastErrorMsg());
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}else{
+				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -731,8 +749,12 @@ public class EtudiantController {
 			}
 
 		} catch (WebBaseException ex) {
-			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
-			LOG.error(ex.getLastErrorMsg());
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}else{
+				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -914,25 +936,6 @@ public class EtudiantController {
 										e.getSignificationResultats().put(r.getAdmission(), ret.getTypResultat().getLibTre());
 									}
 
-									//si le resultat n'est pas deja ajouté on l'ajoute:
-									/*	boolean ajoutRes = true;
-									for(Resultat resu : et.getResultats()){
-										if(resu.getSession().equals(r.getSession())
-												&& resu.getAdmission().equals(r.getAdmission())){
-											if(resu.getNote() == null
-													&& r.getNote() == null){
-												ajoutRes=false;
-											}else{
-												if(resu.getNote() != null
-														&& r.getNote() != null){
-													if(resu.getNote().equals(r.getNote())) {
-														ajoutRes=false;
-													}
-												}
-											}
-										}
-									}*/
-
 
 									//ajout du résultat par ordre de code session (Juillet 2014)
 									//ajout du resultat en fin de liste
@@ -982,7 +985,12 @@ public class EtudiantController {
 
 			}
 		} catch (WebBaseException ex) {
-			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}else{
+				LOG.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -1380,20 +1388,7 @@ public class EtudiantController {
 				}
 			}
 
-			//indentation des libelles dans la liste:
-			/*	if (e.getElementsPedagogiques().size() > 0) {
-				for (ElementPedagogique el : e.getElementsPedagogiques()) {
-					int rg = new Integer(el.getLevel());
 
-					String lib = new String(el.getLibelle());
-					el.setLibelle("");
-					for (int j = 2; j <= rg; j++) {
-						el.setLibelle(el.getLibelle() + "&#160;&#160;&#160;&#160;&#160;");
-					}
-
-					el.setLibelle(el.getLibelle() + lib);
-				}
-			}*/
 
 			//Gestion des temoins fictif si temoinFictif est renseigné dans monDossierWeb.xml
 			if(configController.getTemoinFictif()!=null && !configController.getTemoinFictif().equals("")){
@@ -1473,7 +1468,12 @@ public class EtudiantController {
 			e.getElementsPedagogiques().add(0, ep);
 
 		} catch (WebBaseException ex) {
-			LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}else{
+				LOG.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}
 		}catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -1558,11 +1558,12 @@ public class EtudiantController {
 
 
 		} catch (WebBaseException ex) {
-			//on catch le cas ou les inscriptions aux elp de l'étape ne soient pas effectués.
-			if (!ex.getNature().equals("nullretrieve") && !ex.getDomaine().equals("data") && !ex.getElement().equals("elp") && !ex.getType().equals("tecnical")){
-				LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+			}else{
+				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
-			LOG.error(ex.getLastErrorMsg()+" pour etudiant dont codetu est : " + e.getCod_etu());
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -1613,11 +1614,12 @@ public class EtudiantController {
 
 
 		} catch (WebBaseException ex) {
-			//on catch le cas ou les inscriptions aux elp de l'étape ne soient pas effectués.
-			if (!ex.getNature().equals("nullretrieve") && !ex.getDomaine().equals("data") && !ex.getElement().equals("elp") && !ex.getType().equals("tecnical")){
+			//Si on est dans un cas d'erreur non expliqué
+			if (ex.getNature().equals("technical.ws.remoteerror.global")){
 				LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
+			}else{
+				LOG.info(ex.getLastErrorMsg()+" pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant("+et.getAnnee()+ ","+et.getCode()+"/"+et.getVersion()+")");
 			}
-			LOG.error(ex.getLastErrorMsg()+" pour etudiant dont codind est : " + e.getCod_ind());
 		}catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
 		}
@@ -1920,7 +1922,7 @@ public class EtudiantController {
 			retour.add(message);
 			erreur = true;
 		}
-		
+
 		//Si aucune erreur sur les données insérées
 		if(!erreur){
 			boolean succes = false;
@@ -1996,7 +1998,7 @@ public class EtudiantController {
 			} catch (Exception ex) {
 				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + codetu,ex);
 			}
-			
+
 			if (!succes) {
 				message = applicationContext.getMessage("modificationContact.erreur.ws", null, Locale.getDefault());
 				retour.add(message);
