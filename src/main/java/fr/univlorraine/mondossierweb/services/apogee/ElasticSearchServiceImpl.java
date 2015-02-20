@@ -1,7 +1,5 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -9,35 +7,21 @@ import java.util.Map;
 import lombok.Data;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.impl.XMLResponseParser;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import fr.univlorraine.mondossierweb.entities.solr.ObjSolr;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.action.suggest.SuggestRequestBuilder;
-import org.elasticsearch.action.suggest.SuggestResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryBuilders.*;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.suggest.Suggest;
-import org.elasticsearch.search.suggest.Suggest.Suggestion.Entry;
-import org.elasticsearch.search.suggest.Suggester;
-import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
-import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 
 @Component
@@ -47,10 +31,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 	//private String url = "http://ldn-dubois36.univ-lorraine.fr:8181/solr/apogee";
 	private HttpSolrServer server;
 	private SolrQuery query;
-	private final static int MAX_RESULTS = 100;
 	private Client client;
 
 
+	@SuppressWarnings("resource")
 	@Override
 	public void initConnexion() {
 		//initialise la connexion a ES
@@ -65,35 +49,28 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 	@Override
 	public List<Map<String,Object>> findObj(String value, int maxResult, boolean quickSearck) {
 		//initialise la connexion a ES
-		if(client==null){
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
-			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
-		}
+		initConnexion();
 
 		//init du retour d'ElasticSearch
-		List<Map<String,Object>> beans=new LinkedList<Map<String,Object>>();
+		List<Map<String,Object>> listeResultats=new LinkedList<Map<String,Object>>();
 
 		//Si value a du texte
 		if(StringUtils.hasText(value)){
+			//On supprime les crochets dans le cas où la value soit une des lignes proposée par le champ AutoComplete (contenant le code de l'élément entre cochets)
 			value=value.replaceAll("\\[", "");
 			value=value.replaceAll("\\]", "");
 
-
-
-
-			//supprime l'etoile
+			//on supprime l'étoile
 			value=value.replaceAll("\\*", "");
 
-			//Comment échapper les '+' des codes ELP ex : +CML4151 ????
-			// Et evenuellemnt le slash des VET
-
+			//On passe la value en minuscule
 			value=value.toLowerCase();
 
 
-
-
-
 			/*
+		
+		//TESTS QUERY ALTERNATIVES via Suggestion
+		 
 		CompletionSuggestionBuilder completionSuggestionBuilder = new CompletionSuggestionBuilder("element");
 		completionSuggestionBuilder.text(value);
 		completionSuggestionBuilder.field(PropertyUtils.getElasticSearchChampRecherche());
@@ -125,29 +102,40 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			 */
 
 			QueryBuilder qb;
+			//Configuration de la query (matchQuery) sur le champ de recherche défini dans context.xml
 			qb=QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
 
+			//Si on est en recherche rapide (après avoir entrée une lettre dans le champAutoComplete)
 			if(quickSearck){
-				//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+				//On paramètre la query différemment (matchPhrasePrefixQuery ou fuzzyQuery)
 				qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+				//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
 			}
-			//QueryBuilder qb =QueryBuilders.multiMatchQuery(value,PropertyUtils.getElasticSearchChampRecherche(),"COD_OBJ");
-			//QueryBuilder qb = QueryBuilders.termQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-			//fuzzy gere les fautes de frappes
-			//QueryBuilder qb = QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-			//QueryBuilder qb = QueryBuilders.fuzzyQuery("LIB_OBJ", value);
-
+			
+			/*
+			 Tests d'autres types de query
+			 
+			QueryBuilder qb =QueryBuilders.multiMatchQuery(value,PropertyUtils.getElasticSearchChampRecherche(),"COD_OBJ");
+			QueryBuilder qb = QueryBuilders.termQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			fuzzy gere les fautes de frappes
+			QueryBuilder qb = QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			QueryBuilder qb = QueryBuilders.fuzzyQuery("LIB_OBJ", value);
+			 
+			*/
+			
+			//Execution de la requête
 			SearchResponse response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
 					.setSearchType(SearchType.QUERY_AND_FETCH)
 					.setQuery(qb)
 					.setFrom(0).setSize(60).setExplain(true)
 					.execute()
 					.actionGet();
+			//Récupération des résultats dans un tableau
 			SearchHit[] results = response.getHits().getHits();
 
-			//Si aucun resultat et on est pas en quicksearch
+			//Si aucun resultat et qu'on n'est pas en quicksearch
 			if((results==null || results.length==0) && !quickSearck){
-				//On cherche le code de l'elp
+				//On cherche via le code (cas des elp)
 				qb=QueryBuilders.matchQuery("COD_OBJ", value);
 				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
 						.setSearchType(SearchType.QUERY_AND_FETCH)
@@ -158,16 +146,18 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				results = response.getHits().getHits();
 			}
 
-
+			//Pour chaque résultat du tableau de résultats
 			for (SearchHit hit : results) {
-				//prints out the id of the document
-				Map<String,Object> result = hit.getSource();   //the retrieved document
-				beans.add(result);
+				//Récupération du résultat
+				Map<String,Object> result = hit.getSource();   
+				//Ajout du résultat dans la liste
+				listeResultats.add(result);
 			}
-			return beans;
+			
 		}
 
-		return beans;
+		//On retourne la liste de résultats
+		return listeResultats;
 	}
 
 
