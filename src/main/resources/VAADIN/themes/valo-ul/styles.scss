@@ -57,4 +57,22 @@
 	.v-button-primary {
 		min-width: 0px;
 	}
+	
+	.flexwrap {
+	
+    	.itembox {
+        white-space: normal;
+        vertical-align: top;
+    	}
+    
+	}
+    
+	.flexwrap[width-range~="0-1199px"] {
+    	.itembox {width: 100%}
+	}
+    
+	.flexwrap[width-range~="1200px-"] {
+    	.itembox {width: 50%}
+	}
+
 }

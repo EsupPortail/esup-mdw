@@ -16,9 +16,11 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -80,14 +82,20 @@ public class EtatCivilView extends VerticalLayout implements View {
 		addComponent(title);
 
 
-		HorizontalLayout globalLayout = new HorizontalLayout();
+		VerticalLayout globalLayout = new VerticalLayout();
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
 
 		//Layout avec les infos etatcivil et contact
-		VerticalLayout idLayout = new VerticalLayout();
+		CssLayout idLayout = new CssLayout();
 		idLayout.setSizeFull();
-		idLayout.setSpacing(true);
+		idLayout.setStyleName("flexwrap");
+		//idLayout.setSpacing(true);
+
+		globalLayout.addComponent(idLayout);
+		// Enable Responsive CSS selectors for the layout
+		Responsive.makeResponsive(idLayout);
+
 
 		/* Generalites */
 		FormLayout formGeneralitesLayout = new FormLayout();
@@ -111,13 +119,8 @@ public class EtatCivilView extends VerticalLayout implements View {
 		formatTextField(fieldNom);
 		formGeneralitesLayout.addComponent(fieldNom);
 
-		String captionEmail = applicationContext.getMessage(NAME+".mail.title", null, getLocale());
-		/*TextField fieldEmail = new TextField(captionEmail, MainUI.getCurrent().getEtudiant().getEmail());
-		formatTextField(fieldEmail);
-		formGeneralitesLayout.addComponent(fieldEmail);*/
-
 		Label mailLabel = new Label();
-		mailLabel.setCaption(captionEmail);
+		mailLabel.setCaption(applicationContext.getMessage(NAME+".mail.title", null, getLocale()));
 		String mail = MainUI.getCurrent().getEtudiant().getEmail();
 		if(StringUtils.hasText(mail)){
 			mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
@@ -126,9 +129,6 @@ public class EtatCivilView extends VerticalLayout implements View {
 		}
 		mailLabel.setSizeFull();
 		formGeneralitesLayout.addComponent(mailLabel);
-
-
-
 
 
 		String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
@@ -153,27 +153,22 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 		panelGeneralites.setContent(formGeneralitesLayout);
 
+		panelGeneralites.setStyleName("itembox");
+		panelGeneralites.setSizeUndefined();
 		idLayout.addComponent(panelGeneralites);
 
 
 
 
-		/* Info de contact */
-		panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
-
-		renseignerPanelContact();
-
-		idLayout.addComponent(panelContact);
-
-
-		globalLayout.addComponent(idLayout);
 
 
 
 
-		HorizontalLayout bacLayout = new HorizontalLayout();
+
+
+		/*HorizontalLayout bacLayout = new HorizontalLayout();
 		bacLayout.setSizeFull();
-		bacLayout.setSpacing(true);
+		bacLayout.setSpacing(true);*/
 
 		/* Bac */
 
@@ -211,12 +206,19 @@ public class EtatCivilView extends VerticalLayout implements View {
 			panelBac.setContent(formBacLayout);
 		}
 
-		bacLayout.addComponent(panelBac);
+		panelBac.setStyleName("itembox");
+		panelBac.setSizeUndefined();
+		idLayout.addComponent(panelBac);
 
-		globalLayout.addComponent(bacLayout);
+
+
+
+		/* Info de contact */
+		panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
+		renseignerPanelContact();
+		globalLayout.addComponent(panelContact);
 
 		addComponent(globalLayout);
-
 
 
 
@@ -226,12 +228,12 @@ public class EtatCivilView extends VerticalLayout implements View {
 	private void renseignerPanelContact() {
 
 		VerticalLayout contactLayout = new VerticalLayout();
-		
+
 		/* Layout pour afficher les erreurs */
 		VerticalLayout erreursLayout = new VerticalLayout();
 		contactLayout.addComponent(erreursLayout);
 		erreursLayout.setVisible(false);
-		
+
 		/* Layout avec les champ 'Portable' et 'Email personnel' */
 		FormLayout formContactLayout = new FormLayout();
 		formContactLayout.setSpacing(true);
@@ -345,34 +347,65 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 	private void ajouterBacToView(FormLayout formBacLayout,BacEtatCivil bec){
 		String captionBac = applicationContext.getMessage(NAME+".codebac.title", null, getLocale());
-		TextField fieldBac = new TextField(captionBac, bec.getLib_bac());
-		formatTextField(fieldBac);
+		Label fieldBac = new Label();
+		fieldBac.setCaption(captionBac);
+		if(StringUtils.hasText(bec.getLib_bac())){
+			fieldBac.setValue("<b>"+bec.getLib_bac()+"</b");
+			fieldBac.setContentMode(ContentMode.HTML);
+		}
+		fieldBac.setSizeFull();
 		formBacLayout.addComponent(fieldBac);
 
 		String captionAnneeBac = applicationContext.getMessage(NAME+".anneebac.title", null, getLocale());
-		TextField fieldAnneeBac = new TextField(captionAnneeBac, bec.getDaa_obt_bac_iba());
-		formatTextField(fieldAnneeBac);
+		Label fieldAnneeBac = new Label();
+		fieldAnneeBac.setCaption(captionAnneeBac);
+		if(StringUtils.hasText(bec.getDaa_obt_bac_iba())){
+			fieldAnneeBac.setValue("<b>"+bec.getDaa_obt_bac_iba()+"</b");
+			fieldAnneeBac.setContentMode(ContentMode.HTML);
+		}
+		fieldAnneeBac.setSizeFull();
 		formBacLayout.addComponent(fieldAnneeBac);
 
 		String captionMentionBac = applicationContext.getMessage(NAME+".mentionbac.title", null, getLocale());
-		TextField fieldMentionBac = new TextField(captionMentionBac, bec.getCod_mnb());
-		formatTextField(fieldMentionBac);
+		Label fieldMentionBac = new Label();
+		fieldMentionBac.setCaption(captionMentionBac);
+		if(StringUtils.hasText(bec.getCod_mnb())){
+			fieldMentionBac.setValue("<b>"+bec.getCod_mnb()+"</b");
+			fieldMentionBac.setContentMode(ContentMode.HTML);
+		}
+		fieldMentionBac.setSizeFull();
 		formBacLayout.addComponent(fieldMentionBac);
 
 
 		String captionTypeEtbBac = applicationContext.getMessage(NAME+".typeetbbac.title", null, getLocale());
-		TextField fieldTypeEtbBac = new TextField(captionTypeEtbBac, bec.getCod_tpe());
-		formatTextField(fieldTypeEtbBac);
+		Label fieldTypeEtbBac = new Label();
+		fieldTypeEtbBac.setCaption(captionTypeEtbBac);
+		if(StringUtils.hasText(bec.getCod_tpe())){
+			fieldTypeEtbBac.setValue("<b>"+bec.getCod_tpe()+"</b");
+			fieldTypeEtbBac.setContentMode(ContentMode.HTML);
+		}
+		fieldTypeEtbBac.setSizeFull();
 		formBacLayout.addComponent(fieldTypeEtbBac);
 
 		String captionEtbBac = applicationContext.getMessage(NAME+".etbbac.title", null, getLocale());
-		TextField fieldEtbBac = new TextField(captionEtbBac, bec.getCod_etb());
-		formatTextField(fieldEtbBac);
+		Label fieldEtbBac = new Label();
+		fieldEtbBac.setCaption(captionEtbBac);
+		String etb=bec.getCod_etb();
+		if(StringUtils.hasText(etb)){
+			fieldEtbBac.setValue("<b>"+etb+"</b");
+			fieldEtbBac.setContentMode(ContentMode.HTML);
+		}
+		fieldEtbBac.setSizeFull();
 		formBacLayout.addComponent(fieldEtbBac);
 
 		String captionDepBac = applicationContext.getMessage(NAME+".depbac.title", null, getLocale());
-		TextField fieldDepBac = new TextField(captionDepBac, bec.getCod_dep());
-		formatTextField(fieldDepBac);
+		Label fieldDepBac = new Label();
+		fieldDepBac.setCaption(captionDepBac);
+		if(StringUtils.hasText(bec.getCod_dep())){
+			fieldDepBac.setValue("<b>"+bec.getCod_dep()+"</b");
+			fieldDepBac.setContentMode(ContentMode.HTML);
+		}
+		fieldDepBac.setSizeFull();
 		formBacLayout.addComponent(fieldDepBac);
 	}
 	/**
