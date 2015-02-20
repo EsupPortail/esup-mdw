@@ -14,6 +14,7 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.entities.solr.ObjSolr;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -49,74 +50,50 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 	private final static int MAX_RESULTS = 100;
 	private Client client;
 
-	
-	
 
 	@Override
-	public List<Map<String,Object>> findObj(String value, int maxResult, boolean quickSearck) {
-		value=value.replaceAll("\\[", "");
-		value=value.replaceAll("\\]", "");
-
-		/*
-		List<ObjSolr> beans=new LinkedList<ObjSolr>();
-
-		if(server == null){
-			server = new HttpSolrServer( PropertyUtils.getSolrUrl() );
-
-			server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
-			server.setConnectionTimeout(5000); // 5 seconds to establish TCP
-
-			server.setParser(new XMLResponseParser()); // binary parser is used by default
-			server.setSoTimeout(5000);  // socket read timeout
-			server.setDefaultMaxConnectionsPerHost(100);
-			server.setMaxTotalConnections(100);
-			server.setFollowRedirects(false);  // defaults to false
-			server.setAllowCompression(true);
-
-
-		}
-		if(query == null){
-			query = new SolrQuery();
-			query.setStart(0);
-		}
-		if(maxResult>0){
-			query.setRows(maxResult);
-		}else{
-			query.setRows(MAX_RESULTS);
-		}
-
-		query.setQuery( value);
-
-		try {
-
-			QueryResponse rsp =  server.query(query);
-			beans = rsp.getBeans(ObjSolr.class);
-
-		} catch (SolrServerException e) {
-			e.printStackTrace();
-		}
-
-		 */
-
-		//ElasticSearch
-		List<Map<String,Object>> beans=new LinkedList<Map<String,Object>>();
-
-		//supprime l'etoile
-		value=value.replaceAll("\\*", "");
-
-		//Comment échapper les '+' des codes ELP ex : +CML4151 ????
-		// Et evenuellemnt le slash des VET
-
-		value=value.toLowerCase();
-
-		//System.out.println("value Elastic Search for : "+value);
+	public void initConnexion() {
+		//initialise la connexion a ES
 		if(client==null){
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
 			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
 		}
 
+	}
 
-/*
+
+	@Override
+	public List<Map<String,Object>> findObj(String value, int maxResult, boolean quickSearck) {
+		//initialise la connexion a ES
+		if(client==null){
+			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
+			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
+		}
+
+		//init du retour d'ElasticSearch
+		List<Map<String,Object>> beans=new LinkedList<Map<String,Object>>();
+
+		//Si value a du texte
+		if(StringUtils.hasText(value)){
+			value=value.replaceAll("\\[", "");
+			value=value.replaceAll("\\]", "");
+
+
+
+
+			//supprime l'etoile
+			value=value.replaceAll("\\*", "");
+
+			//Comment échapper les '+' des codes ELP ex : +CML4151 ????
+			// Et evenuellemnt le slash des VET
+
+			value=value.toLowerCase();
+
+
+
+
+
+			/*
 		CompletionSuggestionBuilder completionSuggestionBuilder = new CompletionSuggestionBuilder("element");
 		completionSuggestionBuilder.text(value);
 		completionSuggestionBuilder.field(PropertyUtils.getElasticSearchChampRecherche());
@@ -145,50 +122,58 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			System.out.println("compsuggestion null");
 		}
 
-*/
+			 */
 
-		QueryBuilder qb;
-		qb=QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			QueryBuilder qb;
+			qb=QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
 
-		if(quickSearck){
-			//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-			qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-		}
-		//QueryBuilder qb =QueryBuilders.multiMatchQuery(value,PropertyUtils.getElasticSearchChampRecherche(),"COD_OBJ");
-		//QueryBuilder qb = QueryBuilders.termQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-		//fuzzy gere les fautes de frappes
-		//QueryBuilder qb = QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-		//QueryBuilder qb = QueryBuilders.fuzzyQuery("LIB_OBJ", value);
+			if(quickSearck){
+				//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+				qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			}
+			//QueryBuilder qb =QueryBuilders.multiMatchQuery(value,PropertyUtils.getElasticSearchChampRecherche(),"COD_OBJ");
+			//QueryBuilder qb = QueryBuilders.termQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			//fuzzy gere les fautes de frappes
+			//QueryBuilder qb = QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			//QueryBuilder qb = QueryBuilders.fuzzyQuery("LIB_OBJ", value);
 
-		SearchResponse response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
-				.setSearchType(SearchType.QUERY_AND_FETCH)
-				.setQuery(qb)
-				.setFrom(0).setSize(60).setExplain(true)
-				.execute()
-				.actionGet();
-		SearchHit[] results = response.getHits().getHits();
-		
-		//Si aucun resultat et on est pas en quicksearch
-		if((results==null || results.length==0) && !quickSearck){
-			//On cherche le code de l'elp
-			qb=QueryBuilders.matchQuery("COD_OBJ", value);
-			response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
+			SearchResponse response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
 					.setSearchType(SearchType.QUERY_AND_FETCH)
 					.setQuery(qb)
 					.setFrom(0).setSize(60).setExplain(true)
 					.execute()
 					.actionGet();
-			results = response.getHits().getHits();
+			SearchHit[] results = response.getHits().getHits();
+
+			//Si aucun resultat et on est pas en quicksearch
+			if((results==null || results.length==0) && !quickSearck){
+				//On cherche le code de l'elp
+				qb=QueryBuilders.matchQuery("COD_OBJ", value);
+				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
+						.setSearchType(SearchType.QUERY_AND_FETCH)
+						.setQuery(qb)
+						.setFrom(0).setSize(60).setExplain(true)
+						.execute()
+						.actionGet();
+				results = response.getHits().getHits();
+			}
+
+
+			for (SearchHit hit : results) {
+				//prints out the id of the document
+				Map<String,Object> result = hit.getSource();   //the retrieved document
+				beans.add(result);
+			}
+			return beans;
 		}
-		
-		
-		for (SearchHit hit : results) {
-			//prints out the id of the document
-			Map<String,Object> result = hit.getSource();   //the retrieved document
-			beans.add(result);
-		}
+
 		return beans;
 	}
+
+
+
+
+
 
 
 
