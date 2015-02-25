@@ -557,7 +557,7 @@ public class MainUI extends GenericUI {
 
 
 			/* Assistance */
-			Button helpBtn = new Button("Assistance", FontAwesome.SUPPORT);
+			Button helpBtn = new Button(applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()), FontAwesome.SUPPORT);
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpBasicWindow(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale())));});
 			mainMenu.addComponent(helpBtn);
