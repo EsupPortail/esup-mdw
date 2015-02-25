@@ -116,32 +116,37 @@ public class RechercheController {
 
 
 	public void accessToMobileNotesDetail(Etape etape) {
-		
-		
-		MdwTouchkitUI.getCurrent().navigateToDetailNotes(etape);
-		
-		
-		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
-		String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
-		boolean afficherMessage = true;
-		if(StringUtils.hasText(val)){
-			afficherMessage = Boolean.valueOf(val);
-		}
 
+
+		MdwTouchkitUI.getCurrent().navigateToDetailNotes(etape);
+
+
+		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+		boolean afficherMessage = true;
+		if(!userController.isEtudiant()){
+			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
+
+			if(StringUtils.hasText(val)){
+				afficherMessage = Boolean.valueOf(val);
+			}
+		}
+		
 		if(afficherMessage){
 			String message =applicationContext.getMessage("notesDetailMobileView.window.message.info", null, null);
-			HelpMobileWindow hbw = new HelpMobileWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null));
+			HelpMobileWindow hbw = new HelpMobileWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null),!userController.isEtudiant());
 			hbw.addCloseListener(g->{
-				boolean choix = hbw.getCheckBox().getValue();
-				//Test si l'utilisateur a coché la case pour ne plus afficher le message
-				if(choix){
-					//mettre a jour dans la base de données
-					userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE, "false");
+				if(!userController.isEtudiant()){
+					boolean choix = hbw.getCheckBox().getValue();
+					//Test si l'utilisateur a coché la case pour ne plus afficher le message
+					if(choix){
+						//mettre a jour dans la base de données
+						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE, "false");
+					}
 				}
 			});
 			UI.getCurrent().addWindow(hbw);
 		}
-		
+
 	}
 
 

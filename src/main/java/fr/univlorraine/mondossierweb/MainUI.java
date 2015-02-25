@@ -368,7 +368,7 @@ public class MainUI extends GenericUI {
 		}
 
 		if(afficherMessage){
-			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
+			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
 			hbw.addCloseListener(g->{
 				boolean choix = hbw.getCheckBox().getValue();
 				//Test si l'utilisateur a coché la case pour ne plus afficher le message

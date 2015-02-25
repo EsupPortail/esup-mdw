@@ -14,8 +14,6 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.SessionSupport;
-import org.springframework.context.annotation.Bean;
-import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.mobile.device.DeviceResolverRequestFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -23,7 +21,6 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;

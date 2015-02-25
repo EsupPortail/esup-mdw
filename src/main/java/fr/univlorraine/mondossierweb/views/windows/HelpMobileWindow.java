@@ -32,11 +32,11 @@ public class HelpMobileWindow extends Window {
 
 	/* Composants */
 	private Button btnFermer = new Button();
-	
+
 	@Getter
 	private CheckBox checkBox=new CheckBox();
 
-	
+
 
 	public void addBtnNonListener(ClickListener clickListener) {
 		btnFermer.addClickListener(clickListener);
@@ -50,7 +50,7 @@ public class HelpMobileWindow extends Window {
 	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
 	 */
 	public HelpMobileWindow() {
-		this(null, null);
+		this(null, null,false);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class HelpMobileWindow extends Window {
 	 * @param message
 	 */
 	public HelpMobileWindow(String message) {
-		this(message, null);
+		this(message, null,false);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class HelpMobileWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public HelpMobileWindow(String message, String titre) {
+	public HelpMobileWindow(String message, String titre, boolean displayCheckBox) {
 		// Style 
 		setWidth("90%");
 		setModal(true);
@@ -95,11 +95,12 @@ public class HelpMobileWindow extends Window {
 		buttonsLayout.setSpacing(true);
 		layout.addComponent(buttonsLayout);
 
-		// Checkbox "ne plus afficher ce message"
-		checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.mobile.message", null, getLocale()));
-		buttonsLayout.addComponent(checkBox);
-		buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
-		
+		if(displayCheckBox) {
+			// Checkbox "ne plus afficher ce message"
+			checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.mobile.message", null, getLocale()));
+			buttonsLayout.addComponent(checkBox);
+			buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
+		}
 		// Bouton "Fermer"
 		btnFermer.setIcon(FontAwesome.CHECK);
 		btnFermer.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -107,8 +108,9 @@ public class HelpMobileWindow extends Window {
 		btnFermer.addClickListener(e -> close());
 		buttonsLayout.addComponent(btnFermer);
 		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);
-		buttonsLayout.setExpandRatio(checkBox, 1);
-
+		if(displayCheckBox) {
+			buttonsLayout.setExpandRatio(checkBox, 1);
+		}
 
 		// Centre la fenêtre 
 		center();

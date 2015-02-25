@@ -429,24 +429,28 @@ public class NotesView extends VerticalLayout implements View {
 				}
 			});
 			UI.getCurrent().addWindow(dnw);
-			
-			
-			//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
-			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE);
-			boolean afficherMessage = true;
-			if(StringUtils.hasText(val)){
-				afficherMessage = Boolean.valueOf(val);
-			}
 
+
+			//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+			boolean afficherMessage = true;
+			if(!userController.isEtudiant()){
+				String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE);
+				if(StringUtils.hasText(val)){
+					afficherMessage = Boolean.valueOf(val);
+				}
+			}
+			
 			if(afficherMessage){
 				String message =applicationContext.getMessage(NAME+".window.message.info", null, getLocale());
-				HelpWindow hbw = new HelpWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
+				HelpWindow hbw = new HelpWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),!userController.isEtudiant());
 				hbw.addCloseListener(g->{
-					boolean choix = hbw.getCheckBox().getValue();
-					//Test si l'utilisateur a coché la case pour ne plus afficher le message
-					if(choix){
-						//mettre a jour dans la base de données
-						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE, "false");
+					if(!userController.isEtudiant()){
+						boolean choix = hbw.getCheckBox().getValue();
+						//Test si l'utilisateur a coché la case pour ne plus afficher le message
+						if(choix){
+							//mettre a jour dans la base de données
+							userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE, "false");
+						}
 					}
 				});
 				UI.getCurrent().addWindow(hbw);

@@ -32,11 +32,11 @@ public class HelpWindow extends Window {
 
 	/* Composants */
 	private Button btnFermer = new Button();
-	
+
 	@Getter
 	private CheckBox checkBox=new CheckBox();
 
-	
+
 
 	public void addBtnNonListener(ClickListener clickListener) {
 		btnFermer.addClickListener(clickListener);
@@ -50,7 +50,7 @@ public class HelpWindow extends Window {
 	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
 	 */
 	public HelpWindow() {
-		this(null, null);
+		this(null, null,false);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class HelpWindow extends Window {
 	 * @param message
 	 */
 	public HelpWindow(String message) {
-		this(message, null);
+		this(message, null,false);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class HelpWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public HelpWindow(String message, String titre) {
+	public HelpWindow(String message, String titre,boolean displayCheckBox) {
 		/* Style */
 		setWidth(900, Unit.PIXELS);
 		setModal(true);
@@ -95,17 +95,20 @@ public class HelpWindow extends Window {
 		buttonsLayout.setSpacing(true);
 		layout.addComponent(buttonsLayout);
 
-		checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.message", null, getLocale()));
-		buttonsLayout.addComponent(checkBox);
-		buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
-		
+		if(displayCheckBox){
+			checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.message", null, getLocale()));
+			buttonsLayout.addComponent(checkBox);
+			buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
+		}
+
 		btnFermer.setCaption(applicationContext.getMessage("helpWindow.btnFermer", null, getLocale()));
 		btnFermer.setIcon(FontAwesome.TIMES);
 		btnFermer.addClickListener(e -> close());
 		buttonsLayout.addComponent(btnFermer);
 		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);
-		buttonsLayout.setExpandRatio(checkBox, 1);
-
+		if(displayCheckBox){
+			buttonsLayout.setExpandRatio(checkBox, 1);
+		}
 
 		/* Centre la fenêtre */
 		center();
