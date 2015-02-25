@@ -105,18 +105,33 @@ public class EtatCivilView extends VerticalLayout implements View {
 		Panel panelGeneralites= new Panel(applicationContext.getMessage(NAME+".generalites.title", null, getLocale()));
 
 		String captionNumDossier = applicationContext.getMessage(NAME+".numdossier.title", null, getLocale());
-		TextField fieldNumDossier = new TextField(captionNumDossier, MainUI.getCurrent().getEtudiant().getCod_etu());
-		formatTextField(fieldNumDossier);
+		Label fieldNumDossier = new Label();
+		fieldNumDossier.setCaption(captionNumDossier);
+		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getCod_etu())){
+			fieldNumDossier.setValue("<b>"+MainUI.getCurrent().getEtudiant().getCod_etu()+"</b");
+			fieldNumDossier.setContentMode(ContentMode.HTML);
+		}
+		fieldNumDossier.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldNumDossier);
 
 		String captionNNE = applicationContext.getMessage(NAME+".nne.title", null, getLocale());
-		TextField fieldNNE = new TextField(captionNNE, MainUI.getCurrent().getEtudiant().getCod_nne());
-		formatTextField(fieldNNE);
+		Label fieldNNE = new Label();
+		fieldNNE.setCaption(captionNNE);
+		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getCod_nne())){
+			fieldNNE.setValue("<b>"+MainUI.getCurrent().getEtudiant().getCod_nne()+"</b");
+			fieldNNE.setContentMode(ContentMode.HTML);
+		}
+		fieldNNE.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldNNE);
 
 		String captionNom = applicationContext.getMessage(NAME+".nom.title", null, getLocale());
-		TextField fieldNom = new TextField(captionNom, MainUI.getCurrent().getEtudiant().getNom());
-		formatTextField(fieldNom);
+		Label fieldNom = new Label();
+		fieldNom.setCaption(captionNom);
+		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getNom())){
+			fieldNom.setValue("<b>"+MainUI.getCurrent().getEtudiant().getNom()+"</b");
+			fieldNom.setContentMode(ContentMode.HTML);
+		}
+		fieldNom.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldNom);
 
 		Label mailLabel = new Label();
@@ -132,23 +147,43 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 
 		String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
-		TextField fieldNationalite = new TextField(captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
-		formatTextField(fieldNationalite);
+		Label fieldNationalite = new Label();
+		fieldNationalite.setCaption(captionNationalite);
+		if(StringUtils.hasText( MainUI.getCurrent().getEtudiant().getNationalite())){
+			fieldNationalite.setValue("<b>"+ MainUI.getCurrent().getEtudiant().getNationalite()+"</b");
+			fieldNationalite.setContentMode(ContentMode.HTML);
+		}
+		fieldNationalite.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldNationalite);
 
 		String captionDateNaissance = applicationContext.getMessage(NAME+".naissance.title", null, getLocale());
-		TextField fieldDateNaissance = new TextField(captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
-		formatTextField(fieldDateNaissance);
+		Label fieldDateNaissance = new Label();
+		fieldDateNaissance.setCaption(captionDateNaissance);
+		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getDatenaissance())){
+			fieldDateNaissance.setValue("<b>"+ MainUI.getCurrent().getEtudiant().getDatenaissance() +"</b");
+			fieldDateNaissance.setContentMode(ContentMode.HTML);
+		}
+		fieldDateNaissance.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldDateNaissance);
 
 		String captionLieuNaissance = applicationContext.getMessage(NAME+".lieunaissance.title", null, getLocale());
-		TextField fieldLieuNaissance = new TextField(captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
-		formatTextField(fieldLieuNaissance);
+		Label fieldLieuNaissance = new Label();
+		fieldLieuNaissance.setCaption(captionLieuNaissance);
+		if(StringUtils.hasText( MainUI.getCurrent().getEtudiant().getLieunaissance())){
+			fieldLieuNaissance.setValue("<b>"+  MainUI.getCurrent().getEtudiant().getLieunaissance() +"</b");
+			fieldLieuNaissance.setContentMode(ContentMode.HTML);
+		}
+		fieldLieuNaissance.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldLieuNaissance);
 
 		String captionDepNaissance = applicationContext.getMessage(NAME+".depnaissance.title", null, getLocale());
-		TextField fieldDepNaissance = new TextField(captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
-		formatTextField(fieldDepNaissance);
+		Label fieldDepNaissance = new Label();
+		fieldDepNaissance.setCaption(captionDepNaissance);
+		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getDepartementnaissance())){
+			fieldDepNaissance.setValue("<b>"+  MainUI.getCurrent().getEtudiant().getDepartementnaissance() +"</b");
+			fieldDepNaissance.setContentMode(ContentMode.HTML);
+		}
+		fieldDepNaissance.setSizeFull();
 		formGeneralitesLayout.addComponent(fieldDepNaissance);
 
 		panelGeneralites.setContent(formGeneralitesLayout);
