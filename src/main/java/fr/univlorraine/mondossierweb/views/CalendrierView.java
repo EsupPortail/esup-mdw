@@ -87,6 +87,7 @@ public class CalendrierView extends VerticalLayout implements View {
 
 		/* Titre */
 		HorizontalLayout titleLayout = new HorizontalLayout();
+		titleLayout.setWidth("100%");
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 		title.addStyleName(ValoTheme.LABEL_H1);
 		titleLayout.addComponent(title);
@@ -95,6 +96,7 @@ public class CalendrierView extends VerticalLayout implements View {
 		if(MainUI.getCurrent().getEtudiant().getCalendrier()!=null && MainUI.getCurrent().getEtudiant().getCalendrier().size()>0){
 			Button pdfButton = new Button();
 			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+			pdfButton.addStyleName("button-big-icon");
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
 			FileDownloader fd = new FileDownloader(calendrierController.exportPdf());

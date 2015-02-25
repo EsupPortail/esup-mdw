@@ -52,6 +52,14 @@ font-weight: bold;
 	font-weight: bold;
 }
 
+.valo-ul .button-big-icon {
+font-size: xx-large;
+}
+
+.valo-ul .button-icon {
+font-size: x-large;
+}
+
 .valo-ul .v-panel {
 	border-radius: 5px;
 }

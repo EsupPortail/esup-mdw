@@ -104,6 +104,7 @@ public class NotesView extends VerticalLayout implements View {
 
 		/* Titre */
 		HorizontalLayout titleLayout = new HorizontalLayout();
+		titleLayout.setWidth("100%");
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 		title.addStyleName(ValoTheme.LABEL_H1);
 		titleLayout.addComponent(title);
@@ -113,6 +114,7 @@ public class NotesView extends VerticalLayout implements View {
 				(MainUI.getCurrent().getEtudiant().getEtapes()!=null && MainUI.getCurrent().getEtudiant().getEtapes().size()>0)){
 			Button pdfButton = new Button();
 			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+			pdfButton.addStyleName("button-big-icon");
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
 			FileDownloader fd = new FileDownloader(noteController.exportPdfResume());

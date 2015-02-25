@@ -121,6 +121,7 @@ public class DetailNotesWindow extends Window {
 		if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
 			Button pdfButton = new Button();
 			pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+			pdfButton.addStyleName("button-icon");
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
 			FileDownloader fd = new FileDownloader(noteController.exportPdfDetail(etape));

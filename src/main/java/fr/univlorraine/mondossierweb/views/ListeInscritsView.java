@@ -472,6 +472,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnExportTrombi=new Button();
 				btnExportTrombi.setIcon(FontAwesome.FILE_PDF_O);
 				btnExportTrombi.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				btnExportTrombi.addStyleName("button-icon");
 				btnExportTrombi.setDescription(applicationContext.getMessage(NAME + ".pdf.trombinoscope.link", null, getLocale()));
 
 				//methode qui permet de generer l'export à la demande
@@ -508,6 +509,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnExportExcel=new Button();
 				btnExportExcel.setIcon(FontAwesome.FILE_EXCEL_O);
 				btnExportExcel.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				btnExportExcel.addStyleName("button-icon");
 				btnExportExcel.setDescription(applicationContext.getMessage(NAME + ".excel.link", null, getLocale()));
 				String nomFichierXls = applicationContext.getMessage("excel.listeinscrits.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".xls";
 				StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
