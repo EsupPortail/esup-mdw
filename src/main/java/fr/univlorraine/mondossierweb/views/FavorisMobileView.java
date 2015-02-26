@@ -23,6 +23,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -32,6 +33,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 
 /**
  * Favoris sur mobile
@@ -58,6 +60,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 
 
+	private Button infoButton;
+	
 	private List<String> liste_types_inscrits;
 
 	private List<String> liste_type_arbo;
@@ -97,6 +101,19 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		navbar.setHeight("40px");
 		navbar.setStyleName("navigation-bar");
 
+		//Bouton retour
+		infoButton = new Button();
+		infoButton.setIcon(FontAwesome.INFO);
+		infoButton.setStyleName("v-nav-button");
+		infoButton.addClickListener(e->{
+			//afficher message
+			HelpMobileWindow hbw = new HelpMobileWindow(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),false);
+
+			UI.getCurrent().addWindow(hbw);
+		});
+		navbar.addComponent(infoButton);
+		navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
+		
 		//Title
 		Label labelFav = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
 		labelFav.setStyleName("v-label-navbar");

@@ -32,6 +32,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ui.UIState.NotificationTypeConfiguration;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -64,6 +65,7 @@ import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
@@ -180,10 +182,7 @@ public class MdwTouchkitUI extends GenericUI{
 			}
 			/* Traite les autres erreurs normalement */
 			LOG.error(e.getThrowable().toString(), e.getThrowable());
-			//LOG.error(e.getThrowable().getCause().toString(), e.getThrowable());
-			//displayViewFullScreen(ErreurView.NAME);
 			navigator.navigateTo(ErreurView.NAME);
-			//navigator.navigateTo(ErreurView.NAME);
 		});
 
 		setStyleName("v-noscrollableelement");
@@ -206,21 +205,7 @@ public class MdwTouchkitUI extends GenericUI{
 		/* Construit le gestionnaire de vues */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
 
-		/* Résout la vue à afficher */
-		/*String fragment = Page.getCurrent().getUriFragment();
-		System.out.println("fragment : "+fragment);
-		if (fragment != null && !fragment.isEmpty()) {
-			if(fragment.contains(FavorisMobileView.NAME)){
-				contentLayout.setSizeUndefined();
-				setContent(mainLayout);
-			}
-			if(fragment.contains(ListeInscritsMobileView.NAME) ||
-					fragment.contains(AccesRefuseView.NAME) ||
-					fragment.contains(ErreurView.NAME)){
-				contentLayout.setSizeFull();
-				setContent(contentLayout);
-			}
-		}*/
+
 
 		/* Initialise Google Analytics */
 		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
@@ -233,18 +218,13 @@ public class MdwTouchkitUI extends GenericUI{
 
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
-			/*mainLayout.setSizeFull();
-
-			mainLayout.addComponent(contentLayout);
-			mainLayout.addComponent(menuLayout);
-			mainLayout.setExpandRatio(contentLayout, 1);*/
 
 			if(userController.isEnseignant()){
 
 				//On consultera les notes en vue enseignant
 				vueEnseignantNotesEtResultats=true;
 				navigator.navigateTo(FavorisMobileView.NAME);
-				//buildMainMenuEnseignant();
+				afficherMessageIntroEnseignants();
 
 			}else{
 				//On consultera les notes en vue etudiant
@@ -268,7 +248,7 @@ public class MdwTouchkitUI extends GenericUI{
 			}
 
 		}else{
-			//displayViewFullScreen(AccesRefuseView.NAME);
+	
 			navigator.navigateTo(AccesRefuseView.NAME);
 		}
 
@@ -278,43 +258,32 @@ public class MdwTouchkitUI extends GenericUI{
 	}
 
 
-	/* private void buildMainMenuEnseignant() {
-		menuLayout.removeAllComponents();
-		if(menuEnseignant==null){
-			menuEnseignant=new TabBarView();
-		}
-		Label label = new Label();
-		Tab tabFavoris = menuEnseignant.addTab(label);
+	private void afficherMessageIntroEnseignants() {
+		afficherMessageIntro(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()));
 
-		//Set tab name and/or icon
-		//tabFavoris.setCaption("Favoris");
-		tabFavoris.setIcon(FontAwesome.BOOKMARK);
-
-
-		Label label2 = new Label();
-		Tab tabSearch = menuEnseignant.addTab(label2);
-
-		//Set tab name and/or icon
-		//tabSearch.setCaption("Recherche");
-		tabSearch.setIcon(FontAwesome.SEARCH);
-
-		//Programmatically modify tab bar
-		menuEnseignant.setSelectedTab(tabFavoris); //same as user clicking the tab
-		menuLayout.addComponent(menuEnseignant);
-
-
-		navigator.navigateTo(FavorisMobileView.NAME);
-
-
-	}*/
-
-
-	/*private void displayViewFullScreen(String view){
-		//contentLayout.setSizeFull();
-		//checkMenuIsNotDisplayed();
-		navigator.navigateTo(view);
 	}
-	 */
+	
+	private void afficherMessageIntro(String text){
+		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
+		boolean afficherMessage = true;
+		if(StringUtils.hasText(val)){
+			afficherMessage = Boolean.valueOf(val);
+		}
+
+		if(afficherMessage){
+			HelpMobileWindow hbw = new HelpMobileWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
+			hbw.addCloseListener(g->{
+				boolean choix = hbw.getCheckBox().getValue();
+				//Test si l'utilisateur a coché la case pour ne plus afficher le message
+				if(choix){
+					//mettre a jour dans la base de données
+					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
+				}
+			});
+			UI.getCurrent().addWindow(hbw);
+		}
+	}
 
 	public void navigateToListeInscritsFromSearch(Map<String, String> parameterMap) {
 		trombinoscopeFromView = RechercheMobileView.NAME;
@@ -337,16 +306,12 @@ public class MdwTouchkitUI extends GenericUI{
 	}
 	
 	public void navigateToDossierEtudiant() {
-		//navigator.navigateTo(InformationsAnnuellesMobileView.NAME);
-		//navigator.navigateTo(EtudiantMobileView.NAME);
-
 
 		informationsAnnuellesMobileView.refresh();
 		calendrierMobileView.refresh();
 		notesMobileView.refresh();
 
 		
-
 		if(menuEtudiant==null){
 			initMenuEtudiant();
 		}
@@ -377,25 +342,10 @@ public class MdwTouchkitUI extends GenericUI{
 		noteNavigationManager.setCurrentComponent(notesMobileView);
 		noteNavigationManager.setNextComponent(notesDetailMobileView);
 		
-		//tabNotes = menuEtudiant.addTab(notesMobileView, "Résultats",  FontAwesome.LIST);
+	
 		tabNotes = menuEtudiant.addTab(noteNavigationManager, "Résultats",  FontAwesome.LIST);
 		tabNotes.setId("tabNotes");
 
-
-		/*menuEtudiant.addListener(new SelectedTabChangeListener() {
-            private static final long serialVersionUID = -2358653511430014752L;
-
-            public void selectedTabChange(SelectedTabChangeEvent event) {
-
-
-
-            	 menuEtudiant.setSelectedTab(tabCalendrier);
-            	  Tab selected     = menuEtudiant.getSelelectedTab();
-                System.out.println("idtab : "+menuEtudiant.getSelelectedTab().getCaption());
-
-                etudiantNavigationManager.navigateTo(calendrierMobileView);
-            }
-        });*/
 
 	}
 
@@ -404,7 +354,6 @@ public class MdwTouchkitUI extends GenericUI{
 			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
 		}
 
-		//displayViewFullScreen(ListeInscritsMobileView.NAME);
 		navigator.navigateTo(ListeInscritsMobileView.NAME);
 	}
 
@@ -441,19 +390,7 @@ public class MdwTouchkitUI extends GenericUI{
 			
 	}
 
-	/*public void checkMenuIsNotDisplayed() {
-		this.setContent(contentLayout);
-
-	}*/
-
-	/*public void checkMenuIsDisplayed() {
-		mainLayout.setSizeFull();
-		mainLayout.addComponent(contentLayout);
-		mainLayout.addComponent(menuLayout);
-		mainLayout.setExpandRatio(contentLayout, 1);
-		this.setContent(mainLayout);
-
-	}*/
+	
 
 
 }
