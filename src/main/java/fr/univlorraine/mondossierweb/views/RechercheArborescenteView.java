@@ -575,6 +575,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnDeplier.addClickListener(e->{
 					deplierNoeudComplet((String)itemId);
 					selectionnerLigne((String)itemId);
+					table.setCurrentPageFirstItemId((String)itemId);
 				});
 				boutonActionLayout.addComponent(btnDeplier);
 			}
@@ -597,6 +598,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 	private void selectionnerLigne(Object itemId) {
+		
 		table.setValue(itemId);
 		String typeItemSelected=(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
 		ligneSelectionneeLabel.setValue((String) hc.getItem(itemId).getItemProperty(LIBELLE_PROPERTY).getValue()+ " ("+typeItemSelected+")");

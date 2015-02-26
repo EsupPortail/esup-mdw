@@ -147,10 +147,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		btnRecherche.setEnabled(true);
 		btnRecherche.addClickListener(e -> search(false));
 
-		
+
 		//Init connexion à ES, pour gain perf au premiere lettre tapées
 		ElasticSearchService.initConnexion();
-		
+
 		//CHAMP DE RECHERCHE
 		champRecherche = new AutoComplete();
 		champRecherche.setWidth(700, Unit.PIXELS); //540
@@ -408,6 +408,14 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		if(StringUtils.hasText(value) && value.length()>1){
 
 
+			boolean suggestionValidee = false;
+
+			//On détecte si la recherche porte sur une suggestion proposée par la pop_up
+			if(value.contains("[") && value.contains("]")){
+				suggestionValidee = true;
+			}
+
+
 			///////////////////////////////////////////////////////
 			//appel elasticSearch
 			///////////////////////////////////////////////////////
@@ -421,7 +429,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			if(lobjresult!=null){
 
 				rrContainer.removeAllItems();
-
+				String code=null;
+				String type=null;
 				for(Map<String,Object> obj : lobjresult){
 					if(obj != null){
 
@@ -433,6 +442,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 							i.getItemProperty("lib").setValue(rr.getLib());
 							i.getItemProperty("code").setValue(rr.getCode());
 							i.getItemProperty("type").setValue(rr.type);
+							code=rr.getCode();
+							type=rr.type;
 							rrContainer.setChildrenAllowed(rr, false);
 						}
 
@@ -442,6 +453,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 				tableResultats.setVisible(true);
 				tuneSearch();
+				//la recherche porte sur une suggestion proposée par la pop_up et on a bien un seul résultat
+				if(suggestionValidee && lobjresult.size()==1 && rrContainer.size()==1 && code!=null && type!=null){
+					//On accède directemet au détail
+					rechercheController.accessToDetail(code,type);
+					
+				}
 			}
 
 
