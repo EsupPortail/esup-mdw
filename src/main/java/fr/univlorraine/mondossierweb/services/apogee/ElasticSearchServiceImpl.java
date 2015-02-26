@@ -56,21 +56,29 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 		//Si value a du texte
 		if(StringUtils.hasText(value)){
+			boolean rechercherParCode = false;
+
 			//On supprime les crochets dans le cas où la value soit une des lignes proposée par le champ AutoComplete (contenant le code de l'élément entre cochets)
-			value=value.replaceAll("\\[", "");
-			value=value.replaceAll("\\]", "");
+			if(value.contains("[") && value.contains("]")){
+				value=value.replaceAll("\\[", "");
+				//Recuperation du code
+				value = value.split("\\]")[0];
+				rechercherParCode = true;
+			}else{
+				value=value.replaceAll("\\[", "");
+				value=value.replaceAll("\\]", "");
 
-			//on supprime l'étoile
-			value=value.replaceAll("\\*", "");
-
+				//on supprime l'étoile
+				value=value.replaceAll("\\*", "");
+			}
 			//On passe la value en minuscule
 			value=value.toLowerCase();
 
 
 			/*
-		
+
 		//TESTS QUERY ALTERNATIVES via Suggestion
-		 
+
 		CompletionSuggestionBuilder completionSuggestionBuilder = new CompletionSuggestionBuilder("element");
 		completionSuggestionBuilder.text(value);
 		completionSuggestionBuilder.field(PropertyUtils.getElasticSearchChampRecherche());
@@ -102,39 +110,45 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			 */
 
 			QueryBuilder qb;
-			//Configuration de la query (matchQuery) sur le champ de recherche défini dans context.xml
-			qb=QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+			SearchHit[] results=null;
+			SearchResponse response=null;
 
-			//Si on est en recherche rapide (après avoir entrée une lettre dans le champAutoComplete)
-			if(quickSearck){
-				//On paramètre la query différemment (matchPhrasePrefixQuery ou fuzzyQuery)
-				qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-				//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
-			}
-			
-			/*
+			//On ne cherchepas uniquement par le code
+			if(!rechercherParCode){
+				//Configuration de la query (matchQuery) sur le champ de recherche défini dans context.xml
+				qb=QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+
+				//Si on est en recherche rapide (après avoir entrée une lettre dans le champAutoComplete)
+				if(quickSearck){
+					//On paramètre la query différemment (matchPhrasePrefixQuery ou fuzzyQuery)
+					qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+					//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+				}
+
+				/*
 			 Tests d'autres types de query
-			 
+
 			QueryBuilder qb =QueryBuilders.multiMatchQuery(value,PropertyUtils.getElasticSearchChampRecherche(),"COD_OBJ");
 			QueryBuilder qb = QueryBuilders.termQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
 			fuzzy gere les fautes de frappes
 			QueryBuilder qb = QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
 			QueryBuilder qb = QueryBuilders.fuzzyQuery("LIB_OBJ", value);
-			 
-			*/
-			
-			//Execution de la requête
-			SearchResponse response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
-					.setSearchType(SearchType.QUERY_AND_FETCH)
-					.setQuery(qb)
-					.setFrom(0).setSize(60).setExplain(true)
-					.execute()
-					.actionGet();
-			//Récupération des résultats dans un tableau
-			SearchHit[] results = response.getHits().getHits();
 
-			//Si aucun resultat et qu'on n'est pas en quicksearch
-			if((results==null || results.length==0) && !quickSearck){
+				 */
+
+				//Execution de la requête
+				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
+						.setSearchType(SearchType.QUERY_AND_FETCH)
+						.setQuery(qb)
+						.setFrom(0).setSize(60).setExplain(true)
+						.execute()
+						.actionGet();
+				//Récupération des résultats dans un tableau
+				results = response.getHits().getHits();
+			}
+
+			//Si aucun resultat et qu'on n'est pas en quicksearch OU qu'on recherche par code uniquement
+			if(rechercherParCode || (results==null || results.length==0) && !quickSearck){
 				//On cherche via le code (cas des elp)
 				qb=QueryBuilders.matchQuery("COD_OBJ", value);
 				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
@@ -149,11 +163,32 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			//Pour chaque résultat du tableau de résultats
 			for (SearchHit hit : results) {
 				//Récupération du résultat
-				Map<String,Object> result = hit.getSource();   
-				//Ajout du résultat dans la liste
-				listeResultats.add(result);
+				Map<String,Object> result = hit.getSource();  
+				System.out.println(result.get("COD_OBJ")+ " - "+value);
+				//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
+				if(!rechercherParCode){
+					listeResultats.add(result);
+				}else{
+
+					String codres = (String)result.get("COD_OBJ");
+					codres = codres.toLowerCase();
+					
+					int vrsres =(Integer)result.get("COD_VRS_OBJ");
+
+					//cas or VET
+					if(!value.contains("/") && codres.equals(value)){
+						//Ajout du résultat dans la liste
+						listeResultats.add(result);
+					}
+					//cas VET
+					if(value.contains("/") && (codres+"/"+vrsres).equals(value)){
+						//Ajout du résultat dans la liste
+						listeResultats.add(result);
+					}
+					
+				}
 			}
-			
+
 		}
 
 		//On retourne la liste de résultats

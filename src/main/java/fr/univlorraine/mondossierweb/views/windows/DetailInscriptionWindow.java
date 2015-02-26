@@ -100,8 +100,6 @@ public class DetailInscriptionWindow extends Window {
 		HorizontalLayout titleLayout = new HorizontalLayout();
 		titleLayout.setSizeFull();
 		titleLayout.setHeight("20px");
-		//Label labelSousMenu = new Label(applicationContext.getMessage(NAME+".sousmenu", null, getLocale()));
-		//titleLayout.addComponent(labelSousMenu);
 		Label labelAnneeUniv = new Label(applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" <b>"+ etape.getAnnee()+"</b>");
 		labelAnneeUniv.setContentMode(ContentMode.HTML);
 		titleLayout.addComponent(labelAnneeUniv);
