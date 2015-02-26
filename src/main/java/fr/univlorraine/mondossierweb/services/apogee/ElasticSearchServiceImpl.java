@@ -164,7 +164,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			for (SearchHit hit : results) {
 				//Récupération du résultat
 				Map<String,Object> result = hit.getSource();  
-				System.out.println(result.get("COD_OBJ")+ " - "+value);
+				
 				//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
 				if(!rechercherParCode){
 					listeResultats.add(result);

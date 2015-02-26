@@ -17,7 +17,6 @@ import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
@@ -76,14 +75,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	private static final String DEPLIE_PROPERTY = "deplie";
 
 	private static final String TYPE_PROPERTY ="type";
-
-	private static final Action TOUT_DEPLIER_ACTION=new Action("Tout déplier");
-
-	private static final Action METTRE_EN_FAVORI_ACTION=new Action("Mettre en favori");
-
-	private static final Action SUPPRIMER_FAVORI_ACTION=new Action("Supprimer des favoris");
-
-	private static final Action LISTE_INSCRIT_ACTION=new Action("Accéder à la liste d'inscrits");
 
 	/* les champs de la table */
 	public static final String[] DETAIL_FIELDS_ORDER = {"libelle", "trueObjectId","type"};
@@ -272,13 +263,13 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		comboBoxAnneeUniv.setValue(annee);
 		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
 		
-		reinitButton = new Button(" ");
+		reinitButton = new Button();
 		reinitButton.setDescription(applicationContext.getMessage(NAME+".reinitbutton.description", null, getLocale()));
 		reinitButton.addClickListener(e->{
 			initFromScratch();
 		});
-		reinitButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		reinitButton.setIcon(FontAwesome.ERASER);
+		reinitButton.setStyleName(ValoTheme.BUTTON_DANGER);
+		reinitButton.setIcon(FontAwesome.TIMES);
 		if(!StringUtils.hasText(code)){
 			reinitButton.setVisible(false);
 		}
@@ -294,7 +285,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		btnLeftLayout.addComponent(comboBoxAnneeUniv);
 		btnLeftLayout.setComponentAlignment(comboBoxAnneeUniv, Alignment.MIDDLE_LEFT);
 		btnLeftLayout.addComponent(reinitButton);
-		btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_LEFT);
+		btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_RIGHT);
 		btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
 		btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
 		btnLayout.addComponent(btnLeftLayout);
