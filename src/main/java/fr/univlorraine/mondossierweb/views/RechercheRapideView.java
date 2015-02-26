@@ -431,6 +431,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				rrContainer.removeAllItems();
 				String code=null;
 				String type=null;
+				
 				for(Map<String,Object> obj : lobjresult){
 					if(obj != null){
 

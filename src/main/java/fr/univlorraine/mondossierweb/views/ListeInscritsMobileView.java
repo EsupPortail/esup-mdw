@@ -161,7 +161,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 		//Si l'objet n'est pas déjà en favori
 		if(lfav!=null && !lfav.contains(favori)){
 			//Création du bouton pour ajouter l'objet aux favoris
-			Button btnAjoutFavori = new Button();
+			Button btnAjoutFavori = new Button("+");
 			btnAjoutFavori.setIcon(FontAwesome.STAR_O);
 			btnAjoutFavori.setStyleName("v-nav-button");
 			btnAjoutFavori.addClickListener(e->{
