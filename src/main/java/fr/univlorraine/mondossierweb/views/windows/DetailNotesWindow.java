@@ -424,7 +424,7 @@ public class DetailNotesWindow extends Window {
 			ElementPedagogique el = (ElementPedagogique) bid.getBean();
 			Label libLabel = new Label();
 
-			if(StringUtils.hasText(el.getLibelle())){
+			if(StringUtils.hasText(el.getLibelle()) && el.getRes1()!=null){
 
 				//indentation des libelles dans la liste:
 				String res = el.getRes1();
@@ -457,7 +457,7 @@ public class DetailNotesWindow extends Window {
 			ElementPedagogique el = (ElementPedagogique) bid.getBean();
 			Label libLabel = new Label();
 
-			if(StringUtils.hasText(el.getLibelle())){
+			if(StringUtils.hasText(el.getLibelle()) && el.getRes2()!=null){
 
 				//indentation des libelles dans la liste:
 				String res = el.getRes2();
