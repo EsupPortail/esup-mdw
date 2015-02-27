@@ -148,7 +148,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 		List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
 		if(ldiplomes!=null && ldiplomes.size()>0){
 			Panel diplomesPanel = new Panel(applicationContext.getMessage(NAME+".table.diplomes", null, getLocale()));
-			diplomesPanel.setStyleName("v-panel-caption-centertitle-panel");
+			diplomesPanel.setStyleName("centertitle-panel");
 			diplomesPanel.addStyleName("v-colored-panel-caption");
 			VerticalLayout diplomesLayout=new VerticalLayout();
 			for(Diplome diplome : ldiplomes){
@@ -228,7 +228,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 		if(letapes!=null && letapes.size()>0){
 			Panel elpsPanel = new Panel(applicationContext.getMessage(NAME+".table.etapes", null, getLocale()));
-			elpsPanel.setStyleName("v-panel-caption-centertitle-panel");
+			elpsPanel.setStyleName("centertitle-panel");
 			elpsPanel.addStyleName("v-colored-panel-caption");
 			VerticalLayout elpsLayout=new VerticalLayout();
 

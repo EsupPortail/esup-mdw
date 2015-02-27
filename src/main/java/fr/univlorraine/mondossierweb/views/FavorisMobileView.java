@@ -158,6 +158,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 				Panel vetPanel = new Panel(applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
 				vetPanel.setStyleName("centertitle-panel");
+				vetPanel.addStyleName("v-colored-panel-caption");
 				vetPanel.setSizeFull();
 
 				VerticalLayout vetLayout = new VerticalLayout();
@@ -212,6 +213,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			if(favorisContientElp(lfav)){
 				Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
 				elpPanel.setStyleName("centertitle-panel");
+				elpPanel.addStyleName("v-colored-panel-caption");
 				elpPanel.setSizeFull();
 				
 				VerticalLayout elpLayout = new VerticalLayout();
