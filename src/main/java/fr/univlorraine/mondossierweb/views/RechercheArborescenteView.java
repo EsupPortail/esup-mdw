@@ -601,7 +601,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		String typeItemSelected=(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
 		ligneSelectionneeLabel.setValue((String) hc.getItem(itemId).getItemProperty(LIBELLE_PROPERTY).getValue()+ " ("+typeItemSelected+")");
 		//Si c'est un ELP qui est selectionne
-		if(typeItemSelected.equals(Utils.ELP)){
+		if(typeItemSelected.equals(Utils.ELP) || typeItemSelected.equals(Utils.COL) || typeItemSelected.equals(Utils.GRP)){
 			//On va chercher le premier element pere non ELP pour l'afficher en rappel
 			String idItemSelected=(String) hc.getItem(itemId).getItemProperty(ID_PROPERTY).getValue();
 			//On recupere l'id complet de l'ELP et on le split pour en parcourir l'arborescence
@@ -611,8 +611,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			String idVet = "";
 			for(int i=0;i<elps.length;i++){
 				if(!vetTrouvee){
-					//Si le type est different de ELP
-					if(!elps[i].substring(0,3).equals(Utils.ELP)){
+					//Si le type est different de ELP , GRP et COL
+					String typeItem = elps[i].substring(0,3);
+					if(!typeItem.equals(Utils.ELP) && !typeItem.equals(Utils.COL) && !typeItem.equals(Utils.GRP)){
 						vetTrouvee=true;
 						idVet = idItemSelected.replaceAll(idsElp+"_", "");
 					}else{
