@@ -25,7 +25,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
@@ -143,14 +145,92 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 
 
+		List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
+		if(ldiplomes!=null && ldiplomes.size()>0){
+			Panel diplomesPanel = new Panel(applicationContext.getMessage(NAME+".table.diplomes", null, getLocale()));
+			diplomesPanel.setStyleName("v-panel-caption-centertitle-panel");
+			diplomesPanel.addStyleName("v-colored-panel-caption");
+			VerticalLayout diplomesLayout=new VerticalLayout();
+			for(Diplome diplome : ldiplomes){
+				Panel panelEnCours=null;
 
 
+				panelEnCours = new Panel(diplome.getAnnee());
+				panelEnCours.setStyleName("v-panel-caption-centertitle-panel");
+
+				HorizontalLayout noteLayout = new HorizontalLayout();
+				noteLayout.setSizeFull();
+				noteLayout.setSpacing(true);
+				
+
+				VerticalLayout libelleLayout = new VerticalLayout();
+				libelleLayout.setSizeFull();
+				
+				Label libelleButton = new Label(diplome.getLib_web_vdi());
+				libelleButton.setStyleName("v-button-multiline");
+				libelleButton.setHeight("100%");
+				libelleButton.setWidth("100%");
+				
+				//Appel de la window contenant le détail des notes
+				if(diplome.getResultats()!=null && diplome.getResultats().size()>0){
+					libelleLayout.addComponent(new Label(""));
+				}
+				libelleLayout.addComponent(libelleButton);
+				
+				
+				
+
+				HorizontalLayout notesessionLayout = new HorizontalLayout();
+				notesessionLayout.setSizeFull();
+				notesessionLayout.setSpacing(true);
+
+				if(diplome.getResultats()!=null && diplome.getResultats().size()>0){
+					int i=0;
+					for(Resultat r : diplome.getResultats()){
+						i++;
+						VerticalLayout resultatLayout = new VerticalLayout();
+						resultatLayout.setSizeFull();
+						Label session = new Label(r.getSession());
+						session.setStyleName("label-bold-with-bottom");
+						resultatLayout.addComponent(session);
+						Label note = new Label(r.getNote());
+						resultatLayout.addComponent(note);
+						Label resultat = new Label(r.getAdmission());
+						resultatLayout.addComponent(resultat);
+						//Si c'est la dernière session
+						if(i==diplome.getResultats().size()){
+							//On affiche les infos en gras
+							note.setStyleName(ValoTheme.LABEL_BOLD);
+							resultat.setStyleName(ValoTheme.LABEL_BOLD);
+						}
+						notesessionLayout.addComponent(resultatLayout);
+					}
+				}else{
+					Label resultat = new Label("Aucun résultat");
+					resultat.setStyleName(ValoTheme.LABEL_SMALL);
+					notesessionLayout.addComponent(resultat);
+				}
+
+				noteLayout.addComponent(libelleLayout);
+
+
+				noteLayout.addComponent(notesessionLayout);
+
+				panelEnCours.setContent(noteLayout);
+				diplomesLayout.addComponent(panelEnCours);
+			}
+			diplomesPanel.setContent(diplomesLayout);
+			globalLayout.addComponent(diplomesPanel);
+		}
 
 
 		List<Etape> letapes=MdwTouchkitUI.getCurrent().getEtudiant().getEtapes();
 
 		if(letapes!=null && letapes.size()>0){
-
+			Panel elpsPanel = new Panel(applicationContext.getMessage(NAME+".table.etapes", null, getLocale()));
+			elpsPanel.setStyleName("v-panel-caption-centertitle-panel");
+			elpsPanel.addStyleName("v-colored-panel-caption");
+			VerticalLayout elpsLayout=new VerticalLayout();
 
 			for(Etape etape : letapes){
 				Panel panelEnCours=null;
@@ -162,7 +242,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 				HorizontalLayout noteLayout = new HorizontalLayout();
 				noteLayout.setSizeFull();
 				noteLayout.setSpacing(true);
-				//noteLayout.setMargin(true);
 				
 
 				VerticalLayout libelleLayout = new VerticalLayout();
@@ -222,9 +301,10 @@ public class NotesMobileView extends VerticalLayout implements View {
 				noteLayout.addComponent(notesessionLayout);
 
 				panelEnCours.setContent(noteLayout);
-				globalLayout.addComponent(panelEnCours);
+				elpsLayout.addComponent(panelEnCours);
 			}
-
+			elpsPanel.setContent(elpsLayout);
+			globalLayout.addComponent(elpsPanel);
 
 		}
 

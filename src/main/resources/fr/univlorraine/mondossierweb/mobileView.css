@@ -120,6 +120,11 @@ height: 100%;
 opacity: 1.0 !important;
 }
 
+.valo-ul .v-panel-caption-v-colored-panel-caption {
+	background: rgb(85,96,164);
+	color: #FFFFFF;
+}
+
 .valo-ul .v-panel-caption-centertitle-panel {
 text-align: center;
 }

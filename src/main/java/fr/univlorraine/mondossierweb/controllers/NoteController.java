@@ -200,7 +200,10 @@ public class NoteController {
 
 		// Création de la ressource 
 		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/pdf");
+		//resource.getStream().setContentType("application/force-download");
+		resource.getStream().setParameter("Content-Disposition", "attachment; filename="+nomFichier);
+		resource.setMIMEType("application/unknow");
+		//resource.setMIMEType("application/pdf");
 		resource.setCacheTime(0);
 		return resource;
 	}
