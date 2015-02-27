@@ -23,6 +23,14 @@ public class Utils {
 	public static final String TYPE_ELP = "Elément pédagogique";
 
 	public static final String ELP = "ELP";
+	
+	public static final String TYPE_COL = "Collection de groupes";
+
+	public static final String COL = "COL";
+	
+	public static final String TYPE_GRP = "Groupe";
+
+	public static final String GRP = "GRP";
 
 	public static final String TYPE_VET = "Etape";
 
@@ -80,6 +88,10 @@ public class Utils {
 				return Utils.TYPE_VDI;
 			if(type.equals(VET))
 				return Utils.TYPE_VET;
+			if(type.equals(COL))
+				return Utils.TYPE_COL;
+			if(type.equals(GRP))
+				return Utils.TYPE_GRP;
 			if(type.equals(ETU))
 				return Utils.TYPE_ETU;
 		}

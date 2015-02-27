@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
@@ -82,6 +84,32 @@ public class RechercheArborescenteController {
 
 		}
 		return annees;
+	}
+	
+	public void renseigneObjFromGroupe(ObjetBase obj, Groupe g,String itemId){
+		obj.setType(Utils.GRP);
+		if(StringUtils.hasText(itemId)){
+			obj.setId(Utils.GRP+":"+g.getCleGroupe()+"_"+itemId);
+		}else{
+			obj.setId(Utils.GRP+":"+g.getCleGroupe());
+		}
+		obj.setTrueObjectId(g.getCodGroupe());
+		obj.setLibelle(g.getLibGroupe());
+		obj.setDeplie("true");
+		
+	}
+	
+	public void renseigneObjFromCollection(ObjetBase obj, CollectionDeGroupes cdg,String itemId){
+		obj.setType(Utils.COL);
+		if(StringUtils.hasText(itemId)){
+			obj.setId(Utils.COL+":"+cdg.getCodCollection()+"_"+itemId);
+		}else{
+			obj.setId(Utils.COL+":"+cdg.getCodCollection());
+		}
+		obj.setTrueObjectId(cdg.getCodCollection());
+		obj.setLibelle(cdg.getCodCollection());
+		obj.setDeplie("true");
+		
 	}
 
 	public void renseigneObjFromElp(ObjetBase obj, ElementPedagogique elp,String itemId) {

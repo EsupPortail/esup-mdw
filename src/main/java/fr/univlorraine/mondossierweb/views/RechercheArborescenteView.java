@@ -30,6 +30,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
@@ -39,8 +40,12 @@ import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
+import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
+import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -97,6 +102,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	private ComposanteService composanteService;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient ListeInscritsController listeInscritsController;
 
 
 	private HierarchicalContainer hc;
@@ -130,7 +137,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	private String type;
 
 	private boolean initEffectue;
-	
+
 	private Button reinitButton;
 
 	/**
@@ -177,7 +184,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}
 	}
 
-	
+
 	/**
 	 * reinitialise la vue pour pointer sur les données en paramètres
 	 * @param parameterMap
@@ -190,7 +197,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		type = null;
 		init();
 	}
-	
+
 	/**
 	 * reinitialise la vue pour pointer sur les données en paramètres
 	 * @param parameterMap
@@ -262,7 +269,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		}
 		comboBoxAnneeUniv.setValue(annee);
 		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
-		
+
 		reinitButton = new Button();
 		reinitButton.setDescription(applicationContext.getMessage(NAME+".reinitbutton.description", null, getLocale()));
 		reinitButton.addClickListener(e->{
@@ -410,12 +417,12 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			Item i = hc.addItem(obj.getId());
 			renseignerItem(i,obj);
 			rootItemId = (String)i.getItemProperty(ID_PROPERTY).getValue();
-			
+
 
 		}
 
-	
-	
+
+
 
 		//Vrai si ce n'est pas la premiere initialisation de la table
 		/*if(initEffectue){
@@ -438,7 +445,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER_ON_REFRESH);
 		}
-		
+
 		//On déplie l'élément racine (quand la racine de la table n'est pas la totalité des composantes)
 		if(StringUtils.hasText(rootItemId)){
 			selectionnerLigne(rootItemId);
@@ -467,7 +474,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 		//LOG.debug("enter");
 	}
-	
+
 	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
 
 		public Object generateCell(Table source, Object itemId,
@@ -589,7 +596,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 	private void selectionnerLigne(Object itemId) {
-		
+
 		table.setValue(itemId);
 		String typeItemSelected=(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
 		ligneSelectionneeLabel.setValue((String) hc.getItem(itemId).getItemProperty(LIBELLE_PROPERTY).getValue()+ " ("+typeItemSelected+")");
@@ -711,15 +718,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								Item i = hc.addItem(obj.getId());
 								if(i!=null){
 									renseignerItem(i,obj);
-									/*i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
-									i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
-									i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
-									i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-									i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
 
 									table.setParent(obj.getId(), itemId);
-								}else{
-									//LOG.debug("attention : element non créé !");
 								}
 
 
@@ -741,38 +741,106 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								String vrsEtp=tabs[1];
 								lelp = composanteService.findElpFromVet( codEtp, vrsEtp);
 							}
+							//true si on est sur un ELP pour lequel on récupère des groupes, false sinon
+							boolean elpAvecGroupe=false;
 							if(type.equals(Utils.ELP)){
 								//recuperation des elp
 								lelp = composanteService.findElpFromElp( trueObjectId);
+
+								//Si ELP n'a pas de fils , on cherche les groupes
+								if(lelp==null || lelp.size()==0){
+									//On tente de récupèrer les groupes de l'ELP
+									List<ElpDeCollection> lgroupes =  listeInscritsController.recupererGroupes(annee, trueObjectId);
+									//Si on a récupéré des groupes
+									if(lgroupes != null && lgroupes.size()>0){
+										//Vrai si on a plusieurs collection (dans ce cas on affiche les collections dans l'arbo)
+										boolean plsrsCollection = false;
+										//On parcourt l'ELP (un seul ELP dans la liste en vérité)
+										for(ElpDeCollection edc : lgroupes){
+											//Si plusieurs collection
+											if(edc.getListeCollection().size()>1){
+												plsrsCollection = true;
+											}
+											for(CollectionDeGroupes cdg : edc.getListeCollection()){
+												String itemIdPourGroupe=itemId;
+												//Si plusieurs collection on ajoute la collection dans la table
+												if(plsrsCollection){
+													//On créé un nouvel objet basique à inséré dans le tableau
+													ObjetBase obj = new ObjetBase();
+													//On value l'objet obj à partir de l'ELP en cours
+													rechercheArborescenteController.renseigneObjFromCollection(obj, cdg, itemId);
+													//On ajout l'objet au tableau
+													Item i = hc.addItem(obj.getId());
+													if(i!=null){
+														//On value l'item du tableau à partir de l'objet
+														renseignerItem(i,obj);
+														//On branche correctement l'item avec son père
+														table.setParent(obj.getId(), itemId);
+														//On déplie la collection automatiquement
+														table.setCollapsed(obj.getId(), false);
+														//On remet le focus sur l'ELP
+														selectionnerLigne(itemId);
+														//Le pere des groupes sera la collection et non l'elp
+														itemIdPourGroupe=obj.getId();
+													}
+												}
+												//Pour chaque groupe
+												for(Groupe groupe : cdg.getListeGroupes()){
+													elpAvecGroupe=true;
+													//On ajoute le groupe
+													//On créé un nouvel objet basique à inséré dans le tableau
+													ObjetBase obj = new ObjetBase();
+													//On value l'objet obj à partir de l'ELP en cours
+													rechercheArborescenteController.renseigneObjFromGroupe(obj, groupe, itemIdPourGroupe);
+													//On ajout l'objet au tableau
+													Item i = hc.addItem(obj.getId());
+													if(i!=null){
+														//On value l'item du tableau à partir de l'objet
+														renseignerItem(i,obj);
+														//On branche correctement l'item avec son père
+														table.setParent(obj.getId(), itemIdPourGroupe);
+														//On fait disparaitre la fleche à gauche de l'élément sans fils
+														table.setChildrenAllowed(obj.getId(), false);
+													}
+
+												}
+											}
+										}
+									}
+								}
 							}
 
-							List<ObjetBase> lobj = new LinkedList<ObjetBase>();
+							//List<ObjetBase> lobj = new LinkedList<ObjetBase>();
+							//Si on a récupéré des ELP
 							if(lelp!=null && lelp.size()>0){
+								//On parcourt les ELP
 								for(ElementPedagogique elp : lelp){
-
+									//On créé un nouvel objet basique à inséré dans le tableau
 									ObjetBase obj = new ObjetBase();
+									//On value l'objet obj à partir de l'ELP en cours
 									rechercheArborescenteController.renseigneObjFromElp(obj, elp, itemId);
-									lobj.add(obj);
-
+									//On ajoute l'objet à la liste
+									//lobj.add(obj);
+									//On ajout l'objet au tableau
 									Item i = hc.addItem(obj.getId());
 									if(i!=null){
+										//On value l'item du tableau à partir de l'objet
 										renseignerItem(i,obj);
-										/*i.getItemProperty(LIBELLE_PROPERTY).setValue(obj.getLibelle());
-										i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
-										i.getItemProperty(TRUE_ID_PROPERTY).setValue(obj.getTrueObjectId());
-										i.getItemProperty(TYPE_PROPERTY).setValue(obj.getType());
-										i.getItemProperty(DEPLIE_PROPERTY).setValue(obj.getDeplie());*/
-
+										//On branche correcetement l'item avec son père
 										table.setParent(obj.getId(), itemId);
 									}
-
-
 								}
 							}else{
-								if(afficherMessage){
-									Notification.show("Aucun sous élément pour cet élément");
+								//Si on n'est pas sur un ELP avec des groupes
+								if(!elpAvecGroupe){
+									//Si aucun elp récupéré et qu'on doit afficher le message
+									if(afficherMessage){
+										//On affiche le message de notification
+										Notification.show("Aucun sous élément pour cet élément");
+									}
+									//On fait disparaitre la fleche à gauche de l'élément sans fils
+									table.setChildrenAllowed(itemId, false);
 								}
-								table.setChildrenAllowed(itemId, false);
 							}
 
 							//maj du Deplie pour l'element ou la vet
