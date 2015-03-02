@@ -374,6 +374,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				}
 			}
 			panelLayout.addComponent(formInscritLayout);
+			panelLayout.setComponentAlignment(formInscritLayout, Alignment.MIDDLE_LEFT);
 
 
 			//Création du favori pour l'objet concerné pas la liste des inscrits
