@@ -60,6 +60,25 @@ font-size: xx-large;
 font-size: x-large;
 }
 
+
+.valo-ul .v-formlayout.light  > table > tbody > tr > td {
+	padding-top: 0;
+	height: 37px;
+	border-bottom: none;
+	padding-bottom: initial;
+}
+
+.valo-ul .v-formlayout.light  > table > tbody > [class*="lastrow"] > td {
+	padding-top: 0;
+	height: 37px;
+	border-bottom: none;
+	padding-bottom: initial;
+}
+
+.valo-ul .small-font-element{
+	font-size: small;
+}
+
 .valo-ul .v-panel {
 	border-radius: 5px;
 }

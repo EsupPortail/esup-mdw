@@ -202,9 +202,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			//Panel contenant les filtres d'affichage et le bouton de mise en favori
 			HorizontalLayout panelLayout = new HorizontalLayout();
 			panelLayout.setSizeFull();
+			panelLayout.addStyleName("small-font-element");
 
 			// Layout contenant les filtres
 			FormLayout formInscritLayout = new FormLayout();
+			formInscritLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 			formInscritLayout.setSpacing(true);
 			formInscritLayout.setMargin(true);
 
