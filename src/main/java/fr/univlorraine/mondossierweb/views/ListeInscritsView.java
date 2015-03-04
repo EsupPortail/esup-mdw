@@ -712,7 +712,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 				inscritstable.setColumnCollapsingAllowed(true);
 				inscritstable.setColumnReorderingAllowed(false);
-
+		
 				//On masque les colonnes de notes par défaut
 				inscritstable.setColumnCollapsed("notes1", true);
 				inscritstable.setColumnCollapsed("notes2", true);
