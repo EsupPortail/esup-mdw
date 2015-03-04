@@ -884,8 +884,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
 			Inscrit i = (Inscrit) bins.getBean();
 			Label etapeLabel = new Label();
-			if(StringUtils.hasText(i.getId_etp())){
-				etapeLabel.setValue(i.getId_etp());
+			if(StringUtils.hasText(i.getLib_etp())){
+				etapeLabel.setValue(i.getLib_etp());
 			}
 			return etapeLabel;
 		}
