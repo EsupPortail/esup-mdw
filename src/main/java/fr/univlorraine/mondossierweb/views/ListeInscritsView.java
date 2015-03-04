@@ -110,6 +110,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private GridLayout trombiLayout;
 
+	private Button btnMasquerFiltre;
+
 	private Button btnAjoutFavori;
 
 	private VerticalLayout favoriLayout;
@@ -144,6 +146,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private HorizontalLayout leftResumeLayout;
 
 	private HorizontalLayout middleResumeLayout;
+	
+	private Button btnDisplayFiltres;
 
 	private Button btnExportTrombi;
 
@@ -412,6 +416,18 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			//Ajout du bouton à l'interface
 			favoriLayout.addComponent(btnAjoutFavori);
 			favoriLayout.setComponentAlignment(btnAjoutFavori, Alignment.TOP_RIGHT);
+			if(typeIsElp()){
+				btnMasquerFiltre = new Button(applicationContext.getMessage(NAME+".btn.btnMasquerFiltre", null, getLocale()));
+				btnMasquerFiltre.setIcon(FontAwesome.CHEVRON_CIRCLE_UP);
+				btnMasquerFiltre.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				btnMasquerFiltre.setDescription(applicationContext.getMessage(NAME+".btn.btnMasquerFiltre", null, getLocale()));
+				btnMasquerFiltre.addClickListener(e->{
+					panelFormInscrits.setContent(null);
+					btnDisplayFiltres.setVisible(true);
+				});
+				favoriLayout.addComponent(btnMasquerFiltre);
+				favoriLayout.setComponentAlignment(btnMasquerFiltre, Alignment.BOTTOM_RIGHT);
+			}
 			panelLayout.addComponent(favoriLayout);
 			panelLayout.setComponentAlignment(favoriLayout, Alignment.TOP_RIGHT);
 
@@ -467,6 +483,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				leftResumeLayout.setComponentAlignment(infoDescriptionButton, Alignment.MIDDLE_LEFT);
 
 
+			
+				
 				//Bouton export trombinoscope
 				btnExportTrombi=new Button();
 				btnExportTrombi.setIcon(FontAwesome.FILE_PDF_O);
@@ -571,14 +589,33 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				collapseResultatsS2.setDescription(applicationContext.getMessage(NAME+".collapseResultatsS2.description", null, getLocale()));
 				middleResumeLayout.addComponent(collapseResultatsS2);
 				middleResumeLayout.setComponentAlignment(collapseResultatsS2, Alignment.MIDDLE_CENTER);
-				
+
 
 				resumeLayout.addComponent(middleResumeLayout);
 
+				HorizontalLayout buttonResumeLayout = new HorizontalLayout();
+				buttonResumeLayout.setSizeFull();
+				buttonResumeLayout.setSpacing(true);
+				//Bouton pour afficher les filtres
+				btnDisplayFiltres=new Button();
+				btnDisplayFiltres.setWidth("52px");
+				btnDisplayFiltres.setHeight("32px");
+				btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+				btnDisplayFiltres.setIcon(FontAwesome.FILTER);
+				btnDisplayFiltres.setDescription(applicationContext.getMessage(NAME+".btn.displayFilters", null, getLocale()));
+				btnDisplayFiltres.addClickListener(e->{
+					panelFormInscrits.setContent(panelLayout);
+					btnDisplayFiltres.setVisible(false);
+				});
+				buttonResumeLayout.addComponent(btnDisplayFiltres);
+				buttonResumeLayout.setComponentAlignment(btnDisplayFiltres, Alignment.MIDDLE_RIGHT);
+				buttonResumeLayout.setExpandRatio(btnDisplayFiltres, 1);
+				btnDisplayFiltres.setVisible(false);
+				
 				//Bouton trombinoscope
 				btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
 				btnTrombi.setIcon(FontAwesome.GROUP);
-				resumeLayout.addComponent(btnTrombi);
+				buttonResumeLayout.addComponent(btnTrombi);
 
 				//Test si trombinoscope est affiché
 				if(afficherTrombinoscope){
@@ -600,12 +637,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					verticalLayoutForTrombi.setHeight("100%");
 					middleResumeLayout.setVisible(false);
 				});
-				resumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
+				buttonResumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
 
 				//Bouton de retour à l'affichage de la liste
 				btnRetourListe= new Button(applicationContext.getMessage(NAME+".message.retourliste", null, getLocale()));
 				btnRetourListe.setIcon(FontAwesome.BARS);
-				resumeLayout.addComponent(btnRetourListe);
+				buttonResumeLayout.addComponent(btnRetourListe);
 				if(!afficherTrombinoscope){
 					btnRetourListe.setVisible(false);
 				}
@@ -622,7 +659,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					middleResumeLayout.setVisible(true);
 
 				});
-				resumeLayout.setComponentAlignment(btnRetourListe, Alignment.MIDDLE_RIGHT);
+				buttonResumeLayout.setComponentAlignment(btnRetourListe, Alignment.MIDDLE_RIGHT);
+				
+				resumeLayout.addComponent(buttonResumeLayout);
 
 				infoLayout.addComponent(resumeLayout);
 
