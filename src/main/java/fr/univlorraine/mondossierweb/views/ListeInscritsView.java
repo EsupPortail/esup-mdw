@@ -33,6 +33,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -142,6 +143,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private HorizontalLayout leftResumeLayout;
 
+	private HorizontalLayout middleResumeLayout;
+
 	private Button btnExportTrombi;
 
 	private Button btnExportExcel;
@@ -155,7 +158,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	}
 	public void refresh() {
-		
+
 		//Actualiser de l'affiche du bouton de mise en favori
 		if(btnAjoutFavori !=null && favoriLayout!=null && StringUtils.hasText(code) && StringUtils.hasText(typeFavori)){
 
@@ -226,7 +229,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					listeAnnees.setItemCaption(annee,annee+"/"+anneenplusun);
 				}
 				listeAnnees.setValue( MainUI.getCurrent().getAnneeInscrits());
-				
+
 				//Gestion de l'événement sur le changement d'année
 				listeAnnees.addValueChangeListener(new ValueChangeListener() {
 					@Override
@@ -237,7 +240,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						Map<String, String> parameterMap = new HashMap<>();
 						parameterMap.put("code",code);
 						parameterMap.put("type",typeFavori);
-						
+
 						//récupération de la nouvelle liste
 						if(typeIsVet()){
 							listeInscritsController.recupererLaListeDesInscrits(parameterMap, selectedValue,MainUI.getCurrent());
@@ -245,7 +248,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						if(typeIsElp()){
 							listeInscritsController.recupererLaListeDesInscritsELP(parameterMap, selectedValue,MainUI.getCurrent());
 						}
-						
+
 						//update de l'affichage
 						initListe();
 					}
@@ -279,7 +282,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 						listeEtapes.setValue( TOUTES_LES_ETAPES_LABEL);
 					}
-					
+
 					//Gestion de l'événement sur le changement d'étape
 					listeEtapes.addValueChangeListener(new ValueChangeListener() {
 						@Override
@@ -289,7 +292,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 								vetSelectionnee = null;
 							}
 							MainUI.getCurrent().setEtapeInscrits(vetSelectionnee);
-							
+
 							//faire le changement
 							String groupeSelectionne = ((listeGroupes!=null && listeGroupes.getValue()!=null)?(String)listeGroupes.getValue():null);
 							if(groupeSelectionne!=null && groupeSelectionne.equals(TOUS_LES_GROUPES_LABEL)){
@@ -306,7 +309,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				List<ElpDeCollection> lgroupes = MainUI.getCurrent().getListeGroupesInscrits();
 				if(lgroupes != null && lgroupes.size()>0){
 					listeGroupes = new NativeSelect();
-					
+
 					listeGroupes.setNullSelectionAllowed(false);
 					listeGroupes.setRequired(false);
 					listeGroupes.setWidth("348px");
@@ -337,14 +340,14 @@ public class ListeInscritsView extends VerticalLayout implements View {
 								grpSelectionnee = null;
 							}
 							MainUI.getCurrent().setGroupeInscrits(grpSelectionnee);
-							
+
 							//faire le changement
 							String etapeSelectionnee = ((listeEtapes!=null && listeEtapes.getValue()!=null)?(String)listeEtapes.getValue():null);
 							if(etapeSelectionnee!=null && etapeSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
 								etapeSelectionnee=null;
 							}
 							filtrerInscrits(etapeSelectionnee,grpSelectionnee);
-							
+
 						}
 					});
 
@@ -395,26 +398,26 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			btnAjoutFavori.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			btnAjoutFavori.setDescription(applicationContext.getMessage(NAME+".btn.ajoutFavori", null, getLocale()));
 			btnAjoutFavori.addClickListener(e->{
-				
+
 				//creation du favori en base sur le clic du bouton
 				favorisController.saveFavori(favori);
-				
+
 				//On cache le bouton de mise en favori
 				btnAjoutFavori.setVisible(false);
-				
+
 				//Affichage d'un message de confirmation
 				Notification.show(applicationContext.getMessage(NAME+".message.favoriAjoute", null, getLocale()), Type.TRAY_NOTIFICATION );
 			});
-			
+
 			//Ajout du bouton à l'interface
 			favoriLayout.addComponent(btnAjoutFavori);
 			favoriLayout.setComponentAlignment(btnAjoutFavori, Alignment.TOP_RIGHT);
 			panelLayout.addComponent(favoriLayout);
 			panelLayout.setComponentAlignment(favoriLayout, Alignment.TOP_RIGHT);
-			
+
 			//Si l'objet est déjà en favori
 			if(lfav!=null && lfav.contains(favori)){
-				
+
 				//On affiche pas le bouton de mise en favori
 				btnAjoutFavori.setVisible(false);
 			}
@@ -431,12 +434,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			if(linscrits!=null && linscrits.size()>0 && listecodind!=null && listecodind.size()>0){
 				infoLayout= new VerticalLayout();
 				infoLayout.setSizeFull();
-				
+
 				//Layout avec le nb d'inscrit, le bouton trombinoscope et le bouton d'export
 				HorizontalLayout resumeLayout=new HorizontalLayout();
 				resumeLayout.setWidth("100%");
 				resumeLayout.setHeight("50px");
-				
+
 				//Label affichant le nb d'inscrits
 				infoNbInscrit = new Label(applicationContext.getMessage(NAME+".message.nbinscrit", null, getLocale())+ " : "+linscrits.size());
 
@@ -456,7 +459,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					if(typeIsElp()){
 						message=applicationContext.getMessage(NAME+".message.info.elpdescription", null, getLocale());
 					}
-					
+
 					HelpBasicWindow hbw = new HelpBasicWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
 					UI.getCurrent().addWindow(hbw);
 				});
@@ -477,25 +480,25 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
 					@Override
 					public InputStream getStream() {
-						
+
 						//recuperation de l'année sélectionnée et du libellé de l'ELP
 						String annee=(String)listeAnnees.getValue();
 						String libObj=panelFormInscrits.getCaption();
-						
+
 						//création du trombi en pdf
 						return listeInscritsController.getPdfStream(linscrits, listecodind,libObj,  annee);
 					}
 				}, nomFichier);
 				resource.setMIMEType("application/pdf");
 				resource.setCacheTime(0);
-				
+
 				//On ajoute le FD sur le bouton d'export
 				new FileDownloader(resource).extend(btnExportTrombi);
 
 				leftResumeLayout.addComponent(btnExportTrombi);
 				leftResumeLayout.setComponentAlignment(btnExportTrombi, Alignment.MIDDLE_LEFT);
 				if(!afficherTrombinoscope){
-					
+
 					//On cache le bouton d'export pdf
 					btnExportTrombi.setVisible(false);
 				}
@@ -511,28 +514,66 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
 					@Override
 					public InputStream getStream() {
-						
+
 						//recuperation de l'année sélectionnée et du libellé de l'ELP
 						String annee=(String)listeAnnees.getValue();
 						String libObj=panelFormInscrits.getCaption();
-						
+
 						//création du trombi en pdf
 						return listeInscritsController.getXlsStream(linscrits, listecodind,libObj,  annee, typeFavori);
 					}
 				}, nomFichierXls);
 				resourceXls.setMIMEType("application/xls");
 				resourceXls.setCacheTime(0);
-				
+
 				//On ajoute le FD sur le bouton d'export
 				new FileDownloader(resourceXls).extend(btnExportExcel);
 				if(!afficherTrombinoscope){
-					
+
 					//On échange le bouton d'export pdf par le bouton export excel
 					leftResumeLayout.replaceComponent(btnExportTrombi, btnExportExcel);
 				}
 
 
 				resumeLayout.addComponent(leftResumeLayout);
+
+
+				//Middle layout avec les bouton de collapse des colonnes
+				middleResumeLayout= new HorizontalLayout();
+				middleResumeLayout.setSizeFull();
+				middleResumeLayout.addStyleName("small-font-element");
+				middleResumeLayout.setSpacing(true);
+
+				if(!typeIsVet()){
+					CheckBox collapseEtp = new CheckBox(applicationContext.getMessage(NAME+".collapseEtp.title", null, getLocale()));
+					collapseEtp.setValue(true);
+					collapseEtp.addValueChangeListener(e->{
+						inscritstable.setColumnCollapsed("etape", !collapseEtp.getValue());
+					});
+					collapseEtp.setDescription(applicationContext.getMessage(NAME+".collapseEtp.description", null, getLocale()));
+					middleResumeLayout.addComponent(collapseEtp);
+					middleResumeLayout.setComponentAlignment(collapseEtp, Alignment.MIDDLE_CENTER);
+				}
+				CheckBox collapseResultatsS1  = new CheckBox(applicationContext.getMessage(NAME+".collapseResultatsS1.title", null, getLocale()));
+				collapseResultatsS1.setValue(false);
+				collapseResultatsS1.addValueChangeListener(e->{
+					inscritstable.setColumnCollapsed("notes1", !collapseResultatsS1.getValue());
+				});
+				collapseResultatsS1.setDescription(applicationContext.getMessage(NAME+".collapseResultatsS1.description", null, getLocale()));
+				middleResumeLayout.addComponent(collapseResultatsS1);
+				middleResumeLayout.setComponentAlignment(collapseResultatsS1, Alignment.MIDDLE_CENTER);
+
+				CheckBox collapseResultatsS2  = new CheckBox(applicationContext.getMessage(NAME+".collapseResultatsS2.title", null, getLocale()));
+				collapseResultatsS2.setValue(false);
+				collapseResultatsS2.addValueChangeListener(e->{
+					inscritstable.setColumnCollapsed("notes2", !collapseResultatsS2.getValue());
+				});
+				collapseResultatsS2.setDescription(applicationContext.getMessage(NAME+".collapseResultatsS2.description", null, getLocale()));
+				middleResumeLayout.addComponent(collapseResultatsS2);
+				middleResumeLayout.setComponentAlignment(collapseResultatsS2, Alignment.MIDDLE_CENTER);
+				
+
+				resumeLayout.addComponent(middleResumeLayout);
 
 				//Bouton trombinoscope
 				btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
@@ -550,13 +591,14 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnTrombi.setVisible(false);
 					btnExportTrombi.setVisible(true);
 					leftResumeLayout.replaceComponent(btnExportExcel, btnExportTrombi);
-					
+
 					//Bouton retour a la liste devient visible
 					btnRetourListe.setVisible(true);
 					dataLayout.removeAllComponents();
 					dataLayout.addComponent(verticalLayoutForTrombi);
 					dataLayout.setHeight("100%");
 					verticalLayoutForTrombi.setHeight("100%");
+					middleResumeLayout.setVisible(false);
 				});
 				resumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
 
@@ -567,7 +609,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				if(!afficherTrombinoscope){
 					btnRetourListe.setVisible(false);
 				}
-				
+
 				//Gestion du clic sur le bouton de  retour à l'affichage de la liste
 				btnRetourListe.addClickListener(e->{
 					afficherTrombinoscope = false;
@@ -577,6 +619,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnRetourListe.setVisible(false);
 					dataLayout.removeAllComponents();
 					dataLayout.addComponent(inscritstable);
+					middleResumeLayout.setVisible(true);
 
 				});
 				resumeLayout.setComponentAlignment(btnRetourListe, Alignment.MIDDLE_RIGHT);
@@ -619,20 +662,28 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setColumnHeader("etape", applicationContext.getMessage(NAME+".table.etape", null, getLocale()));
 				}
 
+
+
 				String[] fields_to_display = INS_FIELDS_TO_DISPLAY_ELP;
 				if(typeIsVet()){
 					fields_to_display = INS_FIELDS_TO_DISPLAY_VET;
 				}
+
 				inscritstable.setVisibleColumns((Object[]) fields_to_display);
 
 				inscritstable.setColumnCollapsingAllowed(true);
 				inscritstable.setColumnReorderingAllowed(false);
+
+				//On masque les colonnes de notes par défaut
+				inscritstable.setColumnCollapsed("notes1", true);
+				inscritstable.setColumnCollapsed("notes2", true);
+
 				inscritstable.setSelectable(false);
 				inscritstable.setImmediate(true);
 				inscritstable.addStyleName("scrollabletable");
 				//Si on n'a pas déjà demandé à afficher le trombinoscope
 				if(!afficherTrombinoscope){
-					
+
 					//la layout contient la table
 					dataLayout.addComponent(inscritstable);
 				}
