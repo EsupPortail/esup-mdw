@@ -6,19 +6,22 @@ import javax.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -55,9 +58,9 @@ public class AdressesView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		
+
 		removeAllComponents();
-		
+
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
@@ -66,11 +69,20 @@ public class AdressesView extends VerticalLayout implements View {
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 		title.addStyleName(ValoTheme.LABEL_H1);
 		addComponent(title);
-		
 
-		HorizontalLayout globalLayout = new HorizontalLayout();
+
+		VerticalLayout globalLayout = new VerticalLayout();
 		globalLayout.setSizeFull();
 		globalLayout.setSpacing(true);
+
+		//Layout avec les infos etatcivil et contact
+		CssLayout idLayout = new CssLayout();
+		idLayout.setSizeFull();
+		idLayout.setStyleName("flexwrap");
+
+		globalLayout.addComponent(idLayout);
+		// Enable Responsive CSS selectors for the layout
+		Responsive.makeResponsive(idLayout);
 
 		if(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
 
@@ -81,34 +93,40 @@ public class AdressesView extends VerticalLayout implements View {
 			Panel panelAdresseAnnuelle= new Panel(applicationContext.getMessage(NAME+".adresseannuelle.title", null, getLocale())+" "+MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAnnee());
 
 			String captionAdresseAnnuelle = applicationContext.getMessage(NAME+".adresse.title", null, getLocale());
-			TextField fieldAdresseAnnuelle = new TextField(captionAdresseAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse1());
-			formatTextField(fieldAdresseAnnuelle);
+			Label fieldAdresseAnnuelle = new Label();
+			formatLabel(fieldAdresseAnnuelle, captionAdresseAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse1());
 			formAdresseAnnuelleLayout.addComponent(fieldAdresseAnnuelle);
 
 			String annuelle2 = valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse2(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse3());
 			if(annuelle2!=null){
-				TextField fieldAdresseAnnuelle2 = new TextField("", annuelle2);
-				formatTextField(fieldAdresseAnnuelle2);
+				Label fieldAdresseAnnuelle2 = new Label();
+				formatLabel(fieldAdresseAnnuelle2, null, annuelle2);
 				formAdresseAnnuelleLayout.addComponent(fieldAdresseAnnuelle2);
 			}
 			String captionVilleAnnuelle = applicationContext.getMessage(NAME+".ville.title", null, getLocale());
-			TextField fieldVilleAnnuelle = new TextField(captionVilleAnnuelle, valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresseetranger(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getCodePostal(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getVille()));
-			formatTextField(fieldVilleAnnuelle);
+			Label fieldVilleAnnuelle = new Label();
+			formatLabel(fieldVilleAnnuelle, captionVilleAnnuelle, valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresseetranger(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getCodePostal(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getVille()));
 			formAdresseAnnuelleLayout.addComponent(fieldVilleAnnuelle);
 
 			String captionPaysAnnuelle = applicationContext.getMessage(NAME+".pays.title", null, getLocale());
-			TextField fieldPaysAnnuelle = new TextField(captionPaysAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getPays());
-			formatTextField(fieldPaysAnnuelle);
+			Label fieldPaysAnnuelle = new Label();
+			formatLabel(fieldPaysAnnuelle, captionPaysAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getPays());
 			formAdresseAnnuelleLayout.addComponent(fieldPaysAnnuelle);
 
 			String captionTelephoneAnnuelle = applicationContext.getMessage(NAME+".telephone.title", null, getLocale());
-			TextField fieldTelephoneAnnuelle = new TextField(captionTelephoneAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getNumerotel());
-			formatTextField(fieldTelephoneAnnuelle);
+			Label fieldTelephoneAnnuelle = new Label();
+			formatLabel(fieldTelephoneAnnuelle, captionTelephoneAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getNumerotel());
 			formAdresseAnnuelleLayout.addComponent(fieldTelephoneAnnuelle);
 
 			panelAdresseAnnuelle.setContent(formAdresseAnnuelleLayout);
 
-			globalLayout.addComponent(panelAdresseAnnuelle);
+
+			HorizontalLayout adresseAnnuelleGlobalLayout = new HorizontalLayout();
+			adresseAnnuelleGlobalLayout.setSizeUndefined();
+			adresseAnnuelleGlobalLayout.setStyleName("firstitembox");
+			adresseAnnuelleGlobalLayout.addComponent(panelAdresseAnnuelle);
+			adresseAnnuelleGlobalLayout.setExpandRatio(panelAdresseAnnuelle, 1);
+			idLayout.addComponent(adresseAnnuelleGlobalLayout);
 		}
 
 		if(MainUI.getCurrent().getEtudiant().getAdresseFixe()!=null){
@@ -119,35 +137,42 @@ public class AdressesView extends VerticalLayout implements View {
 			Panel panelAdresseFixe= new Panel(applicationContext.getMessage(NAME+".adressefixe.title", null, getLocale()));
 
 			String captionAdresseFixe = applicationContext.getMessage(NAME+".adresse.title", null, getLocale());
-			TextField fieldAdresseFixe = new TextField(captionAdresseFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse1());
-			formatTextField(fieldAdresseFixe);
+			Label fieldAdresseFixe = new Label();
+			formatLabel(fieldAdresseFixe, captionAdresseFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse1());
 			formAdresseFixeLayout.addComponent(fieldAdresseFixe);
 
 			String adfixe2=valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse2(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse3());
 			if(adfixe2!=null){
-				TextField fieldAdresseFixe2 = new TextField("", adfixe2);
-				formatTextField(fieldAdresseFixe2);
+				Label fieldAdresseFixe2 = new Label();
+				formatLabel(fieldAdresseFixe2, null, adfixe2);
 				formAdresseFixeLayout.addComponent(fieldAdresseFixe2);
 			}
 
 			String captionVilleFixe = applicationContext.getMessage(NAME+".ville.title", null, getLocale());
-			TextField fieldVilleFixe = new TextField(captionVilleFixe, valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresseetranger(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getCodePostal(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getVille()));
-			formatTextField(fieldVilleFixe);
+			Label fieldVilleFixe = new Label();
+			formatLabel(fieldVilleFixe, captionVilleFixe, valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresseetranger(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getCodePostal(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getVille()));
 			formAdresseFixeLayout.addComponent(fieldVilleFixe);
 
 			String captionPaysFixe = applicationContext.getMessage(NAME+".pays.title", null, getLocale());
-			TextField fieldPaysFixe = new TextField(captionPaysFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getPays());
-			formatTextField(fieldPaysFixe);
+			Label fieldPaysFixe = new Label();
+			formatLabel(fieldPaysFixe, captionPaysFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getPays());
 			formAdresseFixeLayout.addComponent(fieldPaysFixe);
 
 			String captionTelephoneFixe = applicationContext.getMessage(NAME+".telephone.title", null, getLocale());
-			TextField fieldTelephoneFixe = new TextField(captionTelephoneFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getNumerotel());
-			formatTextField(fieldTelephoneFixe);
+			Label fieldTelephoneFixe = new Label();
+			formatLabel(fieldTelephoneFixe, captionTelephoneFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getNumerotel());
 			formAdresseFixeLayout.addComponent(fieldTelephoneFixe);
 
 			panelAdresseFixe.setContent(formAdresseFixeLayout);
 
-			globalLayout.addComponent(panelAdresseFixe);
+
+			HorizontalLayout adresseFixeGlobalLayout = new HorizontalLayout();
+			adresseFixeGlobalLayout.setSizeUndefined();
+			adresseFixeGlobalLayout.setStyleName("itembox");
+			adresseFixeGlobalLayout.addComponent(panelAdresseFixe);
+			adresseFixeGlobalLayout.setExpandRatio(panelAdresseFixe, 1);
+			idLayout.addComponent(adresseFixeGlobalLayout);
+
 
 		}
 
@@ -157,7 +182,7 @@ public class AdressesView extends VerticalLayout implements View {
 			HorizontalLayout btnLayout = new HorizontalLayout();
 			btnLayout.setSizeFull();
 			btnLayout.setSpacing(true);
-			
+
 			Button btnModifAdresses = new Button (applicationContext.getMessage(NAME+".bouton.modifieradresses", null, getLocale()));
 			btnModifAdresses.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			btnModifAdresses.setIcon(FontAwesome.EDIT);
@@ -188,11 +213,15 @@ public class AdressesView extends VerticalLayout implements View {
 		return valuateTextFieldFromMultipleValues(valuateTextFieldFromMultipleValues(string1, string2),string3);
 	}
 
-	private void formatTextField(TextField tf){
-		tf.setEnabled(false);
-		tf.setSizeFull();
-		tf.setNullRepresentation("");
-		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+	private void formatLabel(Label label, String caption, String value){
+		if(StringUtils.hasText(caption)){
+			label.setCaption(caption);
+		}
+		if(StringUtils.hasText(value)){
+			label.setValue("<b>"+ value +"</b");
+			label.setContentMode(ContentMode.HTML);
+		}
+		label.setSizeFull();
 	}
 
 	/**

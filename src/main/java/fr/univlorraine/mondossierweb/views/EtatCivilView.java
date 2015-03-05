@@ -12,7 +12,6 @@ import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -27,7 +26,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -36,8 +34,6 @@ import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
 
 /**
  * Page d'accueil
@@ -90,7 +86,6 @@ public class EtatCivilView extends VerticalLayout implements View {
 		CssLayout idLayout = new CssLayout();
 		idLayout.setSizeFull();
 		idLayout.setStyleName("flexwrap");
-		//idLayout.setSpacing(true);
 
 		globalLayout.addComponent(idLayout);
 		// Enable Responsive CSS selectors for the layout
@@ -106,36 +101,22 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 		String captionNumDossier = applicationContext.getMessage(NAME+".numdossier.title", null, getLocale());
 		Label fieldNumDossier = new Label();
-		fieldNumDossier.setCaption(captionNumDossier);
-		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getCod_etu())){
-			fieldNumDossier.setValue("<b>"+MainUI.getCurrent().getEtudiant().getCod_etu()+"</b");
-			fieldNumDossier.setContentMode(ContentMode.HTML);
-		}
-		fieldNumDossier.setSizeFull();
+		formatLabel(fieldNumDossier, captionNumDossier, MainUI.getCurrent().getEtudiant().getCod_etu());
 		formGeneralitesLayout.addComponent(fieldNumDossier);
 
 		String captionNNE = applicationContext.getMessage(NAME+".nne.title", null, getLocale());
 		Label fieldNNE = new Label();
-		fieldNNE.setCaption(captionNNE);
-		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getCod_nne())){
-			fieldNNE.setValue("<b>"+MainUI.getCurrent().getEtudiant().getCod_nne()+"</b");
-			fieldNNE.setContentMode(ContentMode.HTML);
-		}
-		fieldNNE.setSizeFull();
+		formatLabel(fieldNNE, captionNNE, MainUI.getCurrent().getEtudiant().getCod_nne());
 		formGeneralitesLayout.addComponent(fieldNNE);
 
 		String captionNom = applicationContext.getMessage(NAME+".nom.title", null, getLocale());
 		Label fieldNom = new Label();
-		fieldNom.setCaption(captionNom);
-		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getNom())){
-			fieldNom.setValue("<b>"+MainUI.getCurrent().getEtudiant().getNom()+"</b");
-			fieldNom.setContentMode(ContentMode.HTML);
-		}
-		fieldNom.setSizeFull();
+		formatLabel(fieldNom, captionNom, MainUI.getCurrent().getEtudiant().getNom());
 		formGeneralitesLayout.addComponent(fieldNom);
 
+		String captionMail = applicationContext.getMessage(NAME+".mail.title", null, getLocale());
 		Label mailLabel = new Label();
-		mailLabel.setCaption(applicationContext.getMessage(NAME+".mail.title", null, getLocale()));
+		mailLabel.setCaption(captionMail);
 		String mail = MainUI.getCurrent().getEtudiant().getEmail();
 		if(StringUtils.hasText(mail)){
 			mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
@@ -148,55 +129,33 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 		String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
 		Label fieldNationalite = new Label();
-		fieldNationalite.setCaption(captionNationalite);
-		if(StringUtils.hasText( MainUI.getCurrent().getEtudiant().getNationalite())){
-			fieldNationalite.setValue("<b>"+ MainUI.getCurrent().getEtudiant().getNationalite()+"</b");
-			fieldNationalite.setContentMode(ContentMode.HTML);
-		}
-		fieldNationalite.setSizeFull();
+		formatLabel(fieldNationalite, captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
 		formGeneralitesLayout.addComponent(fieldNationalite);
 
 		String captionDateNaissance = applicationContext.getMessage(NAME+".naissance.title", null, getLocale());
 		Label fieldDateNaissance = new Label();
-		fieldDateNaissance.setCaption(captionDateNaissance);
-		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getDatenaissance())){
-			fieldDateNaissance.setValue("<b>"+ MainUI.getCurrent().getEtudiant().getDatenaissance() +"</b");
-			fieldDateNaissance.setContentMode(ContentMode.HTML);
-		}
-		fieldDateNaissance.setSizeFull();
+		formatLabel(fieldDateNaissance, captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
 		formGeneralitesLayout.addComponent(fieldDateNaissance);
 
 		String captionLieuNaissance = applicationContext.getMessage(NAME+".lieunaissance.title", null, getLocale());
 		Label fieldLieuNaissance = new Label();
-		fieldLieuNaissance.setCaption(captionLieuNaissance);
-		if(StringUtils.hasText( MainUI.getCurrent().getEtudiant().getLieunaissance())){
-			fieldLieuNaissance.setValue("<b>"+  MainUI.getCurrent().getEtudiant().getLieunaissance() +"</b");
-			fieldLieuNaissance.setContentMode(ContentMode.HTML);
-		}
-		fieldLieuNaissance.setSizeFull();
+		formatLabel(fieldLieuNaissance, captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
 		formGeneralitesLayout.addComponent(fieldLieuNaissance);
 
 		String captionDepNaissance = applicationContext.getMessage(NAME+".depnaissance.title", null, getLocale());
 		Label fieldDepNaissance = new Label();
-		fieldDepNaissance.setCaption(captionDepNaissance);
-		if(StringUtils.hasText(MainUI.getCurrent().getEtudiant().getDepartementnaissance())){
-			fieldDepNaissance.setValue("<b>"+  MainUI.getCurrent().getEtudiant().getDepartementnaissance() +"</b");
-			fieldDepNaissance.setContentMode(ContentMode.HTML);
-		}
-		fieldDepNaissance.setSizeFull();
+		formatLabel(fieldDepNaissance, captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
 		formGeneralitesLayout.addComponent(fieldDepNaissance);
 
 		panelGeneralites.setContent(formGeneralitesLayout);
 
-		//panelGeneralites.setStyleName("itembox");
-		//panelGeneralites.setSizeUndefined();
+
 		HorizontalLayout generalitesGlobalLayout = new HorizontalLayout();
 		generalitesGlobalLayout.setSizeUndefined();
 		generalitesGlobalLayout.setStyleName("firstitembox");
 		generalitesGlobalLayout.addComponent(panelGeneralites);
 		generalitesGlobalLayout.setExpandRatio(panelGeneralites, 1);
 		idLayout.addComponent(generalitesGlobalLayout);
-		//idLayout.addComponent(panelGeneralites);
 
 
 
@@ -236,9 +195,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 			panelBac.setContent(formBacLayout);
 		}
 
-		/*panelBac.setStyleName("itembox");
-		panelBac.setSizeUndefined();
-		idLayout.addComponent(panelBac);*/
+
 		HorizontalLayout bacGlobalLayout = new HorizontalLayout();
 		bacGlobalLayout.setSizeUndefined();
 		bacGlobalLayout.setStyleName("itembox");
@@ -380,68 +337,48 @@ public class EtatCivilView extends VerticalLayout implements View {
 		tf.setNullRepresentation("");
 		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
 	}
+	
+	private void formatLabel(Label label, String caption, String value){
+		if(StringUtils.hasText(caption)){
+			label.setCaption(caption);
+		}
+		if(StringUtils.hasText(value)){
+			label.setValue("<b>"+ value +"</b");
+			label.setContentMode(ContentMode.HTML);
+		}
+		label.setSizeFull();
+	}
 
 	private void ajouterBacToView(FormLayout formBacLayout,BacEtatCivil bec){
 		String captionBac = applicationContext.getMessage(NAME+".codebac.title", null, getLocale());
 		Label fieldBac = new Label();
-		fieldBac.setCaption(captionBac);
-		if(StringUtils.hasText(bec.getLib_bac())){
-			fieldBac.setValue("<b>"+bec.getLib_bac()+"</b");
-			fieldBac.setContentMode(ContentMode.HTML);
-		}
-		fieldBac.setSizeFull();
+		formatLabel(fieldBac, captionBac, bec.getLib_bac());
 		formBacLayout.addComponent(fieldBac);
 
 		String captionAnneeBac = applicationContext.getMessage(NAME+".anneebac.title", null, getLocale());
 		Label fieldAnneeBac = new Label();
-		fieldAnneeBac.setCaption(captionAnneeBac);
-		if(StringUtils.hasText(bec.getDaa_obt_bac_iba())){
-			fieldAnneeBac.setValue("<b>"+bec.getDaa_obt_bac_iba()+"</b");
-			fieldAnneeBac.setContentMode(ContentMode.HTML);
-		}
-		fieldAnneeBac.setSizeFull();
+		formatLabel(fieldAnneeBac, captionAnneeBac, bec.getDaa_obt_bac_iba());
 		formBacLayout.addComponent(fieldAnneeBac);
 
 		String captionMentionBac = applicationContext.getMessage(NAME+".mentionbac.title", null, getLocale());
 		Label fieldMentionBac = new Label();
-		fieldMentionBac.setCaption(captionMentionBac);
-		if(StringUtils.hasText(bec.getCod_mnb())){
-			fieldMentionBac.setValue("<b>"+bec.getCod_mnb()+"</b");
-			fieldMentionBac.setContentMode(ContentMode.HTML);
-		}
-		fieldMentionBac.setSizeFull();
+		formatLabel(fieldMentionBac, captionMentionBac, bec.getCod_mnb());
 		formBacLayout.addComponent(fieldMentionBac);
 
 
 		String captionTypeEtbBac = applicationContext.getMessage(NAME+".typeetbbac.title", null, getLocale());
 		Label fieldTypeEtbBac = new Label();
-		fieldTypeEtbBac.setCaption(captionTypeEtbBac);
-		if(StringUtils.hasText(bec.getCod_tpe())){
-			fieldTypeEtbBac.setValue("<b>"+bec.getCod_tpe()+"</b");
-			fieldTypeEtbBac.setContentMode(ContentMode.HTML);
-		}
-		fieldTypeEtbBac.setSizeFull();
+		formatLabel(fieldTypeEtbBac, captionTypeEtbBac, bec.getCod_tpe());
 		formBacLayout.addComponent(fieldTypeEtbBac);
 
 		String captionEtbBac = applicationContext.getMessage(NAME+".etbbac.title", null, getLocale());
 		Label fieldEtbBac = new Label();
-		fieldEtbBac.setCaption(captionEtbBac);
-		String etb=bec.getCod_etb();
-		if(StringUtils.hasText(etb)){
-			fieldEtbBac.setValue("<b>"+etb+"</b");
-			fieldEtbBac.setContentMode(ContentMode.HTML);
-		}
-		fieldEtbBac.setSizeFull();
+		formatLabel(fieldEtbBac, captionEtbBac, bec.getCod_etb());
 		formBacLayout.addComponent(fieldEtbBac);
 
 		String captionDepBac = applicationContext.getMessage(NAME+".depbac.title", null, getLocale());
 		Label fieldDepBac = new Label();
-		fieldDepBac.setCaption(captionDepBac);
-		if(StringUtils.hasText(bec.getCod_dep())){
-			fieldDepBac.setValue("<b>"+bec.getCod_dep()+"</b");
-			fieldDepBac.setContentMode(ContentMode.HTML);
-		}
-		fieldDepBac.setSizeFull();
+		formatLabel(fieldDepBac, captionDepBac, bec.getCod_dep());
 		formBacLayout.addComponent(fieldDepBac);
 	}
 	/**
