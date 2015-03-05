@@ -188,22 +188,17 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 		panelGeneralites.setContent(formGeneralitesLayout);
 
-		panelGeneralites.setStyleName("itembox");
-		panelGeneralites.setSizeUndefined();
-		idLayout.addComponent(panelGeneralites);
+		//panelGeneralites.setStyleName("itembox");
+		//panelGeneralites.setSizeUndefined();
+		HorizontalLayout generalitesGlobalLayout = new HorizontalLayout();
+		generalitesGlobalLayout.setSizeUndefined();
+		generalitesGlobalLayout.setStyleName("firstitembox");
+		generalitesGlobalLayout.addComponent(panelGeneralites);
+		generalitesGlobalLayout.setExpandRatio(panelGeneralites, 1);
+		idLayout.addComponent(generalitesGlobalLayout);
+		//idLayout.addComponent(panelGeneralites);
 
 
-
-
-
-
-
-
-
-
-		/*HorizontalLayout bacLayout = new HorizontalLayout();
-		bacLayout.setSizeFull();
-		bacLayout.setSpacing(true);*/
 
 		/* Bac */
 
@@ -241,9 +236,15 @@ public class EtatCivilView extends VerticalLayout implements View {
 			panelBac.setContent(formBacLayout);
 		}
 
-		panelBac.setStyleName("itembox");
+		/*panelBac.setStyleName("itembox");
 		panelBac.setSizeUndefined();
-		idLayout.addComponent(panelBac);
+		idLayout.addComponent(panelBac);*/
+		HorizontalLayout bacGlobalLayout = new HorizontalLayout();
+		bacGlobalLayout.setSizeUndefined();
+		bacGlobalLayout.setStyleName("itembox");
+		bacGlobalLayout.addComponent(panelBac);
+		bacGlobalLayout.setExpandRatio(panelBac, 1);
+		idLayout.addComponent(bacGlobalLayout);
 
 
 
