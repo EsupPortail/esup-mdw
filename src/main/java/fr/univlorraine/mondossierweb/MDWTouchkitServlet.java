@@ -13,6 +13,8 @@ import com.vaadin.server.SessionInitListener;
 
 public class MDWTouchkitServlet extends TouchKitServlet {
 	
+	private static final long serialVersionUID = 1L;
+
 	private Logger LOG = LoggerFactory.getLogger(MDWTouchkitServlet.class);
 	
 	 private MdwTouchkitUIProvider uiProvider = new MdwTouchkitUIProvider();
@@ -22,7 +24,10 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 	        super.servletInitialized();
 		    
 	        getService().addSessionInitListener(new SessionInitListener() {
-	            @Override
+
+				private static final long serialVersionUID = 3292761415754953448L;
+
+				@Override
 	            public void sessionInit(SessionInitEvent event) throws ServiceException {
 	            	LOG.debug("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
 	                event.getSession().addUIProvider(uiProvider);
@@ -33,7 +38,6 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 	        TouchKitSettings s = getTouchKitSettings();
 	        s.getWebAppSettings().setWebAppCapable(true);
 	        s.getWebAppSettings().setStatusBarStyle("black");
-	       // String contextPath = getServletConfig().getServletContext().getContextPath();
 
 	        s.getApplicationCacheSettings().setCacheManifestEnabled(true);
 	        

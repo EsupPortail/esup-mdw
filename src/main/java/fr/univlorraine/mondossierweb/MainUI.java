@@ -195,8 +195,7 @@ public class MainUI extends GenericUI {
 				cause = cause.getCause();
 			}
 			// Traite les autres erreurs normalement 
-			//On garde une trace dans les logs, au cas où
-			cause.printStackTrace();
+			LOG.error(e.getThrowable().toString(), e.getThrowable());
 			// Affiche de la vue d'erreur
 			displayViewFullScreen(ErreurView.NAME);
 			//DefaultErrorHandler.doDefault(e);
