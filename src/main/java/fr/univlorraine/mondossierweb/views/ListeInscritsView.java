@@ -631,6 +631,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				}
 				//Gestion du clic sur le bouton trombinoscope
 				btnTrombi.addClickListener(e->{
+					//On refresh le ticket de photo et on met a jour le trombinoscope avec les urls photo misent à jour
+					listeInscritsController.setUrlPhotos(linscrits);
+					displayTrombinoscope();
+					
 					afficherTrombinoscope=true;
 					btnTrombi.setVisible(false);
 					btnExportTrombi.setVisible(true);

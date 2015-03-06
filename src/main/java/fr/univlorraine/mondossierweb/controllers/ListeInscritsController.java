@@ -374,7 +374,7 @@ public class ListeInscritsController {
 	 * renseigne l'url pour la photo de chaque inscrit.
 	 * @param listeInscrits
 	 */
-	private void setUrlPhotos(List<Inscrit> listeInscrits) {
+	public void setUrlPhotos(List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
 			i.setUrlphoto(photo.getUrlPhoto(i.getCod_ind(), i.getCod_etu()));
 
