@@ -16,10 +16,14 @@ import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 
+/**
+ * UI générique, pour gérer les attributs communs aux UI desktop ou Mobile sans se soucier de la version de l'UI appelée
+ * @author dubois36
+ *
+ */
 public class GenericUI  extends UI {
 
 	private static final long serialVersionUID = 7686258492589590192L;
-	//la liste des années disponible pour la liste des inscrits en cours.
 
 
 	//Etudiant dont on consulte le dossier

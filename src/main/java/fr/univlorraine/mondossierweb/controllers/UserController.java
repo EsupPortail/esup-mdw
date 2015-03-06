@@ -1,16 +1,12 @@
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.naming.directory.Attributes;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.esupportail.portal.ws.client.PortalGroup;
@@ -21,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
@@ -44,19 +39,16 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.Administrateurs;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateur;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateurPK;
 import fr.univlorraine.mondossierweb.entities.UtilisateurSwap;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
 import fr.univlorraine.mondossierweb.repositories.AdministrateursRepository;
-import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
 import fr.univlorraine.mondossierweb.repositories.PreferencesUtilisateurRepository;
 import fr.univlorraine.mondossierweb.repositories.UtilisateurSwapRepository;
-import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
-import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
+import fr.univlorraine.mondossierweb.services.apogee.UtilisateurServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
@@ -203,12 +195,7 @@ public class UserController {
 		Page.getCurrent().open(switchToUserUrl, null);
 	}
 
-	/**
-	 * Rétabli le rôle original de l'utilisateur
-	 */
-	public void switchBackToPreviousUser() {
-		Page.getCurrent().open(environment.getRequiredProperty("switchUser.exitUrl"), null);
-	}
+
 
 	public boolean isEnseignant() {
 		//Un admin a les droits d'un enseignant

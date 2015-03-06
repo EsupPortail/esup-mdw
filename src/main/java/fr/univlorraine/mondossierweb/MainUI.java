@@ -24,10 +24,8 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -137,39 +135,38 @@ public class MainUI extends GenericUI {
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
 
-
-
-	/* Composants */
+	//Le composant principal de la page (contient tabSheetGlobal ou layoutDossierEtudiant en fonction du type de l'utilisateur)
 	private VerticalLayout mainVerticalLayout=new VerticalLayout();
+	
+	//Le menu de la partie "dossier étudiant"
 	private CssLayout mainMenu = new CssLayout();
+	
+	//Le layout contenant le menu
 	private CssLayout menuLayout = new CssLayout(mainMenu);
+	
+	//Contenu de la partie "dossier étudiant" contentLayout affiche la vue à afficher dans le dossier via le "navigator"
 	private CssLayout contentLayout = new CssLayout();
+	
+	//Layout principal de la partie "dossier étudiant" : contient le menu et le contentlayout
 	private HorizontalLayout layoutDossierEtudiant = new HorizontalLayout(menuLayout, contentLayout);
+	
+	//le tabSheet global affiché aux enseignants (contient les onglets Recherche et Dossier)
 	private TabSheet tabSheetGlobal = new TabSheet();
+	
+	//Layout de l'onglet Recherche de tabSheetGlobal
 	private VerticalLayout layoutOngletRecherche;
+	
+	//Le sous menu Recherche affiché aux enseignants (affiche les onglets recherche rapide, rechercher arbo, liste inscrits, favoris)
 	private TabSheet tabSheetEnseignant= new TabSheet();
-	//private CssLayout contentTabSheetEnseignantLayout = new CssLayout();
 
-
-
-	/** Gestionnaire de vues étudiant*/
+	// Gestionnaire de vues de la partie "Dossier étudiant"
 	@Getter
 	private DiscoveryNavigator navigator = new DiscoveryNavigator(this, contentLayout);
 
-
-
-	/** Gestionnaire de vues */
-	/*@Getter
-	private DiscoveryNavigator navigatorEnseignant = new DiscoveryNavigator(this, contentTabSheetEnseignantLayout);*/
-
-
-
-
-
-	/** Noms des vues et boutons du menu associés */
+	// Noms des vues et boutons du menu associés 
 	private Map<String, Button> viewButtons = new HashMap<>();
 
-	/** Noms des vues et index du tab associé */
+	// Noms des vues et index du tab associé 
 	private Map<String, Integer> viewEnseignantTab = new HashMap<>();
 
 	/**
@@ -184,6 +181,8 @@ public class MainUI extends GenericUI {
 	 */
 	@Override
 	protected void init(VaadinRequest request) {
+		
+		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();
 			while (cause instanceof Throwable) {
@@ -195,18 +194,21 @@ public class MainUI extends GenericUI {
 				}
 				cause = cause.getCause();
 			}
-			/* Traite les autres erreurs normalement */
+			// Traite les autres erreurs normalement 
+			//On garde une trace dans les logs, au cas où
+			cause.printStackTrace();
+			// Affiche de la vue d'erreur
 			displayViewFullScreen(ErreurView.NAME);
 			//DefaultErrorHandler.doDefault(e);
 		});
 
-		/* Affiche le nom de l'application dans l'onglet du navigateur */
+		// Affiche le nom de l'application dans l'onglet du navigateur 
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
 
 
 
-		/* Construit le gestionnaire de vues */
+		/* Construit le gestionnaire de vues utilisé pour naviguer dans le dossier d'un étudiant */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
 		navigator.addViewChangeListener(new ViewChangeListener() {
 			private static final long serialVersionUID = 7905379446201794289L;
@@ -215,14 +217,17 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
+				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
 				return true;
 			}
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
+				//On récupère l'élément du menu concerné par la vue à afficher
 				Button button = viewButtons.get(event.getViewName());
 				if (button instanceof Button) {
+					//on applique le style "selected" sur l'objet du menu concerné par la vue affichée
 					button.addStyleName(SELECTED_ITEM);
 				}
 			}
@@ -231,20 +236,25 @@ public class MainUI extends GenericUI {
 
 		/* Initialise Google Analytics */
 		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
+
 		/* Suis les changements de vue du navigator */
 		googleAnalyticsTracker.trackNavigator(navigator);
 
+		//mainVerticalLayout est le contenu principal de la page
 		setContent(mainVerticalLayout);
 
+		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
-
-
 
 			/* Parametre le layoutDossierEtudiant */
 			menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
+			//Le contentLayout est scrollable si besoin
 			contentLayout.addStyleName("v-scrollable");
+			//contentLayout prend toute la place possible
 			contentLayout.setSizeFull();
+			//le contentLayout prend toute la place disponible dans le layoutDossierEtudiant
 			layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
+			//layoutDossierEtudiant prend toute la place possible
 			layoutDossierEtudiant.setSizeFull();
 
 
@@ -253,19 +263,14 @@ public class MainUI extends GenericUI {
 				//On consultera les notes en vue enseignant
 				vueEnseignantNotesEtResultats=true;
 
-				/* Construit le menu horizontal pour les enseignants */
+				//Construit le menu horizontal pour les enseignants
 				tabSheetGlobal.setSizeFull();
 				tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
-				//ajout de l'onglet Admin
 				rangTabRecherche=0;
 				rangTabDossierEtudiant = 1;
-				/*if(userController.isAdmin()){
-					tabSheetGlobal.addTab(adminView, "Admin", FontAwesome.WRENCH);
-					rangTabRecherche = 1;
-					rangTabDossierEtudiant = 2;
-				}*/
-				//ajout de l'onglet recherche
+
+				//ajout de l'onglet principal 'recherche'
 				layoutOngletRecherche = new VerticalLayout();
 				ajoutOngletRecherche();
 				layoutOngletRecherche.setSizeFull();
@@ -273,6 +278,8 @@ public class MainUI extends GenericUI {
 
 				//ajout de l'onglet dossier étudiant
 				addTabDossierEtudiant();
+				
+				//Ce tabSheet sera aligné à droite
 				tabSheetGlobal.addStyleName("right-aligned-tabs");
 
 				//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
@@ -282,94 +289,125 @@ public class MainUI extends GenericUI {
 			}else{
 				//On consultera les notes en vue etudiant
 				vueEnseignantNotesEtResultats=false;
+
 				//User Etudiant
 				//Le Dossier est définit comme étant le contenu de la page
 				mainVerticalLayout.addComponent(layoutDossierEtudiant);
 				mainVerticalLayout.setSizeFull();
 				mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
 
+				//On renseigne l'étudiant dont on consulte le dossier
+				//Récupération du cod_etu
 				etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
 				LOG.debug("MainUI etudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
+				//Récupération de l'état-civil (et les adresses)
 				etudiantController.recupererEtatCivil();
-				/*etudiantController.recupererInscriptions();
-				etudiantController.recupererCalendrierExamens();*/
+				//On construit le menu affiché à l'étudiant
 				buildMainMenuEtudiant();
 			}
-
-			//setContent(layout);
-
-
-
-
-			/* Contruit le menu */
-			//buildMainMenuEtudiant();
-
 
 
 			/* Enregistre l'UI pour la réception de notifications */
 			uiController.registerUI(this);
 
-			/* Résout la vue à afficher */
-			String fragment = Page.getCurrent().getUriFragment();
-			//PROBLEME DU F5 : on passe ici que quand on reinitialise l'UI. 
-			//On ne peut donc pas rediriger vers des vu qui utilise des variables non initialisées (ex : Main.getCurrent.getEtudiant)
-			//if (fragment == null || fragment.isEmpty()) {
+			
+			// fragment de l'url pour gérer la vue à afficher via l'url. NON UTILISE POUR LE MOMENT
+			/*String fragment = Page.getCurrent().getUriFragment();
+			if (fragment == null || fragment.isEmpty()) */
+
+			//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
+			//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
 			if(!configController.isApplicationActive()){
 				displayViewFullScreen(AccesBloqueView.NAME);
 			}else{
-
+				//Si utilisateur enseignant
 				if(userController.isEnseignant()){
+					//Récupération des favoris pour l'utilisateur
 					List<Favoris> lfav = favorisController.getFavoris();
 					if(lfav!=null && lfav.size()>0){
+						//On affiche la vue des favoris
 						navigator.navigateTo(FavorisView.NAME);
 						navigateToFavoris();
+						//Affichage du message d'intro si besoin
 						afficherMessageIntroEnseignants();
 
 					}else{
+						//On affiche la vue de recherche rapide
 						navigator.navigateTo(RechercheRapideView.NAME);
 						navigateToRechercheRapide();
+						//Affichage du message d'intro si besoin
 						afficherMessageIntroEnseignants();
 					}
 				}else{
+					//Si utilisateur étudiant
 					if(userController.isEtudiant()){
+						//On affiche la vue de l'état-civil
 						navigator.navigateTo(EtatCivilView.NAME);
+						//Affichage du message d'intro si besoin
 						afficherMessageIntroEtudiants();
 					}else{
+						//On affiche la vue d'erreur
 						displayViewFullScreen(ErreurView.NAME);
 					}
 				}
 			}
 		}else{
+			//Si utilisateur n'est ni enseignant, ni étudiant
+			//On affiche la vue accès refusé
 			displayViewFullScreen(AccesRefuseView.NAME);
 		}
 	}
 
+	/**
+	 * Affichage d'une vue en full-screen
+	 * @param view
+	 */
 	private void displayViewFullScreen(String view){
 		setContent(contentLayout);
 		navigator.navigateTo(view);
 	}
 
+	/**
+	 * Affichage du message d'intro aux étudiants
+	 */
 	private void afficherMessageIntroEtudiants() {
 		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()));
-
 	}
 
+	/**
+	 * Affichage du message d'intro aux enseignants
+	 */
 	private void afficherMessageIntroEnseignants() {
 		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.enseignant", null, getLocale()));
 
 	}
 
+	/**
+	 * Affichage d'un message d'intro
+	 * @param text
+	 */
 	private void afficherMessageIntro(String text){
-		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
+
+		//On Recupere dans la base si l'utilisateur a indiqué une préférence pour l'affichage du message d'introduction
 		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE);
+
+		//Par défaut, on affiche le message
 		boolean afficherMessage = true;
+
+		//Si on a une préférence indiquée par l'utilisateur en ce qui concerne l'affichage du message d'intro
 		if(StringUtils.hasText(val)){
+			//On récupère ce choix dans afficherMessage
 			afficherMessage = Boolean.valueOf(val);
 		}
 
+		//Si on doit afficher le message
 		if(afficherMessage){
+			//Création de la pop-pup contenant le message
 			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
+
+			//Sur la fermeture de la fenêtre
 			hbw.addCloseListener(g->{
+				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
 				boolean choix = hbw.getCheckBox().getValue();
 				//Test si l'utilisateur a coché la case pour ne plus afficher le message
 				if(choix){
@@ -377,129 +415,178 @@ public class MainUI extends GenericUI {
 					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE, "false");
 				}
 			});
+
+			//Affichage de la pop_up
 			UI.getCurrent().addWindow(hbw);
 		}
 	}
 
+	/**
+	 * Création des onglets pour l'enseignant
+	 */
 	private void ajoutOngletRecherche() {
 		tabSheetEnseignant.setSizeFull();
 
 
-		tabSheetEnseignant.addTab(rechercheRapideView, "Recherche Rapide", FontAwesome.SEARCH);
-		//tabSheetEnseignant.addTab(contentTabSheetEnseignantLayout, "Recherche Rapide", FontAwesome.SEARCH);
+		//Onglet recherche rapide
+		tabSheetEnseignant.addTab(rechercheRapideView, applicationContext.getMessage("mainUI.rechercherapide.title", null, getLocale()), FontAwesome.SEARCH);
 		viewEnseignantTab.put(rechercheRapideView.NAME, 0);
 
-		tabSheetEnseignant.addTab(rechercheArborescenteView, "Recherche Arborescente", FontAwesome.SITEMAP);
-		//tabSheetEnseignant.addTab(contentTabSheetEnseignantLayout, "Recherche Arborescente", FontAwesome.SITEMAP);
+		//Onglet recherche arborescente
+		tabSheetEnseignant.addTab(rechercheArborescenteView, applicationContext.getMessage("mainUI.recherchearbo.title", null, getLocale()), FontAwesome.SITEMAP);
 		viewEnseignantTab.put(rechercheArborescenteView.NAME, 1);
 
+		//Onglet favoris
 		tabSheetEnseignant.addTab(favorisView, "Favoris", FontAwesome.STAR_O);
 		viewEnseignantTab.put(favorisView.NAME, 2);
+
+		//On gère le changement d'onglet effectué par l'utilisateur
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {
 
 			public void selectedTabChange(SelectedTabChangeEvent event){
-				// Find the tabsheet
+				//On récupère le tabSheet
 				TabSheet tabsheet = event.getTabSheet();
 
-				// Find the tab (here we know it's a layout)
+				//On récupère la vue à  afficher
 				View vue = (View) tabsheet.getSelectedTab();
+				//Si l'utilisateur veut afficher la vue des favoris
 				if (vue instanceof FavorisView){
+					//On initialise la vue
 					favorisView.init();
 				}
+				//Si l'utilisateur veut afficher la vue de la liste des inscrits
 				if (vue instanceof ListeInscritsView){
+					//On refresh la vue
 					listeInscritsView.refresh();
 				}
+				//Si l'utilisateur veut afficher la vue de la recherche arborescente
 				if (vue instanceof RechercheArborescenteView){
+					//On refresh la vue
 					rechercheArborescenteView.refresh();
 				}
 
 
 			}
 		});
-		//tabSheetEnseignant.addTab(contentTabSheetEnseignantLayout, "Favoris", FontAwesome.STAR_O);
 
+		//Ajout de l'onglet contenant la liste des inscrits
 		addTabListeInscrits();
 
 
-		tabSheetEnseignant.addStyleName("left-aligned-tabs");
+		//Ajout du tabSheet dans le layout
 		layoutOngletRecherche.addComponent(tabSheetEnseignant);
+		//On passe le layout en sizeFull
 		layoutOngletRecherche.setSizeFull();
+		//Le tabSheet prend toute la place disponible dans le layout
 		layoutOngletRecherche.setExpandRatio(tabSheetEnseignant, 1);
 
 	}
 
 
 
-
+	/**
+	 * Ajout de l'onglet contenant la liste des inscrits
+	 */
 	private void addTabListeInscrits() {
-		tabSheetEnseignant.addTab(listeInscritsView, "Liste d'inscrits ", FontAwesome.USERS);
+		//Ajout de l'onglet au tabSheet
+		tabSheetEnseignant.addTab(listeInscritsView, applicationContext.getMessage("mainUI.listeinscrits.title", null, getLocale()) + " ", FontAwesome.USERS);
 		//test si c'est la premiere fois qu'on ajoute l'onglet
 		if(!viewEnseignantTab.containsKey(listeInscritsView.NAME)){
+			//On enregistre que l'onglet de la liste des inscrit est en 4em position (on compte à partir de 0)
 			viewEnseignantTab.put(listeInscritsView.NAME, 3);
 		}
+		//On masque l'onglet par défaut
 		tabSheetEnseignant.getTab(3).setVisible(false);
+		//L'onglet possible une croix pour être fermé
 		tabSheetEnseignant.getTab(3).setClosable(true);
 
 	}
 
+	/**
+	 * Ajout de l'onglet principal "dossier" contenant le dossier de l'étudiant
+	 */
 	private void addTabDossierEtudiant() {
-		tabSheetGlobal.addTab(layoutDossierEtudiant, "Dossier", FontAwesome.USER);
+		//Ajout de l'onglet "Dossier"
+		tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
+		//On cache l'onglet par défaut
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(false);
+		//L'onglet possible une croix pour être fermé
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setClosable(true);
 
 	}
 
-	public void navigateToRechercheArborescenteTab(){
+	/**
+	 * Pour se rendre à la vue de rechercheArborescente
+	 */
+	/*public void navigateToRechercheArborescenteTab(){
 		tabSheetEnseignant.setSelectedTab(2);
-	}
+	}*/
 
+	/**
+	 * Construction du menu étudiant
+	 */
 	private void buildMainMenuEtudiant() {
 
+		//Si l'étudiant dont on affiche le dossier est renseigné
 		if(etudiant!=null){
 
+			//Ajout du style au menu
 			mainMenu.setPrimaryStyleName(ValoTheme.MENU_PART);
+			//On fixe la largeur du menu
 			mainMenu.setWidth("233px");
 
+			//Layout contenant la photo
+			HorizontalLayout photoLayout = new HorizontalLayout();
 
-			HorizontalLayout fotoLayout = new HorizontalLayout();
+			//Ajout du style au layout
+			photoLayout.addStyleName(ValoTheme.MENU_SUBTITLE);
+			//On fixe la largeur du layout
+			photoLayout.setWidth(213, Unit.PIXELS);
+			//La layout a des marges
+			photoLayout.setMargin(true);
 
-			fotoLayout.addStyleName(ValoTheme.MENU_SUBTITLE);
-			fotoLayout.setWidth(213, Unit.PIXELS);
-			fotoLayout.setMargin(true);
-
-
-
-
+			//Bouton qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours. Par défaut, icone indiquant que l'étudiant est inscrit
 			Button etuInscritBtn = new Button("", FontAwesome.CHECK_CIRCLE);
+			//Ajout du style au bouton
 			etuInscritBtn.setPrimaryStyleName(ValoTheme.BUTTON_BORDERLESS);
+			
+			//Si l'étudiant est inscrit pour l'année en cours
 			if(etudiant.isInscritPourAnneeEnCours()){
+				//On fixe la description du bouton
 				etuInscritBtn.setDescription("Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
 			}else{
+				//On change l'icone du bouton pour indiquer que l'étudiant n'est pas inscrit
 				etuInscritBtn.setIcon(FontAwesome.EXCLAMATION_CIRCLE);
+				//On fixe la description du bouton
 				etuInscritBtn.setDescription("Non Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
 			}
 
-			fotoLayout.addComponent(new HorizontalLayout());
+			//Ajout d'un élément vide dans le layout
+			photoLayout.addComponent(new HorizontalLayout());
 
-			/* Photo étudiant */
+			//Si on a une url pour la photo de l'étudiant
 			if(etudiant.getPhoto()!=null){
-				Image logo = new Image(null, new ClassResource("/images/UL.png"));
+				//Création de l'image contenant la photo
 				Image fotoEtudiant = new Image(null, new ExternalResource(etudiant.getPhoto()));
 				fotoEtudiant.setWidth("120px");
 				fotoEtudiant.setHeight("153px");
-				fotoLayout.addComponent(fotoEtudiant);
-				fotoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
-				fotoLayout.setExpandRatio(fotoEtudiant, 1);
+				//Ajout de la photo au layout
+				photoLayout.addComponent(fotoEtudiant);
+				//Alignement de la photo
+				photoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
+				//La photo prend toute la place disponible dans son layout
+				photoLayout.setExpandRatio(fotoEtudiant, 1);
 			}
-			fotoLayout.addComponent(etuInscritBtn);
+			
+			//Ajout au layout du bouton, qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours
+			photoLayout.addComponent(etuInscritBtn);
+
+			//Ajout du layout de la photo au menu
+			mainMenu.addComponent(photoLayout);
 
 
-			mainMenu.addComponent(fotoLayout);
 
-
-
-			/* Titre: Username */
-			//Label usernameLabel = new Label(userController.getCurrentUserName());
+			//Ajout du Prénom/Nom et codetu de l'étudiant dans le menu
 			Label usernameLabel = new Label(etudiant.getNom()+"<br />"+etudiant.getCod_etu(), ContentMode.HTML);
 			usernameLabel.addStyleName(ValoTheme.MENU_SUBTITLE);
 			usernameLabel.setSizeUndefined();
@@ -510,7 +597,6 @@ public class MainUI extends GenericUI {
 
 			//info annuelles visibles que si étudiant inscrit pour l'année en cours
 			if(etudiant.isInscritPourAnneeEnCours()){
-				/* Informations Annuelles */
 				addItemMenu("Informations annuelles", InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
 			}
 
@@ -525,49 +611,29 @@ public class MainUI extends GenericUI {
 			addItemMenu("Calendrier des épreuves", CalendrierView.NAME, FontAwesome.CALENDAR);
 
 
-			/* Bouton vers la vue Admin */
-			if (userController.canCurrentUserAccessView(AdminView.class)) {
-				//	addItemMenu(applicationContext.getMessage(AdminView.NAME + ".title", null, getLocale()), AdminView.NAME, FontAwesome.WRENCH);
-				/* Activation des profils: décommenter cette zone */
-				/*
-			addItemMenu(null, applicationContext.getMessage("admin.tabProfils", null, getLocale()), SecurityView.NAME, FontAwesome.LOCK);
-				 */
-			}
-
-			/* Bouton permettant de rétablir l'utilisateur ayant changé de rôle */
-			if (userController.isUserSwitched()) {
-				Button btnSwitchUserBack = new Button(applicationContext.getMessage("admin.switchUser.btnSwitchUserBack", null, getLocale()), FontAwesome.UNDO);
-				btnSwitchUserBack.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-				btnSwitchUserBack.addClickListener(e -> userController.switchBackToPreviousUser());
-				mainMenu.addComponent(btnSwitchUserBack);
-			}
-
-
-
-
-
 			/* Notes et Résultats */
 			addItemMenu(applicationContext.getMessage(NotesView.NAME + ".title", null, getLocale()), NotesView.NAME, FontAwesome.LIST);
 
+			/* Séparation avant Bouton "Aide" */
 			CssLayout bottomMainMenu1 = new CssLayout();
 			bottomMainMenu1.setStyleName(ValoTheme.MENU_SUBTITLE);
 			bottomMainMenu1.setSizeUndefined();
 			mainMenu.addComponent(bottomMainMenu1);
 
-
-
-			/* Assistance */
+			/* Aide */
 			Button helpBtn = new Button(applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()), FontAwesome.SUPPORT);
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpBasicWindow(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale())));});
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */
+			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
 			/*	Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 			decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			decoBtn.addClickListener(e -> getUI().getPage().setLocation("j_spring_security_logout"));
 			mainMenu.addComponent(decoBtn);*/
 
+			/* Séparation */
 			CssLayout bottomMainMenu = new CssLayout();
 			bottomMainMenu.setStyleName(ValoTheme.MENU_SUBTITLE);
 			bottomMainMenu.setSizeUndefined();
@@ -578,11 +644,23 @@ public class MainUI extends GenericUI {
 		}
 	}
 
+	/**
+	 * Ajout d'un item dans le menu étudiant
+	 * @param caption
+	 * @param viewName
+	 * @param icon
+	 */
 	private void addItemMenu(String caption, String viewName, com.vaadin.server.Resource icon) {
+		
+		//Création du bouton
 		Button itemBtn = new Button(caption, icon);
 		itemBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+		
+		//Gestion du clic sur le bouton
 		itemBtn.addClickListener(e -> navigator.navigateTo(viewName));
 		viewButtons.put(viewName, itemBtn);
+		
+		//Ajout du bouton au menu
 		mainMenu.addComponent(itemBtn);
 	}
 
@@ -591,70 +669,113 @@ public class MainUI extends GenericUI {
 	 */
 	@Override
 	public void detach() {
-		/* Se désinscrit de la réception de notifications */
+		/* Se désinscrit de la réception de notifications (utile en cas d'utilisation du push) */
 		uiController.unregisterUI(this);
 
 		super.detach();
 	}
 
+	/**
+	 * Affichage de la vue Recherche Arborescente
+	 * @param parameterMap
+	 */
 	public void navigateToRechercheArborescente(Map<String, String> parameterMap) {
+		//récupération de l'onglet qui affiche la vue RechercheArborescente
 		int numtab = viewEnseignantTab.get(rechercheArborescenteView.NAME);
+		//Si on a des paramètres renseignés
 		if(parameterMap!=null){
+			//initialisation de la vue avec les paramètres (on se place sur un élément précis de l'arborescence)
 			rechercheArborescenteView.initFromParameters(parameterMap);
 		}
+		//On sélectionne l'onglet pour afficher la vue
 		tabSheetEnseignant.setSelectedTab(numtab);
 	}
 
+	/**
+	 * Affichage de la vue Liste Inscrits
+	 * @param parameterMap
+	 */
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
+		//récupération de l'onglet qui affiche la vue ListeInscrits
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
+		
+		//Si on a des paramètres renseignés
 		if(parameterMap!=null){
+			
+			//Récupéation de la liste des inscrits des inscrits en fonction des paramètres
 			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
+			//initialisation de la vue avec la liste des inscrits
 			listeInscritsView.initListe();
 		}
 		//Si l'onglet a été closed
 		if(tabSheetEnseignant.getTab(numtab)==null){
+			//On recréé l'onglet
 			addTabListeInscrits();
 		}
-
+		
+		//On affiche l'onglet
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 
+		//On se rend sur l'onglet pour afficher la vue ListeInscrits
 		tabSheetEnseignant.setSelectedTab(numtab);
 	}
 
+	/**
+	 * Affichage de la vue des favoris
+	 */
 	public void navigateToFavoris() {
+		//récupération de l'onglet qui affiche la vue des favoris
 		int numtab = viewEnseignantTab.get(favorisView.NAME);
+		//On affiche l'onglet
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
+		//On se rend sur l'onglet pour afficher la vue des favoris
 		tabSheetEnseignant.setSelectedTab(numtab);
+		//On se rend sur l'onglet Recherche dans le tabSheet principal au cas où on vienne du dossier d'un étudiant
 		tabSheetGlobal.setSelectedTab(rangTabRecherche);
 	}
 
+	/**
+	 * Affichage de la vue RechercheRapide
+	 */
 	public void navigateToRechercheRapide() {
+		//récupération de l'onglet qui affiche la vue RechercheRapide
 		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
+		//On affiche l'onglet
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
+		//On se rend sur l'onglet pour afficher la vue RechercheRapide
 		tabSheetEnseignant.setSelectedTab(numtab);
+		//On se rend sur l'onglet Recherche dans le tabSheet principal au cas où on vienne du dossier d'un étudiant
 		tabSheetGlobal.setSelectedTab(rangTabRecherche);
 	}
 
+	/**
+	 * Affichage du dossier d'un étudiant
+	 * @param parameterMap
+	 */
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
-		if(parameterMap!=null){
-			//listeInscritsView.initFromParameters(parameterMap);
-		}
+
 		//Si l'onglet a été closed
 		if(tabSheetGlobal.getTab(rangTabDossierEtudiant)==null){
+			//On recréé l'onglet
 			addTabDossierEtudiant();
 		}
+		//Si le menu a déjà été initialisé
 		if(mainMenu!=null){
+			//On supprime le contenu du menu 
 			mainMenu.removeAllComponents();
 		}
+		//On reconstruit le menu pour l'étudiant concerné
 		buildMainMenuEtudiant();
+		
+		//On rend visible l'onglet "Dossier" dans le tabSheet principal
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(true);
 
+		//On se rend sur l'onglet "Dossier" dans le tabSheet principal
 		tabSheetGlobal.setSelectedTab(rangTabDossierEtudiant);
 
+		//par défaut on affiche la vue état-civil
 		navigator.navigateTo(EtatCivilView.NAME);
 	}
-
-
 
 
 
