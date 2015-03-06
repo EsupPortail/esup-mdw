@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.eclipse.persistence.internal.jpa.config.tables.TableImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -146,12 +147,18 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private HorizontalLayout leftResumeLayout;
 
 	private HorizontalLayout middleResumeLayout;
-	
+
 	private Button btnDisplayFiltres;
 
 	private Button btnExportTrombi;
 
 	private Button btnExportExcel;
+
+	private CheckBox collapseEtp;
+
+	private CheckBox collapseResultatsS1;
+
+	private CheckBox collapseResultatsS2;
 
 	/**
 	 * Initialise la vue
@@ -483,8 +490,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				leftResumeLayout.setComponentAlignment(infoDescriptionButton, Alignment.MIDDLE_LEFT);
 
 
-			
-				
+
+
 				//Bouton export trombinoscope
 				btnExportTrombi=new Button();
 				btnExportTrombi.setIcon(FontAwesome.FILE_PDF_O);
@@ -563,7 +570,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				middleResumeLayout.setSpacing(true);
 
 				if(!typeIsVet()){
-					CheckBox collapseEtp = new CheckBox(applicationContext.getMessage(NAME+".collapseEtp.title", null, getLocale()));
+					collapseEtp = new CheckBox(applicationContext.getMessage(NAME+".collapseEtp.title", null, getLocale()));
 					collapseEtp.setValue(true);
 					collapseEtp.addValueChangeListener(e->{
 						inscritstable.setColumnCollapsed("etape", !collapseEtp.getValue());
@@ -572,7 +579,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					middleResumeLayout.addComponent(collapseEtp);
 					middleResumeLayout.setComponentAlignment(collapseEtp, Alignment.MIDDLE_CENTER);
 				}
-				CheckBox collapseResultatsS1  = new CheckBox(applicationContext.getMessage(NAME+".collapseResultatsS1.title", null, getLocale()));
+				collapseResultatsS1  = new CheckBox(applicationContext.getMessage(NAME+".collapseResultatsS1.title", null, getLocale()));
 				collapseResultatsS1.setValue(false);
 				collapseResultatsS1.addValueChangeListener(e->{
 					inscritstable.setColumnCollapsed("notes1", !collapseResultatsS1.getValue());
@@ -581,7 +588,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				middleResumeLayout.addComponent(collapseResultatsS1);
 				middleResumeLayout.setComponentAlignment(collapseResultatsS1, Alignment.MIDDLE_CENTER);
 
-				CheckBox collapseResultatsS2  = new CheckBox(applicationContext.getMessage(NAME+".collapseResultatsS2.title", null, getLocale()));
+				collapseResultatsS2  = new CheckBox(applicationContext.getMessage(NAME+".collapseResultatsS2.title", null, getLocale()));
 				collapseResultatsS2.setValue(false);
 				collapseResultatsS2.addValueChangeListener(e->{
 					inscritstable.setColumnCollapsed("notes2", !collapseResultatsS2.getValue());
@@ -611,7 +618,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				buttonResumeLayout.setComponentAlignment(btnDisplayFiltres, Alignment.MIDDLE_RIGHT);
 				buttonResumeLayout.setExpandRatio(btnDisplayFiltres, 1);
 				btnDisplayFiltres.setVisible(false);
-				
+
 				//Bouton trombinoscope
 				btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
 				btnTrombi.setIcon(FontAwesome.GROUP);
@@ -660,7 +667,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 				});
 				buttonResumeLayout.setComponentAlignment(btnRetourListe, Alignment.MIDDLE_RIGHT);
-				
+
 				resumeLayout.addComponent(buttonResumeLayout);
 
 				infoLayout.addComponent(resumeLayout);
@@ -672,8 +679,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				//Table contenant la liste des inscrits
 				inscritstable = new Table(null, new BeanItemContainer<>(Inscrit.class, linscrits));
 
+				inscritstable.addStyleName("table-without-column-selector");
 				inscritstable.setSizeFull();
-
 				inscritstable.setVisibleColumns(new String[0]);
 
 				String[] fields = INS_FIELDS_ELP;
@@ -712,10 +719,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 				inscritstable.setColumnCollapsingAllowed(true);
 				inscritstable.setColumnReorderingAllowed(false);
-		
+
 				//On masque les colonnes de notes par défaut
 				inscritstable.setColumnCollapsed("notes1", true);
 				inscritstable.setColumnCollapsed("notes2", true);
+
+	
 
 				inscritstable.setSelectable(false);
 				inscritstable.setImmediate(true);
@@ -759,6 +768,15 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	}
 
+	private void majCheckbox() {
+		System.out.println("majCheckbox");
+		if(typeIsElp()){
+			collapseEtp.setValue(!inscritstable.isColumnCollapsed("etape"));
+		}
+		collapseResultatsS1.setValue(!inscritstable.isColumnCollapsed("notes1"));
+		collapseResultatsS2.setValue(!inscritstable.isColumnCollapsed("notes2"));
+
+	}
 	private void displayTrombinoscope() {
 		List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
 
