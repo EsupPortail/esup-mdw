@@ -1,12 +1,9 @@
 package fr.univlorraine.mondossierweb.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import fr.univlorraine.tools.vaadin.EntityPusher;
-
 /**
- * Configuration Entity Push
+ * Configuration Entity Push NON UTILISE
  * 
  * @author Adrien Colson
  */

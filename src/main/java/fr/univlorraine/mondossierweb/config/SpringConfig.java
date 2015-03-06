@@ -19,10 +19,6 @@ import fr.univlorraine.mondossierweb.Initializer;
  */
 @Configuration
 @EnableSpringConfigured
-/* Activation des profils: décommenter cette zone et commenter la ligne suivante */
-/*
-@ComponentScan(basePackageClasses=Initializer.class,basePackages="fr.univlorraine")
-*/
 @ComponentScan(basePackageClasses=Initializer.class)
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 @EnableWebMvc
@@ -45,10 +41,6 @@ public class SpringConfig {
 	@Bean
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-		/* Activation des profils: décommenter cette zone et commenter la ligne suivante */
-		/*
-		resourceBundleMessageSource.setBasenames("i18n/messages", "i18n/security-messages", "i18n/vaadin-messages");
-		 */
 		resourceBundleMessageSource.setBasenames("i18n/messages", "i18n/vaadin-messages");
 		return resourceBundleMessageSource;
 	}

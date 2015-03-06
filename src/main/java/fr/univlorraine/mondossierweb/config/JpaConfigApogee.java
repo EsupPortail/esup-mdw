@@ -52,10 +52,6 @@ public class JpaConfigApogee {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactoryApogee() {
 		LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		localContainerEntityManagerFactoryBean.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
-		/* Activation des profils: décommenter cette zone et commenter la ligne suivante */
-		/*
-		localContainerEntityManagerFactoryBean.setPackagesToScan(Structure.class.getPackage().getName(), SecurityProfil.class.getPackage().getName());
-		*/
 		localContainerEntityManagerFactoryBean.setPackagesToScan(VObjSeApogee.class.getPackage().getName());
 		localContainerEntityManagerFactoryBean.setDataSource(dataSourceApogee());
 		localContainerEntityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());

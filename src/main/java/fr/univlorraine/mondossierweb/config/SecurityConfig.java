@@ -134,26 +134,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return casAuthenticationProvider;
 	}
 
-	/* Configuration LDAP */
-
-	/*Activation des profils: décommenter le bloc ci-dessous et commenter le bean userDetailsService ci-dessous*/
-	/*
-	@Bean
-	public SecurityUserDetailMapper securityUserDetailsMapper() throws Exception {
-		SecurityUserDetailMapper userDetailsMapper = new SecurityUserDetailMapper();
-		userDetailsMapper.setRoleAttributes(new String[] {environment.getProperty("ldap.roleAttribute")});
-		return userDetailsMapper;
-	}
 	
-	@Bean(name="userDetailsService")
-	@Override
-	public UserDetailsService userDetailsServiceBean() throws Exception {
-		LdapUserDetailsService ldapUserDetailsService = new LdapUserDetailsService(ldapUserSearch());
-		ldapUserDetailsService.setUserDetailsMapper(securityUserDetailsMapper());
-		return ldapUserDetailsService;
-	}
-	
-	*/
 	@Bean(name="userDetailsService")
 	@Override
 	public UserDetailsService userDetailsServiceBean() throws Exception {
@@ -189,8 +170,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new FilterBasedLdapUserSearch("ou=people", "uid={0}", ldapServer());
 	}
 
-	/* Filtre permettant de prendre le rôle d'un autre utilisateur */
-
+	/* Filtre permettant de prendre le rôle d'un autre utilisateur => NON UTILISE */
 	@Bean
 	public SwitchUserFilter switchUserFilter() throws Exception {
 		SwitchUserFilter switchUserFilter = new SwitchUserFilter();

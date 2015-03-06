@@ -5,13 +5,10 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -29,10 +26,6 @@ import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
  */
 @Configuration
 @EnableTransactionManagement(mode=AdviceMode.ASPECTJ)
-/* Activation des profils: décommenter cette zone et commenter la ligne suivante */
-/*
-@EnableJpaRepositories(basePackageClasses={StructureRepository.class, SecurityProfilRepository.class})
-*/
 @EnableJpaRepositories(basePackageClasses=FavorisRepository.class,transactionManagerRef="transactionManager", entityManagerFactoryRef="entityManagerFactory")
 public class JpaConfig {
 
@@ -48,31 +41,6 @@ public class JpaConfig {
 		return dsLookup.getDataSource("java:/comp/env/jdbc/db");
 	}
 
-	/**
-	 * Initialisation de la base de données
-	 * @param schemaScript
-	 * @param dataScript
-	 * @return
-	 */
-	/*Activation des profils: décommenter cette zone et commenter la ligne suivante
-	 * -->insertion des donn�es exemple*/
-	/*	
-	public DataSourceInitializer dataSourceInitializer(@Value("classpath:dataBase/db-schema.sql") org.springframework.core.io.Resource schemaScript, @Value("classpath:dataBase/db-test-data.sql") org.springframework.core.io.Resource dataScript, @Value("classpath:dataBase/db-security.sql") org.springframework.core.io.Resource securityScript) {
-	*/
-	/*@Bean
-	public DataSourceInitializer dataSourceInitializer(@Value("classpath:dataBase/db-schema.sql") org.springframework.core.io.Resource schemaScript, @Value("classpath:dataBase/db-test-data.sql") org.springframework.core.io.Resource dataScript) {
-		DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-		dataSourceInitializer.setDataSource(dataSource());
-
-		ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
-		resourceDatabasePopulator.addScript(schemaScript);
-		resourceDatabasePopulator.addScript(dataScript);
-		//Activation des profils: décommenter cette zone
-		//resourceDatabasePopulator.addScript(securityScript);
-		dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
-
-		return dataSourceInitializer;
-	}*/
 
 	/**
 	 * EntityManager Factory
@@ -82,10 +50,6 @@ public class JpaConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		localContainerEntityManagerFactoryBean.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
-		/* Activation des profils: décommenter cette zone et commenter la ligne suivante */
-		/*
-		localContainerEntityManagerFactoryBean.setPackagesToScan(Structure.class.getPackage().getName(), SecurityProfil.class.getPackage().getName());
-		*/
 		localContainerEntityManagerFactoryBean.setPackagesToScan(Favoris.class.getPackage().getName());
 		localContainerEntityManagerFactoryBean.setDataSource(dataSource());
 		localContainerEntityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
