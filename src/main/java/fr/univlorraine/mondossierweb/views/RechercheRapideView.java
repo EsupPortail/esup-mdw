@@ -500,10 +500,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString()));
 
-
 			return b;
 		}
 	}
+
 
 
 
