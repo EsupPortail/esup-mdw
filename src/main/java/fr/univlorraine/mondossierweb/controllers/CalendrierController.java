@@ -117,6 +117,8 @@ public class CalendrierController {
 		
 		String nomFichier = applicationContext.getMessage("pdf.calendrier.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 
+		nomFichier = nomFichier.replaceAll(" ","_");
+		
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;
 

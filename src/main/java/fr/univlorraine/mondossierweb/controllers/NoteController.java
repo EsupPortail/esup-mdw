@@ -114,7 +114,7 @@ public class NoteController {
 
 		
 		String nomFichier = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
-		
+		nomFichier = nomFichier.replaceAll(" ","_");
 		
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;
@@ -164,7 +164,7 @@ public class NoteController {
 
 		
 		String nomFichier = applicationContext.getMessage("pdf.detail.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
-		
+		nomFichier = nomFichier.replaceAll(" ","_");
 		
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;

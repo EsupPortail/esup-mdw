@@ -103,5 +103,25 @@
 	.flexwrap .itembox .v-slot .v-panel {
 		width: 100%;
 	}
+	
+	
+	/*
+	.v-loading-indicator[style*="none"]:before {
+  display: none;
+}
+
+
+	.v-loading-indicator-delay:before,
+.v-loading-indicator-wait:before {
+  content: "";
+  position: fixed;
+  background: rgba(0,0,0,.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: auto;
+}
+*/
 
 }

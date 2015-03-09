@@ -502,6 +502,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				//methode qui permet de generer l'export à la demande
 				//Création du nom du fichier
 				String nomFichier = applicationContext.getMessage("pdf.trombinoscope.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".pdf";
+				nomFichier = nomFichier.replaceAll(" ","_");
 				StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
 					@Override
 					public InputStream getStream() {
@@ -515,6 +516,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 				}, nomFichier);
 				resource.setMIMEType("application/pdf");
+				/*
+				resource.getStream().setParameter("Content-Type","application/force-download");
+				resource.getStream().setParameter("Content-Disposition","attachment; filename=\"toto.pdf\"");
+				 */
 				resource.setCacheTime(0);
 
 				//On ajoute le FD sur le bouton d'export
@@ -536,6 +541,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnExportExcel.addStyleName("button-icon");
 				btnExportExcel.setDescription(applicationContext.getMessage(NAME + ".excel.link", null, getLocale()));
 				String nomFichierXls = applicationContext.getMessage("excel.listeinscrits.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".xls";
+				nomFichierXls = nomFichierXls.replaceAll(" ","_");
 				StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
 					@Override
 					public InputStream getStream() {
