@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.views;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -62,6 +63,7 @@ import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
+import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailGroupesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
@@ -83,7 +85,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	public static final String[] INS_FIELDS_TO_DISPLAY_ELP = {"cod_etu","prenom","nom","date_nai_ind","email","etape","notes1","notes2"};
 
 	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","prenom","nom","date_nai_ind","email","iae","notes1","notes2"};
-
 
 	public static final String TOUTES_LES_ETAPES_LABEL = "toutes";
 
@@ -542,7 +543,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnExportExcel.setDescription(applicationContext.getMessage(NAME + ".excel.link", null, getLocale()));
 				String nomFichierXls = applicationContext.getMessage("excel.listeinscrits.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".xls";
 				nomFichierXls = nomFichierXls.replaceAll(" ","_");
+				
 				StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
+					 
 					@Override
 					public InputStream getStream() {
 
@@ -555,19 +558,17 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 				}, nomFichierXls);
 				resourceXls.setMIMEType("application/xls");
+				//resourceXls.setMIMEType("force-download");
 				resourceXls.setCacheTime(0);
-
 				//On ajoute le FD sur le bouton d'export
-				new FileDownloader(resourceXls).extend(btnExportExcel);
+				new MyFileDownloader(resourceXls).extend(btnExportExcel);
+				
 				if(!afficherTrombinoscope){
-
 					//On échange le bouton d'export pdf par le bouton export excel
 					leftResumeLayout.replaceComponent(btnExportTrombi, btnExportExcel);
 				}
 
-
 				resumeLayout.addComponent(leftResumeLayout);
-
 
 				//Middle layout avec les bouton de collapse des colonnes
 				middleResumeLayout= new HorizontalLayout();

@@ -461,7 +461,7 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public InputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee, String typeFavori) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee, String typeFavori) {
 
 		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
 		try {
