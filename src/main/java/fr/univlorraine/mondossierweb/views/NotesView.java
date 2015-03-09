@@ -3,24 +3,21 @@ package fr.univlorraine.mondossierweb.views;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.util.StringUtils;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -29,27 +26,20 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.entities.Favoris;
-import fr.univlorraine.mondossierweb.entities.FavorisPK;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.ActionsColumnGenerator;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 
@@ -117,7 +107,7 @@ public class NotesView extends VerticalLayout implements View {
 			pdfButton.addStyleName("button-big-icon");
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-			FileDownloader fd = new FileDownloader(noteController.exportPdfResume());
+			MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfResume());
 			fd.extend(pdfButton);
 			titleLayout.addComponent(pdfButton);
 			titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);

@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
@@ -17,7 +16,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -29,14 +27,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 
 /**
  * Page d'accueil
@@ -99,7 +95,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			pdfButton.addStyleName("button-big-icon");
 			pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 			pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-			FileDownloader fd = new FileDownloader(calendrierController.exportPdf());
+			MyFileDownloader fd = new MyFileDownloader(calendrierController.exportPdf());
 			fd.extend(pdfButton);
 			titleLayout.addComponent(pdfButton);
 			titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);

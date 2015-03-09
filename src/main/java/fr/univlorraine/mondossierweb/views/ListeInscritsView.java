@@ -517,14 +517,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 				}, nomFichier);
 				resource.setMIMEType("application/pdf");
-				/*
-				resource.getStream().setParameter("Content-Type","application/force-download");
-				resource.getStream().setParameter("Content-Disposition","attachment; filename=\"toto.pdf\"");
-				 */
 				resource.setCacheTime(0);
 
 				//On ajoute le FD sur le bouton d'export
-				new FileDownloader(resource).extend(btnExportTrombi);
+				new MyFileDownloader(resource).extend(btnExportTrombi);
 
 				leftResumeLayout.addComponent(btnExportTrombi);
 				leftResumeLayout.setComponentAlignment(btnExportTrombi, Alignment.MIDDLE_LEFT);
@@ -558,7 +554,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 				}, nomFichierXls);
 				resourceXls.setMIMEType("application/xls");
-				//resourceXls.setMIMEType("force-download");
+
 				resourceXls.setCacheTime(0);
 				//On ajoute le FD sur le bouton d'export
 				new MyFileDownloader(resourceXls).extend(btnExportExcel);
