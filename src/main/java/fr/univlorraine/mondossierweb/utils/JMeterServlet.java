@@ -1,4 +1,4 @@
-package fr.univlorraine.mondossierweb;
+package fr.univlorraine.mondossierweb.utils;
 
 
 import com.vaadin.server.ClientConnector;
