@@ -56,7 +56,6 @@ import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
-import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
@@ -114,8 +113,6 @@ public class MainUI extends GenericUI {
 
 
 
-	@Resource
-	private AdminView adminView;
 
 	@Resource
 	private RechercheRapideView rechercheRapideView;
