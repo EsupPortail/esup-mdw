@@ -11,7 +11,6 @@ import lombok.Setter;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -21,7 +20,6 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
-import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBase;
@@ -39,8 +37,6 @@ public class RechercheArborescenteController {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient Environment environment;
-	@Resource
-	private transient UserDetailsService userDetailsService;
 	@Resource
 	private transient UiController uiController;
 	@Resource

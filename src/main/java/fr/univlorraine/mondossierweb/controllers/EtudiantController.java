@@ -3,11 +3,9 @@ package fr.univlorraine.mondossierweb.controllers;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -16,11 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
@@ -38,17 +34,18 @@ import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
-import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
+import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterfaceProxy;
 import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.servicesmetiers.PedagogiqueMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.pedagogiquemetier.PedagogiqueMetierServiceInterfaceProxy;
 import gouv.education.apogee.commun.servicesmetiers.AdministratifMetierServiceInterface;
 import gouv.education.apogee.commun.servicesmetiers.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.servicesmetiers.PedagogiqueMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExterneDTO;
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExternesEtTransfertsDTO;
 import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmAnuDTO2;
@@ -92,8 +89,6 @@ public class EtudiantController {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient Environment environment;
-	@Resource
-	private transient UserDetailsService userDetailsService;
 	/** {@link DiplomeApogeeServiceImpl} */
 	@Resource
 	private DiplomeApogeeService diplomeService;

@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -33,8 +32,6 @@ public class RechercheController {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient Environment environment;
-	@Resource
-	private transient UserDetailsService userDetailsService;
 	@Resource
 	private transient EtudiantController etudiantController;
 	@Resource
