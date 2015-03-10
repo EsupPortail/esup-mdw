@@ -55,7 +55,7 @@ public class DebugConfig {
 	 * Branche customizableTraceInterceptor sur les méthodes enter des vues
 	 * @return
 	 */
-	@Bean
+/*	@Bean
 	public Advisor viewsEnterAdvisor() {
 		return new StaticMethodMatcherPointcutAdvisor(customizableTraceInterceptor()) {
 			private static final long serialVersionUID = -7297125641462899887L;
@@ -65,6 +65,6 @@ public class DebugConfig {
 				return clazz.isAnnotationPresent(VaadinView.class) && "enter".equals(method.getName());
 			}
 		};
-	}
+	}*/
 
 }
