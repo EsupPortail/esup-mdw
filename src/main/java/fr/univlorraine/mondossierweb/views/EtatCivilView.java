@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -41,7 +43,10 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 @Component @Scope("prototype")
 @VaadinView(EtatCivilView.NAME)
 public class EtatCivilView extends VerticalLayout implements View {
+	
 	private static final long serialVersionUID = -2056224835347802529L;
+	
+	private Logger LOG = LoggerFactory.getLogger(EtatCivilView.class);
 
 	public static final String NAME = "etatCivilView";
 
@@ -72,6 +77,8 @@ public class EtatCivilView extends VerticalLayout implements View {
 		setMargin(true);
 		setSpacing(true);
 
+		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
+		
 		/* Titre */
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 		title.addStyleName(ValoTheme.LABEL_H1);

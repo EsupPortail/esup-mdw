@@ -116,7 +116,6 @@ public class CalendrierView extends VerticalLayout implements View {
 		if(MainUI.getCurrent().getEtudiant()!=null && MainUI.getCurrent().getEtudiant().getCalendrier()!=null && MainUI.getCurrent().getEtudiant().getCalendrier().size()>0){
 
 			BeanItemContainer<Examen> bic= new BeanItemContainer<>(Examen.class, MainUI.getCurrent().getEtudiant().getCalendrier());
-			LOG.info("bic : "+bic.size());
 			Table calendrierTable = new Table(null, bic);
 			calendrierTable.setWidth("100%");
 			String[] colonnes_to_create = CAL_FIELDS;
@@ -141,7 +140,6 @@ public class CalendrierView extends VerticalLayout implements View {
 			calendrierTable.setImmediate(true);
 			calendrierTable.setStyleName("noscrollabletable");
 			calendrierTable.setPageLength(calendrierTable.getItemIds().size() );
-			LOG.info("calendrierTable.getItemIds().size()  : "+calendrierTable.getItemIds().size());
 
 			panelCalendrier.setContent(calendrierTable);
 		}else{

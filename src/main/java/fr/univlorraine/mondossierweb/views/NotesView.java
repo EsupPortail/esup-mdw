@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -49,7 +51,10 @@ import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 @Component @Scope("prototype")
 @VaadinView(NotesView.NAME)
 public class NotesView extends VerticalLayout implements View {
+	
 	private static final long serialVersionUID = -6491779626961549383L;
+	
+	private Logger LOG = LoggerFactory.getLogger(NotesView.class);
 
 	public static final String NAME = "notesView";
 
@@ -77,6 +82,9 @@ public class NotesView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
+		
+		LOG.debug(userController.getCurrentUserName()+" NotesView");
+		
 		removeAllComponents();
 		/* Style */
 		setMargin(true);

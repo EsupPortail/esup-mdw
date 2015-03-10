@@ -679,6 +679,7 @@ public class MainUI extends GenericUI {
 	 * @param parameterMap
 	 */
 	public void navigateToRechercheArborescente(Map<String, String> parameterMap) {
+		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
 		//récupération de l'onglet qui affiche la vue RechercheArborescente
 		int numtab = viewEnseignantTab.get(rechercheArborescenteView.NAME);
 		//Si on a des paramètres renseignés
@@ -695,6 +696,7 @@ public class MainUI extends GenericUI {
 	 * @param parameterMap
 	 */
 	public void navigateToListeInscrits(Map<String, String> parameterMap) {
+		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
 		//récupération de l'onglet qui affiche la vue ListeInscrits
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 		
@@ -723,6 +725,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue des favoris
 	 */
 	public void navigateToFavoris() {
+		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToFavoris");
 		//récupération de l'onglet qui affiche la vue des favoris
 		int numtab = viewEnseignantTab.get(favorisView.NAME);
 		//On affiche l'onglet
@@ -737,6 +740,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue RechercheRapide
 	 */
 	public void navigateToRechercheRapide() {
+		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheRapide");
 		//récupération de l'onglet qui affiche la vue RechercheRapide
 		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
 		//On affiche l'onglet
@@ -752,7 +756,9 @@ public class MainUI extends GenericUI {
 	 * @param parameterMap
 	 */
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
-
+		
+		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
+	
 		//Si l'onglet a été closed
 		if(tabSheetGlobal.getTab(rangTabDossierEtudiant)==null){
 			//On recréé l'onglet

@@ -266,22 +266,20 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	public String getRemoteAdresse() {
 		WebBrowser browser;
 		String ip =  getIpAddr();
-		LOG.info("IP client via VaadinService Headers : "+ip);
+		LOG.debug("IP client via VaadinService Headers : "+ip);
 
 
 		//Recuperation de l'IP pour info
 		if(GenericUI.getCurrent() instanceof MainUI){
 			MainUI mainUI = MainUI.getCurrent();
 			browser = mainUI.getPage().getWebBrowser();
-			LOG.info("browser IP client MainUI : "+browser.getAddress());
-			//return browser.getAddress();
+			LOG.debug("browser IP client MainUI : "+browser.getAddress());
 
 		}
 		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
 			MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
 			browser = mdwTouchkitUI.getPage().getWebBrowser();
-			LOG.info("browser IP client MdwTouchkitUI : "+browser.getAddress());
-			//return browser.getAddress();
+			LOG.debug("browser IP client MdwTouchkitUI : "+browser.getAddress());
 
 		}
 
@@ -304,33 +302,33 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 			if(ip.contains(",")){
 				ip = ip.split(",")[1];
 			}
-			LOG.info("IP client : "+ip+" recuperee dans le Header x-forwarded-for");
+			LOG.debug("IP client : "+ip+" recuperee dans le Header x-forwarded-for");
 		}
 		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 			ip = hsRequest.getHeader("X-Forwarded-For");      
 		}else{
-			LOG.info("IP client : "+ip+" recuperee dans le Header X_FORWARDED_FOR");
+			LOG.debug("IP client : "+ip+" recuperee dans le Header X_FORWARDED_FOR");
 		}
 		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 			ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
 		}else{
-			LOG.info("IP client : "+ip+" recuperee dans le Header X-Forwarded-For");
+			LOG.debug("IP client : "+ip+" recuperee dans le Header X-Forwarded-For");
 		}
 		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 			ip = hsRequest.getHeader("Proxy-Client-IP");      
 		}else{
-			LOG.info("IP client : "+ip+" recuperee dans le Header HTTP_X_FORWARDED_FOR");
+			LOG.debug("IP client : "+ip+" recuperee dans le Header HTTP_X_FORWARDED_FOR");
 		}   
 		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 			ip = hsRequest.getHeader("WL-Proxy-Client-IP");      
 		}else{
-			LOG.info("IP client : "+ip+" recuperee dans le Header Proxy-Client-IP");
+			LOG.debug("IP client : "+ip+" recuperee dans le Header Proxy-Client-IP");
 		}   
 		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 			ip = hsRequest.getRemoteAddr();     
-			LOG.info("IP client : "+ip+" recuperee via getRemoteAddr");
+			LOG.debug("IP client : "+ip+" recuperee via getRemoteAddr");
 		}else{
-			LOG.info("IP client : "+ip+" recuperee dans le Header WL-Proxy-Client-IP");
+			LOG.debug("IP client : "+ip+" recuperee dans le Header WL-Proxy-Client-IP");
 		}   
 		return ip;      
 	} 

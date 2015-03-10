@@ -280,14 +280,14 @@ public class UserController {
 
 			if (useruportal) {
 				//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
-				LOG.info("USER "+getCurrentUserName()+" ENSEIGNANT VIA UPORTAL");
+				LOG.debug("USER "+getCurrentUserName()+" ENSEIGNANT VIA UPORTAL");
 				GenericUI.getCurrent().setTypeUser(TEACHER_USER);
 				GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
 
 
 			} else {
 				//va voir dans apogée
-				LOG.info("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
+				LOG.debug("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
 
 
 				//On test si on doit chercher l'utilisateur dans Apogee
@@ -298,12 +298,12 @@ public class UserController {
 						Utilisateur uti = utilisateurService.findUtilisateur(getCurrentUserName().toUpperCase());
 
 						if (uti != null) {
-							LOG.info("USER "+getCurrentUserName()+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
+							LOG.debug("USER "+getCurrentUserName()+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
 							GenericUI.getCurrent().setTypeUser(TEACHER_USER);
 							GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant","Authentification d'un enseignant");
 						} else {
 							GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
-							LOG.info("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+							LOG.debug("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
 
 						}
 					} catch (Exception ex) {

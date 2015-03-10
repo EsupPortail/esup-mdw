@@ -237,7 +237,7 @@ public class EtudiantController {
 				}
 
 				GenericUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
-				LOG.info("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
+				LOG.debug("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				try{
 					InsAdmAnuDTO2[] iaad2 = monProxyAdministratif.recupererIAAnnuelles_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), GenericUI.getCurrent().getAnneeUnivEnCours(), "ARE");
 					if(iaad2!=null){
@@ -1005,21 +1005,17 @@ public class EtudiantController {
 		boolean insere = false;
 		int rang = 0;
 		int anneeEtape = new Integer(et.getAnnee().substring(0, 4));
-		//LOG.info("anneeEtape : "+anneeEtape);
 		while(!insere && rang < e.getEtapes().size()){
 
 			int anneeEtapeEnCours = new Integer(e.getEtapes().get(rang).getAnnee().substring(0, 4));
-			//LOG.info("anneeEtapeEnCours : "+anneeEtapeEnCours);
 			if(anneeEtape > anneeEtapeEnCours){
 				e.getEtapes().add(rang, et);
 				insere = true;
-				//	LOG.info("etape inseree");
 			}
 			rang++;
 		} 
 		if(!insere){
 			e.getEtapes().add(et);
-			//LOG.info("etape inseree en fin");
 		}
 	}
 
@@ -1447,7 +1443,6 @@ public class EtudiantController {
 
 			//ajout de l'étape sélectionnée en début de liste:
 			ElementPedagogique ep = new ElementPedagogique();
-			//LOG.info("etape Annee : "+et.getAnnee());
 			ep.setAnnee(et.getAnnee());
 			ep.setCode(et.getCode());
 			ep.setLevel(1);
