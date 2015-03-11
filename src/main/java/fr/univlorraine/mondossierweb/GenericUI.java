@@ -18,7 +18,7 @@ import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 
 /**
  * UI générique, pour gérer les attributs communs aux UI desktop ou Mobile sans se soucier de la version de l'UI appelée
- * @author dubois36
+ * @author charlie dubois
  *
  */
 public class GenericUI  extends UI {
