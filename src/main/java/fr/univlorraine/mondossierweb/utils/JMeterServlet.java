@@ -14,8 +14,9 @@ import com.vaadin.ui.Component;
 import fr.univlorraine.tools.vaadin.FrenchUnsupportedBrowserHandlerSpringVaadinServlet;
 
 /**
- * @author Charlie Dubois from Marcus Hellberg (marcus@vaadin.com) 
+ * @author Marcus Hellberg (marcus@vaadin.com) 
  *  Further modified by Johannes Tuikkala (johannes@vaadin.com)
+ *  modified by Charlie Dubois
  */
 public class JMeterServlet extends FrenchUnsupportedBrowserHandlerSpringVaadinServlet {
     private static final long serialVersionUID = 898354532369443197L;
