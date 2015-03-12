@@ -120,13 +120,14 @@ public class UserController {
 	 * @return true si l'utilisateur peut accéder à la vue
 	 */
 	public boolean canCurrentUserAccessView(Class<? extends View> viewClass) {
+		//return true;
 		MethodInvocation methodInvocation = MethodInvocationUtils.createFromClass(viewClass, "enter");
 		Collection<ConfigAttribute> configAttributes = methodSecurityInterceptor.obtainSecurityMetadataSource().getAttributes(methodInvocation);
-		/* Renvoie true si la vue n'est pas sécurisée */
+		// Renvoie true si la vue n'est pas sécurisée 
 		if (configAttributes==null || configAttributes.isEmpty()) {
 			return true;
 		}
-		/* Vérifie que l'utilisateur a les droits requis */
+		// Vérifie que l'utilisateur a les droits requis 
 		try {
 			methodSecurityInterceptor.getAccessDecisionManager().decide(getCurrentAuthentication(), methodInvocation, configAttributes);
 		} catch (InsufficientAuthenticationException | AccessDeniedException e) {
@@ -146,6 +147,8 @@ public class UserController {
 	 * @return username de l'utilisateur courant
 	 */
 	public String getCurrentUserName() {
+		//return "toto54";
+		
 		String username= getCurrentAuthentication().getName();
 		UtilisateurSwap us= utilisateurSwapRepository.findOne(username);
 		if(us!=null && us.getLoginCible()!=null){

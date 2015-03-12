@@ -28,7 +28,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 @Data
 public class ElasticSearchServiceImpl implements ElasticSearchService{
 
-	//private String url = "http://ldn-dubois36.univ-lorraine.fr:8181/solr/apogee";
+
 	private HttpSolrServer server;
 	private SolrQuery query;
 	private Client client;

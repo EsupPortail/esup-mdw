@@ -14,20 +14,20 @@ public class EmptyJMeterAuthenticationProvider implements AuthenticationProvider
 	@Override
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
-		 String name = authentication.getName();
-	        String password = authentication.getCredentials().toString();
+		// String name = authentication.getName();
+	       // String password = authentication.getCredentials().toString();
 	 
 	        // use the credentials to try to authenticate against the third party system
 
-	            List<GrantedAuthority> grantedAuths = new ArrayList<>();
-	            return new UsernamePasswordAuthenticationToken(name, password, grantedAuths);
-	       
+	          List<GrantedAuthority> grantedAuths = new ArrayList<>();
+	            return new UsernamePasswordAuthenticationToken("toto54", "", grantedAuths);
 	
 	}
 
 	 @Override
 	    public boolean supports(Class<?> authentication) {
-	        return authentication.equals(UsernamePasswordAuthenticationToken.class);
+		 return true;
+	       // return authentication.equals(UsernamePasswordAuthenticationToken.class);
 	    }
 
 }

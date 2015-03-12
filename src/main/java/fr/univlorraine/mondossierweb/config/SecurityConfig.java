@@ -30,10 +30,11 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+
+import fr.univlorraine.mondossierweb.utils.EmptyJMeterAuthenticationProvider;
 
 /**
  * Configuration Spring Security
@@ -48,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Resource
 	private Environment environment;
 
+	
 	@Bean(name="authenticationManager")
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -68,14 +70,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.addFilterBefore(singleSignOutFilter(), LogoutFilter.class)
 			.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()))
 			.addFilter(casAuthenticationFilter())
-			.addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class)
-			/* La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection */
+			//.addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class)
+			// La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection
 			.csrf().disable();
 	}
+
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(casAuthenticationProvider());
+	
 	}
 
 	
@@ -171,7 +175,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/* Filtre permettant de prendre le rôle d'un autre utilisateur => NON UTILISE */
-	@Bean
+	/*@Bean
 	public SwitchUserFilter switchUserFilter() throws Exception {
 		SwitchUserFilter switchUserFilter = new SwitchUserFilter();
 		switchUserFilter.setUserDetailsService(userDetailsServiceBean());
@@ -179,6 +183,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		switchUserFilter.setExitUserUrl(environment.getRequiredProperty("switchUser.exitUrl"));
 		switchUserFilter.setTargetUrl("/");
 		return switchUserFilter;
-	}
+	}*/
+	
+	
 
 }

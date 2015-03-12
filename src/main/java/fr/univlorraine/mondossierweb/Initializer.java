@@ -26,6 +26,7 @@ import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;
 
 import fr.univlorraine.mondossierweb.config.SpringConfig;
+import fr.univlorraine.mondossierweb.utils.JMeterServlet;
 import fr.univlorraine.tools.atmosphere.RecoverSecurityContextAtmosphereInterceptor;
 import fr.univlorraine.tools.logback.UserMdcServletFilter;
 import fr.univlorraine.tools.vaadin.FrenchUnsupportedBrowserHandlerSpringVaadinServlet;
@@ -105,6 +106,7 @@ public class Initializer implements WebApplicationInitializer {
 		restServlet.addMapping("/rest", "/rest/*");
 
 		/* Servlet Spring-Vaadin */
+		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);
 		ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", FrenchUnsupportedBrowserHandlerSpringVaadinServlet.class);
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");
