@@ -877,7 +877,12 @@ public class NoteController {
 				celltext2.setBorder(Rectangle.NO_BORDER);
 				table2.addCell(celltext2);
 
-				Paragraph pa3 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getLibelle().replaceAll(applicationContext.getMessage("pdf.replace.nbsp", null, Locale.getDefault()), " "), normal);
+				
+				String indentation = "";
+				for(int j=0;j<etudiant.getElementsPedagogiques().get(i).getLevel();j++){
+					indentation= indentation + "     ";
+				}
+				Paragraph pa3 = new Paragraph(indentation+etudiant.getElementsPedagogiques().get(i).getLibelle(), normal);
 				PdfPCell celltext3 = new PdfPCell(pa3);
 				celltext3.setBorder(Rectangle.NO_BORDER);
 				table2.addCell(celltext3);
