@@ -120,7 +120,6 @@ public class UserController {
 	 * @return true si l'utilisateur peut accéder à la vue
 	 */
 	public boolean canCurrentUserAccessView(Class<? extends View> viewClass) {
-		//return true;
 		MethodInvocation methodInvocation = MethodInvocationUtils.createFromClass(viewClass, "enter");
 		Collection<ConfigAttribute> configAttributes = methodSecurityInterceptor.obtainSecurityMetadataSource().getAttributes(methodInvocation);
 		// Renvoie true si la vue n'est pas sécurisée 
