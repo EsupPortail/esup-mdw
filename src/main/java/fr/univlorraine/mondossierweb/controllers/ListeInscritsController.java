@@ -63,9 +63,13 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterfaceProxy;
 import gouv.education.apogee.commun.servicesmetiers.OffreFormationMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO3;
+import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO4;
 import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO2;
+import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO3;
 import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO2;
+import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO3;
 import gouv.education.apogee.commun.transverse.dto.scolarite.RecupererGroupeDTO2;
+import gouv.education.apogee.commun.transverse.dto.scolarite.RecupererGroupeDTO3;
 
 /**
  * Gestion de l'affichage de la liste des inscrits
@@ -389,23 +393,23 @@ public class ListeInscritsController {
 		}
 
 		try{
-			RecupererGroupeDTO2 recupererGroupeDTO = monProxyOffreDeFormation.recupererGroupe_v2(annee, null, null, null, codElp, null);
+			RecupererGroupeDTO3 recupererGroupeDTO = monProxyOffreDeFormation.recupererGroupe_v3(annee, null, null, null, codElp, null);
 
 			if (recupererGroupeDTO != null){
 				//On parcourt les ELP
-				for(ElementPedagogiDTO2 elp : recupererGroupeDTO.getListElementPedagogi()){
+				for(ElementPedagogiDTO3 elp : recupererGroupeDTO.getListElementPedagogi()){
 					ElpDeCollection el = new ElpDeCollection(elp.getCodElp(), elp.getLibElp());
 
 					List<CollectionDeGroupes> listeCollection = new LinkedList<CollectionDeGroupes>();
 
 					//On parcourt les collections de l'ELP
-					for( CollectionDTO3 cd2: elp.getListCollection()){
+					for( CollectionDTO4 cd2: elp.getListCollection()){
 						CollectionDeGroupes collection = new CollectionDeGroupes(cd2.getCodExtCol());
 
 						List<Groupe> listegroupe = new LinkedList<Groupe>();
 
 						//On parcourt les groupes de la collection
-						for(GroupeDTO2 gd2 : cd2.getListGroupe()){
+						for(GroupeDTO3 gd2 : cd2.getListGroupe()){
 							//On récupère les infos sur le groupe
 							Groupe groupe = new Groupe(gd2.getCodExtGpe());
 							groupe.setLibGroupe(gd2.getLibGpe());
