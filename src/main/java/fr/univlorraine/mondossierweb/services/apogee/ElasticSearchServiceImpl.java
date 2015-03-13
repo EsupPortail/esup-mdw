@@ -90,7 +90,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 		//get suggests from the response
 		Suggest suggest = suggestresponse.getSuggest();
-		System.out.println("suggest : "+suggest.toString()+" size : "+suggest.size());
+		LOG.debug("suggest : "+suggest.toString()+" size : "+suggest.size());
 
 		CompletionSuggestion compsuggestion = suggest.getSuggestion("element");
 		if(compsuggestion!=null){
@@ -100,11 +100,11 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				List<CompletionSuggestion.Entry.Option> options =entry.getOptions();
 				if(options != null)  {
 					CompletionSuggestion.Entry.Option option = options.get(0);
-					System.out.println(""+option.getText().string());
+					LOG.debug(""+option.getText().string());
 				}
 			}
 		}else{
-			System.out.println("compsuggestion null");
+			LOG.debug("compsuggestion null");
 		}
 
 			 */

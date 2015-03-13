@@ -60,15 +60,19 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
+import fr.univlorraine.mondossierweb.views.AssistanceView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.EtatCivilView;
+import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.FavorisView;
 import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
 import fr.univlorraine.mondossierweb.views.InscriptionsView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsView;
 import fr.univlorraine.mondossierweb.views.NotesView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
+import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
@@ -168,6 +172,8 @@ public class MainUI extends GenericUI {
 
 	// Noms des vues et index du tab associé 
 	private Map<String, Integer> viewEnseignantTab = new HashMap<>();
+	
+
 
 	/**
 	 * @see com.vaadin.ui.UI#getCurrent()
@@ -208,7 +214,7 @@ public class MainUI extends GenericUI {
 
 
 
-		/* Construit le gestionnaire de vues utilisé pour naviguer dans le dossier d'un étudiant */
+		/* Construit le gestionnaire de vues utilisé par la barre d'adresse et pour naviguer dans le dossier d'un étudiant */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
 		navigator.addViewChangeListener(new ViewChangeListener() {
 			private static final long serialVersionUID = 7905379446201794289L;
@@ -217,15 +223,44 @@ public class MainUI extends GenericUI {
 			
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
-				System.out.println("beforeViewChange : "+event.getViewName());
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
+				
+
+				//On bloque l'accès aux vues enseignants
+				if(Utils.isViewEnseignant(event.getViewName())){
+					//Si utilisateur n'est pas enseignant
+					if(!userController.isEnseignant()){
+						//acces bloque
+						return false;
+					}else{
+						//Affichage de la vue enseignant demandée
+						if(event.getViewName().equals(FavorisView.NAME)){
+							navigateToFavoris();
+							return true;
+						}
+						if(event.getViewName().equals(ListeInscritsView.NAME)){
+							navigateToListeInscrits(null);
+							return true;
+						}
+						if(event.getViewName().equals(RechercheRapideView.NAME)){
+							navigateToRechercheRapide();
+							return true;
+						}
+						if(event.getViewName().equals(RechercheArborescenteView.NAME)){
+							navigateToRechercheArborescente(null);
+							return true;
+						}
+						
+						return false; //la vue enseignant demandée n'est pas géré (ex :vue mobile appelée depuis la version desktop)
+					}
+				}
+				
 				return true;
 			}
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
-				System.out.println("afterViewChange : "+event.getViewName());
 				//On récupère l'élément du menu concerné par la vue à afficher
 				Button button = viewButtons.get(event.getViewName());
 				if (button instanceof Button) {
@@ -329,14 +364,14 @@ public class MainUI extends GenericUI {
 					if(lfav!=null && lfav.size()>0){
 						//On affiche la vue des favoris
 						navigator.navigateTo(FavorisView.NAME);
-						navigateToFavoris();
+						//navigateToFavoris();
 						//Affichage du message d'intro si besoin
 						afficherMessageIntroEnseignants();
 
 					}else{
 						//On affiche la vue de recherche rapide
 						navigator.navigateTo(RechercheRapideView.NAME);
-						navigateToRechercheRapide();
+						//navigateToRechercheRapide();
 						//Affichage du message d'intro si besoin
 						afficherMessageIntroEnseignants();
 					}

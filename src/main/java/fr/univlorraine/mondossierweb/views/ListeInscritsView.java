@@ -781,7 +781,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 
 	private void majCheckbox() {
-		System.out.println("majCheckbox");
 		if(typeIsElp()){
 			collapseEtp.setValue(!inscritstable.isColumnCollapsed("etape"));
 		}

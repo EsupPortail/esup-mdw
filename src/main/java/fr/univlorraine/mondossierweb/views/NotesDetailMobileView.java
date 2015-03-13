@@ -93,7 +93,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant() || userController.isEtudiant()){
+		if((userController.isEnseignant() || userController.isEtudiant()) && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null){
 			if(codetu==null || !codetuToDisplay.equals(codetu)){
 				codetu=null;
 			}

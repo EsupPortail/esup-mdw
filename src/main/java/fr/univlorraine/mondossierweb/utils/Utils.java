@@ -9,6 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Panel;
 
+import fr.univlorraine.mondossierweb.views.AssistanceView;
+import fr.univlorraine.mondossierweb.views.FavorisMobileView;
+import fr.univlorraine.mondossierweb.views.FavorisView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsView;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
+import fr.univlorraine.mondossierweb.views.RechercheMobileView;
+import fr.univlorraine.mondossierweb.views.RechercheRapideView;
+
 /**
  * @author Charlie Dubois
  * 
@@ -62,6 +71,10 @@ public class Utils {
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;
+	
+	//liste des vues enseignants dont l'accès est à protéger
+	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
+			FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
 
 	/** formatage d'une date pour ne garder que jour, mois , annee*/
 	public static String formatDateToString(Date d){
@@ -96,6 +109,15 @@ public class Utils {
 				return Utils.TYPE_ETU;
 		}
 		return type;
+	}
+
+	public static boolean isViewEnseignant(String viewName) {
+		for(int i=0;i<LISTE_VIEWS_ENSEIGNANT.length;i++){
+			if(LISTE_VIEWS_ENSEIGNANT[i].equals(viewName)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

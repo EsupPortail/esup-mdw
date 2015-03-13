@@ -55,7 +55,6 @@ public class MyFileDownloader extends FileDownloader {
             }
 
             if ( fileSize > 0 ) {
-            	System.out.println("size-2 : "+fileSize);
                 stream.setParameter("Content-Length", "" + fileSize);
             }
             

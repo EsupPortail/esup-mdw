@@ -31,8 +31,6 @@ public class MdwUserDetails implements UserDetails {
 	
 		this.username = username;
 		
-		System.out.println("Role : "+droits);
-		
 		/* load Authorities */
 		authorities.add(new SimpleGrantedAuthority(droits));
 		
@@ -44,7 +42,6 @@ public class MdwUserDetails implements UserDetails {
 			authorities.add(new SimpleGrantedAuthority(UserController.TEACHER_USER));
 		}
 		
-		System.out.println("=>Authorities : "+authorities);
 		
 	}
 
