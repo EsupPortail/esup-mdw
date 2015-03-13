@@ -45,9 +45,9 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 @VaadinView(EtatCivilView.NAME)
 @PreAuthorize("hasRole('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
-	
+
 	private static final long serialVersionUID = -2056224835347802529L;
-	
+
 	private Logger LOG = LoggerFactory.getLogger(EtatCivilView.class);
 
 	public static final String NAME = "etatCivilView";
@@ -75,161 +75,165 @@ public class EtatCivilView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		
+
+
 		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
-		
-		System.out.println(userController.getCurrentUserName()+" init EtatCivilView");
-		
-		if(MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
-		
-		/* Style */
-		setMargin(true);
-		setSpacing(true);
-		
-		/* Titre */
-		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
+
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() || userController.isEtudiant()){
+
+			System.out.println(userController.getCurrentUserName()+" init EtatCivilView");
+
+			if(MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+
+				/* Style */
+				setMargin(true);
+				setSpacing(true);
+
+				/* Titre */
+				Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
+				title.addStyleName(ValoTheme.LABEL_H1);
+				addComponent(title);
 
 
-		VerticalLayout globalLayout = new VerticalLayout();
-		globalLayout.setSizeFull();
-		globalLayout.setSpacing(true);
+				VerticalLayout globalLayout = new VerticalLayout();
+				globalLayout.setSizeFull();
+				globalLayout.setSpacing(true);
 
-		//Layout avec les infos etatcivil et contact
-		CssLayout idLayout = new CssLayout();
-		idLayout.setSizeFull();
-		idLayout.setStyleName("flexwrap");
+				//Layout avec les infos etatcivil et contact
+				CssLayout idLayout = new CssLayout();
+				idLayout.setSizeFull();
+				idLayout.setStyleName("flexwrap");
 
-		globalLayout.addComponent(idLayout);
-		// Enable Responsive CSS selectors for the layout
-		Responsive.makeResponsive(idLayout);
-
-
-		/* Generalites */
-		FormLayout formGeneralitesLayout = new FormLayout();
-		formGeneralitesLayout.setSpacing(true);
-		formGeneralitesLayout.setMargin(true);
-
-		Panel panelGeneralites= new Panel(applicationContext.getMessage(NAME+".generalites.title", null, getLocale()));
-
-		String captionNumDossier = applicationContext.getMessage(NAME+".numdossier.title", null, getLocale());
-		Label fieldNumDossier = new Label();
-		formatLabel(fieldNumDossier, captionNumDossier, MainUI.getCurrent().getEtudiant().getCod_etu());
-		formGeneralitesLayout.addComponent(fieldNumDossier);
-
-		String captionNNE = applicationContext.getMessage(NAME+".nne.title", null, getLocale());
-		Label fieldNNE = new Label();
-		formatLabel(fieldNNE, captionNNE, MainUI.getCurrent().getEtudiant().getCod_nne());
-		formGeneralitesLayout.addComponent(fieldNNE);
-
-		String captionNom = applicationContext.getMessage(NAME+".nom.title", null, getLocale());
-		Label fieldNom = new Label();
-		formatLabel(fieldNom, captionNom, MainUI.getCurrent().getEtudiant().getNom());
-		formGeneralitesLayout.addComponent(fieldNom);
-
-		String captionMail = applicationContext.getMessage(NAME+".mail.title", null, getLocale());
-		Label mailLabel = new Label();
-		mailLabel.setCaption(captionMail);
-		String mail = MainUI.getCurrent().getEtudiant().getEmail();
-		if(StringUtils.hasText(mail)){
-			mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
-			mailLabel.setValue(mail);
-			mailLabel.setContentMode(ContentMode.HTML);
-		}
-		mailLabel.setSizeFull();
-		formGeneralitesLayout.addComponent(mailLabel);
+				globalLayout.addComponent(idLayout);
+				// Enable Responsive CSS selectors for the layout
+				Responsive.makeResponsive(idLayout);
 
 
-		String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
-		Label fieldNationalite = new Label();
-		formatLabel(fieldNationalite, captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
-		formGeneralitesLayout.addComponent(fieldNationalite);
+				/* Generalites */
+				FormLayout formGeneralitesLayout = new FormLayout();
+				formGeneralitesLayout.setSpacing(true);
+				formGeneralitesLayout.setMargin(true);
 
-		String captionDateNaissance = applicationContext.getMessage(NAME+".naissance.title", null, getLocale());
-		Label fieldDateNaissance = new Label();
-		formatLabel(fieldDateNaissance, captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
-		formGeneralitesLayout.addComponent(fieldDateNaissance);
+				Panel panelGeneralites= new Panel(applicationContext.getMessage(NAME+".generalites.title", null, getLocale()));
 
-		String captionLieuNaissance = applicationContext.getMessage(NAME+".lieunaissance.title", null, getLocale());
-		Label fieldLieuNaissance = new Label();
-		formatLabel(fieldLieuNaissance, captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
-		formGeneralitesLayout.addComponent(fieldLieuNaissance);
+				String captionNumDossier = applicationContext.getMessage(NAME+".numdossier.title", null, getLocale());
+				Label fieldNumDossier = new Label();
+				formatLabel(fieldNumDossier, captionNumDossier, MainUI.getCurrent().getEtudiant().getCod_etu());
+				formGeneralitesLayout.addComponent(fieldNumDossier);
 
-		String captionDepNaissance = applicationContext.getMessage(NAME+".depnaissance.title", null, getLocale());
-		Label fieldDepNaissance = new Label();
-		formatLabel(fieldDepNaissance, captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
-		formGeneralitesLayout.addComponent(fieldDepNaissance);
+				String captionNNE = applicationContext.getMessage(NAME+".nne.title", null, getLocale());
+				Label fieldNNE = new Label();
+				formatLabel(fieldNNE, captionNNE, MainUI.getCurrent().getEtudiant().getCod_nne());
+				formGeneralitesLayout.addComponent(fieldNNE);
 
-		panelGeneralites.setContent(formGeneralitesLayout);
+				String captionNom = applicationContext.getMessage(NAME+".nom.title", null, getLocale());
+				Label fieldNom = new Label();
+				formatLabel(fieldNom, captionNom, MainUI.getCurrent().getEtudiant().getNom());
+				formGeneralitesLayout.addComponent(fieldNom);
+
+				String captionMail = applicationContext.getMessage(NAME+".mail.title", null, getLocale());
+				Label mailLabel = new Label();
+				mailLabel.setCaption(captionMail);
+				String mail = MainUI.getCurrent().getEtudiant().getEmail();
+				if(StringUtils.hasText(mail)){
+					mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
+					mailLabel.setValue(mail);
+					mailLabel.setContentMode(ContentMode.HTML);
+				}
+				mailLabel.setSizeFull();
+				formGeneralitesLayout.addComponent(mailLabel);
 
 
-		HorizontalLayout generalitesGlobalLayout = new HorizontalLayout();
-		generalitesGlobalLayout.setSizeUndefined();
-		generalitesGlobalLayout.setStyleName("firstitembox");
-		generalitesGlobalLayout.addComponent(panelGeneralites);
-		generalitesGlobalLayout.setExpandRatio(panelGeneralites, 1);
-		idLayout.addComponent(generalitesGlobalLayout);
+				String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
+				Label fieldNationalite = new Label();
+				formatLabel(fieldNationalite, captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
+				formGeneralitesLayout.addComponent(fieldNationalite);
+
+				String captionDateNaissance = applicationContext.getMessage(NAME+".naissance.title", null, getLocale());
+				Label fieldDateNaissance = new Label();
+				formatLabel(fieldDateNaissance, captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
+				formGeneralitesLayout.addComponent(fieldDateNaissance);
+
+				String captionLieuNaissance = applicationContext.getMessage(NAME+".lieunaissance.title", null, getLocale());
+				Label fieldLieuNaissance = new Label();
+				formatLabel(fieldLieuNaissance, captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
+				formGeneralitesLayout.addComponent(fieldLieuNaissance);
+
+				String captionDepNaissance = applicationContext.getMessage(NAME+".depnaissance.title", null, getLocale());
+				Label fieldDepNaissance = new Label();
+				formatLabel(fieldDepNaissance, captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
+				formGeneralitesLayout.addComponent(fieldDepNaissance);
+
+				panelGeneralites.setContent(formGeneralitesLayout);
+
+
+				HorizontalLayout generalitesGlobalLayout = new HorizontalLayout();
+				generalitesGlobalLayout.setSizeUndefined();
+				generalitesGlobalLayout.setStyleName("firstitembox");
+				generalitesGlobalLayout.addComponent(panelGeneralites);
+				generalitesGlobalLayout.setExpandRatio(panelGeneralites, 1);
+				idLayout.addComponent(generalitesGlobalLayout);
 
 
 
-		/* Bac */
+				/* Bac */
 
 
-		Panel panelBac= new Panel(applicationContext.getMessage(NAME+".bac.title", null, getLocale()));
+				Panel panelBac= new Panel(applicationContext.getMessage(NAME+".bac.title", null, getLocale()));
 
-		//Si plusieurs bac
-		if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()>1){
-			panelBac.setCaption(applicationContext.getMessage(NAME+".bacs.title", null, getLocale()));
-			TabSheet bacTabSheet = new TabSheet();
-			VerticalLayout vBacLayout = new VerticalLayout();
-			vBacLayout.setSizeFull();
-			bacTabSheet.setSizeFull();
-			bacTabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
-			for(BacEtatCivil bec : MainUI.getCurrent().getEtudiant().getListeBac()){
+				//Si plusieurs bac
+				if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()>1){
+					panelBac.setCaption(applicationContext.getMessage(NAME+".bacs.title", null, getLocale()));
+					TabSheet bacTabSheet = new TabSheet();
+					VerticalLayout vBacLayout = new VerticalLayout();
+					vBacLayout.setSizeFull();
+					bacTabSheet.setSizeFull();
+					bacTabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
+					for(BacEtatCivil bec : MainUI.getCurrent().getEtudiant().getListeBac()){
 
-				FormLayout tabBacLayout = new FormLayout();
-				tabBacLayout.setSizeFull();
-				tabBacLayout.setMargin(false);
-				ajouterBacToView(tabBacLayout,bec);
-				bacTabSheet.addTab(tabBacLayout, bec.getCod_bac(), FontAwesome.GRADUATION_CAP);
+						FormLayout tabBacLayout = new FormLayout();
+						tabBacLayout.setSizeFull();
+						tabBacLayout.setMargin(false);
+						ajouterBacToView(tabBacLayout,bec);
+						bacTabSheet.addTab(tabBacLayout, bec.getCod_bac(), FontAwesome.GRADUATION_CAP);
+
+					}
+					vBacLayout.addComponent(bacTabSheet);
+					panelBac.setContent(vBacLayout);
+				}else{
+					//Si un seul bac
+					FormLayout formBacLayout = new FormLayout();
+					formBacLayout.setSizeFull();
+					if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()==1){
+						formBacLayout.setSpacing(true);
+						formBacLayout.setMargin(true);
+						ajouterBacToView(formBacLayout,MainUI.getCurrent().getEtudiant().getListeBac().get(0));
+					}
+					panelBac.setContent(formBacLayout);
+				}
+
+
+				HorizontalLayout bacGlobalLayout = new HorizontalLayout();
+				bacGlobalLayout.setSizeUndefined();
+				bacGlobalLayout.setStyleName("itembox");
+				bacGlobalLayout.addComponent(panelBac);
+				bacGlobalLayout.setExpandRatio(panelBac, 1);
+				idLayout.addComponent(bacGlobalLayout);
+
+
+
+
+				/* Info de contact */
+				panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
+				renseignerPanelContact();
+				globalLayout.addComponent(panelContact);
+
+				addComponent(globalLayout);
+
 
 			}
-			vBacLayout.addComponent(bacTabSheet);
-			panelBac.setContent(vBacLayout);
-		}else{
-			//Si un seul bac
-			FormLayout formBacLayout = new FormLayout();
-			formBacLayout.setSizeFull();
-			if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()==1){
-				formBacLayout.setSpacing(true);
-				formBacLayout.setMargin(true);
-				ajouterBacToView(formBacLayout,MainUI.getCurrent().getEtudiant().getListeBac().get(0));
-			}
-			panelBac.setContent(formBacLayout);
 		}
-
-
-		HorizontalLayout bacGlobalLayout = new HorizontalLayout();
-		bacGlobalLayout.setSizeUndefined();
-		bacGlobalLayout.setStyleName("itembox");
-		bacGlobalLayout.addComponent(panelBac);
-		bacGlobalLayout.setExpandRatio(panelBac, 1);
-		idLayout.addComponent(bacGlobalLayout);
-
-
-
-
-		/* Info de contact */
-		panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
-		renseignerPanelContact();
-		globalLayout.addComponent(panelContact);
-
-		addComponent(globalLayout);
-
-
-		}
-
 	}
 
 	private void renseignerPanelContact() {
@@ -351,7 +355,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		tf.setNullRepresentation("");
 		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
 	}
-	
+
 	private void formatLabel(Label label, String caption, String value){
 		if(StringUtils.hasText(caption)){
 			label.setCaption(caption);

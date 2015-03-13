@@ -45,7 +45,7 @@ public class FavorisView extends VerticalLayout implements View {
 
 	public static final String NAME = "favorisView";
 
-	
+
 	public static final String[] FAV_FIELDS_ORDER = {"Type","id", "Libelle", "Actions"};
 
 
@@ -76,75 +76,80 @@ public class FavorisView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		removeAllComponents();
-		/* Style */
-		setMargin(true);
-		setSpacing(true);
 
-		liste_types_inscrits= new LinkedList<String>();
-		liste_types_inscrits.add("ELP");
-		liste_types_inscrits.add("VET");
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() ){
 
-		liste_type_arbo= new LinkedList<String>();
-		liste_type_arbo.add("CMP");
-		liste_type_arbo.add("VET");
+			removeAllComponents();
+			/* Style */
+			setMargin(true);
+			setSpacing(true);
 
-		/* Titre */
-		/*Label title = new Label("Favoris");
+			liste_types_inscrits= new LinkedList<String>();
+			liste_types_inscrits.add("ELP");
+			liste_types_inscrits.add("VET");
+
+			liste_type_arbo= new LinkedList<String>();
+			liste_type_arbo.add("CMP");
+			liste_type_arbo.add("VET");
+
+			/* Titre */
+			/*Label title = new Label("Favoris");
 		title.addStyleName(ValoTheme.LABEL_H1);
 		addComponent(title);*/
 
-		List<Favoris> lfav = favorisController.getFavoris();
+			List<Favoris> lfav = favorisController.getFavoris();
 
-		VerticalLayout globalLayout = new VerticalLayout();
-		globalLayout.setSizeFull();
-		globalLayout.setSpacing(true);
+			VerticalLayout globalLayout = new VerticalLayout();
+			globalLayout.setSizeFull();
+			globalLayout.setSpacing(true);
 
 
 
-		if(lfav!=null && lfav.size()>0){
-			bic = new BeanItemContainer<>(Favoris.class,lfav);
-			bic.addNestedContainerProperty("id.typfav");
-			bic.addNestedContainerProperty("id.idfav");
-			favorisTable = new Table(null, bic);
-			favorisTable.setWidth("100%");
+			if(lfav!=null && lfav.size()>0){
+				bic = new BeanItemContainer<>(Favoris.class,lfav);
+				bic.addNestedContainerProperty("id.typfav");
+				bic.addNestedContainerProperty("id.idfav");
+				favorisTable = new Table(null, bic);
+				favorisTable.setWidth("100%");
 
-			favorisTable.addGeneratedColumn("Type", new DisplayTypeColumnGenerator());
-			favorisTable.setColumnHeader("Type", applicationContext.getMessage(NAME+".table.id.typfav", null, getLocale()));
-			
-			favorisTable.addGeneratedColumn("id", new DisplayIdColumnGenerator());
-			favorisTable.setColumnHeader("id", applicationContext.getMessage(NAME+".table.id.idfav", null, getLocale()));
-			
-			favorisTable.addGeneratedColumn("Libelle", new MyLibelleColumnGenerator());
-			favorisTable.addGeneratedColumn("Actions", new MyActionsColumnGenerator());
-			
-			favorisTable.setVisibleColumns((Object[]) FAV_FIELDS_ORDER);
-			favorisTable.setColumnCollapsingAllowed(true);
-			favorisTable.setColumnReorderingAllowed(true);
-			favorisTable.setSelectable(true);
-			favorisTable.setImmediate(true);
-			favorisTable.addStyleName("noscrollabletable");
-			favorisTable.setPageLength(favorisTable.getItemIds().size() );
-			globalLayout.addComponent(favorisTable);
+				favorisTable.addGeneratedColumn("Type", new DisplayTypeColumnGenerator());
+				favorisTable.setColumnHeader("Type", applicationContext.getMessage(NAME+".table.id.typfav", null, getLocale()));
 
+				favorisTable.addGeneratedColumn("id", new DisplayIdColumnGenerator());
+				favorisTable.setColumnHeader("id", applicationContext.getMessage(NAME+".table.id.idfav", null, getLocale()));
+
+				favorisTable.addGeneratedColumn("Libelle", new MyLibelleColumnGenerator());
+				favorisTable.addGeneratedColumn("Actions", new MyActionsColumnGenerator());
+
+				favorisTable.setVisibleColumns((Object[]) FAV_FIELDS_ORDER);
+				favorisTable.setColumnCollapsingAllowed(true);
+				favorisTable.setColumnReorderingAllowed(true);
+				favorisTable.setSelectable(true);
+				favorisTable.setImmediate(true);
+				favorisTable.addStyleName("noscrollabletable");
+				favorisTable.setPageLength(favorisTable.getItemIds().size() );
+				globalLayout.addComponent(favorisTable);
+
+			}
+
+			labelAucunFavoriLayout = new HorizontalLayout();
+			labelAucunFavoriLayout.setMargin(true);
+			labelAucunFavoriLayout.setSizeFull();
+			Label aucunFavoris = new Label(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
+			aucunFavoris.setStyleName(ValoTheme.LABEL_COLORED);
+			aucunFavoris.addStyleName(ValoTheme.LABEL_BOLD);
+			labelAucunFavoriLayout.addComponent(aucunFavoris);
+			labelAucunFavoriLayout.setVisible(false);
+			globalLayout.addComponent(labelAucunFavoriLayout);
+
+			if(lfav==null || lfav.size()==0){
+				labelAucunFavoriLayout.setVisible(true);
+			}
+
+
+			addComponent(globalLayout);
 		}
-
-		labelAucunFavoriLayout = new HorizontalLayout();
-		labelAucunFavoriLayout.setMargin(true);
-		labelAucunFavoriLayout.setSizeFull();
-		Label aucunFavoris = new Label(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
-		aucunFavoris.setStyleName(ValoTheme.LABEL_COLORED);
-		aucunFavoris.addStyleName(ValoTheme.LABEL_BOLD);
-		labelAucunFavoriLayout.addComponent(aucunFavoris);
-		labelAucunFavoriLayout.setVisible(false);
-		globalLayout.addComponent(labelAucunFavoriLayout);
-
-		if(lfav==null || lfav.size()==0){
-			labelAucunFavoriLayout.setVisible(true);
-		}
-
-
-		addComponent(globalLayout);
 	}
 
 	/**
@@ -166,7 +171,7 @@ public class FavorisView extends VerticalLayout implements View {
 			return idObj;
 		}
 	}
-	
+
 	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
 
 		public Object generateCell(Table source, Object itemId,
@@ -178,7 +183,7 @@ public class FavorisView extends VerticalLayout implements View {
 			return Utils.convertTypeToDisplay(typeObj);
 		}
 	}
-	
+
 	/** Formats the position in a column containing Date objects. */
 	class MyActionsColumnGenerator implements Table.ColumnGenerator {
 		/**
@@ -216,7 +221,7 @@ public class FavorisView extends VerticalLayout implements View {
 						favorisTable.setVisible(false);
 						labelAucunFavoriLayout.setVisible(true);
 					}
-					
+
 					//PROPAGATION DANS LA VUE RECHERCHE ARBO!
 
 				}
@@ -263,7 +268,7 @@ public class FavorisView extends VerticalLayout implements View {
 			String idObj = (String)item.getItemProperty("id.idfav").getValue();
 
 			HorizontalLayout boutonActionLayout = new HorizontalLayout();
-			
+
 			if(typeObj!=null){
 				Label lib = new Label(favorisController.getLibObjFavori(typeObj,idObj));
 				boutonActionLayout.addComponent(lib);

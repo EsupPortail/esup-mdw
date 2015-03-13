@@ -73,115 +73,119 @@ public class InscriptionsView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		/* Style */
-		setMargin(true);
-		setSpacing(true);
+
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() || userController.isEtudiant()){
+			/* Style */
+			setMargin(true);
+			setSpacing(true);
 
 
 
 
-		/* Titre */
-		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
+			/* Titre */
+			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
+			title.addStyleName(ValoTheme.LABEL_H1);
+			addComponent(title);
 
 
-		VerticalLayout globalLayout = new VerticalLayout();
-		globalLayout.setSizeFull();
-		globalLayout.setSpacing(true);
+			VerticalLayout globalLayout = new VerticalLayout();
+			globalLayout.setSizeFull();
+			globalLayout.setSpacing(true);
 
-		//Si les informations sur les inscriptions n'ont pas déjà été récupérées, on les récupère
-		if(MainUI.getCurrent().getEtudiant().getLibEtablissement()==null){
-			etudiantController.recupererInscriptions();
-		}
-
-		//Test si la récupération des inscriptions via le WS s'est bien passée
-		if(MainUI.getCurrent().isRecuperationWsInscriptionsOk()){
-			
-			//Tout c'est bien passé lors de la récupération des infos via le WS
-			
-			Panel panelInscription= new Panel(MainUI.getCurrent().getEtudiant().getLibEtablissement());
-
-
-			Table inscriptionsTable = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinsciae()));
-			inscriptionsTable.setWidth("100%");
-			String[] colonnes = IA_FIELDS_ORDER;
-			if(userController.isEtudiant()){
-				colonnes = IA_FIELDS_ORDER_ETU;
+			//Si les informations sur les inscriptions n'ont pas déjà été récupérées, on les récupère
+			if(MainUI.getCurrent().getEtudiant().getLibEtablissement()==null){
+				etudiantController.recupererInscriptions();
 			}
-			inscriptionsTable.setVisibleColumns((Object[]) colonnes);
-			for (String fieldName : colonnes) {
-				inscriptionsTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
-			}
-			inscriptionsTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.lib_etp", null, getLocale()), new LibelleInscriptionColumnGenerator());
 
-			//inscriptionsTable.setSortContainerPropertyId("cod_anu");
-			inscriptionsTable.setColumnCollapsingAllowed(true);
-			inscriptionsTable.setColumnReorderingAllowed(false);
-			inscriptionsTable.setSelectable(false);
-			inscriptionsTable.setImmediate(true);
-			inscriptionsTable.setStyleName("noscrollabletable");
-			inscriptionsTable.setPageLength(inscriptionsTable.getItemIds().size() );
-			panelInscription.setContent(inscriptionsTable);
-			globalLayout.addComponent(panelInscription);
+			//Test si la récupération des inscriptions via le WS s'est bien passée
+			if(MainUI.getCurrent().isRecuperationWsInscriptionsOk()){
+
+				//Tout c'est bien passé lors de la récupération des infos via le WS
+
+				Panel panelInscription= new Panel(MainUI.getCurrent().getEtudiant().getLibEtablissement());
 
 
-			//DAC
-			Panel panelDAC= new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
-
-			if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null && MainUI.getCurrent().getEtudiant().getLinscdac().size()>0){
-				Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
-				inscriptionsDAC.setWidth("100%");
-				inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);
-				for (String fieldName : DAC_FIELDS_ORDER) {
-					inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".tabledac." + fieldName, null, getLocale()));
+				Table inscriptionsTable = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinsciae()));
+				inscriptionsTable.setWidth("100%");
+				String[] colonnes = IA_FIELDS_ORDER;
+				if(userController.isEtudiant()){
+					colonnes = IA_FIELDS_ORDER_ETU;
 				}
-				inscriptionsDAC.setColumnCollapsingAllowed(true);
-				inscriptionsDAC.setColumnReorderingAllowed(false);
-				inscriptionsDAC.setSelectable(false);
-				inscriptionsDAC.setImmediate(true);
-				inscriptionsDAC.setStyleName("noscrollabletable");
-				inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size() );
-				panelDAC.setContent(inscriptionsDAC);
+				inscriptionsTable.setVisibleColumns((Object[]) colonnes);
+				for (String fieldName : colonnes) {
+					inscriptionsTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
+				}
+				inscriptionsTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.lib_etp", null, getLocale()), new LibelleInscriptionColumnGenerator());
+
+				//inscriptionsTable.setSortContainerPropertyId("cod_anu");
+				inscriptionsTable.setColumnCollapsingAllowed(true);
+				inscriptionsTable.setColumnReorderingAllowed(false);
+				inscriptionsTable.setSelectable(false);
+				inscriptionsTable.setImmediate(true);
+				inscriptionsTable.setStyleName("noscrollabletable");
+				inscriptionsTable.setPageLength(inscriptionsTable.getItemIds().size() );
+				panelInscription.setContent(inscriptionsTable);
+				globalLayout.addComponent(panelInscription);
+
+
+				//DAC
+				Panel panelDAC= new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
+
+				if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null && MainUI.getCurrent().getEtudiant().getLinscdac().size()>0){
+					Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
+					inscriptionsDAC.setWidth("100%");
+					inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);
+					for (String fieldName : DAC_FIELDS_ORDER) {
+						inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".tabledac." + fieldName, null, getLocale()));
+					}
+					inscriptionsDAC.setColumnCollapsingAllowed(true);
+					inscriptionsDAC.setColumnReorderingAllowed(false);
+					inscriptionsDAC.setSelectable(false);
+					inscriptionsDAC.setImmediate(true);
+					inscriptionsDAC.setStyleName("noscrollabletable");
+					inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size() );
+					panelDAC.setContent(inscriptionsDAC);
+				}else{
+					HorizontalLayout labelDacLayout = new HorizontalLayout();
+					labelDacLayout.setMargin(true);
+					labelDacLayout.setSizeFull();
+					Label aucuneDAC = new Label(applicationContext.getMessage(NAME + ".dac.aucune", null, getLocale())+ " "+MainUI.getCurrent().getEtudiant().getLibEtablissement());
+					aucuneDAC.setStyleName(ValoTheme.LABEL_COLORED);
+					aucuneDAC.addStyleName(ValoTheme.LABEL_BOLD);
+					labelDacLayout.addComponent(aucuneDAC);
+					panelDAC.setContent(labelDacLayout);
+				}
+				globalLayout.addComponent(panelDAC);
+
+
+				Panel panelPremInscription= new Panel(applicationContext.getMessage(NAME + ".premiereinsc.title", null, getLocale()));
+				FormLayout formPremInscription = new FormLayout();
+				formPremInscription.setSpacing(true);
+				formPremInscription.setMargin(true);
+
+				String captionAnneePremInscription = applicationContext.getMessage(NAME+".premiereinsc.annee", null, getLocale());
+				TextField fieldAnneePremInscription = new TextField(captionAnneePremInscription, MainUI.getCurrent().getEtudiant().getAnneePremiereInscrip());
+				formatTextField(fieldAnneePremInscription);
+				formPremInscription.addComponent(fieldAnneePremInscription);
+
+				String captionEtbPremInscription = applicationContext.getMessage(NAME+".premiereinsc.etb", null, getLocale());
+				TextField fieldEtbPremInscription = new TextField(captionEtbPremInscription, MainUI.getCurrent().getEtudiant().getEtbPremiereInscrip());
+				formatTextField(fieldEtbPremInscription);
+				formPremInscription.addComponent(fieldEtbPremInscription);
+
+				panelPremInscription.setContent(formPremInscription);
+				globalLayout.addComponent(panelPremInscription);
+
+				addComponent(globalLayout);
 			}else{
-				HorizontalLayout labelDacLayout = new HorizontalLayout();
-				labelDacLayout.setMargin(true);
-				labelDacLayout.setSizeFull();
-				Label aucuneDAC = new Label(applicationContext.getMessage(NAME + ".dac.aucune", null, getLocale())+ " "+MainUI.getCurrent().getEtudiant().getLibEtablissement());
-				aucuneDAC.setStyleName(ValoTheme.LABEL_COLORED);
-				aucuneDAC.addStyleName(ValoTheme.LABEL_BOLD);
-				labelDacLayout.addComponent(aucuneDAC);
-				panelDAC.setContent(labelDacLayout);
+				//Il y a eu un soucis lors de la récupération des infos via le WS
+				Panel panelErreurInscription= new Panel();
+				Label labelMsgErreur = new Label(applicationContext.getMessage("AllView.erreur.message", null, getLocale()));
+				panelErreurInscription.setContent(labelMsgErreur);
+				addComponent(panelErreurInscription);
+
 			}
-			globalLayout.addComponent(panelDAC);
-
-
-			Panel panelPremInscription= new Panel(applicationContext.getMessage(NAME + ".premiereinsc.title", null, getLocale()));
-			FormLayout formPremInscription = new FormLayout();
-			formPremInscription.setSpacing(true);
-			formPremInscription.setMargin(true);
-
-			String captionAnneePremInscription = applicationContext.getMessage(NAME+".premiereinsc.annee", null, getLocale());
-			TextField fieldAnneePremInscription = new TextField(captionAnneePremInscription, MainUI.getCurrent().getEtudiant().getAnneePremiereInscrip());
-			formatTextField(fieldAnneePremInscription);
-			formPremInscription.addComponent(fieldAnneePremInscription);
-
-			String captionEtbPremInscription = applicationContext.getMessage(NAME+".premiereinsc.etb", null, getLocale());
-			TextField fieldEtbPremInscription = new TextField(captionEtbPremInscription, MainUI.getCurrent().getEtudiant().getEtbPremiereInscrip());
-			formatTextField(fieldEtbPremInscription);
-			formPremInscription.addComponent(fieldEtbPremInscription);
-
-			panelPremInscription.setContent(formPremInscription);
-			globalLayout.addComponent(panelPremInscription);
-
-			addComponent(globalLayout);
-		}else{
-			//Il y a eu un soucis lors de la récupération des infos via le WS
-			Panel panelErreurInscription= new Panel();
-			Label labelMsgErreur = new Label(applicationContext.getMessage("AllView.erreur.message", null, getLocale()));
-			panelErreurInscription.setContent(labelMsgErreur);
-			addComponent(panelErreurInscription);
-			
 		}
 
 	}

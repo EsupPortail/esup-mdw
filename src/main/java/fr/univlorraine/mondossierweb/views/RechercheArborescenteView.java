@@ -146,27 +146,30 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 	public void refresh() {
-		//Actualiser de l'affiche du bouton de mise en favori
-		if(table!=null && hc!=null){
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant()){
+			//Actualiser de l'affiche du bouton de mise en favori
+			if(table!=null && hc!=null){
 
 
-			recuperationDesfavoris();
+				recuperationDesfavoris();
 
 
-			if(listeBoutonFavoris!=null){
+				if(listeBoutonFavoris!=null){
 
-				for(ReferencedButton btnfav : listeBoutonFavoris){
+					for(ReferencedButton btnfav : listeBoutonFavoris){
 
 
-					if(markedRows.contains(btnfav.getIdObj())){	
-						btnfav.getButton().setIcon(FontAwesome.TRASH_O);
-						btnfav.getButton().setStyleName(ValoTheme.BUTTON_DANGER);
-						btnfav.getButton().addStyleName("deletefavbutton");
-						btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
-					}else{
-						btnfav.getButton().setIcon(FontAwesome.STAR_O);
-						btnfav.getButton().setStyleName(ValoTheme.BUTTON_PRIMARY);
-						btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
+						if(markedRows.contains(btnfav.getIdObj())){	
+							btnfav.getButton().setIcon(FontAwesome.TRASH_O);
+							btnfav.getButton().setStyleName(ValoTheme.BUTTON_DANGER);
+							btnfav.getButton().addStyleName("deletefavbutton");
+							btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
+						}else{
+							btnfav.getButton().setIcon(FontAwesome.STAR_O);
+							btnfav.getButton().setStyleName(ValoTheme.BUTTON_PRIMARY);
+							btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
+						}
 					}
 				}
 			}
@@ -215,171 +218,173 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-		/* Style */
-		setMargin(false);
-		setSpacing(false);
-		setSizeFull();
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() ){
+			/* Style */
+			setMargin(false);
+			setSpacing(false);
+			setSizeFull();
 
-		if(listeBoutonFavoris!=null){
-			listeBoutonFavoris.clear();
-		}else{
-			listeBoutonFavoris = new LinkedList<ReferencedButton>();
-		}
-
-		liste_types_favoris = new LinkedList<String>();
-		liste_types_favoris.add(Utils.CMP);
-		liste_types_favoris.add(Utils.ELP);
-		liste_types_favoris.add(Utils.VET);
-
-		liste_types_inscrits= new LinkedList<String>();
-		liste_types_inscrits.add(Utils.ELP);
-		liste_types_inscrits.add(Utils.VET);
-
-		liste_types_deplier= new LinkedList<String>();
-		liste_types_deplier.add(Utils.ELP);
-		liste_types_deplier.add(Utils.VET);
-
-
-		recuperationDesfavoris();
-
-		HorizontalLayout btnLayout = new HorizontalLayout();
-		btnLayout.setMargin(false);
-		btnLayout.setSpacing(false);
-		btnLayout.setWidth("100%");
-
-
-
-
-		comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
-		comboBoxAnneeUniv.setTextInputAllowed(false);
-		comboBoxAnneeUniv.setNullSelectionAllowed(false);
-		//Initialisation de la liste des années
-		List<String> lanneeUniv = rechercheArborescenteController.recupererLesDixDernieresAnneeUniversitaire();
-		if(lanneeUniv!=null && lanneeUniv.size()>0){
-			for(String anneeUniv : lanneeUniv){
-				comboBoxAnneeUniv.addItem(anneeUniv);
-				int anneenplusun = Integer.parseInt(anneeUniv) + 1;
-				comboBoxAnneeUniv.setItemCaption(anneeUniv,anneeUniv+"/"+anneenplusun);
+			if(listeBoutonFavoris!=null){
+				listeBoutonFavoris.clear();
+			}else{
+				listeBoutonFavoris = new LinkedList<ReferencedButton>();
 			}
-			if(annee==null){
-				//annee=etudiantController.getAnneeUnivEnCours();
-				annee = lanneeUniv.get(0);
-			}
-		}
-		comboBoxAnneeUniv.setValue(annee);
-		comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
 
-		reinitButton = new Button();
-		reinitButton.setDescription(applicationContext.getMessage(NAME+".reinitbutton.description", null, getLocale()));
-		reinitButton.addClickListener(e->{
-			initFromScratch();
-		});
-		reinitButton.setStyleName(ValoTheme.BUTTON_DANGER);
-		reinitButton.setIcon(FontAwesome.TIMES);
-		if(!StringUtils.hasText(code)){
-			reinitButton.setVisible(false);
-		}
-		labelLigneSelectionneeLabel =new Label();
-		labelLigneSelectionneeLabel.setValue(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
-		labelLigneSelectionneeLabel.addStyleName("label-align-right");
-		labelLigneSelectionneeLabel.setVisible(false);
+			liste_types_favoris = new LinkedList<String>();
+			liste_types_favoris.add(Utils.CMP);
+			liste_types_favoris.add(Utils.ELP);
+			liste_types_favoris.add(Utils.VET);
+
+			liste_types_inscrits= new LinkedList<String>();
+			liste_types_inscrits.add(Utils.ELP);
+			liste_types_inscrits.add(Utils.VET);
+
+			liste_types_deplier= new LinkedList<String>();
+			liste_types_deplier.add(Utils.ELP);
+			liste_types_deplier.add(Utils.VET);
 
 
-		HorizontalLayout btnLeftLayout= new HorizontalLayout();
-		btnLeftLayout.setWidth("100%");
-		btnLeftLayout.setMargin(true);
-		btnLeftLayout.addComponent(comboBoxAnneeUniv);
-		btnLeftLayout.setComponentAlignment(comboBoxAnneeUniv, Alignment.MIDDLE_LEFT);
-		btnLeftLayout.addComponent(reinitButton);
-		btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_RIGHT);
-		btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
-		btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
-		btnLayout.addComponent(btnLeftLayout);
+			recuperationDesfavoris();
 
-
-		ligneSelectionneeLabel =new Label();
-		//ligneSelectionneeLabel.setCaption(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
-		ligneSelectionneeLabel.setVisible(false);
-		elpLayout = new FormLayout();
-		elpLayout.setMargin(false);
-		vetElpSelectionneLabel = new Label();
-		vetElpSelectionneLabel.setVisible(false);
-		elpLayout.addComponent(vetElpSelectionneLabel);
-		elpLayout.setVisible(false);
-		VerticalLayout ligneLayout = new VerticalLayout();
-		ligneLayout.addComponent(ligneSelectionneeLabel);
-		ligneLayout.addComponent(elpLayout);
-
-
-		btnLayout.addComponent(ligneLayout);
-		btnLayout.setComponentAlignment(ligneLayout, Alignment.MIDDLE_LEFT);
-
-		addComponent(btnLayout);
-
-
-
-		if(code!=null && type!=null){
-			Label elementRecherche = new Label(code +" "+type);
-			elementRecherche.addStyleName(ValoTheme.LABEL_H1);
-			//addComponent(elementRecherche);
-
-		}
-
-		table = new TreeTable();
-		table.setSizeFull();
-		table.setStyleName("scrollabletable");
-		table.setSelectable(true);
-
-		initComposantes();
+			HorizontalLayout btnLayout = new HorizontalLayout();
+			btnLayout.setMargin(false);
+			btnLayout.setSpacing(false);
+			btnLayout.setWidth("100%");
 
 
 
 
-		//gestion du style pour les lignes en favori
-		table.setCellStyleGenerator(new CellStyleGenerator() {
-			@Override
-			public String getStyle(final Table source, final Object itemId,final Object propertyId) {
-				String style = null;
-				if (propertyId == null && markedRows.contains(itemId)) {
-					style = "marked";
+			comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
+			comboBoxAnneeUniv.setTextInputAllowed(false);
+			comboBoxAnneeUniv.setNullSelectionAllowed(false);
+			//Initialisation de la liste des années
+			List<String> lanneeUniv = rechercheArborescenteController.recupererLesDixDernieresAnneeUniversitaire();
+			if(lanneeUniv!=null && lanneeUniv.size()>0){
+				for(String anneeUniv : lanneeUniv){
+					comboBoxAnneeUniv.addItem(anneeUniv);
+					int anneenplusun = Integer.parseInt(anneeUniv) + 1;
+					comboBoxAnneeUniv.setItemCaption(anneeUniv,anneeUniv+"/"+anneenplusun);
 				}
-				return style;
+				if(annee==null){
+					//annee=etudiantController.getAnneeUnivEnCours();
+					annee = lanneeUniv.get(0);
+				}
 			}
-		});
+			comboBoxAnneeUniv.setValue(annee);
+			comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
 
-		table.addItemClickListener(new ItemClickListener() {
+			reinitButton = new Button();
+			reinitButton.setDescription(applicationContext.getMessage(NAME+".reinitbutton.description", null, getLocale()));
+			reinitButton.addClickListener(e->{
+				initFromScratch();
+			});
+			reinitButton.setStyleName(ValoTheme.BUTTON_DANGER);
+			reinitButton.setIcon(FontAwesome.TIMES);
+			if(!StringUtils.hasText(code)){
+				reinitButton.setVisible(false);
+			}
+			labelLigneSelectionneeLabel =new Label();
+			labelLigneSelectionneeLabel.setValue(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
+			labelLigneSelectionneeLabel.addStyleName("label-align-right");
+			labelLigneSelectionneeLabel.setVisible(false);
 
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				selectionnerLigne(event.getItemId());
+
+			HorizontalLayout btnLeftLayout= new HorizontalLayout();
+			btnLeftLayout.setWidth("100%");
+			btnLeftLayout.setMargin(true);
+			btnLeftLayout.addComponent(comboBoxAnneeUniv);
+			btnLeftLayout.setComponentAlignment(comboBoxAnneeUniv, Alignment.MIDDLE_LEFT);
+			btnLeftLayout.addComponent(reinitButton);
+			btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_RIGHT);
+			btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
+			btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
+			btnLayout.addComponent(btnLeftLayout);
+
+
+			ligneSelectionneeLabel =new Label();
+			//ligneSelectionneeLabel.setCaption(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
+			ligneSelectionneeLabel.setVisible(false);
+			elpLayout = new FormLayout();
+			elpLayout.setMargin(false);
+			vetElpSelectionneLabel = new Label();
+			vetElpSelectionneLabel.setVisible(false);
+			elpLayout.addComponent(vetElpSelectionneLabel);
+			elpLayout.setVisible(false);
+			VerticalLayout ligneLayout = new VerticalLayout();
+			ligneLayout.addComponent(ligneSelectionneeLabel);
+			ligneLayout.addComponent(elpLayout);
+
+
+			btnLayout.addComponent(ligneLayout);
+			btnLayout.setComponentAlignment(ligneLayout, Alignment.MIDDLE_LEFT);
+
+			addComponent(btnLayout);
+
+
+
+			if(code!=null && type!=null){
+				Label elementRecherche = new Label(code +" "+type);
+				elementRecherche.addStyleName(ValoTheme.LABEL_H1);
+				//addComponent(elementRecherche);
+
 			}
 
-		});
+			table = new TreeTable();
+			table.setSizeFull();
+			table.setStyleName("scrollabletable");
+			table.setSelectable(true);
 
-		//gestion du clic sur la fleche pour déplier une entrée
-		table.addExpandListener(new ExpandListener() {
-			private static final long serialVersionUID = 8532342540008245348L;
-			@Override
-			public void nodeExpand(ExpandEvent event) {
-				selectionnerLigne(event.getItemId());
-				deplierNoeud((String)event.getItemId(), true);
-			}
-		});
+			initComposantes();
 
 
 
 
-		VerticalLayout tableVerticalLayout = new VerticalLayout();
-		tableVerticalLayout.setMargin(true);
-		tableVerticalLayout.setSizeFull();
-		tableVerticalLayout.addComponent(table);
-		tableVerticalLayout.setExpandRatio(table, 1);
-		addComponent(tableVerticalLayout);
-		setExpandRatio(tableVerticalLayout, 1);
+			//gestion du style pour les lignes en favori
+			table.setCellStyleGenerator(new CellStyleGenerator() {
+				@Override
+				public String getStyle(final Table source, final Object itemId,final Object propertyId) {
+					String style = null;
+					if (propertyId == null && markedRows.contains(itemId)) {
+						style = "marked";
+					}
+					return style;
+				}
+			});
+
+			table.addItemClickListener(new ItemClickListener() {
+
+				@Override
+				public void itemClick(ItemClickEvent event) {
+					selectionnerLigne(event.getItemId());
+				}
+
+			});
+
+			//gestion du clic sur la fleche pour déplier une entrée
+			table.addExpandListener(new ExpandListener() {
+				private static final long serialVersionUID = 8532342540008245348L;
+				@Override
+				public void nodeExpand(ExpandEvent event) {
+					selectionnerLigne(event.getItemId());
+					deplierNoeud((String)event.getItemId(), true);
+				}
+			});
 
 
 
 
+			VerticalLayout tableVerticalLayout = new VerticalLayout();
+			tableVerticalLayout.setMargin(true);
+			tableVerticalLayout.setSizeFull();
+			tableVerticalLayout.addComponent(table);
+			tableVerticalLayout.setExpandRatio(table, 1);
+			addComponent(tableVerticalLayout);
+			setExpandRatio(tableVerticalLayout, 1);
+
+
+
+		}
 	}
 
 	private void initComposantes() {

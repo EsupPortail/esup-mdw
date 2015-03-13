@@ -215,20 +215,20 @@ public class UserController {
 		if(isAdmin()){
 			return true;
 		}
-		if(GenericUI.getCurrent().getTypeUser()==null){
+		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
-		if(GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
+		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
 			return true;
 		}
 		return false;
 	}
 
 	public boolean isEtudiant() {
-		if(GenericUI.getCurrent().getTypeUser()==null){
+		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
-		if(GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
+		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
 			return true;
 		}
 		return false;

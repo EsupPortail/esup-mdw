@@ -63,7 +63,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 
 	private Button infoButton;
-	
+
 	private List<String> liste_types_inscrits;
 
 	private List<String> liste_type_arbo;
@@ -79,217 +79,220 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		removeAllComponents();
 
-		//((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsDisplayed();
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() ){
+			removeAllComponents();
 
-		/* Style */
-		setSizeFull();
+			//((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsDisplayed();
 
-		liste_types_inscrits= new LinkedList<String>();
-		liste_types_inscrits.add("ELP");
-		liste_types_inscrits.add("VET");
+			/* Style */
+			setSizeFull();
 
-		liste_type_arbo= new LinkedList<String>();
-		liste_type_arbo.add("CMP");
-		liste_type_arbo.add("VET");
+			liste_types_inscrits= new LinkedList<String>();
+			liste_types_inscrits.add("ELP");
+			liste_types_inscrits.add("VET");
 
-		List<Favoris> lfav = favorisController.getFavoris();
+			liste_type_arbo= new LinkedList<String>();
+			liste_type_arbo.add("CMP");
+			liste_type_arbo.add("VET");
 
-
-		//NAVBAR
-		HorizontalLayout navbar=new HorizontalLayout();
-		navbar.setSizeFull();
-		navbar.setHeight("40px");
-		navbar.setStyleName("navigation-bar");
-
-		//Bouton retour
-		infoButton = new Button();
-		infoButton.setIcon(FontAwesome.INFO);
-		infoButton.setStyleName("v-nav-button");
-		infoButton.addClickListener(e->{
-			//afficher message
-			HelpMobileWindow hbw = new HelpMobileWindow(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),false);
-
-			UI.getCurrent().addWindow(hbw);
-		});
-		navbar.addComponent(infoButton);
-		navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
-		
-		//Title
-		Label labelFav = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
-		labelFav.setStyleName("v-label-navbar");
-		navbar.addComponent(labelFav);
-		navbar.setComponentAlignment(labelFav, Alignment.MIDDLE_CENTER);
-
-		//Bouton Search
-		Button searchButton = new Button();
-		searchButton.setIcon(FontAwesome.SEARCH);
-		searchButton.setStyleName("v-nav-button");
-		navbar.addComponent(searchButton);
-		navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
-		searchButton.addClickListener(e->{
-			((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche();
-		});
-		navbar.setExpandRatio(labelFav, 1);
-		addComponent(navbar);
+			List<Favoris> lfav = favorisController.getFavoris();
 
 
+			//NAVBAR
+			HorizontalLayout navbar=new HorizontalLayout();
+			navbar.setSizeFull();
+			navbar.setHeight("40px");
+			navbar.setStyleName("navigation-bar");
 
-		VerticalLayout globalLayout = new VerticalLayout();
-		globalLayout.setSizeFull();
-		globalLayout.setSpacing(true);
-		globalLayout.setMargin(true);
-		
+			//Bouton retour
+			infoButton = new Button();
+			infoButton.setIcon(FontAwesome.INFO);
+			infoButton.setStyleName("v-nav-button");
+			infoButton.addClickListener(e->{
+				//afficher message
+				HelpMobileWindow hbw = new HelpMobileWindow(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),false);
 
-		FormLayout labelLayout = new FormLayout();
-		labelLayout.setSizeFull();
-		labelLayout.setMargin(false);
-		labelLayout.setSpacing(false);
+				UI.getCurrent().addWindow(hbw);
+			});
+			navbar.addComponent(infoButton);
+			navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
 
-	
-		Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
-		infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
-		infoLabel.setIcon(FontAwesome.INFO_CIRCLE);
+			//Title
+			Label labelFav = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
+			labelFav.setStyleName("v-label-navbar");
+			navbar.addComponent(labelFav);
+			navbar.setComponentAlignment(labelFav, Alignment.MIDDLE_CENTER);
 
-		labelLayout.addComponent(infoLabel);
-		globalLayout.addComponent(labelLayout);
-
-		if(lfav!=null && lfav.size()>0){
-			if(favorisContientVet(lfav)){
-
-				Panel vetPanel = new Panel(applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
-				vetPanel.setStyleName("centertitle-panel");
-				vetPanel.addStyleName("v-colored-panel-caption");
-				vetPanel.setSizeFull();
-
-				VerticalLayout vetLayout = new VerticalLayout();
-				vetLayout.setSizeFull();
-				int i=0;
-				for(Favoris fav :  lfav){
-					if(fav.getId().getTypfav().equals(Utils.VET)){
-						i++;
-
-						HorizontalLayout favVetLayout = new HorizontalLayout();
-						favVetLayout.setMargin(true);
-						favVetLayout.setSpacing(true);
-						favVetLayout.setStyleName("v-layout-multiline");
-						favVetLayout.setWidth("100%");
-						favVetLayout.setHeight("100%");
-
-						Button codeButton = new Button(fav.getId().getIdfav());
-						codeButton.setStyleName("link"); 
-						codeButton.addStyleName("v-link");
-						codeButton.setWidth("90px");
-						codeButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
-						});
+			//Bouton Search
+			Button searchButton = new Button();
+			searchButton.setIcon(FontAwesome.SEARCH);
+			searchButton.setStyleName("v-nav-button");
+			navbar.addComponent(searchButton);
+			navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
+			searchButton.addClickListener(e->{
+				((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche();
+			});
+			navbar.setExpandRatio(labelFav, 1);
+			addComponent(navbar);
 
 
-						Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-						libButton.setStyleName("v-button-multiline");
-						libButton.addStyleName("link"); 
-						libButton.addStyleName("v-link");
-						libButton.setHeight("100%");
-						libButton.setWidth("100%");
-						libButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
-						});
 
-						favVetLayout.addComponent(codeButton);
-						favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
-						favVetLayout.addComponent(libButton);
-						favVetLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-						favVetLayout.setExpandRatio(libButton, 1);
-						vetLayout.addComponent(favVetLayout);
-						if(i>1){
-							favVetLayout.addStyleName("line-separator");
+			VerticalLayout globalLayout = new VerticalLayout();
+			globalLayout.setSizeFull();
+			globalLayout.setSpacing(true);
+			globalLayout.setMargin(true);
+
+
+			FormLayout labelLayout = new FormLayout();
+			labelLayout.setSizeFull();
+			labelLayout.setMargin(false);
+			labelLayout.setSpacing(false);
+
+
+			Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
+			infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			infoLabel.setIcon(FontAwesome.INFO_CIRCLE);
+
+			labelLayout.addComponent(infoLabel);
+			globalLayout.addComponent(labelLayout);
+
+			if(lfav!=null && lfav.size()>0){
+				if(favorisContientVet(lfav)){
+
+					Panel vetPanel = new Panel(applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
+					vetPanel.setStyleName("centertitle-panel");
+					vetPanel.addStyleName("v-colored-panel-caption");
+					vetPanel.setSizeFull();
+
+					VerticalLayout vetLayout = new VerticalLayout();
+					vetLayout.setSizeFull();
+					int i=0;
+					for(Favoris fav :  lfav){
+						if(fav.getId().getTypfav().equals(Utils.VET)){
+							i++;
+
+							HorizontalLayout favVetLayout = new HorizontalLayout();
+							favVetLayout.setMargin(true);
+							favVetLayout.setSpacing(true);
+							favVetLayout.setStyleName("v-layout-multiline");
+							favVetLayout.setWidth("100%");
+							favVetLayout.setHeight("100%");
+
+							Button codeButton = new Button(fav.getId().getIdfav());
+							codeButton.setStyleName("link"); 
+							codeButton.addStyleName("v-link");
+							codeButton.setWidth("90px");
+							codeButton.addClickListener(e->{
+								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+							});
+
+
+							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
+							libButton.setStyleName("v-button-multiline");
+							libButton.addStyleName("link"); 
+							libButton.addStyleName("v-link");
+							libButton.setHeight("100%");
+							libButton.setWidth("100%");
+							libButton.addClickListener(e->{
+								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+							});
+
+							favVetLayout.addComponent(codeButton);
+							favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
+							favVetLayout.addComponent(libButton);
+							favVetLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
+							favVetLayout.setExpandRatio(libButton, 1);
+							vetLayout.addComponent(favVetLayout);
+							if(i>1){
+								favVetLayout.addStyleName("line-separator");
+							}
 						}
 					}
+					vetPanel.setContent(vetLayout);
+					globalLayout.addComponent(vetPanel);
+
 				}
-				vetPanel.setContent(vetLayout);
-				globalLayout.addComponent(vetPanel);
+
+				if(favorisContientElp(lfav)){
+					Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
+					elpPanel.setStyleName("centertitle-panel");
+					elpPanel.addStyleName("v-colored-panel-caption");
+					elpPanel.setSizeFull();
+
+					VerticalLayout elpLayout = new VerticalLayout();
+					elpLayout.setSizeFull();
+					int i=0;
+					for(Favoris fav :  lfav){
+						if(fav.getId().getTypfav().equals(Utils.ELP)){
+							i++;
+							HorizontalLayout favElpLayout = new HorizontalLayout();
+							favElpLayout.setMargin(true);
+							favElpLayout.setSpacing(true);
+							favElpLayout.setStyleName("v-layout-multiline");
+							favElpLayout.setWidth("100%");
+							favElpLayout.setHeight("100%");
+
+
+							Button codeButton = new Button(fav.getId().getIdfav());
+							codeButton.setStyleName("link"); 
+							codeButton.addStyleName("v-link");
+							codeButton.setWidth("90px");
+							codeButton.addClickListener(e->{
+								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+							});
+
+							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
+							libButton.setStyleName("v-button-multiline");
+							libButton.addStyleName("link"); 
+							libButton.addStyleName("v-link");
+							libButton.setHeight("100%");
+							libButton.setWidth("100%");
+							libButton.addClickListener(e->{
+								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+							});
+
+							favElpLayout.addComponent(codeButton);
+							favElpLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
+							favElpLayout.addComponent(libButton);
+							favElpLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
+							favElpLayout.setExpandRatio(libButton, 1);
+							elpLayout.addComponent(favElpLayout);
+							if(i>1){
+								favElpLayout.addStyleName("line-separator");
+							}
+						}
+					}
+					elpPanel.setContent(elpLayout);
+					globalLayout.addComponent(elpPanel);
+				}
+
+
 
 			}
 
-			if(favorisContientElp(lfav)){
-				Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
-				elpPanel.setStyleName("centertitle-panel");
-				elpPanel.addStyleName("v-colored-panel-caption");
-				elpPanel.setSizeFull();
-				
-				VerticalLayout elpLayout = new VerticalLayout();
-				elpLayout.setSizeFull();
-				int i=0;
-				for(Favoris fav :  lfav){
-					if(fav.getId().getTypfav().equals(Utils.ELP)){
-						i++;
-						HorizontalLayout favElpLayout = new HorizontalLayout();
-						favElpLayout.setMargin(true);
-						favElpLayout.setSpacing(true);
-						favElpLayout.setStyleName("v-layout-multiline");
-						favElpLayout.setWidth("100%");
-						favElpLayout.setHeight("100%");
-						
+			labelAucunFavoriLayout = new HorizontalLayout();
+			labelAucunFavoriLayout.setMargin(true);
+			labelAucunFavoriLayout.setSizeFull();
+			Label aucunFavoris = new Label(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
+			aucunFavoris.setStyleName(ValoTheme.LABEL_COLORED);
+			aucunFavoris.addStyleName(ValoTheme.LABEL_BOLD);
+			labelAucunFavoriLayout.addComponent(aucunFavoris);
+			labelAucunFavoriLayout.setVisible(false);
+			globalLayout.addComponent(labelAucunFavoriLayout);
 
-						Button codeButton = new Button(fav.getId().getIdfav());
-						codeButton.setStyleName("link"); 
-						codeButton.addStyleName("v-link");
-						codeButton.setWidth("90px");
-						codeButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
-						});
-
-						Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-						libButton.setStyleName("v-button-multiline");
-						libButton.addStyleName("link"); 
-						libButton.addStyleName("v-link");
-						libButton.setHeight("100%");
-						libButton.setWidth("100%");
-						libButton.addClickListener(e->{
-							rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
-						});
-
-						favElpLayout.addComponent(codeButton);
-						favElpLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
-						favElpLayout.addComponent(libButton);
-						favElpLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-						favElpLayout.setExpandRatio(libButton, 1);
-						elpLayout.addComponent(favElpLayout);
-						if(i>1){
-							favElpLayout.addStyleName("line-separator");
-						}
-					}
-				}
-				elpPanel.setContent(elpLayout);
-				globalLayout.addComponent(elpPanel);
+			if(lfav==null || lfav.size()==0){
+				labelAucunFavoriLayout.setVisible(true);
 			}
 
-
+			//addComponent(globalLayout);
+			contentLayout.setStyleName("v-scrollableelement");
+			contentLayout.addComponent(globalLayout);
+			addComponent(contentLayout);
+			setExpandRatio(contentLayout, 1);
 
 		}
-
-		labelAucunFavoriLayout = new HorizontalLayout();
-		labelAucunFavoriLayout.setMargin(true);
-		labelAucunFavoriLayout.setSizeFull();
-		Label aucunFavoris = new Label(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
-		aucunFavoris.setStyleName(ValoTheme.LABEL_COLORED);
-		aucunFavoris.addStyleName(ValoTheme.LABEL_BOLD);
-		labelAucunFavoriLayout.addComponent(aucunFavoris);
-		labelAucunFavoriLayout.setVisible(false);
-		globalLayout.addComponent(labelAucunFavoriLayout);
-
-		if(lfav==null || lfav.size()==0){
-			labelAucunFavoriLayout.setVisible(true);
-		}
-
-		//addComponent(globalLayout);
-		contentLayout.setStyleName("v-scrollableelement");
-		contentLayout.addComponent(globalLayout);
-		addComponent(contentLayout);
-		setExpandRatio(contentLayout, 1);
-
-
 	}
 
 

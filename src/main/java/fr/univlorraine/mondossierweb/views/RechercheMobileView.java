@@ -109,8 +109,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-		// On réinitialise la vue
-				removeAllComponents();
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant()){
+			// On réinitialise la vue
+			removeAllComponents();
 
 			// Style
 			setSizeFull();
@@ -163,7 +165,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
 			ElasticSearchService.initConnexion();
-			
+
 			//Création du champ autoComplete
 			champRecherche = new AutoComplete();
 			champRecherche.setWidth(100, Unit.PERCENTAGE); 
@@ -262,7 +264,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			checkBoxVetLayout.setSizeFull();
 			checkBoxElpLayout.setSizeFull();
 			checkBoxEtuLayout.setSizeFull();
-		
+
 
 
 			if(casesAcocherVet){
@@ -332,7 +334,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			checkBoxLayout.addComponent(checkBoxVetLayout);
 			checkBoxLayout.addComponent(checkBoxElpLayout);
 			checkBoxLayout.addComponent(checkBoxEtuLayout);
-			
+
 
 
 			mainVerticalLayout.addComponent(checkBoxLayout);
@@ -375,7 +377,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			addComponent(mainVerticalLayout);
 			setExpandRatio(mainVerticalLayout, 1);
 
-		
+		}
 	}
 
 
@@ -530,7 +532,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				if(suggestionValidee && lobjresult.size()==1 && rrContainer.size()==1 && code!=null && type!=null){
 					//On accède directemet au détail
 					rechercheController.accessToMobileDetail(code,type,true);
-					
+
 				}
 			}
 

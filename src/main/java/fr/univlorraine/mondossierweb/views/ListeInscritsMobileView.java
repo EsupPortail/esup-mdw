@@ -98,189 +98,190 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant()){
+			// On réinitialise la vue
+			removeAllComponents();
 
-		// On réinitialise la vue
-		removeAllComponents();
+			// Style
+			setSizeFull();
+			addStyleName("v-noscrollableelement");
 
-		// Style
-		setSizeFull();
-		addStyleName("v-noscrollableelement");
-
-		// On récupère le favori à afficher
-		typeFavori = MdwTouchkitUI.getCurrent().getTypeObjListInscrits();
-		libelleObj = "";
-		if(typeIsVet() && MdwTouchkitUI.getCurrent().getEtapeListeInscrits()!=null){
-			libelleObj= MdwTouchkitUI.getCurrent().getEtapeListeInscrits().getLibelle();
-		}
-		if(typeIsElp() && MdwTouchkitUI.getCurrent().getElpListeInscrits()!=null){
-			libelleObj = MdwTouchkitUI.getCurrent().getElpListeInscrits().getLibelle();
-		}
-
-
-		//Récupération de la liste des inscrits
-		List<Inscrit> linscrits = MdwTouchkitUI.getCurrent().getListeInscrits();
-
-
-
-		//NAVBAR
-		HorizontalLayout navbar=new HorizontalLayout();
-		navbar.setSizeFull();
-		navbar.setHeight("40px");
-		navbar.setStyleName("navigation-bar");
-
-		//Bouton retour
-		returnButton = new Button();
-		returnButton.setIcon(FontAwesome.ARROW_LEFT);
-		returnButton.setStyleName("v-nav-button");
-		returnButton.addClickListener(e->{
-			if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
-					MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(FavorisMobileView.NAME)){
-				MdwTouchkitUI.getCurrent().navigateTofavoris();
+			// On récupère le favori à afficher
+			typeFavori = MdwTouchkitUI.getCurrent().getTypeObjListInscrits();
+			libelleObj = "";
+			if(typeIsVet() && MdwTouchkitUI.getCurrent().getEtapeListeInscrits()!=null){
+				libelleObj= MdwTouchkitUI.getCurrent().getEtapeListeInscrits().getLibelle();
 			}
-			if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
-					MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(RechercheMobileView.NAME)){
-				MdwTouchkitUI.getCurrent().navigateToRecherche();
+			if(typeIsElp() && MdwTouchkitUI.getCurrent().getElpListeInscrits()!=null){
+				libelleObj = MdwTouchkitUI.getCurrent().getElpListeInscrits().getLibelle();
 			}
-		});
-		navbar.addComponent(returnButton);
-		navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
 
-		//Title
-		Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
-		labelTrombi.setStyleName("v-label-navbar");
-		navbar.addComponent(labelTrombi);
-		navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
 
-		// bouton pour ajouter en favori si ce n'est pas déjà le cas
-		List<Favoris> lfav = favorisController.getFavoris();
-		FavorisPK favpk = new FavorisPK();
-		favpk.setLogin(userController.getCurrentUserName());
-		favpk.setIdfav( MdwTouchkitUI.getCurrent().getCodeObjListInscrits());
-		favpk.setTypfav(typeFavori);
-		Favoris favori  = new Favoris();
-		favori.setId(favpk);
-		//Si l'objet n'est pas déjà en favori
-		if(lfav!=null && !lfav.contains(favori)){
-			//Création du bouton pour ajouter l'objet aux favoris
-			Button btnAjoutFavori = new Button("+");
-			btnAjoutFavori.setIcon(FontAwesome.STAR_O);
-			btnAjoutFavori.setStyleName("v-nav-button");
-			btnAjoutFavori.addClickListener(e->{
+			//Récupération de la liste des inscrits
+			List<Inscrit> linscrits = MdwTouchkitUI.getCurrent().getListeInscrits();
 
-				//creation du favori en base sur le clic du bouton
-				favorisController.saveFavori(favori);
 
-				//On cache le bouton de mise en favori
-				btnAjoutFavori.setVisible(false);
 
-				//Affichage d'un message de confirmation
-				Notification.show(applicationContext.getMessage(NAME+".message.favoriAjoute", null, getLocale()), Type.TRAY_NOTIFICATION );
+			//NAVBAR
+			HorizontalLayout navbar=new HorizontalLayout();
+			navbar.setSizeFull();
+			navbar.setHeight("40px");
+			navbar.setStyleName("navigation-bar");
+
+			//Bouton retour
+			returnButton = new Button();
+			returnButton.setIcon(FontAwesome.ARROW_LEFT);
+			returnButton.setStyleName("v-nav-button");
+			returnButton.addClickListener(e->{
+				if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
+						MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(FavorisMobileView.NAME)){
+					MdwTouchkitUI.getCurrent().navigateTofavoris();
+				}
+				if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
+						MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(RechercheMobileView.NAME)){
+					MdwTouchkitUI.getCurrent().navigateToRecherche();
+				}
 			});
+			navbar.addComponent(returnButton);
+			navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
 
-			//Ajout du bouton à l'interface
-			navbar.addComponent(btnAjoutFavori);
-		}
+			//Title
+			Label labelTrombi = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
+			labelTrombi.setStyleName("v-label-navbar");
+			navbar.addComponent(labelTrombi);
+			navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
 
+			// bouton pour ajouter en favori si ce n'est pas déjà le cas
+			List<Favoris> lfav = favorisController.getFavoris();
+			FavorisPK favpk = new FavorisPK();
+			favpk.setLogin(userController.getCurrentUserName());
+			favpk.setIdfav( MdwTouchkitUI.getCurrent().getCodeObjListInscrits());
+			favpk.setTypfav(typeFavori);
+			Favoris favori  = new Favoris();
+			favori.setId(favpk);
+			//Si l'objet n'est pas déjà en favori
+			if(lfav!=null && !lfav.contains(favori)){
+				//Création du bouton pour ajouter l'objet aux favoris
+				Button btnAjoutFavori = new Button("+");
+				btnAjoutFavori.setIcon(FontAwesome.STAR_O);
+				btnAjoutFavori.setStyleName("v-nav-button");
+				btnAjoutFavori.addClickListener(e->{
 
+					//creation du favori en base sur le clic du bouton
+					favorisController.saveFavori(favori);
 
-		//Bouton Filtre
-		//On a la possibilité de filtrer le trombinoscope que si on est positionné sur un ELP
-		if(typeIsElp()){
-			filterButton = new Button();
-			filterButton.setIcon(FontAwesome.ELLIPSIS_V);
-			filterButton.setStyleName("v-nav-button");
-			filterButton.addClickListener(e->{
-				FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
-				w.addCloseListener(f->{
-					//Si la personne a fermé la popup en appuyant sur le bouton FILTRER
-					if(w.isDemandeFiltrage()){
-						vetSelectionnee = w.getVetSelectionnee();
-						groupeSelectionne = w.getGroupeSelectionne();
-						displayTrombinoscope();
-					}
+					//On cache le bouton de mise en favori
+					btnAjoutFavori.setVisible(false);
+
+					//Affichage d'un message de confirmation
+					Notification.show(applicationContext.getMessage(NAME+".message.favoriAjoute", null, getLocale()), Type.TRAY_NOTIFICATION );
 				});
-				UI.getCurrent().addWindow(w);
 
-			});
-			navbar.addComponent(filterButton);
-			navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+				//Ajout du bouton à l'interface
+				navbar.addComponent(btnAjoutFavori);
+			}
+
+
+
+			//Bouton Filtre
+			//On a la possibilité de filtrer le trombinoscope que si on est positionné sur un ELP
+			if(typeIsElp()){
+				filterButton = new Button();
+				filterButton.setIcon(FontAwesome.ELLIPSIS_V);
+				filterButton.setStyleName("v-nav-button");
+				filterButton.addClickListener(e->{
+					FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
+					w.addCloseListener(f->{
+						//Si la personne a fermé la popup en appuyant sur le bouton FILTRER
+						if(w.isDemandeFiltrage()){
+							vetSelectionnee = w.getVetSelectionnee();
+							groupeSelectionne = w.getGroupeSelectionne();
+							displayTrombinoscope();
+						}
+					});
+					UI.getCurrent().addWindow(w);
+
+				});
+				navbar.addComponent(filterButton);
+				navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+			}
+
+			navbar.setExpandRatio(labelTrombi, 1);
+			addComponent(navbar);
+
+
+
+
+
+
+			//Test si la liste contient des étudiants
+			if(linscrits!=null && linscrits.size()>0){
+				infoLayout= new VerticalLayout();
+				infoLayout.setSizeFull();
+				infoLayout.setMargin(true);
+				infoLayout.setSpacing(true);
+				infoLayout.addStyleName("v-scrollableelement");
+
+				//Layout avec le Libelle
+				HorizontalLayout resumeLayout=new HorizontalLayout();
+				resumeLayout.setWidth("100%");
+				resumeLayout.setHeight("20px");
+				//Label affichant le nb d'inscrits
+				infoLibelleObj = new Label(libelleObj);
+				infoLibelleObj.setStyleName(ValoTheme.LABEL_SMALL);
+				infoLibelleObj.setSizeFull();
+				resumeLayout.addComponent(infoLibelleObj);
+				resumeLayout.setComponentAlignment(infoLibelleObj, Alignment.TOP_CENTER);
+				infoLayout.addComponent(resumeLayout);
+
+
+
+				//Layout qui contient la liste des inscrits et le trombinoscope
+				dataLayout = new VerticalLayout();
+				dataLayout.setSizeFull();
+
+
+				//Layout contenant le gridLayout correspondant au trombinoscope
+				verticalLayoutForTrombi = new VerticalLayout();
+				verticalLayoutForTrombi.setSizeFull();
+				verticalLayoutForTrombi.addStyleName("v-scrollablepanel");
+
+				//Création du trombinoscope
+				displayTrombinoscope();
+
+				verticalLayoutForTrombi.addComponent(trombiLayout);
+				verticalLayoutForTrombi.setSizeFull();
+				verticalLayoutForTrombi.setHeight(null);
+
+
+				//Le layout contient le trombi à afficher
+				dataLayout.addComponent(verticalLayoutForTrombi);
+
+				infoLayout.addComponent(dataLayout);
+				infoLayout.setExpandRatio(dataLayout, 1);
+
+				addComponent(infoLayout);
+
+
+				setExpandRatio(infoLayout, 1);
+			}else{
+				// Layout contenant le label du message indiquant aucun inscrit
+				infoLayout= new VerticalLayout();
+				infoLayout.setMargin(true);
+				infoLayout.setSpacing(true);
+
+				// Label du message indiquant aucun inscrit
+				Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
+				infoAucuninscrit.setSizeFull();
+
+				// Ajout du label au layout
+				infoLayout.addComponent(infoAucuninscrit);
+				addComponent(infoLayout);
+				setExpandRatio(infoLayout, 1);
+			}
+
 		}
-
-		navbar.setExpandRatio(labelTrombi, 1);
-		addComponent(navbar);
-
-
-
-
-
-
-		//Test si la liste contient des étudiants
-		if(linscrits!=null && linscrits.size()>0){
-			infoLayout= new VerticalLayout();
-			infoLayout.setSizeFull();
-			infoLayout.setMargin(true);
-			infoLayout.setSpacing(true);
-			infoLayout.addStyleName("v-scrollableelement");
-
-			//Layout avec le Libelle
-			HorizontalLayout resumeLayout=new HorizontalLayout();
-			resumeLayout.setWidth("100%");
-			resumeLayout.setHeight("20px");
-			//Label affichant le nb d'inscrits
-			infoLibelleObj = new Label(libelleObj);
-			infoLibelleObj.setStyleName(ValoTheme.LABEL_SMALL);
-			infoLibelleObj.setSizeFull();
-			resumeLayout.addComponent(infoLibelleObj);
-			resumeLayout.setComponentAlignment(infoLibelleObj, Alignment.TOP_CENTER);
-			infoLayout.addComponent(resumeLayout);
-
-
-
-			//Layout qui contient la liste des inscrits et le trombinoscope
-			dataLayout = new VerticalLayout();
-			dataLayout.setSizeFull();
-
-
-			//Layout contenant le gridLayout correspondant au trombinoscope
-			verticalLayoutForTrombi = new VerticalLayout();
-			verticalLayoutForTrombi.setSizeFull();
-			verticalLayoutForTrombi.addStyleName("v-scrollablepanel");
-
-			//Création du trombinoscope
-			displayTrombinoscope();
-
-			verticalLayoutForTrombi.addComponent(trombiLayout);
-			verticalLayoutForTrombi.setSizeFull();
-			verticalLayoutForTrombi.setHeight(null);
-
-
-			//Le layout contient le trombi à afficher
-			dataLayout.addComponent(verticalLayoutForTrombi);
-
-			infoLayout.addComponent(dataLayout);
-			infoLayout.setExpandRatio(dataLayout, 1);
-
-			addComponent(infoLayout);
-
-
-			setExpandRatio(infoLayout, 1);
-		}else{
-			// Layout contenant le label du message indiquant aucun inscrit
-			infoLayout= new VerticalLayout();
-			infoLayout.setMargin(true);
-			infoLayout.setSpacing(true);
-
-			// Label du message indiquant aucun inscrit
-			Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
-			infoAucuninscrit.setSizeFull();
-
-			// Ajout du label au layout
-			infoLayout.addComponent(infoAucuninscrit);
-			addComponent(infoLayout);
-			setExpandRatio(infoLayout, 1);
-		}
-
-
 
 	}
 

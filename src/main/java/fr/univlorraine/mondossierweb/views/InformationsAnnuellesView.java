@@ -54,88 +54,91 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		/* Style */
-		setMargin(true);
-		setSpacing(true);
 
-		/* Titre */
-		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() || userController.isEtudiant()){
+			/* Style */
+			setMargin(true);
+			setSpacing(true);
+
+			/* Titre */
+			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
+			title.addStyleName(ValoTheme.LABEL_H1);
+			addComponent(title);
 
 
-		HorizontalLayout globalLayout = new HorizontalLayout();
-		globalLayout.setSizeFull();
-		globalLayout.setSpacing(true);
+			HorizontalLayout globalLayout = new HorizontalLayout();
+			globalLayout.setSizeFull();
+			globalLayout.setSpacing(true);
 
-		Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent())));
+			Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent())));
 
-		FormLayout formInfosLayout = new FormLayout();
-		formInfosLayout.setSpacing(true);
-		formInfosLayout.setMargin(true);
+			FormLayout formInfosLayout = new FormLayout();
+			formInfosLayout.setSpacing(true);
+			formInfosLayout.setMargin(true);
 
-		//Numéro Anonymat visible que si l'utilisateur est étudiant
-		List<Anonymat> lano = null;
-		if(userController.isEtudiant()){
-			lano = MainUI.getCurrent().getEtudiant().getNumerosAnonymat();
-			if(lano!=null) {
-				//Si l'étudiant n'a qu'un seul numéro d'anonymat
-				if(lano.size()==1){
-					String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-					TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MainUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
-					formatTextField(fieldNumAnonymat);
-					fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-					fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-					formInfosLayout.addComponent(fieldNumAnonymat);
-				}
-				//Si l'étudiant a plusieurs numéros d'anonymat
-				if(lano.size()>1){
-					int i=0;
-					for(Anonymat ano : lano){
-						String captionNumAnonymat = "";
-						if(i==0){
-							//Pour le premier numéro affiché on affiche le libellé du champ
-							captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
-						}
-						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+			//Numéro Anonymat visible que si l'utilisateur est étudiant
+			List<Anonymat> lano = null;
+			if(userController.isEtudiant()){
+				lano = MainUI.getCurrent().getEtudiant().getNumerosAnonymat();
+				if(lano!=null) {
+					//Si l'étudiant n'a qu'un seul numéro d'anonymat
+					if(lano.size()==1){
+						String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
+						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MainUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
 						formatTextField(fieldNumAnonymat);
-						if(i==0){
-							//Pour le premier numéro affiché on affiche l'info bulle
-							fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-							fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-						}
+						fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+						fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 						formInfosLayout.addComponent(fieldNumAnonymat);
-						i++;
+					}
+					//Si l'étudiant a plusieurs numéros d'anonymat
+					if(lano.size()>1){
+						int i=0;
+						for(Anonymat ano : lano){
+							String captionNumAnonymat = "";
+							if(i==0){
+								//Pour le premier numéro affiché on affiche le libellé du champ
+								captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
+							}
+							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+							formatTextField(fieldNumAnonymat);
+							if(i==0){
+								//Pour le premier numéro affiché on affiche l'info bulle
+								fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+								fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+							}
+							formInfosLayout.addComponent(fieldNumAnonymat);
+							i++;
+						}
 					}
 				}
 			}
-		}
 
-		String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-		TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().getNumBoursier() == null ? applicationContext.getMessage(NAME+".boursier.non", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()));
-		formatTextField(fieldNumBoursier);
-		formInfosLayout.addComponent(fieldNumBoursier);
+			String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
+			TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().getNumBoursier() == null ? applicationContext.getMessage(NAME+".boursier.non", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()));
+			formatTextField(fieldNumBoursier);
+			formInfosLayout.addComponent(fieldNumBoursier);
 
-		String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-		TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
-		formatTextField(fieldSalarie);
-		formInfosLayout.addComponent(fieldSalarie);
+			String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
+			TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
+			formatTextField(fieldSalarie);
+			formInfosLayout.addComponent(fieldSalarie);
 
-		String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-		TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
-		formatTextField(fieldAmenagementEtude);
-		formInfosLayout.addComponent(fieldAmenagementEtude);
-
+			String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
+			TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
+			formatTextField(fieldAmenagementEtude);
+			formInfosLayout.addComponent(fieldAmenagementEtude);
 
 
-		panelInfos.setContent(formInfosLayout);
-		globalLayout.addComponent(panelInfos);
-		//Si on affiche aucun ou un seul numéro d'anonymat, on diminue la largeur du panneau.
-		/*if(lano==null || lano.size()<2) {
+
+			panelInfos.setContent(formInfosLayout);
+			globalLayout.addComponent(panelInfos);
+			//Si on affiche aucun ou un seul numéro d'anonymat, on diminue la largeur du panneau.
+			/*if(lano==null || lano.size()<2) {
 			globalLayout.addComponent(new VerticalLayout());
 		}*/
-		addComponent(globalLayout);
-
+			addComponent(globalLayout);
+		}
 
 	}
 

@@ -92,285 +92,288 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	}
 
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
-		if(codetu==null || !codetuToDisplay.equals(codetu)){
-			codetu=null;
-		}
-		//On va chercher les infos dans Apogée si ce n'est pas déjà fait
-		if(etape == null || !etapeToDisplay.getAnnee().equals(etape.getAnnee()) || !etapeToDisplay.getCode().equals(etape.getCode()) || !etapeToDisplay.getVersion().equals(etape.getVersion())){
-			etape=null;
-		}
-		if(codetu==null || etape == null){
-			compteurElp=0;
+		//On vérifie le droit d'accéder à la vue
+		if(userController.isEnseignant() || userController.isEtudiant()){
+			if(codetu==null || !codetuToDisplay.equals(codetu)){
+				codetu=null;
+			}
+			//On va chercher les infos dans Apogée si ce n'est pas déjà fait
+			if(etape == null || !etapeToDisplay.getAnnee().equals(etape.getAnnee()) || !etapeToDisplay.getCode().equals(etape.getCode()) || !etapeToDisplay.getVersion().equals(etape.getVersion())){
+				etape=null;
+			}
+			if(codetu==null || etape == null){
+				compteurElp=0;
 
-			removeAllComponents();
+				removeAllComponents();
 
-			/* Style */
-			setMargin(false);
-			setSpacing(false);
-			setSizeFull();
+				/* Style */
+				setMargin(false);
+				setSpacing(false);
+				setSizeFull();
 
 
 
-			//NAVBAR
-			HorizontalLayout navbar=new HorizontalLayout();
-			navbar.setSizeFull();
-			navbar.setHeight("40px");
-			navbar.setStyleName("navigation-bar");
+				//NAVBAR
+				HorizontalLayout navbar=new HorizontalLayout();
+				navbar.setSizeFull();
+				navbar.setHeight("40px");
+				navbar.setStyleName("navigation-bar");
 
-			//Bouton retour
-			returnButton = new Button();
-			returnButton.setIcon(FontAwesome.ARROW_LEFT);
-			//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-			returnButton.setStyleName("v-nav-button");
-			returnButton.addClickListener(e->{
-				MdwTouchkitUI.getCurrent().navigateToResumeNotes();
-			});
-			navbar.addComponent(returnButton);
-			navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
-
-			//Titre
-			Label labelNavBar = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
-			labelNavBar.setStyleName("v-label-navbar");
-			navbar.addComponent(labelNavBar);
-			navbar.setComponentAlignment(labelNavBar, Alignment.MIDDLE_CENTER);
-
-			navbar.setExpandRatio(labelNavBar, 1);
-
-			//Significations
-			if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
-				significationButton = new Button();
-				significationButton.setIcon(FontAwesome.INFO_CIRCLE);
-				significationButton.setStyleName("v-nav-button");
-				significationButton.addClickListener(e->{
-					//afficher les significations
-					SignificationsMobileWindow w = new SignificationsMobileWindow(true);
-					UI.getCurrent().addWindow(w);
+				//Bouton retour
+				returnButton = new Button();
+				returnButton.setIcon(FontAwesome.ARROW_LEFT);
+				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+				returnButton.setStyleName("v-nav-button");
+				returnButton.addClickListener(e->{
+					MdwTouchkitUI.getCurrent().navigateToResumeNotes();
 				});
-				navbar.addComponent(significationButton);
-				navbar.setComponentAlignment(significationButton, Alignment.MIDDLE_RIGHT);
-			}
+				navbar.addComponent(returnButton);
+				navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+
+				//Titre
+				Label labelNavBar = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
+				labelNavBar.setStyleName("v-label-navbar");
+				navbar.addComponent(labelNavBar);
+				navbar.setComponentAlignment(labelNavBar, Alignment.MIDDLE_CENTER);
+
+				navbar.setExpandRatio(labelNavBar, 1);
+
+				//Significations
+				if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
+					significationButton = new Button();
+					significationButton.setIcon(FontAwesome.INFO_CIRCLE);
+					significationButton.setStyleName("v-nav-button");
+					significationButton.addClickListener(e->{
+						//afficher les significations
+						SignificationsMobileWindow w = new SignificationsMobileWindow(true);
+						UI.getCurrent().addWindow(w);
+					});
+					navbar.addComponent(significationButton);
+					navbar.setComponentAlignment(significationButton, Alignment.MIDDLE_RIGHT);
+				}
 
 
-			addComponent(navbar);
+				addComponent(navbar);
 
 
-			layoutList = new  HashMap<String,LinkedList<HorizontalLayout>>();
+				layoutList = new  HashMap<String,LinkedList<HorizontalLayout>>();
 
-			//Test si user enseignant
-			if(userController.isEnseignant()){
-				//On recupere les notes pour un enseignant
-				etudiantController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
-			}else{
-				//On récupère les notes pour un étudiant
-				etudiantController.renseigneDetailNotesEtResultats(etapeToDisplay);
-			}
+				//Test si user enseignant
+				if(userController.isEnseignant()){
+					//On recupere les notes pour un enseignant
+					etudiantController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
+				}else{
+					//On récupère les notes pour un étudiant
+					etudiantController.renseigneDetailNotesEtResultats(etapeToDisplay);
+				}
 
-			etape=etapeToDisplay;
-			codetu=codetuToDisplay;
+				etape=etapeToDisplay;
+				codetu=codetuToDisplay;
 
-			/* Layout */
-			VerticalLayout layout = new VerticalLayout();
-			layout.setSizeFull();
-			layout.setMargin(true);
-			layout.setSpacing(true);
-			layout.setStyleName("v-scrollableelement");
+				/* Layout */
+				VerticalLayout layout = new VerticalLayout();
+				layout.setSizeFull();
+				layout.setMargin(true);
+				layout.setSpacing(true);
+				layout.setStyleName("v-scrollableelement");
 
-			/* Titre */
-			setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-
-
-			List<ElementPedagogique> lelp = MdwTouchkitUI.getCurrent().getEtudiant().getElementsPedagogiques();
+				/* Titre */
+				setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
 
 
-
-			if(lelp!=null && lelp.size()>0){
-				//Panel notesPanel = new Panel();
-				//notesPanel.setSizeFull();
-
-				VerticalLayout notesLayout = new VerticalLayout();
-				//notesLayout.setSpacing(true);
-
-				HorizontalLayout libSessionLayout = new HorizontalLayout();
-				libSessionLayout.setSizeFull();
-				libSessionLayout.addComponent(new Label());
-
-				HorizontalLayout sessionLayout = new HorizontalLayout();
-				sessionLayout.setSizeFull();
-				Label session1 = new Label("Session1");
-				session1.setStyleName("label-bold-with-bottom");
-				sessionLayout.addComponent(session1);
-				Label session2 = new Label("Session2");
-				session2.setStyleName("label-bold-with-bottom");
-				sessionLayout.addComponent(session2);
-
-				libSessionLayout.addComponent(sessionLayout);
-
-				notesLayout.addComponent(libSessionLayout);
-
-				boolean blueLevel = false;
-
-				compteurElp = 0;
-				elpPere = "";
-
-				for(ElementPedagogique elp : lelp){
-
-					compteurElp++;
-
-					//Si on est sur un element de niveau 1, différent du premier element de la liste (qui est un rappel de l'etape)
-					if(elp.getLevel()==1 && compteurElp>1){
-						blueLevel = !blueLevel;
-					}
-					HorizontalLayout libElpLayout = new HorizontalLayout();
+				List<ElementPedagogique> lelp = MdwTouchkitUI.getCurrent().getEtudiant().getElementsPedagogiques();
 
 
-					if(compteurElp>1){
-						if(elp.getLevel()==1){
-							//Sur un elp de niveau 1, il est sur fond sombre
-							libElpLayout.addStyleName("main-layout-bottom-line-separator");
 
-							//ajout dans la hashMap
-							layoutList.put(elp.getCode(), new LinkedList<HorizontalLayout>());
-							elpPere = elp.getCode();
+				if(lelp!=null && lelp.size()>0){
+					//Panel notesPanel = new Panel();
+					//notesPanel.setSizeFull();
 
-							libElpLayout.addListener(new LayoutClickListener() {
-								public void layoutClick(LayoutClickEvent event) {
-									if(layoutList.get(elp.getCode())==null || layoutList.get(elp.getCode()).size()==0){
-										Notification.show(applicationContext.getMessage(NAME+".message.aucunsouselement", null, getLocale()));
-									}else{
-										//On parcourt les layout des éléments fils de l'élément cliqué
-										for(HorizontalLayout hl : layoutList.get(elp.getCode())){
-											//Si le layout es visible
-											if(hl.isVisible()){
-												//On masque le layout
-												hl.setVisible(false);
-											}else{
-												//On affiche le layout
-												hl.setVisible(true);
+					VerticalLayout notesLayout = new VerticalLayout();
+					//notesLayout.setSpacing(true);
+
+					HorizontalLayout libSessionLayout = new HorizontalLayout();
+					libSessionLayout.setSizeFull();
+					libSessionLayout.addComponent(new Label());
+
+					HorizontalLayout sessionLayout = new HorizontalLayout();
+					sessionLayout.setSizeFull();
+					Label session1 = new Label("Session1");
+					session1.setStyleName("label-bold-with-bottom");
+					sessionLayout.addComponent(session1);
+					Label session2 = new Label("Session2");
+					session2.setStyleName("label-bold-with-bottom");
+					sessionLayout.addComponent(session2);
+
+					libSessionLayout.addComponent(sessionLayout);
+
+					notesLayout.addComponent(libSessionLayout);
+
+					boolean blueLevel = false;
+
+					compteurElp = 0;
+					elpPere = "";
+
+					for(ElementPedagogique elp : lelp){
+
+						compteurElp++;
+
+						//Si on est sur un element de niveau 1, différent du premier element de la liste (qui est un rappel de l'etape)
+						if(elp.getLevel()==1 && compteurElp>1){
+							blueLevel = !blueLevel;
+						}
+						HorizontalLayout libElpLayout = new HorizontalLayout();
+
+
+						if(compteurElp>1){
+							if(elp.getLevel()==1){
+								//Sur un elp de niveau 1, il est sur fond sombre
+								libElpLayout.addStyleName("main-layout-bottom-line-separator");
+
+								//ajout dans la hashMap
+								layoutList.put(elp.getCode(), new LinkedList<HorizontalLayout>());
+								elpPere = elp.getCode();
+
+								libElpLayout.addListener(new LayoutClickListener() {
+									public void layoutClick(LayoutClickEvent event) {
+										if(layoutList.get(elp.getCode())==null || layoutList.get(elp.getCode()).size()==0){
+											Notification.show(applicationContext.getMessage(NAME+".message.aucunsouselement", null, getLocale()));
+										}else{
+											//On parcourt les layout des éléments fils de l'élément cliqué
+											for(HorizontalLayout hl : layoutList.get(elp.getCode())){
+												//Si le layout es visible
+												if(hl.isVisible()){
+													//On masque le layout
+													hl.setVisible(false);
+												}else{
+													//On affiche le layout
+													hl.setVisible(true);
+												}
 											}
 										}
 									}
-								}
-							});
+								});
 
-						}else{
-							libElpLayout.addStyleName("layout-bottom-line-separator");
-							//ajout dans la hashMap
-							layoutList.get(elpPere).add(libElpLayout);
-
-						}
-					}else{
-						//on affiche la racine (qui est un rappel de l'etape) en blanc sur un fond très sombre
-						libElpLayout.addStyleName("root-layout-bottom-line-separator");
-					}
-					libElpLayout.setSizeFull();
-
-					VerticalLayout libVerticalLayout=new VerticalLayout();
-					Label libElpLabel = new Label(elp.getLibelle());
-					libElpLabel.setStyleName("bold-label");
-					libVerticalLayout.addComponent(libElpLabel);
-
-					//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
-					if(compteurElp>1){
-						HorizontalLayout levelMainLayout = new HorizontalLayout();
-						levelMainLayout.setSizeFull();
-						levelMainLayout.setSpacing(true);
-						levelMainLayout.setStyleName("level-indicator-layout");
-
-						int k=0;
-						for(int i=0; i<elp.getLevel();i++){
-							//Ajout d'un level
-							k++;
-							Label libLevelLayout = new Label();
-							libLevelLayout.setSizeFull();
-							libLevelLayout.setHeight("8px");
-							if(blueLevel){
-								libLevelLayout.setStyleName("layout-level-blue-indicator");
 							}else{
-								libLevelLayout.setStyleName("layout-level-green-indicator");
+								libElpLayout.addStyleName("layout-bottom-line-separator");
+								//ajout dans la hashMap
+								layoutList.get(elpPere).add(libElpLayout);
+
 							}
-							levelMainLayout.addComponent(libLevelLayout);
+						}else{
+							//on affiche la racine (qui est un rappel de l'etape) en blanc sur un fond très sombre
+							libElpLayout.addStyleName("root-layout-bottom-line-separator");
 						}
-						//On pense avoir 7 level maxi 
-						for(int j=k; j<8;j++){
-							Label libLevelSpaceLayout = new Label();
-							libLevelSpaceLayout.setSizeFull();
-							libLevelSpaceLayout.setHeight("8px");
-							levelMainLayout.addComponent(libLevelSpaceLayout);
+						libElpLayout.setSizeFull();
+
+						VerticalLayout libVerticalLayout=new VerticalLayout();
+						Label libElpLabel = new Label(elp.getLibelle());
+						libElpLabel.setStyleName("bold-label");
+						libVerticalLayout.addComponent(libElpLabel);
+
+						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
+						if(compteurElp>1){
+							HorizontalLayout levelMainLayout = new HorizontalLayout();
+							levelMainLayout.setSizeFull();
+							levelMainLayout.setSpacing(true);
+							levelMainLayout.setStyleName("level-indicator-layout");
+
+							int k=0;
+							for(int i=0; i<elp.getLevel();i++){
+								//Ajout d'un level
+								k++;
+								Label libLevelLayout = new Label();
+								libLevelLayout.setSizeFull();
+								libLevelLayout.setHeight("8px");
+								if(blueLevel){
+									libLevelLayout.setStyleName("layout-level-blue-indicator");
+								}else{
+									libLevelLayout.setStyleName("layout-level-green-indicator");
+								}
+								levelMainLayout.addComponent(libLevelLayout);
+							}
+							//On pense avoir 7 level maxi 
+							for(int j=k; j<8;j++){
+								Label libLevelSpaceLayout = new Label();
+								libLevelSpaceLayout.setSizeFull();
+								libLevelSpaceLayout.setHeight("8px");
+								levelMainLayout.addComponent(libLevelSpaceLayout);
+							}
+
+							libVerticalLayout.addComponent(levelMainLayout);
 						}
+						libElpLayout.addComponent(libVerticalLayout);
 
-						libVerticalLayout.addComponent(levelMainLayout);
-					}
-					libElpLayout.addComponent(libVerticalLayout);
+						HorizontalLayout noteLayout = new HorizontalLayout();
+						noteLayout.setSizeFull();
 
-					HorizontalLayout noteLayout = new HorizontalLayout();
-					noteLayout.setSizeFull();
-
-					VerticalLayout vlsession1 = new VerticalLayout();
-					Label note1 = new Label(elp.getNote1());
-					if(!StringUtils.hasText(elp.getNote2())){
-						note1.setStyleName("bold-label");
-					}
-					vlsession1.addComponent(note1);
-					if(StringUtils.hasText(elp.getRes1())){
-						Label adm1 = new Label(elp.getRes1());
-						if(!StringUtils.hasText(elp.getRes2())){
-							adm1.setStyleName("bold-label");
+						VerticalLayout vlsession1 = new VerticalLayout();
+						Label note1 = new Label(elp.getNote1());
+						if(!StringUtils.hasText(elp.getNote2())){
+							note1.setStyleName("bold-label");
 						}
-						vlsession1.addComponent(adm1);
-					}
-					noteLayout.addComponent(vlsession1);
+						vlsession1.addComponent(note1);
+						if(StringUtils.hasText(elp.getRes1())){
+							Label adm1 = new Label(elp.getRes1());
+							if(!StringUtils.hasText(elp.getRes2())){
+								adm1.setStyleName("bold-label");
+							}
+							vlsession1.addComponent(adm1);
+						}
+						noteLayout.addComponent(vlsession1);
 
-					VerticalLayout vlsession2 = new VerticalLayout();
-					Label note2 = new Label(elp.getNote2());
-					if(StringUtils.hasText(elp.getNote2())){
-						note2.setStyleName("bold-label");
-					}
-					vlsession2.addComponent(note2);
-					if(StringUtils.hasText(elp.getRes2())){
-						Label adm2 = new Label(elp.getRes2());
+						VerticalLayout vlsession2 = new VerticalLayout();
+						Label note2 = new Label(elp.getNote2());
+						if(StringUtils.hasText(elp.getNote2())){
+							note2.setStyleName("bold-label");
+						}
+						vlsession2.addComponent(note2);
 						if(StringUtils.hasText(elp.getRes2())){
-							adm2.setStyleName("bold-label");
+							Label adm2 = new Label(elp.getRes2());
+							if(StringUtils.hasText(elp.getRes2())){
+								adm2.setStyleName("bold-label");
+							}
+							vlsession2.addComponent(adm2);
 						}
-						vlsession2.addComponent(adm2);
+						noteLayout.addComponent(vlsession2);
+
+						libElpLayout.addComponent(noteLayout);
+
+						notesLayout.addComponent(libElpLayout);
+
+						//Au départ, on cache les éléments de niveau supérieur à 1
+						if(compteurElp>1 && elp.getLevel()>1){
+							libElpLayout.setVisible(false);
+						}
 					}
-					noteLayout.addComponent(vlsession2);
 
-					libElpLayout.addComponent(noteLayout);
-
-					notesLayout.addComponent(libElpLayout);
-
-					//Au départ, on cache les éléments de niveau supérieur à 1
-					if(compteurElp>1 && elp.getLevel()>1){
-						libElpLayout.setVisible(false);
-					}
-				}
-
-				/*notesPanel.setContent(notesLayout);
+					/*notesPanel.setContent(notesLayout);
 			layout.addComponent(notesPanel);
 			layout.setExpandRatio(notesPanel, 1);
-				 */
+					 */
 
-				layout.addComponent(notesLayout);
-				layout.setExpandRatio(notesLayout, 1);
+					layout.addComponent(notesLayout);
+					layout.setExpandRatio(notesLayout, 1);
 
-			}else{
-				setHeight(30, Unit.PERCENTAGE);
-				HorizontalLayout messageLayout=new HorizontalLayout();
-				messageLayout.setSpacing(true);
-				messageLayout.setMargin(true);
-				Label labelAucunResultat = new Label(applicationContext.getMessage(NAME+".message.aucuneresultat", null, getLocale()));
-				labelAucunResultat.setStyleName(ValoTheme.LABEL_BOLD);
-				messageLayout.addComponent(labelAucunResultat);
-				layout.addComponent(messageLayout);
+				}else{
+					setHeight(30, Unit.PERCENTAGE);
+					HorizontalLayout messageLayout=new HorizontalLayout();
+					messageLayout.setSpacing(true);
+					messageLayout.setMargin(true);
+					Label labelAucunResultat = new Label(applicationContext.getMessage(NAME+".message.aucuneresultat", null, getLocale()));
+					labelAucunResultat.setStyleName(ValoTheme.LABEL_BOLD);
+					messageLayout.addComponent(labelAucunResultat);
+					layout.addComponent(messageLayout);
+
+				}
+
+
+
+				addComponent(layout);
+
+				setExpandRatio(layout, 1);
 
 			}
-
-
-
-			addComponent(layout);
-
-			setExpandRatio(layout, 1);
-
 		}
 	}
 
