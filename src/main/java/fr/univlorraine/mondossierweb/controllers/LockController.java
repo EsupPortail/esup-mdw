@@ -60,7 +60,7 @@ public class LockController {
 		}
 
 		locks.put(obj, UI.getCurrent());
-		uiController.notifyUIUpdated(UI.getCurrent());
+		
 		return true;
 	}
 
@@ -88,7 +88,7 @@ public class LockController {
 	public void removeLock(Object obj) {
 		UI ui = locks.get(obj);
 		locks.remove(obj);
-		uiController.notifyUIUpdated(ui);
+		
 	}
 
 	/**

@@ -20,7 +20,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.windows.ConfirmWindow;
 import fr.univlorraine.mondossierweb.views.windows.InputWindow;
 
@@ -55,7 +54,6 @@ public class UiController {
 	 */
 	public synchronized void registerUI(final MainUI ui) {
 		uis.add(ui);
-		notifyUIAdded(ui);
 
 		/* Met à jour les AdminViews lorsqu'une UI change de vue */
 		ui.getNavigator().addViewChangeListener(new ViewChangeListener() {
@@ -68,7 +66,6 @@ public class UiController {
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
-				notifyUIUpdated(ui);
 			}
 		});
 	}
@@ -79,7 +76,6 @@ public class UiController {
 	 */
 	public synchronized void unregisterUI(MainUI ui) {
 		uis.remove(ui);
-		notifyUIRemoved(ui);
 	}
 
 	/**
@@ -111,68 +107,13 @@ public class UiController {
 		UI.getCurrent().addWindow(inputWindow);
 	}
 
-	/* Mise à jour des AdminViews */
 
-	/** AdminViews actives */
-	private LinkedList<AdminView> adminViews = new LinkedList<AdminView>();
 
-	/**
-	 * Ajoute une AdminView à la liste des AdminViews actives
-	 * @param adminView
-	 */
-	public synchronized void registerAdminView(AdminView adminView) {
-		adminViews.add(adminView);
-	}
 
-	/**
-	 * Enlève une AdminView de la liste des AdminViews actives
-	 * @param adminView
-	 */
-	public synchronized void unregisterAdminView(AdminView adminView) {
-		adminViews.remove(adminView);
-	}
 
-	/**
-	 * Informe les AdminViews de l'ajout d'une UI
-	 * @param addedUI
-	 */
-	public synchronized void notifyUIAdded(UI addedUI) {
-		if (UI.getCurrent().getPushConfiguration().getPushMode().isEnabled()) {
-			adminViews.forEach(adminView ->
-				executorService.execute(() ->
-					adminView.receiveAddedUINotification(addedUI)
-				)
-			);
-		}
-	}
 
-	/**
-	 * Informe les AdminViews de la modification d'une UI
-	 * @param removedUI
-	 */
-	public synchronized void notifyUIUpdated(UI updatedUI) {
-		if (UI.getCurrent().getPushConfiguration().getPushMode().isEnabled()) {
-			adminViews.forEach(adminView ->
-				executorService.execute(() ->
-					adminView.receiveUpdatedUINotification(updatedUI)
-				)
-			);
-		}
-	}
 
-	/**
-	 * Informe les AdminViews de la suppression d'une UI
-	 * @param removedUI
-	 */
-	public synchronized void notifyUIRemoved(UI removedUI) {
-		if (UI.getCurrent().getPushConfiguration().getPushMode().isEnabled()) {
-			adminViews.forEach(adminView ->
-				executorService.execute(() ->
-					adminView.receiveRemovedUINotification(removedUI)
-				)
-			);
-		}
-	}
+
 
 	/**
 	 * Vérifie si une UI est toujours active

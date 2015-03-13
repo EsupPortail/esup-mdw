@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import ru.xpoft.vaadin.VaadinView;
@@ -41,6 +42,7 @@ import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(InscriptionsView.NAME)
+@PreAuthorize("hasRole('consultation_dossier')")
 public class InscriptionsView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

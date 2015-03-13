@@ -18,24 +18,20 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.ActionsColumnGenerator;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.DisplayTypeColumnGenerator;
 
 /**
  * Favoris
@@ -43,7 +39,9 @@ import fr.univlorraine.mondossierweb.views.RechercheArborescenteView.DisplayType
 @Component @Scope("prototype")
 @VaadinView(FavorisView.NAME)
 public class FavorisView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
+
+	private static final long serialVersionUID = 6309734175451108885L;
+
 
 	public static final String NAME = "favorisView";
 

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -42,6 +43,7 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
  */
 @Component @Scope("prototype")
 @VaadinView(EtatCivilView.NAME)
+@PreAuthorize("hasRole('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
 	
 	private static final long serialVersionUID = -2056224835347802529L;
@@ -73,11 +75,16 @@ public class EtatCivilView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
+		
+		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
+		
+		System.out.println(userController.getCurrentUserName()+" init EtatCivilView");
+		
+		if(MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
-
-		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
 		
 		/* Titre */
 		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
@@ -221,7 +228,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		addComponent(globalLayout);
 
 
-
+		}
 
 	}
 
@@ -393,6 +400,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		System.out.println(userController.getCurrentUserName()+" enter EtatCivilView");
 	}
 
 }

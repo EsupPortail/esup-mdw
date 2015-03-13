@@ -52,7 +52,10 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 @Component @Scope("prototype")
 @VaadinView(RechercheRapideView.NAME)
 public class RechercheRapideView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
+
+	private static final long serialVersionUID = 7147611659177952737L;
+
+
 
 	public static final String NAME = "rechercheRapideView";
 

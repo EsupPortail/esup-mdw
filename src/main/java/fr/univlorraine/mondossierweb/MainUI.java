@@ -26,6 +26,9 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -179,6 +182,8 @@ public class MainUI extends GenericUI {
 	@Override
 	protected void init(VaadinRequest request) {
 		
+		LOG.debug("init(); mainUI");
+		
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();
@@ -203,16 +208,16 @@ public class MainUI extends GenericUI {
 
 
 
-
 		/* Construit le gestionnaire de vues utilisé pour naviguer dans le dossier d'un étudiant */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
 		navigator.addViewChangeListener(new ViewChangeListener() {
 			private static final long serialVersionUID = 7905379446201794289L;
 
 			private static final String SELECTED_ITEM = "selected";
-
+			
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
+				System.out.println("beforeViewChange : "+event.getViewName());
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
 				return true;
@@ -220,6 +225,7 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
+				System.out.println("afterViewChange : "+event.getViewName());
 				//On récupère l'élément du menu concerné par la vue à afficher
 				Button button = viewButtons.get(event.getViewName());
 				if (button instanceof Button) {

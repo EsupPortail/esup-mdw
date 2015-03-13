@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -28,7 +29,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
@@ -45,6 +45,7 @@ import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(ListeInscritsMobileView.NAME)
+@PreAuthorize("hasRole('teacher')")
 public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

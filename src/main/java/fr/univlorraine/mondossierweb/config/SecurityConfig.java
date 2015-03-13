@@ -34,6 +34,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import fr.univlorraine.mondossierweb.utils.EmptyJMeterAuthenticationProvider;
 
 /**
@@ -49,6 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Resource
 	private Environment environment;
 
+	@Resource
+	private MdwUserDetailsService mdwUserDetailsService;
 	
 	@Bean(name="authenticationManager")
 	@Override
@@ -142,13 +145,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean(name="userDetailsService")
 	@Override
 	public UserDetailsService userDetailsServiceBean() throws Exception {
-		LdapUserDetailsService ldapUserDetailsService = new LdapUserDetailsService(ldapUserSearch());
+		return mdwUserDetailsService;
+	/*	LdapUserDetailsService ldapUserDetailsService = new LdapUserDetailsService(ldapUserSearch());
 		LdapUserDetailsMapper userDetailsMapper = new LdapUserDetailsMapper();
 		userDetailsMapper.setRoleAttributes(new String[] {environment.getRequiredProperty("ldap.roleAttribute")});
 		userDetailsMapper.setConvertToUpperCase(false);
 		ldapUserDetailsService.setUserDetailsMapper(userDetailsMapper);
 
-		return ldapUserDetailsService;
+		return ldapUserDetailsService;*/
 	}
 
 	@Bean

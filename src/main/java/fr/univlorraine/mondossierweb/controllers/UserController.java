@@ -24,6 +24,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -65,8 +66,8 @@ public class UserController {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient Environment environment;
-	@Resource
-	private transient UserDetailsService userDetailsService;
+	/*@Resource
+	private transient UserDetailsService userDetailsService;*/
 	@Resource
 	private transient LdapUserSearch ldapUserSearch;
 	@Resource
@@ -142,13 +143,13 @@ public class UserController {
 		return (UserDetails) getCurrentAuthentication().getPrincipal();
 	}
 
+	
 	/**
 	 * @return username de l'utilisateur courant
 	 */
-	public String getCurrentUserName() {
+	public String getCurrentUserName(String username) {
 		//return "toto54";
-		
-		String username= getCurrentAuthentication().getName();
+
 		UtilisateurSwap us= utilisateurSwapRepository.findOne(username);
 		if(us!=null && us.getLoginCible()!=null){
 			//test si la date de création du swap utilisateur n'est pas plus vieille que 1 heure
@@ -162,6 +163,16 @@ public class UserController {
 			}
 		}
 		return username;
+	}
+	
+	/**
+	 * @return username de l'utilisateur courant
+	 */
+	public String getCurrentUserName() {
+		//return "toto54";
+
+		return getCurrentUserName(getCurrentAuthentication().getName());
+		
 	}
 
 	/**
@@ -180,12 +191,12 @@ public class UserController {
 	 * Change le rôle de l'utilisateur courant
 	 * @param username
 	 */
-	public void switchToUser(String username) {
+	/*public void switchToUser(String username) {
 		if (!StringUtils.hasText(username)) {
 			throw new IllegalArgumentException("username ne peut être vide.");
 		}
 
-		/* Vérifie que l'utilisateur existe */
+		// Vérifie que l'utilisateur existe 
 		try {
 			userDetailsService.loadUserByUsername(username);
 		} catch (UsernameNotFoundException unfe) {
@@ -195,7 +206,7 @@ public class UserController {
 
 		String switchToUserUrl = environment.getRequiredProperty("switchUser.switchUrl") + "?" + SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY + "=" + username;
 		Page.getCurrent().open(switchToUserUrl, null);
-	}
+	}*/
 
 
 
@@ -225,17 +236,13 @@ public class UserController {
 
 
 
+	public String determineTypeUser(String username) {
 
-	public void determineTypeUser() {
-
-		GenericUI.getCurrent().setTypeUser(null);
-		
-		List<String> type = typeLdap(getCurrentUserName());
+		List<String> type = typeLdap(username);
 
 		if (StringUtils.hasText(PropertyUtils.getTypeEtudiantLdap()) && type!=null &&
 				type.contains(PropertyUtils.getTypeEtudiantLdap())) { 
-			GenericUI.getCurrent().setTypeUser(STUDENT_USER);
-			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant","Authentification d'un étudiant");
+			return STUDENT_USER;
 		} else {
 
 			//on cherche a savoir si l'employé a acces (ex: c'est un enseignant)
@@ -252,7 +259,7 @@ public class UserController {
 				if (listegroupes != null && listegroupes.size()>0) {
 
 					//recupère l'utilisateur uportal
-					PortalUser portaluser = portalService.getUser(getCurrentUserName());
+					PortalUser portaluser = portalService.getUser(username);
 
 					//on cherche si il appartient a un groupe
 					useruportal = false;
@@ -282,14 +289,12 @@ public class UserController {
 
 			if (useruportal) {
 				//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
-				LOG.debug("USER "+getCurrentUserName()+" ENSEIGNANT VIA UPORTAL");
-				GenericUI.getCurrent().setTypeUser(TEACHER_USER);
-				GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
-
+				LOG.debug("USER "+username+" ENSEIGNANT VIA UPORTAL");
+				return TEACHER_USER;
 
 			} else {
 				//va voir dans apogée
-				LOG.debug("USER "+getCurrentUserName()+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
+				LOG.debug("USER "+username+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
 
 
 				//On test si on doit chercher l'utilisateur dans Apogee
@@ -297,29 +302,50 @@ public class UserController {
 					//Test de la présence dans la table utilisateur d'Apogee
 					//on regarde si il est dans la table utilisateur 
 					try {
-						Utilisateur uti = utilisateurService.findUtilisateur(getCurrentUserName().toUpperCase());
+						Utilisateur uti = utilisateurService.findUtilisateur(username.toUpperCase());
 
 						if (uti != null) {
-							LOG.debug("USER "+getCurrentUserName()+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
-							GenericUI.getCurrent().setTypeUser(TEACHER_USER);
-							GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant","Authentification d'un enseignant");
+							LOG.debug("USER "+username+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
+							return TEACHER_USER;
 						} else {
-							GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
-							LOG.debug("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
-
+							LOG.debug("utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+							return UNAUTHORIZED_USER;
 						}
 					} catch (Exception ex) {
 						LOG.error("Probleme lors de la vérification de l'existence de l'utilisateur dans la table Utilisateur de Apogee",ex);
 					}
 				}else{
-					GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
-					LOG.info("Utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal -> UTILISATEUR NON AUTORISE !");
+					LOG.info("Utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal -> UTILISATEUR NON AUTORISE !");
+					return UNAUTHORIZED_USER;
+
 				}
 
 
 			}
 		}
 
+		return UNAUTHORIZED_USER;
+	}
+
+
+	public void determineTypeUser() {
+
+		GenericUI.getCurrent().setTypeUser(null);
+
+		String type = determineTypeUser(getCurrentUserName());
+
+		if(type!=null && type.equals(STUDENT_USER)){
+			GenericUI.getCurrent().setTypeUser(STUDENT_USER);
+			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant","Authentification d'un étudiant");
+		}
+		if(type!=null && type.equals(TEACHER_USER)){
+			GenericUI.getCurrent().setTypeUser(TEACHER_USER);
+			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
+		}
+		if(type!=null && type.equals(UNAUTHORIZED_USER)){
+			GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
+			LOG.debug("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+		}
 	}
 
 	/**
@@ -329,8 +355,8 @@ public class UserController {
 	 */
 	public List<String> typeLdap(final String login) {
 		try {
-			if(ldapUserSearch.searchForUser(getCurrentUserName())!=null){
-				String[] vals= ldapUserSearch.searchForUser(getCurrentUserName()).getStringAttributes(PropertyUtils.getAttributLdapEtudiant());
+			if(ldapUserSearch.searchForUser(login)!=null){
+				String[] vals= ldapUserSearch.searchForUser(login).getStringAttributes(PropertyUtils.getAttributLdapEtudiant());
 				if(vals!=null){
 					List<String> listeValeurs = Arrays.asList(vals);
 					return listeValeurs;
@@ -348,13 +374,13 @@ public class UserController {
 	 * @return la valeur pour l'utilisateur de la préférence en parametre
 	 */
 	public String getPreference(String preference) {
-	
+
 		PreferencesUtilisateur pu = preferencesUtilisateurRepository.findOnePrefFromLoginAndPrefid(getCurrentUserName(), preference);
-		
+
 		if(pu!=null && pu.getId()!=null && pu.getValeur()!=null){
 			return pu.getValeur();
 		}
-		
+
 		return null;
 	}
 
@@ -372,19 +398,21 @@ public class UserController {
 		pu.setId(pupk);
 		pu.setValeur(valeur);
 		preferencesUtilisateurRepository.save(pu);
-		
+
 	}
 
-	public boolean isAdmin() {
-		String login = getCurrentUserName();
+	public boolean isAdmin(String login) {
 		Administrateurs adm = administrateursRepository.findOne(login);
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
-			
 			//GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
-			
 			return true;
 		}
 		return false;
+	}
+
+
+	public boolean isAdmin() {
+		return isAdmin(getCurrentUserName());
 	}
 
 }

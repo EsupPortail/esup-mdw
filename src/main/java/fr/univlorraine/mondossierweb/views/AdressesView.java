@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -37,6 +38,7 @@ import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(AdressesView.NAME)
+@PreAuthorize("hasRole('consultation_dossier')")
 public class AdressesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

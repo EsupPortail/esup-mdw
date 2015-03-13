@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import ru.xpoft.vaadin.VaadinView;
@@ -39,6 +40,7 @@ import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
  */
 @Component @Scope("prototype")
 @VaadinView(CalendrierView.NAME)
+@PreAuthorize("hasRole('consultation_dossier')")
 public class CalendrierView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 
