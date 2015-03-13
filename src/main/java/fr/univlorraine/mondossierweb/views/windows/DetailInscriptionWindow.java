@@ -113,6 +113,7 @@ public class DetailInscriptionWindow extends Window {
 
 			Panel panelDetailInscription= new Panel(etape.getLibelle());
 			panelDetailInscription.setSizeFull();
+			panelDetailInscription.addStyleName("small-font-element");
 
 			List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
 			if(lelp!=null && lelp.size()>0){

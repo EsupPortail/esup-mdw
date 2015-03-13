@@ -172,7 +172,7 @@ public class NotesView extends VerticalLayout implements View {
 
 
 			Panel panelNotesDiplomes= new Panel(applicationContext.getMessage(NAME+".table.diplomes", null, getLocale()));
-
+			//panelNotesDiplomes.addStyleName("small-font-element");
 
 			Table notesDiplomesTable = new Table(null, new BeanItemContainer<>(Diplome.class, MainUI.getCurrent().getEtudiant().getDiplomes()));
 			notesDiplomesTable.setWidth("100%");
@@ -203,7 +203,7 @@ public class NotesView extends VerticalLayout implements View {
 
 
 			Panel panelNotesEtapes= new Panel(applicationContext.getMessage(NAME+".table.etapes", null, getLocale()));
-
+			//panelNotesEtapes.addStyleName("small-font-element");
 
 			Table notesEtapesTable = new Table(null, new BeanItemContainer<>(Etape.class, MainUI.getCurrent().getEtudiant().getEtapes()));
 			notesEtapesTable.setWidth("100%");

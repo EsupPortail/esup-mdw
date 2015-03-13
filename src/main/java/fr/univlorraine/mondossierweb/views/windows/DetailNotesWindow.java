@@ -56,6 +56,10 @@ public class DetailNotesWindow extends Window {
 	private transient ConfigController configController;
 
 	private Etape etape;
+	
+	private Button btnDisplayFiltres;
+	
+	private Panel panelVue;
 
 	/**
 	 * Crée une fenêtre
@@ -109,6 +113,29 @@ public class DetailNotesWindow extends Window {
 			titleLayout.addComponent(messageLabel);
 			titleLayout.setExpandRatio(messageLabel, 1);
 			titleLayout.setComponentAlignment(messageLabel, Alignment.MIDDLE_LEFT);
+			
+			//Test si user enseignant
+			if(userController.isEnseignant() && lelp!=null && lelp.size()>0){
+				//Bouton pour afficher les filtres
+				btnDisplayFiltres=new Button();
+				btnDisplayFiltres.setWidth("52px");
+				btnDisplayFiltres.setHeight("32px");
+				btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_PRIMARY);
+				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
+					btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+				}
+				btnDisplayFiltres.setIcon(FontAwesome.FILTER);
+				btnDisplayFiltres.setDescription(applicationContext.getMessage(NAME+".btn.displayFilters", null, getLocale()));
+				btnDisplayFiltres.addClickListener(e->{
+					btnDisplayFiltres.setVisible(false);
+					panelVue.setVisible(true);
+				});
+				titleLayout.addComponent(btnDisplayFiltres);
+				titleLayout.setComponentAlignment(btnDisplayFiltres, Alignment.MIDDLE_RIGHT);
+				//titleLayout.setExpandRatio(btnDisplayFiltres, 1);
+				btnDisplayFiltres.setVisible(true);
+			}
+			
 			if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
@@ -126,7 +153,7 @@ public class DetailNotesWindow extends Window {
 
 			//Test si user enseignant
 			if(userController.isEnseignant() && lelp!=null && lelp.size()>0){
-				Panel panelVue= new Panel();
+				panelVue= new Panel();
 
 				HorizontalLayout vueLayout = new HorizontalLayout();
 				vueLayout.setMargin(true);
@@ -156,11 +183,13 @@ public class DetailNotesWindow extends Window {
 
 				panelVue.setContent(vueLayout);
 				layout.addComponent(panelVue);
+				panelVue.setVisible(false);
 			}
 
 
 
 			Panel panelDetailNotes= new Panel(etape.getLibelle()+" - "+applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" "+ etape.getAnnee());
+			panelDetailNotes.addStyleName("small-font-element");
 			panelDetailNotes.setSizeFull();
 
 
@@ -206,6 +235,7 @@ public class DetailNotesWindow extends Window {
 				Panel panelSignificationResultats= new Panel(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 
 				panelSignificationResultats.addStyleName("significationpanel");
+				panelSignificationResultats.addStyleName("small-font-element");
 				panelSignificationResultats.setIcon(FontAwesome.INFO_CIRCLE);
 
 				VerticalLayout significationLayout = new VerticalLayout();
