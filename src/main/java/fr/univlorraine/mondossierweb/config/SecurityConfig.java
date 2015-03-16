@@ -12,7 +12,6 @@ import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
@@ -26,13 +25,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+
 
 /**
  * Configuration Spring Security
@@ -139,20 +137,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
-	@Bean(name="userDetailsService")
-	@Override
-	public UserDetailsService userDetailsServiceBean() throws Exception {
-		return mdwUserDetailsService;
-	/*	LdapUserDetailsService ldapUserDetailsService = new LdapUserDetailsService(ldapUserSearch());
-		LdapUserDetailsMapper userDetailsMapper = new LdapUserDetailsMapper();
-		userDetailsMapper.setRoleAttributes(new String[] {environment.getRequiredProperty("ldap.roleAttribute")});
-		userDetailsMapper.setConvertToUpperCase(false);
-		ldapUserDetailsService.setUserDetailsMapper(userDetailsMapper);
+	
 
-		return ldapUserDetailsService;*/
-	}
-
-	@Bean
+	/*@Bean
 	public LdapContextSource ldapServer() {
 		LdapContextSource ldapContextSource = new LdapContextSource();
 		ldapContextSource.setUrl(environment.getRequiredProperty("ldap.url"));
@@ -168,12 +155,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 
 		return ldapContextSource;
-	}
+	}*/
 
-	@Bean
+	/*@Bean
 	public LdapUserSearch ldapUserSearch() {
 		return new FilterBasedLdapUserSearch("ou=people", "uid={0}", ldapServer());
-	}
+	}*/
 
 	/* Filtre permettant de prendre le rôle d'un autre utilisateur => NON UTILISE */
 	/*@Bean
@@ -186,6 +173,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return switchUserFilter;
 	}*/
 	
+	@Bean(name="userDetailsService")
+	@Override
+	public UserDetailsService userDetailsServiceBean() throws Exception {
+		//return new MdwUserDetailsService();
+		return mdwUserDetailsService;
+		/*LdapUserDetailsService ldapUserDetailsService = new LdapUserDetailsService(ldapUserSearch());
+		LdapUserDetailsMapper userDetailsMapper = new LdapUserDetailsMapper();
+		userDetailsMapper.setRoleAttributes(new String[] {environment.getRequiredProperty("ldap.roleAttribute")});
+		userDetailsMapper.setConvertToUpperCase(false);
+		ldapUserDetailsService.setUserDetailsMapper(userDetailsMapper);
+
+		return ldapUserDetailsService;*/
+	}
 	
 
 }
