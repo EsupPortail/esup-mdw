@@ -38,8 +38,8 @@ import fr.univnancy2.PhotoClient.exception.PhotoClientException;
  * classe pour la gestion des photos (notament la récupération du ticket).
  * @author Charlie Dubois
  */
-@Component(value="photoProvider")
-@Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
+//@Component(value="photoProvider")
+//@Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
 public class PhotoNancy2ImplCodEtu implements IPhoto {
 	/**
 	 * Un logger.
@@ -47,14 +47,14 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	private static final Logger LOG = LoggerFactory.getLogger(PhotoNancy2ImplCodEtu.class);
 
 
-	@Resource
-	private transient UserController userController;
+	/*@Resource
+	private transient UserController userController;*/
 
 
 	/**
 	 * vrai si l'utilisateur est un enseignant.
 	 */
-	private boolean utilisateurEnseignant;
+	//private boolean utilisateurEnseignant;
 
 	/**
 	 * d�lai avant expiration du ticket.
@@ -104,13 +104,13 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	/**
 	 * @see org.esupportail.mondossierweb.web.photo.IPhoto#urlPhoto(java.lang.String)
 	 */
-	public String getUrlPhoto(final String cod_ind, String cod_etu) {
+	public String getUrlPhoto(final String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
 		String url = "";
 
 		if(cod_etu==null)
 			cod_etu="00000000";
 
-		checkTicket(cod_etu);
+		checkTicket(cod_etu, isUtilisateurEnseignant, loginUser);
 
 		if (tc != null && tc.isValid(DELAI_TICKET_SEC)) {
 
@@ -125,14 +125,14 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 		return url;
 	}
 
-	public String getUrlPhotoTrombinoscopePdf(final String cod_ind, String cod_etu) {
+	public String getUrlPhotoTrombinoscopePdf(final String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
 		String url = "";
 
 		if(cod_etu==null)
 			cod_etu="00000000";
 		//on refait le ticket pour le serveur qui genere le pdf:
-		utilisateurEnseignant = userController.isEnseignant();
-		String loginUser = userController.getCurrentUserName();
+		/*utilisateurEnseignant = userController.isEnseignant();
+		String loginUser = userController.getCurrentUserName();*/
 
 		if (!forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 			initForServer(loginUser);
@@ -155,14 +155,14 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	/**
 	 * @see org.esupportail.mondossierweb.web.photo.IPhoto#ticketBon(int)
 	 */
-	public void checkTicket(final String cod_etu) {
+	public void checkTicket(final String cod_etu, boolean isUtilisateurEnseignant,String loginUser) {
 
 		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 
-			utilisateurEnseignant = userController.isEnseignant();
-			String loginUser = userController.getCurrentUserName();
+		/*	utilisateurEnseignant = userController.isEnseignant();
+			String loginUser = userController.getCurrentUserName();*/
 
-			if (!utilisateurEnseignant) {
+			if (!isUtilisateurEnseignant) {
 				init(cod_etu, loginUser);
 			} else {
 				init(loginUser);
@@ -385,13 +385,13 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 		this.photoClient = photoClient;
 	}
 
-	public boolean isUtilisateurEnseignant() {
+	/*public boolean isUtilisateurEnseignant() {
 		return utilisateurEnseignant;
 	}
 
 	public void setUtilisateurEnseignant(boolean utilisateurEnseignant) {
 		this.utilisateurEnseignant = utilisateurEnseignant;
-	}
+	}*/
 
 	public String getCodeapp() {
 

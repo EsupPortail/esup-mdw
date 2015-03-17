@@ -130,8 +130,9 @@ public class ListeInscritsController {
 	 * proxy pour faire appel aux infos sur l'étudiant WS .
 	 */
 	private OffreFormationMetierServiceInterface monProxyOffreDeFormation;
-	@Resource(name="photoProvider")
-	private IPhoto photo;
+	
+	/*@Resource(name="photoProvider")
+	private IPhoto photo;*/
 
 
 
@@ -376,8 +377,8 @@ public class ListeInscritsController {
 	 */
 	public void setUrlPhotos(List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
-			i.setUrlphoto(photo.getUrlPhoto(i.getCod_ind(), i.getCod_etu()));
-
+			//i.setUrlphoto(photo.getUrlPhoto(i.getCod_ind(), i.getCod_etu()));
+			i.setUrlphoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 		}
 	}
 
@@ -945,7 +946,8 @@ public class ListeInscritsController {
 
 					compteur++;
 
-					String foto = photo.getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu());
+					//String foto = photo.getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu());
+					String foto = GenericUI.getCurrent().getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 					Image photo = Image.getInstance(foto);
 					photo.scaleAbsolute(85, 107);
 

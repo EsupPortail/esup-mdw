@@ -14,6 +14,8 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
+import fr.univlorraine.mondossierweb.photo.IPhoto;
+import fr.univlorraine.mondossierweb.photo.PhotoNancy2ImplCodEtu;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 
 /**
@@ -109,6 +111,11 @@ public class GenericUI  extends UI {
 	@Setter
 	@Getter
 	protected String typeUser;
+	
+	//Le photo provider
+	@Setter
+	@Getter
+	private IPhoto photoProvider= new PhotoNancy2ImplCodEtu();
 
 	@Override
 	protected void init(VaadinRequest request) {

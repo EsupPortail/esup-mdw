@@ -110,8 +110,8 @@ public class EtudiantController {
 
 
 
-	@Resource(name="photoProvider")
-	private IPhoto photo;
+	/*@Resource(name="photoProvider")
+	private IPhoto photo;*/
 
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
@@ -161,8 +161,8 @@ public class EtudiantController {
 				}
 
 				//Pour ne renseigner la photo que si elle n'est pas renseignée.
-				GenericUI.getCurrent().getEtudiant().setPhoto(photo.getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu()));
-
+				//GenericUI.getCurrent().getEtudiant().setPhoto(photo.getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu()));
+				GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
 					// on passe par iBATIS pour récupérer l'e-mail.

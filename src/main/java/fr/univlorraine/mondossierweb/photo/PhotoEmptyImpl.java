@@ -23,7 +23,7 @@ public class PhotoEmptyImpl implements IPhoto {
 	 * @param cod_ind 
 	 * @return aucune photo.
 	 */
-	public String getUrlPhoto(String cod_ind, String cod_etu) {
+	public String getUrlPhoto(String cod_ind, String cod_etu,boolean isUtilisateurEnseignant, String loginUser) {
 			return "";
 	}
 
@@ -32,7 +32,7 @@ public class PhotoEmptyImpl implements IPhoto {
 	 * @param cod_ind 
 	 * @return aucune photo.
 	 */
-	public String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu) {
+	public String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu,boolean isUtilisateurEnseignant, String loginUser) {
 		// TODO Auto-generated method stub
 		return null;
 	}
