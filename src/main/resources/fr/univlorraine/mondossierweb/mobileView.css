@@ -52,6 +52,10 @@ border-bottom: 1px solid #c5c5c5;
 	text-align: center;
 }
 
+.valo-ul .label-line-through {
+	text-decoration: line-through;
+}
+
 .valo-ul .v-touchkit-navpanel-container{
 	background: #F0F0F0;
 }

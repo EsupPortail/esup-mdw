@@ -269,20 +269,26 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 			if(casesAcocherVet){
 				checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+				etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			}else{
 				checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
+				etapeLabel.addStyleName("label-line-through");
 			}
 
 			if(casesAcocherElp){
 				checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+				elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			}else{
 				checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
+				elpLabel.addStyleName("label-line-through");
 			}
 
 			if(casesAcocherEtudiant){
 				checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+				etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
 			}else{
 				checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
+				etuLabel.addStyleName("label-line-through");
 			}
 
 			checkBoxVetLayout.addListener(new LayoutClickListener() {
@@ -290,9 +296,11 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					if(casesAcocherVet){
 						casesAcocherVet=false;
 						checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
+						etapeLabel.addStyleName("label-line-through");
 					}else{
 						casesAcocherVet=true;
 						checkBoxVetLayout.setStyleName("layout-checkbox-checked");
+						etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
 					}
 					tuneSearch();
 				}
@@ -303,9 +311,11 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					if(casesAcocherElp){
 						casesAcocherElp=false;
 						checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
+						elpLabel.addStyleName("label-line-through");
 					}else{
 						casesAcocherElp=true;
 						checkBoxElpLayout.setStyleName("layout-checkbox-checked");
+						elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
 					}
 					tuneSearch();
 				}
@@ -316,9 +326,11 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					if(casesAcocherEtudiant){
 						casesAcocherEtudiant=false;
 						checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
+						etuLabel.addStyleName("label-line-through");
 					}else{
 						casesAcocherEtudiant=true;
 						checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
+						etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
 					}
 					tuneSearch();
 				}
