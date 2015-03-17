@@ -368,6 +368,23 @@ public class UserController {
 			return null;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param login de l'utilisateur
+	 * @return vrai si le compte est dans le ldap le type retourné par ldap.
+	 */
+	public boolean estDansLeLdap(final String login) {
+		try {
+			if(ldapUserSearch.searchForUser(login)!=null){
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			LOG.error("Probleme à la recuperation de l'utilisateur : "+login+" dans le LDAP",e);
+			return false;
+		}
+	}
 
 	/**
 	 * @param preference
@@ -403,9 +420,13 @@ public class UserController {
 
 	public boolean isAdmin(String login) {
 		Administrateurs adm = administrateursRepository.findOne(login);
+		//Si le login est dans la table admin
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
-			//GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
-			return true;
+			//On vérifie quand même que l'utilisateur est présent dans le ldap
+			if(estDansLeLdap(login)){
+				//GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
+				return true;
+			}
 		}
 		return false;
 	}
