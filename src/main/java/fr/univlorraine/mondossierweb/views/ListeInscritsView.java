@@ -1,6 +1,5 @@
 package fr.univlorraine.mondossierweb.views;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,7 +10,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.eclipse.persistence.internal.jpa.config.tables.TableImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,7 +27,6 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -46,7 +43,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -866,15 +862,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		//LOG.debug("enter listeInscritsView");
 	}
 
-	private void formatTextField(TextField tf){
-		tf.setEnabled(false);
-		tf.setSizeFull();
-		tf.setNullRepresentation("");
-		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
-	}
 
 
 	/** Formats the position in a column containing Date objects. */
+	@SuppressWarnings("serial")
 	class Session1ColumnGenerator implements Table.ColumnGenerator {
 		/**
 		 * Generates the cell containing the value. The column is
@@ -903,6 +894,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 
 	/** Formats the position in a column containing Date objects. */
+	@SuppressWarnings("serial")
 	class Session2ColumnGenerator implements Table.ColumnGenerator {
 		/**
 		 * Generates the cell containing the value. The column is
@@ -932,6 +924,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 
 	/** Formats the position in a column containing Date objects. */
+	@SuppressWarnings("serial")
 	class MailColumnGenerator implements Table.ColumnGenerator {
 		/**
 		 * Generates the cell containing the value. The column is
