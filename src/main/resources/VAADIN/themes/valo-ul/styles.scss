@@ -105,23 +105,14 @@
 	}
 	
 	
-	/*
-	.v-loading-indicator[style*="none"]:before {
-  display: none;
-}
+/* Correction bug d'affichage cf. http://dev.vaadin.com/ticket/14873 */
+	.v-window-modalitycurtain {
+		@include animation(valo-animate-in-fade 400ms 100ms backwards);
+	}
 
-
-	.v-loading-indicator-delay:before,
-.v-loading-indicator-wait:before {
-  content: "";
-  position: fixed;
-  background: rgba(0,0,0,.5);
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: auto;
-}
-*/
+/* Supprime la largeur minimum des fenêtres */
+	html & .v-window {
+		min-width: 0 !important;
+	}
 
 }
