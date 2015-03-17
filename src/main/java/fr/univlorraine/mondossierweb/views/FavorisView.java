@@ -86,17 +86,12 @@ public class FavorisView extends VerticalLayout implements View {
 			setSpacing(true);
 
 			liste_types_inscrits= new LinkedList<String>();
-			liste_types_inscrits.add("ELP");
-			liste_types_inscrits.add("VET");
+			liste_types_inscrits.add(Utils.ELP);
+			liste_types_inscrits.add(Utils.VET);
 
 			liste_type_arbo= new LinkedList<String>();
-			liste_type_arbo.add("CMP");
-			liste_type_arbo.add("VET");
-
-			/* Titre */
-			/*Label title = new Label("Favoris");
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);*/
+			liste_type_arbo.add(Utils.CMP);
+			liste_type_arbo.add(Utils.VET);
 
 			List<Favoris> lfav = favorisController.getFavoris();
 
