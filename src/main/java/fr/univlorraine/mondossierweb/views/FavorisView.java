@@ -70,6 +70,8 @@ public class FavorisView extends VerticalLayout implements View {
 
 	private Table favorisTable;
 
+	private List<Favoris> lfav;
+
 	private BeanItemContainer<Favoris> bic;
 
 	private HorizontalLayout labelAucunFavoriLayout ;
@@ -80,14 +82,16 @@ public class FavorisView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
+
 		//On vérifie le droit d'accéder à la vue
 		if(userController.isEnseignant() ){
+
 
 			removeAllComponents();
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
-
+			
 			liste_types_inscrits= new LinkedList<String>();
 			liste_types_inscrits.add(Utils.ELP);
 			liste_types_inscrits.add(Utils.VET);
@@ -96,7 +100,7 @@ public class FavorisView extends VerticalLayout implements View {
 			liste_type_arbo.add(Utils.CMP);
 			liste_type_arbo.add(Utils.VET);
 
-			List<Favoris> lfav = favorisController.getFavoris();
+			lfav = favorisController.getFavoris();
 
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
@@ -147,6 +151,7 @@ public class FavorisView extends VerticalLayout implements View {
 
 
 			addComponent(globalLayout);
+
 		}
 	}
 
@@ -220,7 +225,6 @@ public class FavorisView extends VerticalLayout implements View {
 						labelAucunFavoriLayout.setVisible(true);
 					}
 
-					//PROPAGATION DANS LA VUE RECHERCHE ARBO!
 
 				}
 			});

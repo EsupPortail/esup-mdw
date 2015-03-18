@@ -26,9 +26,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -60,19 +57,15 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
-import fr.univlorraine.mondossierweb.views.AssistanceView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.EtatCivilView;
-import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.FavorisView;
 import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
 import fr.univlorraine.mondossierweb.views.InscriptionsView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsView;
 import fr.univlorraine.mondossierweb.views.NotesView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
-import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
@@ -476,6 +469,7 @@ public class MainUI extends GenericUI {
 		//Onglet favoris
 		tabSheetEnseignant.addTab(favorisView, "Favoris", FontAwesome.STAR_O);
 		viewEnseignantTab.put(favorisView.NAME, 2);
+
 
 		//On gère le changement d'onglet effectué par l'utilisateur
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {

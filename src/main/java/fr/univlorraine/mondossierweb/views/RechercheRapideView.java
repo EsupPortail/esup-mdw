@@ -110,7 +110,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-
+		
 		//On vérifie le droit d'accéder à la vue
 		if(userController.isEnseignant()){
 
