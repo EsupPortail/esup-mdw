@@ -95,7 +95,7 @@ public class AutoComplete extends TextField{
 			}
 			selectedItem=0;
 			//On fixe la hauteur de la table en fonction du nombre de résultats affichés
-			choices.setHeight(38 * text.size()+1, Unit.PIXELS);
+			choices.setHeight(38 * text.size()+1, Unit.PIXELS);		
 			//la table fait la même largeur que le composant textfield de saisie
 			choices.setWidth(getWidth(), getWidthUnits());
 
