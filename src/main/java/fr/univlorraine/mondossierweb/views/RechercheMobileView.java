@@ -44,6 +44,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.services.apogee.ElasticSearchServiceImpl;
@@ -73,6 +74,8 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient RechercheArborescenteController rechercheArborescenteController;
 	/** {@link ElasticSearchServiceImpl} */
 	@Resource
 	private ElasticSearchServiceImpl ElasticSearchService;
@@ -628,13 +631,18 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 			Item item = source.getItem(itemId);
 
-			String code = item.getItemProperty("lib").getValue().toString();
+			/*String code = item.getItemProperty("lib").getValue().toString();
 			if(code.startsWith("[")){
 				String tab[]=code.split("]");
 				code=tab[0].replaceFirst("\\[", "").trim();
-			}
+			}*/
 
-			Label labelType = new Label(Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString()));
+			String code = (String)item.getItemProperty("code").getValue();
+			String typeObj = item.getItemProperty("type").getValue().toString();
+			
+			typeObj = rechercheArborescenteController.getTypeObj(typeObj, code);
+			
+			Label labelType = new Label(typeObj);
 			labelType.setWidth("100%");
 			labelType.setStyleName(ValoTheme.LABEL_SMALL);
 			labelType.addStyleName("label-centre-bold");

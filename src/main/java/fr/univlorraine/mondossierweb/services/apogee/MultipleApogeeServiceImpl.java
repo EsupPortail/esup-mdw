@@ -18,6 +18,7 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
+import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 
 
@@ -179,8 +180,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return lannee;
 
 	}
-	
-	
+
+
 
 
 	@Override
@@ -193,6 +194,19 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					" AND concat(MAQ_OBJ_ANO.COD_OBJ_MOA, MAQ_OBJ_ANO.COD_VRS_OBJ_MOA )= concat(V_IND_ANO.COD_OBJ,  V_IND_ANO.COD_VRS_OBJ ) "+
 					" and COD_ETU_ANO is not null)t ", Anonymat.class).getResultList();
 			return lano;
+		}
+		return null;
+	}
+
+	@Override
+	public String getNatureElp(String codElp) {
+		if(StringUtils.hasText(codElp) && StringUtils.hasText(codElp)){
+			@SuppressWarnings("unchecked")
+			NatureElp nature = (NatureElp)entityManagerApogee.createNativeQuery("select nel.COD_NEL, nel.LIB_NEL, nel.LIC_NEL, NEL.TEM_EN_SVE_NEL "+
+					"from ELEMENT_PEDAGOGI elp, NATURE_ELP  nel "+
+					"where nel.COD_NEL=elp.COD_NEL "+
+					"and elp.COD_ELP='"+codElp+"'", NatureElp.class).getSingleResult();
+			return nature.getLib_nel();
 		}
 		return null;
 	}

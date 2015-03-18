@@ -28,6 +28,8 @@ public interface MultipleApogeeService {
 	public abstract List<Inscrit> getInscritsEtapeJuinSep(Etape e);
 
 	public abstract String getLibelleEtape(Etape e);
+	
+	public abstract String getNatureElp(String codElp);
 
 	public abstract List<String> getAnneesFromVetDesc(Etape e,int anneeEnCours);
 	

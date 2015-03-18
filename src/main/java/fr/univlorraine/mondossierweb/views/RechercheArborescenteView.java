@@ -486,8 +486,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 			Item item = source.getItem(itemId);
 			String typeObj = (String)item.getItemProperty(TYPE_PROPERTY).getValue();
-			//On converti le type pour un affichage lisible
-			return Utils.convertTypeToDisplay(typeObj);
+			String idObj = (String)item.getItemProperty(TRUE_ID_PROPERTY).getValue();
+			
+			return rechercheArborescenteController.getTypeObj(typeObj,idObj);
 		}
 	}
 

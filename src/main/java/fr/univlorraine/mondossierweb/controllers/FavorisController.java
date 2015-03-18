@@ -5,24 +5,17 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-
-
-
-
-
-
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.VersionEtapeService;
 import fr.univlorraine.mondossierweb.services.apogee.VersionEtapeServiceImpl;
 

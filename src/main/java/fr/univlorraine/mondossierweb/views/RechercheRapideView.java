@@ -40,6 +40,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.services.apogee.ElasticSearchServiceImpl;
@@ -70,6 +71,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient RechercheArborescenteController rechercheArborescenteController;
 
 
 
@@ -490,7 +493,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			Item item = source.getItem(itemId);
 			//On converti le type pour un affichage lisible
-			return Utils.convertTypeToDisplay(item.getItemProperty("type").getValue().toString());
+			String typeObj = (String) item.getItemProperty("type").getValue();
+			String idObj = (String)item.getItemProperty("code").getValue();
+			
+			return rechercheArborescenteController.getTypeObj(typeObj, idObj);
 		}
 	}
 

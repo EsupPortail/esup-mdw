@@ -142,6 +142,18 @@ public class RechercheArborescenteController {
 		obj.setDeplie("false");
 	}
 
+	public String getTypeObj(String typeObj, String code){
+		if(typeObj==null || !typeObj.equals(Utils.ELP)){
+			return  Utils.convertTypeToDisplay(typeObj);
+		}else{
+			return getNatureElp(code);
+		}
+	}
+	
+	private String getNatureElp(String codElp){
+		return multipleApogeeService.getNatureElp(codElp);
+	}
+	
 	public ObjetBase getObj(String code, String type) {
 		ObjetBase obj = new ObjetBase();
 

@@ -27,6 +27,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
@@ -55,6 +56,8 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
+	@Resource
+	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient FavorisController favorisController;
 	@Resource
@@ -174,8 +177,8 @@ public class FavorisView extends VerticalLayout implements View {
 
 			Item item = source.getItem(itemId);
 			String typeObj = (String)item.getItemProperty("id.typfav").getValue();
-			//On converti le type pour un affichage lisible
-			return Utils.convertTypeToDisplay(typeObj);
+			String idObj = (String)item.getItemProperty("id.idfav").getValue();
+			return rechercheArborescenteController.getTypeObj(typeObj,idObj);
 		}
 	}
 
