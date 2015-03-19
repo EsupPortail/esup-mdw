@@ -30,7 +30,6 @@ import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
-import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;

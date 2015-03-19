@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
