@@ -1,5 +1,7 @@
 package fr.univlorraine.mondossierweb.views;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -12,14 +14,25 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.vaadin.suggestfield.BeanSuggestionConverter;
+import org.vaadin.suggestfield.SuggestField;
+import org.vaadin.suggestfield.SuggestField.NewItemsHandler;
+import org.vaadin.suggestfield.SuggestField.SuggestionHandler;
+import org.vaadin.suggestfield.client.SuggestFieldSuggestion;
 
 import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutAction;
@@ -88,6 +101,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private Button btnRecherche;
 
 	private AutoComplete champRecherche;
+	
+	//private SuggestField search1= new SuggestField();
 
 	private HierarchicalContainer rrContainer;
 
@@ -104,13 +119,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private CheckBox casesAcocherEtudiant;
 
 	private Button resetButton;
+	
+	private List<ResultatDeRecherche> items = new ArrayList<ResultatDeRecherche>();
 
 	/**
 	 * Initialise la vue
 	 */
 	@PostConstruct
 	public void init() {
-		
+
 		//On vérifie le droit d'accéder à la vue
 		if(userController.isEnseignant()){
 
@@ -150,6 +167,23 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			});
 
 		mainVerticalLayout.addComponent(search);*/
+
+
+			//ADD-ON Suggestfield
+		/*	search1.setInputPrompt("Tapez votre recherche");
+			search1.setEnabled(true);
+			search1.setWidth(700, Unit.PIXELS);
+			search1.setPopupWidth(700);
+			setUpAutocomplete(search1);
+			search1.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
+				@Override
+				public void handleAction(Object sender, Object target) {
+					if(target==search1){
+						
+						search(false);
+					}
+				}
+			});*/
 
 
 			//BOUTON DE RECHERCHE
@@ -232,11 +266,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			layoutBordure.setWidth("100px");
 			champRechercheLayout.addComponent(layoutBordure);
 			champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
+
+			/*champRechercheLayout.addComponent(search1);
+			champRechercheLayout.setComponentAlignment(search1, Alignment.MIDDLE_LEFT);*/
+
 			champRechercheLayout.addComponent(champRecherche);
 			champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
-
-			/*champRechercheLayout.addComponent(search);
-		champRechercheLayout.setComponentAlignment(search, Alignment.MIDDLE_CENTER);*/
 
 			//BOUTON RESET
 			champRecherche.addStyleName("textfield-resetable");
@@ -246,6 +281,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			resetButton.addStyleName("btn-reset");
 			resetButton.addClickListener(e->{
 				champRecherche.setValue("");
+				//search1.setValue("");
 				resetButton.setIcon(FontAwesome.TIMES);
 			});
 			champRechercheLayout.addComponent(resetButton);
@@ -327,6 +363,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private List<ResultatDeRecherche> quickSearch(String valueString){
 
 		List<ResultatDeRecherche> listeReponses = new LinkedList<ResultatDeRecherche>();
+		items.clear();
 
 		String value = valueString;
 		if(StringUtils.hasText(value) && value.length()>2){
@@ -371,7 +408,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 									//On evite des doublons
 									while(triOk && rang<listeReponses.size()){
 										//En quickSearch on prend la description et non pas le libelle
-										if((listeReponses.get(rang).lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										ResultatDeRecherche r = (ResultatDeRecherche) listeReponses.get(rang);
+										if((r.lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
 											triOk=false;
 										}
 										rang++;
@@ -380,11 +418,13 @@ public class RechercheRapideView extends VerticalLayout implements View {
 										//En quickSearch on prend la description et non pas le libelle
 										//listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
 										listeReponses.add(new ResultatDeRecherche(obj));
+										items.add(new ResultatDeRecherche(obj));
 									}
 								}else{
 									//En quickSearch on prend la description et non pas le libelle
 									//listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
 									listeReponses.add(new ResultatDeRecherche(obj));
+									items.add(new ResultatDeRecherche(obj));
 								}
 							}
 						}
@@ -396,6 +436,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 		}
 
+		//return listeReponses;
+		//return new ArrayList<Object>(listeReponses);
 		return listeReponses;
 
 	}
@@ -415,6 +457,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			champRecherche.getChoicesPopup().setPopupVisible(false);
 		}
 		String value = String.valueOf(champRecherche.getValue());
+		/*ResultatDeRecherche r = (ResultatDeRecherche)search1.getValue();
+		String value = String.valueOf(r.getLib());*/
 
 		if(StringUtils.hasText(value) && value.length()>1){
 
@@ -495,7 +539,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			//On converti le type pour un affichage lisible
 			String typeObj = (String) item.getItemProperty("type").getValue();
 			String idObj = (String)item.getItemProperty("code").getValue();
-			
+
 			return rechercheArborescenteController.getTypeObj(typeObj, idObj);
 		}
 	}
@@ -567,4 +611,68 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 	}
 
+
+
+/*
+	private void setUpAutocomplete(final SuggestField search) {
+
+
+		search.setSuggestionHandler(new SuggestionHandler() {
+			@Override
+			public List<Object> searchItems(String query) {
+				System.out.println("Query: " + query);
+				return new ArrayList<Object>(quickSearch(query));
+			}
+		});
+		
+		search.setSuggestionConverter(new ResultatDeRechercheSuggestionConverter());
+		
+		search.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				System.out.println("SuugestField value changed");
+				Notification.show("Selected " + search.getValue());
+			}
+		});
+		search.setNewItemsAllowed(true);
+		search.addFocusListener(new FocusListener() {
+			@Override
+			public void focus(FocusEvent event) {
+				System.out.println("Focus event");
+			}
+		});
+		search.addBlurListener(new BlurListener() {
+			@Override
+			public void blur(BlurEvent event) {
+				System.out.println("Blur event");
+			}
+		});
+	}
+
+
+	protected void handleSuggestionSelection(Integer suggestion) {
+		Notification.show("Selected " + suggestion);
+	}
+
+
+	private class ResultatDeRechercheSuggestionConverter extends BeanSuggestionConverter {
+
+		public ResultatDeRechercheSuggestionConverter() {
+			super(ResultatDeRecherche.class, "code", "lib","type");
+		}
+
+		@Override
+		public Object toItem(SuggestFieldSuggestion suggestion) {
+			System.out.println("toItem : "+suggestion.getId());
+			ResultatDeRecherche result = null;
+			for (ResultatDeRecherche bean : items) {
+				if (bean.getCode().toString().equals(suggestion.getId())) {
+					result = bean;
+					break;
+				}
+			}
+			assert result != null : "This should not be happening";
+			return result;
+		}
+	}*/
 }

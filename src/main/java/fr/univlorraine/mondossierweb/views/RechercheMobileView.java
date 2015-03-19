@@ -182,6 +182,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					/*if(event.getText()!=null){
 					resetButton.setIcon(FontAwesome.TIMES);
 				}*/
+					
 					champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, btnRecherche,true);
 
 				}

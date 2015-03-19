@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.beans;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.springframework.util.StringUtils;
@@ -9,13 +10,14 @@ import fr.univlorraine.mondossierweb.entities.solr.ObjSolr;
 import lombok.Data;
 
 @Data
-public class ResultatDeRecherche {
+public class ResultatDeRecherche implements Serializable {
 	
-	public String type;
 	
 	public String code;
 	
 	public String lib;
+	
+	public String type;
 	
 
 	
@@ -54,4 +56,16 @@ public class ResultatDeRecherche {
 	}
 	
 	
+	
+	@Override
+	public String toString() {
+		return lib;
+	}
+
+	public ResultatDeRecherche(String code, String lib, String type) {
+		super();
+		this.type = type;
+		this.code = code;
+		this.lib = lib;
+	}
 }

@@ -118,7 +118,7 @@ public class Initializer implements WebApplicationInitializer {
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(15));
 		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "com.vaadin.DefaultWidgetSet");
-		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+		springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetsetDesktop");
 		//springVaadinServlet.setInitParameter(Constants.DEFAULT_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 		//springVaadinServlet.setInitParameter(Constants.WIDGETSET_DIR_PATH, "VAADIN/widgetsets");
 		
