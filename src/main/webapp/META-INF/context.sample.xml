@@ -53,7 +53,7 @@
 	<Parameter name="productionMode" value="true" />
 <!-- Active/Desactive le push -->
 	<Parameter name="enablePush" value="true" />
-		<!-- vrai on doit affiche le l'indicateur de loading entre certains écrans -->
+		<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans -->
 	<Parameter name="showLoadingIndicator" value="true" />
 
 	<!--  SOLR -->
