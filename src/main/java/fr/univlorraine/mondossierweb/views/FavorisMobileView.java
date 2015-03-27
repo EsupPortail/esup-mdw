@@ -2,6 +2,8 @@ package fr.univlorraine.mondossierweb.views;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -28,11 +30,13 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 
@@ -61,6 +65,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	@Resource
 	private transient RechercheController rechercheController;
 
+	/** Thread pool  */
+	ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	private Button infoButton;
 
@@ -185,7 +191,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							codeButton.addStyleName("v-link");
 							codeButton.setWidth("90px");
 							codeButton.addClickListener(e->{
-								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 							});
 
 
@@ -196,7 +202,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{
-								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 							});
 
 							favVetLayout.addComponent(codeButton);
@@ -240,7 +246,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							codeButton.addStyleName("v-link");
 							codeButton.setWidth("90px");
 							codeButton.addClickListener(e->{
-								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 							});
 
 							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
@@ -250,7 +256,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{
-								rechercheController.accessToMobileDetail(fav.getId().getIdfav(),fav.getId().getTypfav(),false);
+								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 							});
 
 							favElpLayout.addComponent(codeButton);
@@ -294,6 +300,35 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 		}
 	}
+
+
+
+	private void accessToDetail(String id, String type) {
+		
+		//Si on doit afficher une fenêtre de loading pendant l'exécution
+		if(PropertyUtils.isShowLoadingIndicator()){
+			//affichage de la pop-up de loading
+			MdwTouchkitUI.getCurrent().startBusyIndicator();
+			
+			//Execution de la méthode en parallèle dans un thread
+			executorService.execute(new Runnable() {
+				public void run() {
+					MdwTouchkitUI.getCurrent().access(new Runnable() {
+						@Override
+						public void run() {
+							rechercheController.accessToMobileDetail(id,type,false);
+							//close de la pop-up de loading
+							MdwTouchkitUI.getCurrent().stopBusyIndicator();
+						}
+					} );
+				}
+			});
+		}else{
+			//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
+			rechercheController.accessToMobileDetail(id,type,false);
+		}
+	}
+	
 
 
 

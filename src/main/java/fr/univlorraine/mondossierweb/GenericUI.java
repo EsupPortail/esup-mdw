@@ -2,10 +2,16 @@ package fr.univlorraine.mondossierweb;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.util.StringUtils;
+
 import lombok.Getter;
 import lombok.Setter;
 
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
@@ -27,6 +33,25 @@ public class GenericUI  extends UI {
 
 	private static final long serialVersionUID = 7686258492589590192L;
 
+
+	//login de l'utilisateur
+	@Setter
+	@Getter
+	protected String username;
+
+	//'O' ou 'N' si l'utilisateur est un enseignant ou pas
+	@Setter
+	@Getter
+	protected String userIsEnseignant;
+
+	//'O' ou 'N' si l'utilisateur est un étudiant ou pas
+	@Setter
+	@Getter
+	protected String userIsEtudiant;
+
+	//Adresse IP du client
+	@Setter
+	protected String ipClient;
 
 	//Etudiant dont on consulte le dossier
 	@Setter
@@ -111,7 +136,7 @@ public class GenericUI  extends UI {
 	@Setter
 	@Getter
 	protected String typeUser;
-	
+
 	//Le photo provider
 	@Setter
 	@Getter
@@ -130,4 +155,45 @@ public class GenericUI  extends UI {
 		return (GenericUI) UI.getCurrent();
 	}
 
+	
+	public String getIpClient() {     
+
+		if(!StringUtils.hasText(ipClient)){
+
+			VaadinRequest vr = VaadinService.getCurrentRequest();
+
+			VaadinServletRequest vsRequest = (VaadinServletRequest)vr;
+			HttpServletRequest hsRequest = vsRequest.getHttpServletRequest();
+
+			String ip = hsRequest.getHeader("x-forwarded-for");    
+			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+				ip = hsRequest.getHeader("X_FORWARDED_FOR");      
+			}else{
+				//Si x-forwarded-for contient plusieurs IP, on prend la deuxième
+				if(ip.contains(",")){
+					ip = ip.split(",")[1];
+				}
+			}
+			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+				ip = hsRequest.getHeader("X-Forwarded-For");      
+			}
+			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+				ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
+			}
+			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+				ip = hsRequest.getHeader("Proxy-Client-IP");      
+			}   
+			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+				ip = hsRequest.getHeader("WL-Proxy-Client-IP");      
+			}   
+			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+				ip = hsRequest.getRemoteAddr();     
+			} 
+			
+			ipClient = ip;
+			
+		}
+
+		return ipClient;
+	} 
 }

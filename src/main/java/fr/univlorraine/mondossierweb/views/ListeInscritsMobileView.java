@@ -45,7 +45,7 @@ import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(ListeInscritsMobileView.NAME)
-@PreAuthorize("hasRole('teacher')")
+//@PreAuthorize("hasRole('teacher')")
 public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

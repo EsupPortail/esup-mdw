@@ -48,8 +48,8 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 
 
 	/*@Resource
-	private transient UserController userController;*/
-
+	private transient UserController userController;
+	 */
 
 	/**
 	 * vrai si l'utilisateur est un enseignant.
@@ -265,7 +265,8 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	 */
 	public String getRemoteAdresse() {
 		WebBrowser browser;
-		String ip =  getIpAddr();
+		//String ip =  getIpAddr();
+		String ip =  GenericUI.getCurrent().getIpClient();
 		LOG.debug("IP client via VaadinService Headers : "+ip);
 
 
@@ -288,50 +289,6 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 
 
 
-	public String getIpAddr() {      
-		VaadinRequest vr = VaadinService.getCurrentRequest();
-
-		VaadinServletRequest vsRequest = (VaadinServletRequest)vr;
-		HttpServletRequest hsRequest = vsRequest.getHttpServletRequest();
-
-		String ip = hsRequest.getHeader("x-forwarded-for");    
-		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-			ip = hsRequest.getHeader("X_FORWARDED_FOR");      
-		}else{
-			//Si x-forwarded-for contient plusieurs IP, on prend la deuxième
-			if(ip.contains(",")){
-				ip = ip.split(",")[1];
-			}
-			LOG.debug("IP client : "+ip+" recuperee dans le Header x-forwarded-for");
-		}
-		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-			ip = hsRequest.getHeader("X-Forwarded-For");      
-		}else{
-			LOG.debug("IP client : "+ip+" recuperee dans le Header X_FORWARDED_FOR");
-		}
-		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-			ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
-		}else{
-			LOG.debug("IP client : "+ip+" recuperee dans le Header X-Forwarded-For");
-		}
-		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-			ip = hsRequest.getHeader("Proxy-Client-IP");      
-		}else{
-			LOG.debug("IP client : "+ip+" recuperee dans le Header HTTP_X_FORWARDED_FOR");
-		}   
-		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-			ip = hsRequest.getHeader("WL-Proxy-Client-IP");      
-		}else{
-			LOG.debug("IP client : "+ip+" recuperee dans le Header Proxy-Client-IP");
-		}   
-		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-			ip = hsRequest.getRemoteAddr();     
-			LOG.debug("IP client : "+ip+" recuperee via getRemoteAddr");
-		}else{
-			LOG.debug("IP client : "+ip+" recuperee dans le Header WL-Proxy-Client-IP");
-		}   
-		return ip;      
-	} 
 
 	/**
 	 * getter pour l'url de la ressource renseign� dans domain.xml.

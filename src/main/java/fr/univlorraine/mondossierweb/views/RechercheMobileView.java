@@ -55,7 +55,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 /**
  * Recherche sur mobile
  */
-@Component @Scope("session")
+@Component @Scope("prototype") 
 @VaadinView(RechercheMobileView.NAME)
 @PreAuthorize("hasRole('teacher')")
 public class RechercheMobileView extends VerticalLayout implements View {

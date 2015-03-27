@@ -2,9 +2,12 @@ package fr.univlorraine.mondossierweb.views;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -17,6 +20,9 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -26,12 +32,16 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.GenericUI;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.entities.FavorisPK;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
@@ -64,6 +74,9 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 
 
+	/** Thread pool  */
+	ExecutorService executorService = Executors.newSingleThreadExecutor();
+
 	private List<String> liste_types_inscrits;
 
 	private List<String> liste_type_arbo;
@@ -91,7 +104,7 @@ public class FavorisView extends VerticalLayout implements View {
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
-			
+
 			liste_types_inscrits= new LinkedList<String>();
 			liste_types_inscrits.add(Utils.ELP);
 			liste_types_inscrits.add(Utils.VET);
@@ -246,7 +259,30 @@ public class FavorisView extends VerticalLayout implements View {
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
-					rechercheController.accessToDetail(idObj,typeObj);
+
+					//Si on doit afficher une fenêtre de loading pendant l'exécution
+					if(PropertyUtils.isShowLoadingIndicator()){
+						//affichage de la pop-up de loading
+						MainUI.getCurrent().startBusyIndicator();
+
+						//Execution de la méthode en parallèle dans un thread
+						executorService.execute(new Runnable() {
+							public void run() {
+								MainUI.getCurrent().access(new Runnable() {
+									@Override
+									public void run() {
+										rechercheController.accessToDetail(idObj,typeObj);
+										//close de la pop-up de loading
+										MainUI.getCurrent().stopBusyIndicator();
+									}
+								} );
+							}
+						});
+					}else{
+						//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
+						rechercheController.accessToDetail(idObj,typeObj);
+					}
+
 				});
 				boutonActionLayout.addComponent(btnListeInscrits);
 			}

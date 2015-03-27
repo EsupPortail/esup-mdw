@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.esupportail.portal.ws.client.PortalGroup;
@@ -36,10 +37,14 @@ import org.springframework.util.StringUtils;
 
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.GenericUI;
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.Administrateurs;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateur;
 import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateurPK;
@@ -143,7 +148,7 @@ public class UserController {
 		return (UserDetails) getCurrentAuthentication().getPrincipal();
 	}
 
-	
+
 	/**
 	 * @return username de l'utilisateur courant
 	 */
@@ -164,15 +169,23 @@ public class UserController {
 		}
 		return username;
 	}
-	
+
 	/**
 	 * @return username de l'utilisateur courant
 	 */
 	public String getCurrentUserName() {
 		//return "toto54";
 
-		return getCurrentUserName(getCurrentAuthentication().getName());
-		
+		if(GenericUI.getCurrent()!=null){
+			//Si on n'a pas déjà récupéré le login
+			if(!StringUtils.hasText(GenericUI.getCurrent().getUsername())){
+				//On le récupère
+				GenericUI.getCurrent().setUsername(getCurrentAuthentication().getName());
+			}
+
+			return GenericUI.getCurrent().getUsername();
+		}
+		return getCurrentAuthentication().getName();
 	}
 
 	/**
@@ -211,26 +224,55 @@ public class UserController {
 
 
 	public boolean isEnseignant() {
+
+		//Si on connait déjà le statut de l'utilisateur
+		if(GenericUI.getCurrent()!=null && StringUtils.hasText(GenericUI.getCurrent().getUserIsEnseignant())){
+			//On retourne l'état
+			return Utils.getBooleanFromString(GenericUI.getCurrent().getUserIsEnseignant());
+		}
+
 		//Un admin a les droits d'un enseignant
 		if(isAdmin()){
+			//On enregistre l'état
+			if(GenericUI.getCurrent()!=null)
+				GenericUI.getCurrent().setUserIsEnseignant("O");
 			return true;
 		}
 		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
 		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
+			//On enregistre l'état
+			if(GenericUI.getCurrent()!=null)
+				GenericUI.getCurrent().setUserIsEnseignant("O");
 			return true;
 		}
+		//On enregistre l'état
+		if(GenericUI.getCurrent()!=null)
+			GenericUI.getCurrent().setUserIsEnseignant("N");
 		return false;
 	}
 
 	public boolean isEtudiant() {
+
+		//Si on connait déjà le statut de l'utilisateur
+		if(GenericUI.getCurrent()!=null && StringUtils.hasText(GenericUI.getCurrent().getUserIsEtudiant())){
+			//On retourne l'état
+			return Utils.getBooleanFromString(GenericUI.getCurrent().getUserIsEtudiant());
+		}
+
 		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()==null){
 			determineTypeUser();
 		}
 		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
+			//On enregistre l'état
+			if(GenericUI.getCurrent()!=null)
+				GenericUI.getCurrent().setUserIsEtudiant("O");
 			return true;
 		}
+		//On enregistre l'état
+		if(GenericUI.getCurrent()!=null)
+			GenericUI.getCurrent().setUserIsEtudiant("N");
 		return false;
 	}
 
@@ -368,7 +410,7 @@ public class UserController {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param login de l'utilisateur
@@ -435,5 +477,8 @@ public class UserController {
 	public boolean isAdmin() {
 		return isAdmin(getCurrentUserName());
 	}
+
+
+	
 
 }

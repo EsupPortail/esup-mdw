@@ -1,7 +1,6 @@
 package fr.univlorraine.mondossierweb.views;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -14,25 +13,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.vaadin.suggestfield.BeanSuggestionConverter;
-import org.vaadin.suggestfield.SuggestField;
-import org.vaadin.suggestfield.SuggestField.NewItemsHandler;
-import org.vaadin.suggestfield.SuggestField.SuggestionHandler;
-import org.vaadin.suggestfield.client.SuggestFieldSuggestion;
 
 import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutAction;

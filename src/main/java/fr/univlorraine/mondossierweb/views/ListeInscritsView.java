@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -60,9 +62,11 @@ import fr.univlorraine.mondossierweb.entities.FavorisPK;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailGroupesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
+
 
 /**
  * Recherche arborescente
@@ -99,6 +103,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient FavorisController favorisController;
+
+	/** Thread pool  */
+	ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+	//la liste des inscrits
+	private List<Inscrit> linscrits;
 
 	private Button btnTrombi;
 
@@ -156,6 +166,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private CheckBox collapseResultatsS1;
 
 	private CheckBox collapseResultatsS2;
+
+
 
 	/**
 	 * Initialise la vue
@@ -451,7 +463,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				addComponent(panelFormInscrits);
 
 				//Récupération de la liste des inscrits
-				List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
+				linscrits = MainUI.getCurrent().getListeInscrits();
 
 				refreshListeCodind(new BeanItemContainer<>(Inscrit.class, linscrits));
 
@@ -635,24 +647,35 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 					//Gestion du clic sur le bouton trombinoscope
 					btnTrombi.addClickListener(e->{
-						//On refresh le ticket de photo et on met a jour le trombinoscope avec les urls photo misent à jour
-						listeInscritsController.setUrlPhotos(linscrits);
-						displayTrombinoscope();
 
-						afficherTrombinoscope=true;
-						btnTrombi.setVisible(false);
-						btnExportTrombi.setVisible(true);
-						leftResumeLayout.replaceComponent(btnExportExcel, btnExportTrombi);
+						//Si on doit afficher une fenêtre de loading pendant l'exécution
+						if(PropertyUtils.isShowLoadingIndicator()){
+							//affichage de la pop-up de loading
+							MainUI.getCurrent().startBusyIndicator();
 
-						//Bouton retour a la liste devient visible
-						btnRetourListe.setVisible(true);
-						dataLayout.removeAllComponents();
-						dataLayout.addComponent(verticalLayoutForTrombi);
-						dataLayout.setHeight("100%");
-						verticalLayoutForTrombi.setHeight("100%");
-						middleResumeLayout.setVisible(false);
+							//Execution de la méthode en parallèle dans un thread
+							executorService.execute(new Runnable() {
+								public void run() {
+									MainUI.getCurrent().access(new Runnable() {
+										@Override
+										public void run() {
+											executeDisplayTrombinoscope();
+											//close de la pop-up de loading
+											MainUI.getCurrent().stopBusyIndicator();
+										}
+									} );
+								}
+							});
+
+						}else{
+							//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
+							executeDisplayTrombinoscope();
+						}
+
 					});
 					buttonResumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
+
+
 
 					//Bouton de retour à l'affichage de la liste
 					btnRetourListe= new Button(applicationContext.getMessage(NAME+".message.retourliste", null, getLocale()));
@@ -776,6 +799,26 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		}
 	}
 
+	private void executeDisplayTrombinoscope() {
+
+		//On refresh le ticket de photo et on met a jour le trombinoscope avec les urls photo misent à jour
+		listeInscritsController.setUrlPhotos(MainUI.getCurrent().getListeInscrits());
+		displayTrombinoscope();
+
+		afficherTrombinoscope=true;
+		btnTrombi.setVisible(false);
+		btnExportTrombi.setVisible(true);
+		leftResumeLayout.replaceComponent(btnExportExcel, btnExportTrombi);
+
+		//Bouton retour a la liste devient visible
+		btnRetourListe.setVisible(true);
+		dataLayout.removeAllComponents();
+		dataLayout.addComponent(verticalLayoutForTrombi);
+		dataLayout.setHeight("100%");
+		verticalLayoutForTrombi.setHeight("100%");
+		middleResumeLayout.setVisible(false);
+
+	}
 	private void majCheckbox() {
 		if(typeIsElp()){
 			collapseEtp.setValue(!inscritstable.isColumnCollapsed("etape"));
@@ -1055,5 +1098,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			listecodind.add(inscrit.getCod_ind());
 		}
 	}
+
+
+
 
 }

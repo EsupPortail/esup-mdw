@@ -56,6 +56,7 @@ import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
@@ -102,8 +103,9 @@ public class MdwTouchkitUI extends GenericUI{
 	private NotesMobileView notesMobileView;
 	@Resource
 	private NotesDetailMobileView notesDetailMobileView;
-
-
+	
+	//Indicateur de chargement
+	private LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
 
 
 	//La vue par laquelle on est arrivé au trombinoscope
@@ -215,6 +217,9 @@ public class MdwTouchkitUI extends GenericUI{
 		// Si l'utilisateur est enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
+			//On récupère l'IP du client
+			GenericUI.getCurrent().getIpClient();
+			
 			// Si l'utilisateur est enseignant
 			if(userController.isEnseignant()){
 
@@ -464,6 +469,14 @@ public class MdwTouchkitUI extends GenericUI{
 
 	}
 
+
+	public void startBusyIndicator() {
+		addWindow(loadingIndicatorWindow);
+	}
+
+	public void stopBusyIndicator() {
+		loadingIndicatorWindow.close();
+	}
 
 
 

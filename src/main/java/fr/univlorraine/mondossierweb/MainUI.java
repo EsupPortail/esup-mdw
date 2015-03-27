@@ -69,6 +69,7 @@ import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
+import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 
 /**
@@ -125,6 +126,8 @@ public class MainUI extends GenericUI {
 
 	@Resource
 	private FavorisView favorisView;
+	
+	private LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
 
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
 	private int rangTabDossierEtudiant;
@@ -276,6 +279,8 @@ public class MainUI extends GenericUI {
 		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
+			//On récupère l'IP du client
+			GenericUI.getCurrent().getIpClient();
 			/* Parametre le layoutDossierEtudiant */
 			menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
 			//Le contentLayout est scrollable si besoin
@@ -814,6 +819,12 @@ public class MainUI extends GenericUI {
 		navigator.navigateTo(EtatCivilView.NAME);
 	}
 
+	public void startBusyIndicator() {
+		addWindow(loadingIndicatorWindow);
+	}
 
+	public void stopBusyIndicator() {
+		loadingIndicatorWindow.close();
+	}
 
 }

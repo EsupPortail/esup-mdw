@@ -333,3 +333,15 @@ color: rgb(85,96,164);
 .valo-ul .v-label-align-right {
 text-align:right;
 }
+
+.valo-ul .v-window-loadingIndicatorWindow .v-window-outerheader {
+	display: none;
+}
+
+.valo-ul .v-window-loadingIndicatorWindow .v-window-restorebox-disabled, .valo-ul .v-window-loadingIndicatorWindow .v-window-maximizebox-disabled {
+	display: none;
+}
+
+.valo-ul .v-window-loadingIndicatorWindow .v-window-contents {
+	  padding-top: 0 !important;
+}

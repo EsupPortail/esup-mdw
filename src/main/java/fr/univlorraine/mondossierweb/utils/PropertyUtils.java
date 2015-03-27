@@ -80,7 +80,17 @@ public class PropertyUtils {
 		}
 		return false;
 	}
+	
+	/** Retourne vrai on doit affiche le l'indicateur de loading entre certains écrans */
+	public static boolean isShowLoadingIndicator(){
+		if(StringUtils.hasText(System.getProperty("context.showLoadingIndicator"))
+				&& System.getProperty("context.showLoadingIndicator").equals("true")){
+			return true;
+		}
+		return false;
+	}
 
+	
 
 	/** Retourne le type Etudiant dans Ldap */
 	public static String getTypeEtudiantLdap(){

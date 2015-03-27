@@ -149,7 +149,7 @@ public class Initializer implements WebApplicationInitializer {
 		//springTouchkitVaadinServlet.setInitParameter(Constants.WIDGETSET_DIR_PATH, "VAADIN/widgetsets");
 		
 		/* Configure le Push */
-	//	springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
+		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
 		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 		springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
 		/* Active le support des requêtes asynchrones */

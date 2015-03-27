@@ -381,6 +381,8 @@ public class ListeInscritsController {
 			i.setUrlphoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 		}
 	}
+	
+	
 
 
 

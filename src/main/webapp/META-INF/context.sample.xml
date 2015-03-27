@@ -53,6 +53,8 @@
 	<Parameter name="productionMode" value="true" />
 <!-- Active/Desactive le push -->
 	<Parameter name="enablePush" value="true" />
+		<!-- vrai on doit affiche le l'indicateur de loading entre certains écrans -->
+	<Parameter name="showLoadingIndicator" value="true" />
 
 	<!--  SOLR -->
 	<Parameter name="solr.url" value="http://toto.univ-lorraine.fr:8181/solr/apogee" />

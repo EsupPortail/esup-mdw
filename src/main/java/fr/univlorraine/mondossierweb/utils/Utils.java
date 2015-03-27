@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.vaadin.ui.Panel;
 
@@ -116,6 +117,13 @@ public class Utils {
 			if(LISTE_VIEWS_ENSEIGNANT[i].equals(viewName)){
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public static boolean getBooleanFromString(String chaine) {
+		if(StringUtils.hasText(chaine) && chaine.equals("O")){
+				return true;
 		}
 		return false;
 	}
