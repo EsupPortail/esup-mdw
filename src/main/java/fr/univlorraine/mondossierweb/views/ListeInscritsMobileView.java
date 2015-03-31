@@ -279,7 +279,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					layoutPagination.setWidth("100%");
 					layoutPagination.setMargin(true);
 					if(pageEnCours<pageMax){
-						Button btnNext= new Button("Suivant");
+						Button btnNext= new Button(applicationContext.getMessage(NAME+".btn.affichersuite", null, getLocale()));
 						btnNext.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						btnNext.addStyleName("v-popover-button");
 						btnNext.addClickListener(e->{
