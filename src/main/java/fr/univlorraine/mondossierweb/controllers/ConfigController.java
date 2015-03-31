@@ -156,6 +156,10 @@ public class ConfigController {
 		return getValeurForParameter("certScolTampon");
 	}
 	
+	public int getTrombiMobileNbEtuParPage(){
+		return  Integer.parseInt(getValeurForParameter("trombiMobileNbEtuParPage"));
+	}
+	
 	public String getExtensionMailEtudiant(){
 		return getValeurForParameter("extensionMailEtudiant");
 	}
