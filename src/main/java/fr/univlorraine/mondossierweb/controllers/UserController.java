@@ -225,55 +225,94 @@ public class UserController {
 
 	public boolean isEnseignant() {
 
-		//Si on connait déjà le statut de l'utilisateur
-		if(GenericUI.getCurrent()!=null && StringUtils.hasText(GenericUI.getCurrent().getUserIsEnseignant())){
-			//On retourne l'état
-			return Utils.getBooleanFromString(GenericUI.getCurrent().getUserIsEnseignant());
-		}
+		//On teste si la généricUI est déjà initialisée
+		if(GenericUI.getCurrent()!=null){
 
-		//Un admin a les droits d'un enseignant
-		if(isAdmin()){
+			//Si on connait déjà le statut de l'utilisateur
+			if(GenericUI.getCurrent()!=null && StringUtils.hasText(GenericUI.getCurrent().getUserIsEnseignant())){
+
+				//On retourne l'état
+				return Utils.getBooleanFromString(GenericUI.getCurrent().getUserIsEnseignant());
+			}
+
+			//Un admin a les droits d'un enseignant
+			if(isAdmin()){
+
+				//On enregistre l'état
+				if(GenericUI.getCurrent()!=null)
+					GenericUI.getCurrent().setUserIsEnseignant("O");
+				return true;
+			}
+
+			//On détermine le type de l'utilisateur
+			if( GenericUI.getCurrent().getTypeUser()==null){
+				determineTypeUser();
+			}
+
+			//Si c'est un enseignant
+			if( GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
+				//On enregistre l'état
+				if(GenericUI.getCurrent()!=null)
+					GenericUI.getCurrent().setUserIsEnseignant("O");
+				return true;
+			}
+
 			//On enregistre l'état
-			if(GenericUI.getCurrent()!=null)
-				GenericUI.getCurrent().setUserIsEnseignant("O");
-			return true;
-		}
-		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()==null){
-			determineTypeUser();
-		}
-		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
-			//On enregistre l'état
-			if(GenericUI.getCurrent()!=null)
-				GenericUI.getCurrent().setUserIsEnseignant("O");
-			return true;
-		}
-		//On enregistre l'état
-		if(GenericUI.getCurrent()!=null)
 			GenericUI.getCurrent().setUserIsEnseignant("N");
-		return false;
+
+			return false;
+		}else{
+
+			//La GenericUI n'est pas encore initialisée
+
+			//Si c'est un admin
+			if(isAdmin()){
+				//Alors il a les droits enseignants
+				return true;
+			}
+			//On va déterminer le type de l'utilisateur
+			String type =determineTypeUser(getCurrentUserName());
+			//Si c'est un enseignant
+			if(type!=null && type.equals(TEACHER_USER)){
+				return true;
+			}
+			
+			return false;
+		}
 	}
 
 	public boolean isEtudiant() {
+		//On teste si la généricUI est déjà initialisée
+		if(GenericUI.getCurrent()!=null){
+			//Si on connait déjà le statut de l'utilisateur
+			if( StringUtils.hasText(GenericUI.getCurrent().getUserIsEtudiant())){
+				//On retourne l'état
+				return Utils.getBooleanFromString(GenericUI.getCurrent().getUserIsEtudiant());
+			}
 
-		//Si on connait déjà le statut de l'utilisateur
-		if(GenericUI.getCurrent()!=null && StringUtils.hasText(GenericUI.getCurrent().getUserIsEtudiant())){
-			//On retourne l'état
-			return Utils.getBooleanFromString(GenericUI.getCurrent().getUserIsEtudiant());
-		}
-
-		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()==null){
-			determineTypeUser();
-		}
-		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
+			if( GenericUI.getCurrent().getTypeUser()==null){
+				determineTypeUser();
+			}
+			if(GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
+				//On enregistre l'état
+				if(GenericUI.getCurrent()!=null)
+					GenericUI.getCurrent().setUserIsEtudiant("O");
+				return true;
+			}
 			//On enregistre l'état
-			if(GenericUI.getCurrent()!=null)
-				GenericUI.getCurrent().setUserIsEtudiant("O");
-			return true;
-		}
-		//On enregistre l'état
-		if(GenericUI.getCurrent()!=null)
 			GenericUI.getCurrent().setUserIsEtudiant("N");
-		return false;
+			return false;
+		}else{
+			//La GenericUI n'est pas encore initialisée
+			
+			//On va déterminer le type de l'utilisateur
+			String type =determineTypeUser(getCurrentUserName());
+			//Si c'est un enseignant
+			if(type!=null && type.equals(STUDENT_USER)){
+				return true;
+			}
+			return false;
+		}
 	}
 
 
@@ -479,6 +518,6 @@ public class UserController {
 	}
 
 
-	
+
 
 }
