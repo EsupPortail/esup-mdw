@@ -97,7 +97,8 @@ text-align: center;
 
 .valo-ul .root-layout-bottom-line-separator{
 	border-bottom: 1px solid #d1d1ce;
-	background-color: rgb(67, 69, 69);
+	background-color: rgb(85,96,164);
+	/* background-color: rgb(67, 69, 69); */
 	color: white;
 }
 
@@ -138,7 +139,6 @@ opacity: 1.0 !important;
 
 .valo-ul .v-panel-caption-centertitle-panel {
 text-align: center;
-border-top: 0px;
   border-right: 0px;
   border-left: 0px;
   border-bottom: 0px;
