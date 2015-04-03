@@ -115,7 +115,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 			VerticalLayout globalLayout = new VerticalLayout();
 			//globalLayout.setSizeFull();
-			globalLayout.setSpacing(true);
+			globalLayout.setSpacing(false);
 			globalLayout.setMargin(true);
 			globalLayout.setStyleName("v-scrollableelement");
 
@@ -168,6 +168,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 			Panel mailPanel = new Panel();
+			mailPanel.setStyleName("panel-without-bottom-line-separator");
 			HorizontalLayout mailLayout = new HorizontalLayout();
 			mailLayout.setSizeFull();
 			mailLayout.setHeight("25px");
@@ -191,7 +192,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 			Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
-			panelInfos.addStyleName("v-panel-caption-centertitle-panel");
+			panelInfos.setStyleName("centertitle-panel");
+			panelInfos.addStyleName("v-colored-panel-caption");
 
 			FormLayout formInfosLayout = new FormLayout();
 			formInfosLayout.setSpacing(true);
