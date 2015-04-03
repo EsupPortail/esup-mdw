@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.zookeeper.data.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +24,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -90,6 +93,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
 		//On vérifie le droit d'accéder à la vue
 		if((userController.isEnseignant() || userController.isEtudiant()) && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null){
@@ -213,6 +217,9 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					compteurElp = 0;
 					elpPere = "";
 
+					HorizontalLayout layoutPere=null;
+					int nbFils=0;
+					
 					for(ElementPedagogique elp : lelp){
 
 						compteurElp++;
@@ -223,9 +230,16 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						}
 						HorizontalLayout libElpLayout = new HorizontalLayout();
 
-
 						if(compteurElp>1){
 							if(elp.getLevel()==1){
+								
+								//Si le pere précédent n'avait aucun fils
+								if(layoutPere!=null && nbFils==0){
+									layoutPere.setStyleName("layout-bottom-line-separator");
+								}
+								
+								layoutPere=libElpLayout;
+								nbFils=0;
 								//Sur un elp de niveau 1, il est sur fond sombre
 								libElpLayout.addStyleName("main-layout-bottom-line-separator");
 
@@ -233,7 +247,9 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 								layoutList.put(elp.getCode(), new LinkedList<HorizontalLayout>());
 								elpPere = elp.getCode();
 
-								libElpLayout.addListener(new LayoutClickListener() {
+								libElpLayout.setId("layout_pere_"+elp.getCode());
+
+								/*libElpLayout.addListener(new LayoutClickListener() {
 									public void layoutClick(LayoutClickEvent event) {
 										if(layoutList.get(elp.getCode())==null || layoutList.get(elp.getCode()).size()==0){
 											Notification.show(applicationContext.getMessage(NAME+".message.aucunsouselement", null, getLocale()));
@@ -251,10 +267,15 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 											}
 										}
 									}
-								});
+								});*/
+
+
+								//Page.getCurrent().getJavaScript().execute("document.getElementById('"+"layout_pere_"+elp.getCode()+"').onclick=function(){ alert('hello');};");
 
 							}else{
+								nbFils++;
 								libElpLayout.addStyleName("layout-bottom-line-separator");
+								libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_"+elpPere);
 								//ajout dans la hashMap
 								layoutList.get(elpPere).add(libElpLayout);
 
@@ -266,6 +287,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						libElpLayout.setSizeFull();
 
 						VerticalLayout libVerticalLayout=new VerticalLayout();
+						
 						Label libElpLabel = new Label(elp.getLibelle());
 						libElpLabel.setStyleName("bold-label");
 						libVerticalLayout.addComponent(libElpLabel);
@@ -342,14 +364,32 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 						//Au départ, on cache les éléments de niveau supérieur à 1
 						if(compteurElp>1 && elp.getLevel()>1){
-							libElpLayout.setVisible(false);
+							//libElpLayout.setVisible(false);
+							Page.getCurrent().getJavaScript().execute("document.getElementById('"+libElpLayout.getId()+"').style.display=\"none\";");
+							
 						}
 					}
 
-					/*notesPanel.setContent(notesLayout);
-			layout.addComponent(notesPanel);
-			layout.setExpandRatio(notesPanel, 1);
-					 */
+					//Cas où le dernier élément était un élément le pere qui n'avait aucun fils
+					if(layoutPere!=null && nbFils==0){
+						layoutPere.setStyleName("layout-bottom-line-separator");
+					}
+
+					//Ajout du javascript
+					for(Entry<String, LinkedList<HorizontalLayout>> entry : layoutList.entrySet()) {
+						String pere = entry.getKey();
+						LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
+						// traitements
+						if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+							String affichagejavascriptfils = "";
+							for(HorizontalLayout hl : listeLayoutFils){
+								affichagejavascriptfils += "if(document.getElementById('"+hl.getId()+"').style.display==\"none\"){document.getElementById('"+hl.getId()+"').style.display = \"block\";}else{document.getElementById('"+hl.getId()+"').style.display = \"none\";}";
+							}
+							//sur le clic du layout pere, on affiche les fils
+							Page.getCurrent().getJavaScript().execute("document.getElementById('"+"layout_pere_"+pere+"').onclick=function(){ "+affichagejavascriptfils+"};");
+						}
+					}
+
 
 					layout.addComponent(notesLayout);
 					layout.setExpandRatio(notesLayout, 1);
