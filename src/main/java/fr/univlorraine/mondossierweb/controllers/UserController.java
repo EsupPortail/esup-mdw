@@ -239,8 +239,10 @@ public class UserController {
 			if(isAdmin()){
 
 				//On enregistre l'état
-				if(GenericUI.getCurrent()!=null)
+				if(GenericUI.getCurrent()!=null){
 					GenericUI.getCurrent().setUserIsEnseignant("O");
+					GenericUI.getCurrent().setUserIsEtudiant("N");
+				}
 				return true;
 			}
 
@@ -252,8 +254,10 @@ public class UserController {
 			//Si c'est un enseignant
 			if( GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(TEACHER_USER)){
 				//On enregistre l'état
-				if(GenericUI.getCurrent()!=null)
+				if(GenericUI.getCurrent()!=null){
 					GenericUI.getCurrent().setUserIsEnseignant("O");
+					GenericUI.getCurrent().setUserIsEtudiant("N");
+				}
 				return true;
 			}
 
@@ -295,8 +299,10 @@ public class UserController {
 			}
 			if(GenericUI.getCurrent().getTypeUser()!=null && GenericUI.getCurrent().getTypeUser().equals(STUDENT_USER)){
 				//On enregistre l'état
-				if(GenericUI.getCurrent()!=null)
+				if(GenericUI.getCurrent()!=null){
 					GenericUI.getCurrent().setUserIsEtudiant("O");
+					GenericUI.getCurrent().setUserIsEnseignant("N");
+				}
 				return true;
 			}
 			//On enregistre l'état

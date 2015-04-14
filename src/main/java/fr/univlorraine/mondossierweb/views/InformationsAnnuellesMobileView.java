@@ -201,7 +201,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 			//Numéro Anonymat visible que si l'utilisateur est étudiant
 			List<Anonymat> lano = null;
-			if(userController.isEtudiant()){
+			if(!userController.isEnseignant() && userController.isEtudiant()){
 				lano = MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat();
 				if(lano!=null) {
 					//Si l'étudiant n'a qu'un seul numéro d'anonymat
