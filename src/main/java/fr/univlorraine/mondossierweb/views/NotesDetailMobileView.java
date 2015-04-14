@@ -428,8 +428,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 
 	public void refreshJavascript() {
-		System.out.println("refreshJavascript");
-
 		
 		//Ajout du javascript
 		for(Entry<String, LinkedList<HorizontalLayout>> entry : layoutList.entrySet()) {
