@@ -90,6 +90,11 @@ text-align: center;
 	font-weight: bold;
 }
 
+.valo-ul .bold-italic-label{
+	font-weight: bold;
+	font-style: italic;
+}
+
 .valo-ul .main-layout-bottom-line-separator{
 	border-bottom: 1px solid #d1d1ce;
 	background-color: rgb(194, 197, 199);

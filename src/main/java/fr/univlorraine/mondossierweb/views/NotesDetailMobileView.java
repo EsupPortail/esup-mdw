@@ -88,7 +88,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		System.out.println("init");
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -251,29 +251,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 								libElpLayout.setId("layout_pere_"+elp.getCode());
 
-								/*libElpLayout.addListener(new LayoutClickListener() {
-									public void layoutClick(LayoutClickEvent event) {
-										if(layoutList.get(elp.getCode())==null || layoutList.get(elp.getCode()).size()==0){
-											Notification.show(applicationContext.getMessage(NAME+".message.aucunsouselement", null, getLocale()));
-										}else{
-											//On parcourt les layout des éléments fils de l'élément cliqué
-											for(HorizontalLayout hl : layoutList.get(elp.getCode())){
-												//Si le layout es visible
-												if(hl.isVisible()){
-													//On masque le layout
-													hl.setVisible(false);
-												}else{
-													//On affiche le layout
-													hl.setVisible(true);
-												}
-											}
-										}
-									}
-								});*/
-
-
-								//Page.getCurrent().getJavaScript().execute("document.getElementById('"+"layout_pere_"+elp.getCode()+"').onclick=function(){ alert('hello');};");
-
 							}else{
 								nbFils++;
 								libElpLayout.addStyleName("layout-bottom-line-separator");
@@ -291,7 +268,11 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						VerticalLayout libVerticalLayout=new VerticalLayout();
 						
 						Label libElpLabel = new Label(elp.getLibelle());
-						libElpLabel.setStyleName("bold-label");
+						if(elp.isEpreuve()){
+							libElpLabel.setStyleName("bold-italic-label");
+						}else{
+							libElpLabel.setStyleName("bold-label");
+						}
 						libVerticalLayout.addComponent(libElpLabel);
 
 						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
@@ -333,13 +314,21 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						VerticalLayout vlsession1 = new VerticalLayout();
 						Label note1 = new Label(elp.getNote1());
 						if(!StringUtils.hasText(elp.getNote2())){
-							note1.setStyleName("bold-label");
+							if(elp.isEpreuve()){
+								note1.setStyleName("bold-italic-label");
+							}else{
+								note1.setStyleName("bold-label");
+							}
 						}
 						vlsession1.addComponent(note1);
 						if(StringUtils.hasText(elp.getRes1())){
 							Label adm1 = new Label(elp.getRes1());
 							if(!StringUtils.hasText(elp.getRes2())){
-								adm1.setStyleName("bold-label");
+								if(elp.isEpreuve()){
+									adm1.setStyleName("bold-italic-label");
+								}else{
+									adm1.setStyleName("bold-label");
+								}
 							}
 							vlsession1.addComponent(adm1);
 						}
@@ -348,13 +337,21 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						VerticalLayout vlsession2 = new VerticalLayout();
 						Label note2 = new Label(elp.getNote2());
 						if(StringUtils.hasText(elp.getNote2())){
-							note2.setStyleName("bold-label");
+							if(elp.isEpreuve()){
+								note2.setStyleName("bold-italic-label");
+							}else{
+								note2.setStyleName("bold-label");
+							}
 						}
 						vlsession2.addComponent(note2);
 						if(StringUtils.hasText(elp.getRes2())){
 							Label adm2 = new Label(elp.getRes2());
 							if(StringUtils.hasText(elp.getRes2())){
-								adm2.setStyleName("bold-label");
+								if(elp.isEpreuve()){
+									adm2.setStyleName("bold-italic-label");
+								}else{
+									adm2.setStyleName("bold-label");
+								}
 							}
 							vlsession2.addComponent(adm2);
 						}
@@ -407,9 +404,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					layout.addComponent(messageLayout);
 
 				}
-
-
-				System.out.println("refresh end");
 
 				addComponent(layout);
 
