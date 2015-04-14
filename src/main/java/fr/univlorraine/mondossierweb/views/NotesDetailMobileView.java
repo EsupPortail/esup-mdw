@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
+import com.vaadin.annotations.JavaScript;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -44,6 +45,7 @@ import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
  */
 @Component @Scope("prototype")
 @VaadinView(NotesDetailMobileView.NAME)
+@JavaScript("notesDetailMobileView.js")
 public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = 2295120253787356472L;
@@ -86,20 +88,24 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-
+		System.out.println("init");
 	}
 
 	@SuppressWarnings("deprecation")
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
+	
 		//On vérifie le droit d'accéder à la vue
 		if((userController.isEnseignant() || userController.isEtudiant()) && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null){
+			
+			//On repassera dans la cration que si on n'a pas dejà créé la vue
 			if(codetu==null || !codetuToDisplay.equals(codetu)){
 				codetu=null;
 			}
-			//On va chercher les infos dans Apogée si ce n'est pas déjà fait
+			//On repassera dans la cration que si on n'a pas dejà créé la vue
 			if(etape == null || !etapeToDisplay.getAnnee().equals(etape.getAnnee()) || !etapeToDisplay.getCode().equals(etape.getCode()) || !etapeToDisplay.getVersion().equals(etape.getVersion())){
 				etape=null;
 			}
+			//On repassera dans la création que si on n'a pas dejà créé la vue
 			if(codetu==null || etape == null){
 				compteurElp=0;
 
@@ -403,19 +409,45 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				}
 
 
+				System.out.println("refresh end");
 
 				addComponent(layout);
 
 				setExpandRatio(layout, 1);
 
+			}else{
+				refreshJavascript();
 			}
 		}
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
+		
+	}
 
+
+	public void refreshJavascript() {
+		System.out.println("refreshJavascript");
+
+		
+		//Ajout du javascript
+		for(Entry<String, LinkedList<HorizontalLayout>> entry : layoutList.entrySet()) {
+			String pere = entry.getKey();
+			LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
+			// traitements
+			if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+				String affichagejavascriptfils = "";
+				for(HorizontalLayout hl : listeLayoutFils){
+					//On masque par défaut tous les fils
+					Page.getCurrent().getJavaScript().execute("document.getElementById('"+hl.getId()+"').style.display=\"none\";");
+					//Creation du js pour modifier l'affichage au clic sur le pere
+					affichagejavascriptfils += "if(document.getElementById('"+hl.getId()+"').style.display==\"none\"){document.getElementById('"+hl.getId()+"').style.display = \"block\";}else{document.getElementById('"+hl.getId()+"').style.display = \"none\";}";
+				}
+				//sur le clic du layout pere, on affiche les fils
+				Page.getCurrent().getJavaScript().execute("document.getElementById('"+"layout_pere_"+pere+"').onclick=function(){ "+affichagejavascriptfils+"};");
+			}
+		}
 	}
 
 

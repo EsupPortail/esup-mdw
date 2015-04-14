@@ -23,7 +23,12 @@ import org.springframework.util.StringUtils;
 import ru.xpoft.vaadin.DiscoveryNavigator;
 
 import com.vaadin.addon.touchkit.ui.NavigationManager;
+import com.vaadin.addon.touchkit.ui.NavigationManager.NavigationEvent;
+import com.vaadin.addon.touchkit.ui.NavigationManager.NavigationEvent.Direction;
+import com.vaadin.addon.touchkit.ui.NavigationManager.NavigationListener;
 import com.vaadin.addon.touchkit.ui.TabBarView;
+import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeEvent;
+import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeListener;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.FontAwesome;
@@ -395,11 +400,24 @@ public class MdwTouchkitUI extends GenericUI{
 		noteNavigationManager.setCurrentComponent(notesMobileView);
 		//le composant suivant à afficher dans le navigationManager est la vue du détail des notes
 		noteNavigationManager.setNextComponent(notesDetailMobileView);
-
 		//Création de l'onglet Résultats
 		tabNotes = menuEtudiant.addTab(noteNavigationManager, applicationContext.getMessage("mobileUI.resultats.title", null, getLocale()),  FontAwesome.LIST);
 		tabNotes.setId("tabNotes");
-
+		
+		//Détection du retour sur la vue du détail des notes pour mettre à jour le JS
+		menuEtudiant.addListener(new SelectedTabChangeListener() {
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+			 //test si on se rend sur la vue des notes
+			 if(menuEtudiant.getSelelectedTab().equals(tabNotes)){
+				 //test si on se rend sur le détail des notes
+				 if(noteNavigationManager.getCurrentComponent().equals(notesDetailMobileView)){
+					 //On met à jour le JS (qui est normalement perdu, sans explication)
+					 notesDetailMobileView.refreshJavascript();
+				 }
+			 }
+			}
+		});
 
 	}
 
