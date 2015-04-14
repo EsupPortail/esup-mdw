@@ -167,7 +167,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			mainVerticalLayout.setSizeFull();
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
-			ElasticSearchService.initConnexion();
+			ElasticSearchService.initConnexion(true);
 
 			//Création du champ autoComplete
 			champRecherche = new AutoComplete();

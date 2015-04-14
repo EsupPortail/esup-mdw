@@ -182,7 +182,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
-			ElasticSearchService.initConnexion();
+			ElasticSearchService.initConnexion(true);
 
 			//CHAMP DE RECHERCHE
 			champRecherche = new AutoComplete();

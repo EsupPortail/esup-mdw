@@ -36,11 +36,17 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 	@SuppressWarnings("resource")
 	@Override
-	public void initConnexion() {
+	public void initConnexion(boolean fullInit) {
 		//initialise la connexion a ES
 		if(client==null){
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
 			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
+
+			//Si on doit faire un init complet (avec requête à ES)
+			if(fullInit){
+				//requete pour initialiser l'appel à ES 
+				findObj("toto", 10, true);
+			}
 		}
 
 	}
@@ -49,7 +55,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 	@Override
 	public List<Map<String,Object>> findObj(String value, int maxResult, boolean quickSearck) {
 		//initialise la connexion a ES
-		initConnexion();
+		initConnexion(false);
 
 		//init du retour d'ElasticSearch
 		List<Map<String,Object>> listeResultats=new LinkedList<Map<String,Object>>();
@@ -164,7 +170,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			for (SearchHit hit : results) {
 				//Récupération du résultat
 				Map<String,Object> result = hit.getSource();  
-				
+
 				//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
 				if(!rechercherParCode){
 					listeResultats.add(result);
@@ -172,7 +178,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 					String codres = (String)result.get("COD_OBJ");
 					codres = codres.toLowerCase();
-					
+
 					int vrsres =(Integer)result.get("COD_VRS_OBJ");
 
 					//cas or VET
@@ -185,7 +191,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 						//Ajout du résultat dans la liste
 						listeResultats.add(result);
 					}
-					
+
 				}
 			}
 
