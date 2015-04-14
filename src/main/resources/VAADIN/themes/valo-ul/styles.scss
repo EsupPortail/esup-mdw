@@ -134,10 +134,12 @@
  .v-loading-indicator,  
  .v-loading-indicator-delay,  
  .v-loading-indicator-wait {  
-   background-color: black;   
+   /*background-color: black;   */
+   background-color: rgb(255,237,69);
+   background: rgb(255,237,69);
    opacity: .9;  
+   
 }
  
-
 
 }
