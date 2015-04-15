@@ -131,12 +131,35 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 			VerticalLayout globalLayout = new VerticalLayout();
 			//globalLayout.setSizeFull();
-			globalLayout.setSpacing(false);
+			globalLayout.setSpacing(true);
 			globalLayout.setMargin(true);
 			globalLayout.setStyleName("v-scrollableelement");
 
 
+			VerticalLayout slimLayout = new VerticalLayout();
+			slimLayout.setSpacing(false);
+			slimLayout.setMargin(false);
+			//slimLayout.setStyleName("v-scrollableelement");
 
+			Panel mailPanel = new Panel();
+			mailPanel.setStyleName("panel-without-bottom-line-separator");
+			HorizontalLayout mailLayout = new HorizontalLayout();
+			mailLayout.setSizeFull();
+			mailLayout.setHeight("25px");
+			Label mailLabel = new Label();
+			String mail = MdwTouchkitUI.getCurrent().getEtudiant().getEmail();
+			if(StringUtils.hasText(mail)){
+				mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
+				mailLabel.setValue(mail);
+				mailLabel.setContentMode(ContentMode.HTML);
+			}
+			mailLabel.setSizeFull();
+			mailLabel.addStyleName("label-centre");
+			mailLayout.addComponent(mailLabel);
+			mailLayout.setComponentAlignment(mailLabel, Alignment.MIDDLE_CENTER);
+			mailPanel.setContent(mailLayout);
+			slimLayout.addComponent(mailPanel);
+			slimLayout.setComponentAlignment(mailPanel, Alignment.MIDDLE_CENTER);
 
 
 			Panel etuPanel = new Panel();
@@ -178,31 +201,13 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 			etuPanel.setContent(photoLayout);
 
-			globalLayout.addComponent(etuPanel);
-			globalLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);
+			slimLayout.addComponent(etuPanel);
+			slimLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);
 
 
 
-			Panel mailPanel = new Panel();
-			mailPanel.setStyleName("panel-without-bottom-line-separator");
-			HorizontalLayout mailLayout = new HorizontalLayout();
-			mailLayout.setSizeFull();
-			mailLayout.setHeight("25px");
-			Label mailLabel = new Label();
-			String mail = MdwTouchkitUI.getCurrent().getEtudiant().getEmail();
-			if(StringUtils.hasText(mail)){
-				mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
-				mailLabel.setValue(mail);
-				mailLabel.setContentMode(ContentMode.HTML);
-			}
-			mailLabel.setSizeFull();
-			mailLabel.addStyleName("label-centre");
-			mailLayout.addComponent(mailLabel);
-			mailLayout.setComponentAlignment(mailLabel, Alignment.MIDDLE_CENTER);
-			mailPanel.setContent(mailLayout);
-			globalLayout.addComponent(mailPanel);
-			globalLayout.setComponentAlignment(mailPanel, Alignment.MIDDLE_CENTER);
-
+			
+			globalLayout.addComponent(slimLayout);
 
 
 
