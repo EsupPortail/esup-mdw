@@ -110,6 +110,18 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			navbar.addComponent(labelTrombi);
 			navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
 
+			/*if(userController.isEnseignant()){
+				//Bouton Search
+				Button searchButton = new Button();
+				searchButton.setIcon(FontAwesome.SEARCH);
+				searchButton.setStyleName("v-nav-button");
+				navbar.addComponent(searchButton);
+				navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
+				searchButton.addClickListener(e->{
+					((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche();
+				});
+			}*/
+
 			navbar.setExpandRatio(labelTrombi, 1);
 			addComponent(navbar);
 
