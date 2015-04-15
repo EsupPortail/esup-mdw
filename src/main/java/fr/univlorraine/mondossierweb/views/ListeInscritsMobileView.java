@@ -150,7 +150,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				}
 				if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
 						MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(RechercheMobileView.NAME)){
-					MdwTouchkitUI.getCurrent().navigateToRecherche();
+					MdwTouchkitUI.getCurrent().navigateToRecherche(null);
 				}
 			});
 			navbar.addComponent(returnButton);

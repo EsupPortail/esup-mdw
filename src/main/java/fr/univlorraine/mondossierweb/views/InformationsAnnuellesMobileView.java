@@ -96,7 +96,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 						if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
 								MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
-							MdwTouchkitUI.getCurrent().navigateToRecherche();
+							MdwTouchkitUI.getCurrent().navigateToRecherche(null);
 						}
 					}
 				});
@@ -110,17 +110,21 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			navbar.addComponent(labelTrombi);
 			navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
 
-			/*if(userController.isEnseignant()){
-				//Bouton Search
-				Button searchButton = new Button();
-				searchButton.setIcon(FontAwesome.SEARCH);
-				searchButton.setStyleName("v-nav-button");
-				navbar.addComponent(searchButton);
-				navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
-				searchButton.addClickListener(e->{
-					((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche();
-				});
-			}*/
+			if(userController.isEnseignant()){
+				//Si on ne peut pas déjà revenir sur la recherche via le bouton 'retour'
+				if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()==null ||
+						!MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
+					//Bouton Search
+					Button searchButton = new Button();
+					searchButton.setIcon(FontAwesome.SEARCH);
+					searchButton.setStyleName("v-nav-button");
+					navbar.addComponent(searchButton);
+					navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
+					searchButton.addClickListener(e->{
+						((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche(NAME);
+					});
+				}
+			}
 
 			navbar.setExpandRatio(labelTrombi, 1);
 			addComponent(navbar);

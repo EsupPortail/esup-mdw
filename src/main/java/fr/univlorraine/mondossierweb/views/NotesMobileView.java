@@ -106,7 +106,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
 							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
-						MdwTouchkitUI.getCurrent().navigateToRecherche();
+						MdwTouchkitUI.getCurrent().navigateToRecherche(null);
 					}
 				});
 				navbar.addComponent(returnButton);

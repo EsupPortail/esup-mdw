@@ -108,7 +108,7 @@ public class MdwTouchkitUI extends GenericUI{
 	private NotesMobileView notesMobileView;
 	@Resource
 	private NotesDetailMobileView notesDetailMobileView;
-	
+
 	//Indicateur de chargement
 	private LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
 
@@ -116,6 +116,11 @@ public class MdwTouchkitUI extends GenericUI{
 	//La vue par laquelle on est arrivé au trombinoscope
 	@Getter
 	private String trombinoscopeFromView;
+
+	//La vue par laquelle on est arrivé à la recherche
+	@Getter
+	@Setter
+	private String rechercheFromView;
 
 	//La vue par laquelle on est arrivé au dossier étudiant
 	@Getter
@@ -224,7 +229,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 			//On récupère l'IP du client
 			GenericUI.getCurrent().getIpClient();
-			
+
 			// Si l'utilisateur est enseignant
 			if(userController.isEnseignant()){
 
@@ -285,10 +290,10 @@ public class MdwTouchkitUI extends GenericUI{
 	private void afficherMessageIntro(String text){
 		//Recuperer dans la base si l'utilisateur a une préférence pour l'affichage le message
 		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
-		
+
 		//Par défaut on affiche le message
 		boolean afficherMessage = true;
-		
+
 		//Si on a une préférence pour l'utilisateur en ce qui concerne l'affichage du message d'accueil mobile
 		if(StringUtils.hasText(val)){
 			//On récupère ce choix dans afficherMessage
@@ -299,7 +304,7 @@ public class MdwTouchkitUI extends GenericUI{
 		if(afficherMessage){
 			//Création de la pop-pup contenant le message
 			HelpMobileWindow hbw = new HelpMobileWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
-			
+
 			//Sur la fermeture de la fenêtre
 			hbw.addCloseListener(g->{
 				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
@@ -310,7 +315,7 @@ public class MdwTouchkitUI extends GenericUI{
 					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
 				}
 			});
-			
+
 			//Affichage de la pop_up
 			UI.getCurrent().addWindow(hbw);
 		}
@@ -366,7 +371,7 @@ public class MdwTouchkitUI extends GenericUI{
 		}
 		//On affiche la vue infoAnnuelles par défaut
 		menuEtudiant.setSelectedTab(tabInfoAnnuelles);
-		
+
 		//Le contenu principal de la page devient le tabBarView représentant le dossier étudiant
 		setContent(menuEtudiant);
 	}
@@ -375,7 +380,7 @@ public class MdwTouchkitUI extends GenericUI{
 	 * Création du menu étudiant
 	 */
 	private void initMenuEtudiant() {
-		
+
 		//Si le menuEtudiant n'a jamais été initialisé
 		if(menuEtudiant==null){
 			//On créé le menuEtudiant
@@ -403,19 +408,19 @@ public class MdwTouchkitUI extends GenericUI{
 		//Création de l'onglet Résultats
 		tabNotes = menuEtudiant.addTab(noteNavigationManager, applicationContext.getMessage("mobileUI.resultats.title", null, getLocale()),  FontAwesome.LIST);
 		tabNotes.setId("tabNotes");
-		
+
 		//Détection du retour sur la vue du détail des notes pour mettre à jour le JS
 		menuEtudiant.addListener(new SelectedTabChangeListener() {
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {
-			 //test si on se rend sur la vue des notes
-			 if(menuEtudiant.getSelelectedTab().equals(tabNotes)){
-				 //test si on se rend sur le détail des notes
-				 if(noteNavigationManager.getCurrentComponent().equals(notesDetailMobileView)){
-					 //On met à jour le JS (qui est normalement perdu, sans explication)
-					 notesDetailMobileView.refreshJavascript();
-				 }
-			 }
+				//test si on se rend sur la vue des notes
+				if(menuEtudiant.getSelelectedTab().equals(tabNotes)){
+					//test si on se rend sur le détail des notes
+					if(noteNavigationManager.getCurrentComponent().equals(notesDetailMobileView)){
+						//On met à jour le JS (qui est normalement perdu, sans explication)
+						notesDetailMobileView.refreshJavascript();
+					}
+				}
 			}
 		});
 
@@ -441,11 +446,27 @@ public class MdwTouchkitUI extends GenericUI{
 	public void navigateTofavoris() {
 		navigator.navigateTo(FavorisMobileView.NAME);
 	}
+	
+	/**
+	 * Affichage de la vue par laquelle on est arrivée à la recherche
+	 */
+	public void backFromSearch() {
+		if(rechercheFromView==null || rechercheFromView.equals(FavorisMobileView.NAME)){
+			navigator.navigateTo(FavorisMobileView.NAME);
+		}else{
+			if(rechercheFromView.equals(InformationsAnnuellesMobileView.NAME)){
+				navigateToDossierEtudiant();
+			}
+		}
+	}
 
 	/**
 	 * Affichage de la vue Search
 	 */
-	public void navigateToRecherche() {
+	public void navigateToRecherche(String fromView) {
+		if(fromView!=null){
+			rechercheFromView = fromView;
+		}
 		setContent(contentLayout);
 		navigator.navigateTo(RechercheMobileView.NAME);
 	}

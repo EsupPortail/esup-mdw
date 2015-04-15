@@ -17,6 +17,7 @@ import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 
 /**
@@ -81,6 +82,12 @@ public class RechercheController {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
+		
+		//Si on vient de la recherche rapide, il faut que le bouton 'retour' de la recherche rapide arrive sur les favoris
+		//Sinon boucle possible dans la navigation
+		if(fromSearch){
+			MdwTouchkitUI.getCurrent().setRechercheFromView(FavorisMobileView.NAME);
+		}
 
 		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
 			if(type.equals(Utils.TYPE_VET))
