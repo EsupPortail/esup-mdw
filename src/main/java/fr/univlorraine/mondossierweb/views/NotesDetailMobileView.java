@@ -118,6 +118,15 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 
 
+				//Test si user enseignant
+				if(userController.isEnseignant()){
+					//On recupere les notes pour un enseignant
+					etudiantController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
+				}else{
+					//On récupère les notes pour un étudiant
+					etudiantController.renseigneDetailNotesEtResultats(etapeToDisplay);
+				}
+				
 				//NAVBAR
 				HorizontalLayout navbar=new HorizontalLayout();
 				navbar.setSizeFull();
@@ -162,15 +171,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 
 				layoutList = new  HashMap<String,LinkedList<HorizontalLayout>>();
-
-				//Test si user enseignant
-				if(userController.isEnseignant()){
-					//On recupere les notes pour un enseignant
-					etudiantController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
-				}else{
-					//On récupère les notes pour un étudiant
-					etudiantController.renseigneDetailNotesEtResultats(etapeToDisplay);
-				}
 
 				etape=etapeToDisplay;
 				codetu=codetuToDisplay;
