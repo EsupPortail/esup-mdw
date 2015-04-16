@@ -141,26 +141,27 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			slimLayout.setMargin(false);
 			//slimLayout.setStyleName("v-scrollableelement");
 
-			Panel mailPanel = new Panel();
-			mailPanel.setStyleName("panel-without-bottom-line-separator");
-			HorizontalLayout mailLayout = new HorizontalLayout();
-			mailLayout.setSizeFull();
-			mailLayout.setHeight("25px");
-			Label mailLabel = new Label();
 			String mail = MdwTouchkitUI.getCurrent().getEtudiant().getEmail();
 			if(StringUtils.hasText(mail)){
+				Panel mailPanel = new Panel();
+				mailPanel.setStyleName("panel-without-bottom-line-separator");
+				HorizontalLayout mailLayout = new HorizontalLayout();
+				mailLayout.setSizeFull();
+				mailLayout.setHeight("25px");
+				Label mailLabel = new Label();
+
 				mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
 				mailLabel.setValue(mail);
 				mailLabel.setContentMode(ContentMode.HTML);
-			}
-			mailLabel.setSizeFull();
-			mailLabel.addStyleName("label-centre");
-			mailLayout.addComponent(mailLabel);
-			mailLayout.setComponentAlignment(mailLabel, Alignment.MIDDLE_CENTER);
-			mailPanel.setContent(mailLayout);
-			slimLayout.addComponent(mailPanel);
-			slimLayout.setComponentAlignment(mailPanel, Alignment.MIDDLE_CENTER);
 
+				mailLabel.setSizeFull();
+				mailLabel.addStyleName("label-centre");
+				mailLayout.addComponent(mailLabel);
+				mailLayout.setComponentAlignment(mailLabel, Alignment.MIDDLE_CENTER);
+				mailPanel.setContent(mailLayout);
+				slimLayout.addComponent(mailPanel);
+				slimLayout.setComponentAlignment(mailPanel, Alignment.MIDDLE_CENTER);
+			}
 
 			Panel etuPanel = new Panel();
 			HorizontalLayout photoLayout = new HorizontalLayout();
@@ -206,9 +207,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 
-			
-			globalLayout.addComponent(slimLayout);
 
+			globalLayout.addComponent(slimLayout);
 
 
 
@@ -216,70 +216,86 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			panelInfos.setStyleName("centertitle-panel");
 			panelInfos.addStyleName("v-colored-panel-caption");
 
-			FormLayout formInfosLayout = new FormLayout();
-			formInfosLayout.setSpacing(true);
-			formInfosLayout.setMargin(true);
+			//Si l'étudiant est inscrit pour l'année en cours
+			if(MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
 
-			//Numéro Anonymat visible que si l'utilisateur est étudiant
-			List<Anonymat> lano = null;
-			if(!userController.isEnseignant() && userController.isEtudiant()){
-				lano = MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat();
-				if(lano!=null) {
-					//Si l'étudiant n'a qu'un seul numéro d'anonymat
-					if(lano.size()==1){
-						String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
-						formatTextField(fieldNumAnonymat);
-						//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-						//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-						formInfosLayout.addComponent(fieldNumAnonymat);
-					}
-					//Si l'étudiant a plusieurs numéros d'anonymat
-					if(lano.size()>1){
-						int i=0;
-						for(Anonymat ano : lano){
-							String captionNumAnonymat = "";
-							if(i==0){
-								//Pour le premier numéro affiché on affiche le libellé du champ
-								captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
-							}
-							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+				FormLayout formInfosLayout = new FormLayout();
+				formInfosLayout.setSpacing(true);
+				formInfosLayout.setMargin(true);
+
+				//Numéro Anonymat visible que si l'utilisateur est étudiant
+				List<Anonymat> lano = null;
+				if(!userController.isEnseignant() && userController.isEtudiant()){
+					lano = MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat();
+					if(lano!=null) {
+						//Si l'étudiant n'a qu'un seul numéro d'anonymat
+						if(lano.size()==1){
+							String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
+							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
 							formatTextField(fieldNumAnonymat);
-							if(i==0){
-								//Pour le premier numéro affiché on affiche l'info bulle
-								//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-								//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-							}
+							//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+							//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 							formInfosLayout.addComponent(fieldNumAnonymat);
-							i++;
+						}
+						//Si l'étudiant a plusieurs numéros d'anonymat
+						if(lano.size()>1){
+							int i=0;
+							for(Anonymat ano : lano){
+								String captionNumAnonymat = "";
+								if(i==0){
+									//Pour le premier numéro affiché on affiche le libellé du champ
+									captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
+								}
+								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+								formatTextField(fieldNumAnonymat);
+								if(i==0){
+									//Pour le premier numéro affiché on affiche l'info bulle
+									//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+									//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+								}
+								formInfosLayout.addComponent(fieldNumAnonymat);
+								i++;
+							}
 						}
 					}
 				}
+
+				String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
+				TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().getNumBoursier() == null ? applicationContext.getMessage(NAME+".boursier.non", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()));
+				formatTextField(fieldNumBoursier);
+				formInfosLayout.addComponent(fieldNumBoursier);
+
+				String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
+				TextField fieldSalarie = new TextField(captionSalarie, MdwTouchkitUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
+				formatTextField(fieldSalarie);
+				formInfosLayout.addComponent(fieldSalarie);
+
+				String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
+				TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MdwTouchkitUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
+				formatTextField(fieldAmenagementEtude);
+				formInfosLayout.addComponent(fieldAmenagementEtude);
+
+
+
+				panelInfos.setContent(formInfosLayout);
+			}else{
+
+				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
+				labelNonInscritLayout.setMargin(true);
+				labelNonInscritLayout.setSizeFull();
+				Label labelNonInscrit = new Label(applicationContext.getMessage(NAME + ".inscrit.non", null, getLocale()));
+				labelNonInscrit.setStyleName(ValoTheme.LABEL_COLORED);
+				labelNonInscrit.addStyleName(ValoTheme.LABEL_BOLD);
+				labelNonInscrit.setWidth("100%");
+				labelNonInscrit.addStyleName("label-centre");
+				labelNonInscritLayout.addComponent(labelNonInscrit);
+				panelInfos.setContent(labelNonInscritLayout);
+				
+				
 			}
-
-			String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-			TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().getNumBoursier() == null ? applicationContext.getMessage(NAME+".boursier.non", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()));
-			formatTextField(fieldNumBoursier);
-			formInfosLayout.addComponent(fieldNumBoursier);
-
-			String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-			TextField fieldSalarie = new TextField(captionSalarie, MdwTouchkitUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
-			formatTextField(fieldSalarie);
-			formInfosLayout.addComponent(fieldSalarie);
-
-			String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-			TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MdwTouchkitUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
-			formatTextField(fieldAmenagementEtude);
-			formInfosLayout.addComponent(fieldAmenagementEtude);
-
-
-
-			panelInfos.setContent(formInfosLayout);
 			globalLayout.addComponent(panelInfos);
-			//Si on affiche aucun ou un seul numéro d'anonymat, on diminue la largeur du panneau.
-			/*if(lano==null || lano.size()<2) {
-			globalLayout.addComponent(new VerticalLayout());
-			}*/
+
+
 			addComponent(globalLayout);
 			setExpandRatio(globalLayout, 1);
 

@@ -192,6 +192,8 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 				Label aucunExamen = new Label(applicationContext.getMessage(NAME + ".examen.aucun", null, getLocale()));
 				aucunExamen.setStyleName(ValoTheme.LABEL_COLORED);
 				aucunExamen.addStyleName(ValoTheme.LABEL_BOLD);
+				aucunExamen.setWidth("100%");
+				aucunExamen.addStyleName("label-centre");
 				labelExamenLayout.addComponent(aucunExamen);
 				panelCalendrier.setContent(labelExamenLayout);
 				globalLayout.addComponent(panelCalendrier);
