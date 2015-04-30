@@ -74,7 +74,12 @@ public class RechercheController {
 			parameterMap.replace("type",Utils.ETU);
 			MainUI.getCurrent().setEtudiant(new Etudiant(code));
 			etudiantController.recupererEtatCivil();
-			MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+			//Si l'étudiant n'existe pas
+			if(MainUI.getCurrent().getEtudiant()==null){
+				MainUI.getCurrent().afficherErreurView();
+			}else{
+				MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+			}
 		}
 	}
 

@@ -315,6 +315,8 @@ public class EtudiantController {
 				}else{
 					LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				}
+				//On met l'étudiant à null pour remonter le problème
+				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				throw(ex);

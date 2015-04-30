@@ -26,6 +26,9 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -49,6 +52,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
@@ -56,6 +60,7 @@ import fr.univlorraine.mondossierweb.entities.Favoris;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
@@ -110,10 +115,15 @@ public class MainUI extends GenericUI {
 	@Resource
 	private transient FavorisController favorisController;
 	@Resource
+	private transient RechercheController rechercheController;
+	@Resource
 	private transient ConfigController configController;
 
 
 
+
+	@Resource
+	private AdminView adminView;
 
 	@Resource
 	private RechercheRapideView rechercheRapideView;
@@ -126,7 +136,7 @@ public class MainUI extends GenericUI {
 
 	@Resource
 	private FavorisView favorisView;
-	
+
 	private LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
 
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
@@ -137,25 +147,25 @@ public class MainUI extends GenericUI {
 
 	//Le composant principal de la page (contient tabSheetGlobal ou layoutDossierEtudiant en fonction du type de l'utilisateur)
 	private VerticalLayout mainVerticalLayout=new VerticalLayout();
-	
+
 	//Le menu de la partie "dossier étudiant"
 	private CssLayout mainMenu = new CssLayout();
-	
+
 	//Le layout contenant le menu
 	private CssLayout menuLayout = new CssLayout(mainMenu);
-	
+
 	//Contenu de la partie "dossier étudiant" contentLayout affiche la vue à afficher dans le dossier via le "navigator"
 	private CssLayout contentLayout = new CssLayout();
-	
+
 	//Layout principal de la partie "dossier étudiant" : contient le menu et le contentlayout
 	private HorizontalLayout layoutDossierEtudiant = new HorizontalLayout(menuLayout, contentLayout);
-	
+
 	//le tabSheet global affiché aux enseignants (contient les onglets Recherche et Dossier)
 	private TabSheet tabSheetGlobal = new TabSheet();
-	
+
 	//Layout de l'onglet Recherche de tabSheetGlobal
 	private VerticalLayout layoutOngletRecherche;
-	
+
 	//Le sous menu Recherche affiché aux enseignants (affiche les onglets recherche rapide, rechercher arbo, liste inscrits, favoris)
 	private TabSheet tabSheetEnseignant= new TabSheet();
 
@@ -168,7 +178,7 @@ public class MainUI extends GenericUI {
 
 	// Noms des vues et index du tab associé 
 	private Map<String, Integer> viewEnseignantTab = new HashMap<>();
-	
+
 
 
 	/**
@@ -183,9 +193,9 @@ public class MainUI extends GenericUI {
 	 */
 	@Override
 	protected void init(VaadinRequest request) {
-		
+
 		LOG.debug("init(); mainUI");
-		
+
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();
@@ -208,7 +218,19 @@ public class MainUI extends GenericUI {
 		// Affiche le nom de l'application dans l'onglet du navigateur 
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
-
+		//Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
+		//car le fragment ne correspond pas à une vue existante)
+		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
+	           public void uriFragmentChanged(UriFragmentChangedEvent source) {
+	        	   if(source.getUriFragment().contains("accesDossierEtudiant") && userController.isEnseignant()){
+						//Extraction codetu du fragment
+						String fragmentpart[] =source.getUriFragment().split("/");
+						String codetuFragment= fragmentpart[fragmentpart.length-1];
+						rechercheController.accessToDetail(codetuFragment,Utils.ETU);
+						
+					}
+	            }
+	     });
 
 		/* Construit le gestionnaire de vues utilisé par la barre d'adresse et pour naviguer dans le dossier d'un étudiant */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
@@ -216,11 +238,18 @@ public class MainUI extends GenericUI {
 			private static final long serialVersionUID = 7905379446201794289L;
 
 			private static final String SELECTED_ITEM = "selected";
-			
+
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
+				
+				//Si on tente d'accéder à la vue admin et que l'utilisateur est admin
+				if(event.getViewName().equals(AdminView.NAME) && userController.isAdmin()){
+					//Afficher la vue admin
+					setContent(adminView);
+					return true;
+				}
 				
 
 				//On bloque l'accès aux vues enseignants
@@ -247,11 +276,11 @@ public class MainUI extends GenericUI {
 							navigateToRechercheArborescente(null);
 							return true;
 						}
-						
+
 						return false; //la vue enseignant demandée n'est pas géré (ex :vue mobile appelée depuis la version desktop)
 					}
 				}
-				
+
 				return true;
 			}
 
@@ -313,7 +342,7 @@ public class MainUI extends GenericUI {
 
 				//ajout de l'onglet dossier étudiant
 				addTabDossierEtudiant();
-				
+
 				//Ce tabSheet sera aligné à droite
 				tabSheetGlobal.addStyleName("right-aligned-tabs");
 
@@ -345,44 +374,61 @@ public class MainUI extends GenericUI {
 			/* Enregistre l'UI pour la réception de notifications */
 			uiController.registerUI(this);
 
-			
-			// fragment de l'url pour gérer la vue à afficher via l'url. NON UTILISE POUR LE MOMENT
-			/*String fragment = Page.getCurrent().getUriFragment();
-			if (fragment == null || fragment.isEmpty()) */
 
-			//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
-			//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
-			if(!configController.isApplicationActive()){
-				displayViewFullScreen(AccesBloqueView.NAME);
-			}else{
-				//Si utilisateur enseignant
-				if(userController.isEnseignant()){
-					//Récupération des favoris pour l'utilisateur
-					List<Favoris> lfav = favorisController.getFavoris();
-					if(lfav!=null && lfav.size()>0){
-						//On affiche la vue des favoris
-						navigator.navigateTo(FavorisView.NAME);
-						//navigateToFavoris();
-						//Affichage du message d'intro si besoin
-						afficherMessageIntroEnseignants();
 
-					}else{
-						//On affiche la vue de recherche rapide
-						navigator.navigateTo(RechercheRapideView.NAME);
-						//navigateToRechercheRapide();
-						//Affichage du message d'intro si besoin
-						afficherMessageIntroEnseignants();
-					}
+			boolean navigationComplete=false;
+			String fragment = Page.getCurrent().getUriFragment();
+			if (fragment != null && !fragment.isEmpty()) {
+				//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est gérer dans le listener du navigator
+				if(fragment.contains("adminView") && userController.isAdmin()){
+					//Afficher la vue admin
+					navigator.navigateTo(AdminView.NAME);
+					navigationComplete=true;
+				}
+				if(fragment.contains("accesDossierEtudiant") && userController.isEnseignant()){
+					//Extraction codetu du fragment
+					String fragmentpart[] =fragment.split("/");
+					String codetuFragment= fragmentpart[fragmentpart.length-1];
+					rechercheController.accessToDetail(codetuFragment,Utils.ETU);
+					navigationComplete=true;
+				}
+			}
+
+			if(!navigationComplete){
+				//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
+				//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
+				if(!configController.isApplicationActive()){
+					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
-					//Si utilisateur étudiant
-					if(userController.isEtudiant()){
-						//On affiche la vue de l'état-civil
-						navigator.navigateTo(EtatCivilView.NAME);
-						//Affichage du message d'intro si besoin
-						afficherMessageIntroEtudiants();
+					//Si utilisateur enseignant
+					if(userController.isEnseignant()){
+						//Récupération des favoris pour l'utilisateur
+						List<Favoris> lfav = favorisController.getFavoris();
+						if(lfav!=null && lfav.size()>0){
+							//On affiche la vue des favoris
+							navigator.navigateTo(FavorisView.NAME);
+							//navigateToFavoris();
+							//Affichage du message d'intro si besoin
+							afficherMessageIntroEnseignants();
+
+						}else{
+							//On affiche la vue de recherche rapide
+							navigator.navigateTo(RechercheRapideView.NAME);
+							//navigateToRechercheRapide();
+							//Affichage du message d'intro si besoin
+							afficherMessageIntroEnseignants();
+						}
 					}else{
-						//On affiche la vue d'erreur
-						displayViewFullScreen(ErreurView.NAME);
+						//Si utilisateur étudiant
+						if(userController.isEtudiant()){
+							//On affiche la vue de l'état-civil
+							navigator.navigateTo(EtatCivilView.NAME);
+							//Affichage du message d'intro si besoin
+							afficherMessageIntroEtudiants();
+						}else{
+							//On affiche la vue d'erreur
+							displayViewFullScreen(ErreurView.NAME);
+						}
 					}
 				}
 			}
@@ -400,6 +446,14 @@ public class MainUI extends GenericUI {
 	private void displayViewFullScreen(String view){
 		setContent(contentLayout);
 		navigator.navigateTo(view);
+	}
+	
+	/**
+	 * Affichage du message d'intro aux étudiants
+	 */
+	public void afficherErreurView() {
+		navigator.navigateTo(ErreurView.NAME);
+		//displayViewFullScreen(ErreurView.NAME);
 	}
 
 	/**
@@ -585,7 +639,7 @@ public class MainUI extends GenericUI {
 			Button etuInscritBtn = new Button("", FontAwesome.CHECK_CIRCLE);
 			//Ajout du style au bouton
 			etuInscritBtn.setPrimaryStyleName(ValoTheme.BUTTON_BORDERLESS);
-			
+
 			//Si l'étudiant est inscrit pour l'année en cours
 			if(etudiant.isInscritPourAnneeEnCours()){
 				//On fixe la description du bouton
@@ -613,7 +667,7 @@ public class MainUI extends GenericUI {
 				//La photo prend toute la place disponible dans son layout
 				photoLayout.setExpandRatio(fotoEtudiant, 1);
 			}
-			
+
 			//Ajout au layout du bouton, qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours
 			photoLayout.addComponent(etuInscritBtn);
 
@@ -687,15 +741,15 @@ public class MainUI extends GenericUI {
 	 * @param icon
 	 */
 	private void addItemMenu(String caption, String viewName, com.vaadin.server.Resource icon) {
-		
+
 		//Création du bouton
 		Button itemBtn = new Button(caption, icon);
 		itemBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-		
+
 		//Gestion du clic sur le bouton
 		itemBtn.addClickListener(e -> navigator.navigateTo(viewName));
 		viewButtons.put(viewName, itemBtn);
-		
+
 		//Ajout du bouton au menu
 		mainMenu.addComponent(itemBtn);
 	}
@@ -736,10 +790,10 @@ public class MainUI extends GenericUI {
 		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
 		//récupération de l'onglet qui affiche la vue ListeInscrits
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
-		
+
 		//Si on a des paramètres renseignés
 		if(parameterMap!=null){
-			
+
 			//Récupéation de la liste des inscrits des inscrits en fonction des paramètres
 			listeInscritsController.recupererLaListeDesInscrits(parameterMap, null, this);
 			//initialisation de la vue avec la liste des inscrits
@@ -750,7 +804,7 @@ public class MainUI extends GenericUI {
 			//On recréé l'onglet
 			addTabListeInscrits();
 		}
-		
+
 		//On affiche l'onglet
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 
@@ -793,9 +847,11 @@ public class MainUI extends GenericUI {
 	 * @param parameterMap
 	 */
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
-		
+
 		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
-	
+
+		
+		
 		//Si l'onglet a été closed
 		if(tabSheetGlobal.getTab(rangTabDossierEtudiant)==null){
 			//On recréé l'onglet
@@ -808,7 +864,7 @@ public class MainUI extends GenericUI {
 		}
 		//On reconstruit le menu pour l'étudiant concerné
 		buildMainMenuEtudiant();
-		
+
 		//On rend visible l'onglet "Dossier" dans le tabSheet principal
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(true);
 

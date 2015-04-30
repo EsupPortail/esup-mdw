@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.PreferencesApplication;
 import fr.univlorraine.mondossierweb.repositories.PreferencesApplicationRepository;
 
@@ -195,6 +196,15 @@ public class ConfigController {
 		return null;
 	}
 	
+
+	/**
+	 * 
+	 * @return les parametres applicatifs en base
+	 */
+	public List<PreferencesApplication> getAppParameters(){
+		return preferencesApplicationRepository.findAll();
+	}
+	
 	/**
 	 * 
 	 * @param parameter
@@ -208,5 +218,12 @@ public class ConfigController {
 		}
 		return false;
 	}
+
+	public void saveAppParameter(PreferencesApplication prefApp) {
+		preferencesApplicationRepository.saveAndFlush(prefApp);
+		
+	}
+
+
 
 }
