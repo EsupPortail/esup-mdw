@@ -23,17 +23,19 @@ import org.springframework.util.StringUtils;
 import ru.xpoft.vaadin.DiscoveryNavigator;
 
 import com.vaadin.addon.touchkit.ui.NavigationManager;
-import com.vaadin.addon.touchkit.ui.NavigationManager.NavigationEvent;
-import com.vaadin.addon.touchkit.ui.NavigationManager.NavigationEvent.Direction;
-import com.vaadin.addon.touchkit.ui.NavigationManager.NavigationListener;
 import com.vaadin.addon.touchkit.ui.TabBarView;
 import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeEvent;
 import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeListener;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -51,15 +53,21 @@ import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
+import fr.univlorraine.mondossierweb.views.FavorisView;
 import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsView;
 import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
+import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
@@ -180,7 +188,7 @@ public class MdwTouchkitUI extends GenericUI{
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
-					navigator.navigateTo(AccesRefuseView.NAME);
+					afficherMessageAccesRefuse();
 					return;
 				}
 				cause = cause.getCause();
@@ -200,6 +208,24 @@ public class MdwTouchkitUI extends GenericUI{
 		/* Affiche le nom de l'application dans l'onglet du navigateur */
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
+		/* Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
+				car le fragment ne correspond pas à une vue existante) */
+		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
+			public void uriFragmentChanged(UriFragmentChangedEvent source) {
+
+				//On bloque l'accès aux vues desktop
+			/*	if(!Utils.isViewMobile(source.getUriFragment())){
+					afficherMessageAccesRefuse();
+				}*/
+				
+				System.out.println("toto");
+				
+				//Si l'application est en maintenance on bloque l'accès
+				if(!configController.isApplicationMobileActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
+					afficherMessageMaintenance();
+				}
+			}
+		});
 
 		/* Ex de Device Detection */
 		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) request);
@@ -212,7 +238,37 @@ public class MdwTouchkitUI extends GenericUI{
 
 		/* Construit le gestionnaire de vues */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
+		
+		navigator.addViewChangeListener(new ViewChangeListener() {
 
+			private static final long serialVersionUID = 9183991275107545154L;
+
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
+
+				System.out.println("titi : "+event.getViewName() +" "+configController.isApplicationMobileActive() );
+				
+				//On bloque l'accès aux vues desktop
+				if(!Utils.isViewMobile(event.getViewName())){
+					return false;
+				}
+				
+				//Si l'application est en maintenance on bloque l'accès
+				if(!configController.isApplicationMobileActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
+					afficherMessageMaintenance();
+					return false;
+				}
+			
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 
 
 		/* Initialise Google Analytics */
@@ -227,47 +283,51 @@ public class MdwTouchkitUI extends GenericUI{
 		// Si l'utilisateur est enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
-			//On récupère l'IP du client
-			GenericUI.getCurrent().getIpClient();
-
-			// Si l'utilisateur est enseignant
-			if(userController.isEnseignant()){
-
-				//On consultera les notes en vue enseignant
-				vueEnseignantNotesEtResultats=true;
-				//On se rend par défaut à la vue des favoris
-				navigator.navigateTo(FavorisMobileView.NAME);
-				//On affiche le message d'intro
-				afficherMessageIntroEnseignants();
-
+			if(!configController.isApplicationMobileActive()){
+				afficherMessageMaintenance();
 			}else{
-				// Si l'utilisateur est étudiant
-				//On consultera les notes en vue etudiant
-				vueEnseignantNotesEtResultats=false;
-				//On récupère le codetu de l'étudiant
-				etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
-				try{
-					//On récupère l'état-civil et les adresses de l'étudiant
-					etudiantController.recupererEtatCivil();
-					//On récupère le calendrier de l'étudiant
-					etudiantController.recupererCalendrierExamens();
-					//On récupère les notes de l'étudiant
-					etudiantController.recupererNotesEtResultats(etudiant);
-					//On affiche le dossier
-					navigateToDossierEtudiant();
-				} catch (WebBaseException ex) {
-					LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
-					navigator.navigateTo(ErreurView.NAME);
-				} catch (Exception ex) {
-					LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
-					navigator.navigateTo(ErreurView.NAME);
+
+				//On récupère l'IP du client
+				GenericUI.getCurrent().getIpClient();
+
+				// Si l'utilisateur est enseignant
+				if(userController.isEnseignant()){
+
+					//On consultera les notes en vue enseignant
+					vueEnseignantNotesEtResultats=true;
+					//On se rend par défaut à la vue des favoris
+					navigator.navigateTo(FavorisMobileView.NAME);
+					//On affiche le message d'intro
+					afficherMessageIntroEnseignants();
+
+				}else{
+					// Si l'utilisateur est étudiant
+					//On consultera les notes en vue etudiant
+					vueEnseignantNotesEtResultats=false;
+					//On récupère le codetu de l'étudiant
+					etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
+					try{
+						//On récupère l'état-civil et les adresses de l'étudiant
+						etudiantController.recupererEtatCivil();
+						//On récupère le calendrier de l'étudiant
+						etudiantController.recupererCalendrierExamens();
+						//On récupère les notes de l'étudiant
+						etudiantController.recupererNotesEtResultats(etudiant);
+						//On affiche le dossier
+						navigateToDossierEtudiant();
+					} catch (WebBaseException ex) {
+						LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+						navigator.navigateTo(ErreurView.NAME);
+					} catch (Exception ex) {
+						LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+						navigator.navigateTo(ErreurView.NAME);
+					}
+
 				}
-
 			}
-
 		}else{
 			//Utilisateur ni enseignant, ni étudiant, on le redirige vers la vue accès refusé
-			navigator.navigateTo(AccesRefuseView.NAME);
+			afficherMessageAccesRefuse();
 		}
 
 
@@ -275,6 +335,16 @@ public class MdwTouchkitUI extends GenericUI{
 
 	}
 
+	
+	private void afficherMessageMaintenance(){
+		setContent(contentLayout);
+		navigator.navigateTo(AccesBloqueView.NAME);
+	}
+	
+	private void afficherMessageAccesRefuse(){
+		setContent(contentLayout);
+		navigator.navigateTo(AccesRefuseView.NAME);
+	}
 
 	/**
 	 * Affiche du message d'intro pour les enseignants
@@ -446,7 +516,7 @@ public class MdwTouchkitUI extends GenericUI{
 	public void navigateTofavoris() {
 		navigator.navigateTo(FavorisMobileView.NAME);
 	}
-	
+
 	/**
 	 * Affichage de la vue par laquelle on est arrivée à la recherche
 	 */

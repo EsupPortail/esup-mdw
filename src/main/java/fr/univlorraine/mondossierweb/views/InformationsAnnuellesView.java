@@ -20,6 +20,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -56,7 +57,7 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if((userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
 			/* Style */
 			setMargin(true);
 			setSpacing(true);

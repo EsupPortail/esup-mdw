@@ -18,9 +18,11 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 
 /**
@@ -49,7 +51,7 @@ public class AssistanceView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant()){
+		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
 			/* Style */
 			setMargin(true);
 			setSpacing(true);

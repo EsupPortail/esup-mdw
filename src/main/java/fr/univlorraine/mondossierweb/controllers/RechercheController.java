@@ -5,11 +5,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.bouncycastle.asn1.x509.NoticeReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.MainUI;
@@ -53,6 +55,25 @@ public class RechercheController {
 	}
 
 
+	/**
+	 * 
+	 * @param fragment
+	 * @param type
+	 */
+	public void accessToDossierEtudiantDeepLinking(String fragment) {
+		
+		String fragmentpart[] =fragment.split("/");
+		String code= fragmentpart[fragmentpart.length-1];
+		//On vérifie que l'étudiant avec ce code existe
+		if(etudiantController.isEtudiantExiste(code)){
+			//On accède au dossier
+			accessToDetail(code,Utils.ETU);
+		}else{
+			Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()), Notification.Type.WARNING_MESSAGE);
+		}
+		
+	}
+	
 	public void accessToDetail(String code, String type) {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);

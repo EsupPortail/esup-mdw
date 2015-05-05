@@ -29,6 +29,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -80,7 +81,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
 
 		//On vérifie le droit d'accéder à la vue
-		if((userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
 
 			LOG.debug(userController.getCurrentUserName()+" init EtatCivilView");
 

@@ -47,6 +47,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("applicationActive");
 	}
 	
+	public boolean isApplicationMobileActive() {
+		return getBooleanValueForParameter("applicationMobileActive");
+	}
+	
 	public List<String> getListeCertScolTypDiplomeDesactive() {
 		return getListValeurForParameter("certScolTypDiplomeDesactive");
 		

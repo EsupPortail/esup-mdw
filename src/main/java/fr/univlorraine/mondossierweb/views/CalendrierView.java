@@ -24,6 +24,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -75,7 +76,7 @@ public class CalendrierView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 		//On vérifie le droit d'accéder à la vue
-		if((userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
 			/* Style */
 			setMargin(true);
 			setSpacing(true);

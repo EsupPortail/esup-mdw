@@ -221,16 +221,24 @@ public class MainUI extends GenericUI {
 		//Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 		//car le fragment ne correspond pas à une vue existante)
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
-	           public void uriFragmentChanged(UriFragmentChangedEvent source) {
-	        	   if(source.getUriFragment().contains("accesDossierEtudiant") && userController.isEnseignant()){
-						//Extraction codetu du fragment
-						String fragmentpart[] =source.getUriFragment().split("/");
-						String codetuFragment= fragmentpart[fragmentpart.length-1];
-						rechercheController.accessToDetail(codetuFragment,Utils.ETU);
-						
+			public void uriFragmentChanged(UriFragmentChangedEvent source) {
+				
+				System.out.println("TOTO "+source.getUriFragment());
+				//Si l'application est en maintenance on bloque l'accès
+				if(!configController.isApplicationActive() &&
+						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
+						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
+					
+					displayViewFullScreen(AccesBloqueView.NAME);
+				}else{
+					
+					if(source.getUriFragment().contains("accesDossierEtudiant") 
+							&& userController.isEnseignant()){
+						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
 					}
-	            }
-	     });
+				}
+			}
+		});
 
 		/* Construit le gestionnaire de vues utilisé par la barre d'adresse et pour naviguer dans le dossier d'un étudiant */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
@@ -241,6 +249,8 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
+				System.out.println("TITI : "+event.getViewName() +" "+configController.isApplicationMobileActive() );
+				
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
 				
@@ -250,8 +260,17 @@ public class MainUI extends GenericUI {
 					setContent(adminView);
 					return true;
 				}
-				
 
+				//Si l'application est en maintenance on bloque l'accès
+				if(!configController.isApplicationActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
+					displayViewFullScreen(AccesBloqueView.NAME);
+					return true;
+				}
+
+				//On bloque l'accès aux vues mobile
+				if(!Utils.isViewDesktop(event.getViewName())){
+					return false;
+				}
 				//On bloque l'accès aux vues enseignants
 				if(Utils.isViewEnseignant(event.getViewName())){
 					//Si utilisateur n'est pas enseignant
@@ -286,8 +305,10 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
+				
 				//On récupère l'élément du menu concerné par la vue à afficher
 				Button button = viewButtons.get(event.getViewName());
+				
 				if (button instanceof Button) {
 					//on applique le style "selected" sur l'objet du menu concerné par la vue affichée
 					button.addStyleName(SELECTED_ITEM);
@@ -308,126 +329,127 @@ public class MainUI extends GenericUI {
 		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
-			//On récupère l'IP du client
-			GenericUI.getCurrent().getIpClient();
-			/* Parametre le layoutDossierEtudiant */
-			menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
-			//Le contentLayout est scrollable si besoin
-			contentLayout.addStyleName("v-scrollable");
-			//contentLayout prend toute la place possible
-			contentLayout.setSizeFull();
-			//le contentLayout prend toute la place disponible dans le layoutDossierEtudiant
-			layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
-			//layoutDossierEtudiant prend toute la place possible
-			layoutDossierEtudiant.setSizeFull();
-
-
-			//Si user enseignant
-			if(userController.isEnseignant()){
-				//On consultera les notes en vue enseignant
-				vueEnseignantNotesEtResultats=true;
-
-				//Construit le menu horizontal pour les enseignants
-				tabSheetGlobal.setSizeFull();
-				tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
-
-				rangTabRecherche=0;
-				rangTabDossierEtudiant = 1;
-
-				//ajout de l'onglet principal 'recherche'
-				layoutOngletRecherche = new VerticalLayout();
-				ajoutOngletRecherche();
-				layoutOngletRecherche.setSizeFull();
-				tabSheetGlobal.addTab(layoutOngletRecherche, "Recherche", FontAwesome.SEARCH);
-
-				//ajout de l'onglet dossier étudiant
-				addTabDossierEtudiant();
-
-				//Ce tabSheet sera aligné à droite
-				tabSheetGlobal.addStyleName("right-aligned-tabs");
-
-				//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
-				mainVerticalLayout.addComponent(tabSheetGlobal);
-				mainVerticalLayout.setSizeFull();
-				mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
+			if(!configController.isApplicationActive()){
+				displayViewFullScreen(AccesBloqueView.NAME);
 			}else{
-				//On consultera les notes en vue etudiant
-				vueEnseignantNotesEtResultats=false;
-
-				//User Etudiant
-				//Le Dossier est définit comme étant le contenu de la page
-				mainVerticalLayout.addComponent(layoutDossierEtudiant);
-				mainVerticalLayout.setSizeFull();
-				mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
-
-				//On renseigne l'étudiant dont on consulte le dossier
-				//Récupération du cod_etu
-				etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
-				LOG.debug("MainUI etudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
-				//Récupération de l'état-civil (et les adresses)
-				etudiantController.recupererEtatCivil();
-				//On construit le menu affiché à l'étudiant
-				buildMainMenuEtudiant();
-			}
+				//On récupère l'IP du client
+				GenericUI.getCurrent().getIpClient();
+				/* Parametre le layoutDossierEtudiant */
+				menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
+				//Le contentLayout est scrollable si besoin
+				contentLayout.addStyleName("v-scrollable");
+				//contentLayout prend toute la place possible
+				contentLayout.setSizeFull();
+				//le contentLayout prend toute la place disponible dans le layoutDossierEtudiant
+				layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
+				//layoutDossierEtudiant prend toute la place possible
+				layoutDossierEtudiant.setSizeFull();
 
 
-			/* Enregistre l'UI pour la réception de notifications */
-			uiController.registerUI(this);
+				//Si user enseignant
+				if(userController.isEnseignant()){
+					//On consultera les notes en vue enseignant
+					vueEnseignantNotesEtResultats=true;
 
+					//Construit le menu horizontal pour les enseignants
+					tabSheetGlobal.setSizeFull();
+					tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
+					rangTabRecherche=0;
+					rangTabDossierEtudiant = 1;
 
-			boolean navigationComplete=false;
-			String fragment = Page.getCurrent().getUriFragment();
-			if (fragment != null && !fragment.isEmpty()) {
-				//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est gérer dans le listener du navigator
-				if(fragment.contains("adminView") && userController.isAdmin()){
-					//Afficher la vue admin
-					navigator.navigateTo(AdminView.NAME);
-					navigationComplete=true;
-				}
-				if(fragment.contains("accesDossierEtudiant") && userController.isEnseignant()){
-					//Extraction codetu du fragment
-					String fragmentpart[] =fragment.split("/");
-					String codetuFragment= fragmentpart[fragmentpart.length-1];
-					rechercheController.accessToDetail(codetuFragment,Utils.ETU);
-					navigationComplete=true;
-				}
-			}
+					//ajout de l'onglet principal 'recherche'
+					layoutOngletRecherche = new VerticalLayout();
+					ajoutOngletRecherche();
+					layoutOngletRecherche.setSizeFull();
+					tabSheetGlobal.addTab(layoutOngletRecherche, "Recherche", FontAwesome.SEARCH);
 
-			if(!navigationComplete){
-				//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
-				//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
-				if(!configController.isApplicationActive()){
-					displayViewFullScreen(AccesBloqueView.NAME);
+					//ajout de l'onglet dossier étudiant
+					addTabDossierEtudiant();
+
+					//Ce tabSheet sera aligné à droite
+					tabSheetGlobal.addStyleName("right-aligned-tabs");
+
+					//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
+					mainVerticalLayout.addComponent(tabSheetGlobal);
+					mainVerticalLayout.setSizeFull();
+					mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
 				}else{
-					//Si utilisateur enseignant
-					if(userController.isEnseignant()){
-						//Récupération des favoris pour l'utilisateur
-						List<Favoris> lfav = favorisController.getFavoris();
-						if(lfav!=null && lfav.size()>0){
-							//On affiche la vue des favoris
-							navigator.navigateTo(FavorisView.NAME);
-							//navigateToFavoris();
-							//Affichage du message d'intro si besoin
-							afficherMessageIntroEnseignants();
+					//On consultera les notes en vue etudiant
+					vueEnseignantNotesEtResultats=false;
 
-						}else{
-							//On affiche la vue de recherche rapide
-							navigator.navigateTo(RechercheRapideView.NAME);
-							//navigateToRechercheRapide();
-							//Affichage du message d'intro si besoin
-							afficherMessageIntroEnseignants();
-						}
+					//User Etudiant
+					//Le Dossier est définit comme étant le contenu de la page
+					mainVerticalLayout.addComponent(layoutDossierEtudiant);
+					mainVerticalLayout.setSizeFull();
+					mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
+
+					//On renseigne l'étudiant dont on consulte le dossier
+					//Récupération du cod_etu
+					etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
+					LOG.debug("MainUI etudiant : "+MainUI.getCurrent().getEtudiant().getCod_etu());
+					//Récupération de l'état-civil (et les adresses)
+					etudiantController.recupererEtatCivil();
+					//On construit le menu affiché à l'étudiant
+					buildMainMenuEtudiant();
+				}
+
+
+				/* Enregistre l'UI pour la réception de notifications */
+				uiController.registerUI(this);
+
+
+
+				boolean navigationComplete=false;
+				String fragment = Page.getCurrent().getUriFragment();
+				if (fragment != null && !fragment.isEmpty()) {
+					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est gérer dans le listener du navigator
+					if(fragment.contains("adminView") && userController.isAdmin()){
+						//Afficher la vue admin
+						navigator.navigateTo(AdminView.NAME);
+						navigationComplete=true;
+					}
+					if(fragment.contains("accesDossierEtudiant") && userController.isEnseignant()){
+						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
+						navigationComplete=true;
+					}
+				}
+
+				if(!navigationComplete){
+					//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
+					//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
+					if(!configController.isApplicationActive()){
+						displayViewFullScreen(AccesBloqueView.NAME);
 					}else{
-						//Si utilisateur étudiant
-						if(userController.isEtudiant()){
-							//On affiche la vue de l'état-civil
-							navigator.navigateTo(EtatCivilView.NAME);
-							//Affichage du message d'intro si besoin
-							afficherMessageIntroEtudiants();
+						//Si utilisateur enseignant
+						if(userController.isEnseignant()){
+							//Récupération des favoris pour l'utilisateur
+							List<Favoris> lfav = favorisController.getFavoris();
+							if(lfav!=null && lfav.size()>0){
+								//On affiche la vue des favoris
+								navigator.navigateTo(FavorisView.NAME);
+								//navigateToFavoris();
+								//Affichage du message d'intro si besoin
+								afficherMessageIntroEnseignants();
+
+							}else{
+								//On affiche la vue de recherche rapide
+								navigator.navigateTo(RechercheRapideView.NAME);
+								//navigateToRechercheRapide();
+								//Affichage du message d'intro si besoin
+								afficherMessageIntroEnseignants();
+							}
 						}else{
-							//On affiche la vue d'erreur
-							displayViewFullScreen(ErreurView.NAME);
+							//Si utilisateur étudiant
+							if(userController.isEtudiant()){
+								//On affiche la vue de l'état-civil
+								navigator.navigateTo(EtatCivilView.NAME);
+								//Affichage du message d'intro si besoin
+								afficherMessageIntroEtudiants();
+							}else{
+								//On affiche la vue d'erreur
+								displayViewFullScreen(ErreurView.NAME);
+							}
 						}
 					}
 				}
@@ -447,7 +469,7 @@ public class MainUI extends GenericUI {
 		setContent(contentLayout);
 		navigator.navigateTo(view);
 	}
-	
+
 	/**
 	 * Affichage du message d'intro aux étudiants
 	 */
@@ -850,8 +872,8 @@ public class MainUI extends GenericUI {
 
 		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
 
-		
-		
+
+
 		//Si l'onglet a été closed
 		if(tabSheetGlobal.getTab(rangTabDossierEtudiant)==null){
 			//On recréé l'onglet

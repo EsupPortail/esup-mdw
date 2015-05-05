@@ -29,6 +29,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -97,7 +98,7 @@ public class FavorisView extends VerticalLayout implements View {
 
 
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant() ){
+		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
 
 
 			removeAllComponents();

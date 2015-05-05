@@ -20,7 +20,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.entities.PreferencesApplication;
-import fr.univlorraine.mondossierweb.entities.PreferencesApplication_;
 
 
 
@@ -34,7 +33,7 @@ public class PreferencesApplicationWindow extends Window {
 
 	public static final String NAME = "preferencesApplicationWindow";
 	
-	public static final String[] CONF_APP_FIELDS_ORDER = {PreferencesApplication_.prefId.getName(), PreferencesApplication_.prefDesc.getName(), PreferencesApplication_.valeur.getName()};
+	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
 
 	@Resource
 	private transient ApplicationContext applicationContext;
@@ -85,8 +84,8 @@ public class PreferencesApplicationWindow extends Window {
 			formLayout.addComponent(field);
 		}
 
-		fieldGroup.getField(PreferencesApplication_.prefId.getName()).setReadOnly(prefApp.getPrefId() != null);
-		fieldGroup.getField(PreferencesApplication_.prefDesc.getName()).setReadOnly(prefApp.getPrefDesc() != null);
+		fieldGroup.getField("prefId").setReadOnly(prefApp.getPrefId() != null);
+		fieldGroup.getField("prefDesc").setReadOnly(prefApp.getPrefDesc() != null);
 
 		layout.addComponent(formLayout);
 

@@ -10,11 +10,25 @@ import org.springframework.util.StringUtils;
 
 import com.vaadin.ui.Panel;
 
+import fr.univlorraine.mondossierweb.views.AccesBloqueView;
+import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.AdminView;
+import fr.univlorraine.mondossierweb.views.AdressesView;
 import fr.univlorraine.mondossierweb.views.AssistanceView;
+import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
+import fr.univlorraine.mondossierweb.views.CalendrierView;
+import fr.univlorraine.mondossierweb.views.ErreurView;
+import fr.univlorraine.mondossierweb.views.EtatCivilView;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.FavorisView;
+import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
+import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
+import fr.univlorraine.mondossierweb.views.InscriptionsView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsView;
+import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
+import fr.univlorraine.mondossierweb.views.NotesMobileView;
+import fr.univlorraine.mondossierweb.views.NotesView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
@@ -73,6 +87,38 @@ public class Utils {
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;
 	
+	//liste des vues desktop
+	private static final String[] LISTE_VIEWS_DESKTOP = {
+		AccesBloqueView.NAME,
+		AccesRefuseView.NAME,
+		AdminView.NAME,
+		AdressesView.NAME,
+		AssistanceView.NAME,
+		CalendrierView.NAME,
+		ErreurView.NAME,
+		EtatCivilView.NAME,
+		FavorisView.NAME,
+		InformationsAnnuellesView.NAME, 
+		InscriptionsView.NAME,
+		ListeInscritsView.NAME,
+		NotesView.NAME,
+		RechercheArborescenteView.NAME,
+		RechercheRapideView.NAME
+		};
+	
+	//liste des vues mobiles
+	private static final String[] LISTE_VIEWS_MOBILE = {
+		AccesBloqueView.NAME,
+		AccesRefuseView.NAME,
+		CalendrierMobileView.NAME,
+		ErreurView.NAME,
+		FavorisMobileView.NAME,
+		InformationsAnnuellesMobileView.NAME, 
+		ListeInscritsMobileView.NAME,
+		NotesDetailMobileView.NAME,
+		NotesMobileView.NAME,
+		RechercheMobileView.NAME};
+	
 	//liste des vues enseignants dont l'accès est à protéger
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
 			FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
@@ -115,6 +161,32 @@ public class Utils {
 	public static boolean isViewEnseignant(String viewName) {
 		for(int i=0;i<LISTE_VIEWS_ENSEIGNANT.length;i++){
 			if(LISTE_VIEWS_ENSEIGNANT[i].equals(viewName)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+
+	
+	public static boolean isViewDesktop(String viewName) {
+		if(viewName!=null && viewName.contains("!")){
+			viewName = viewName.replaceAll("!", "");
+		}
+		for(int i=0;i<LISTE_VIEWS_DESKTOP.length;i++){
+			if(LISTE_VIEWS_DESKTOP[i].equals(viewName)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isViewMobile(String viewName) {
+		if(viewName!=null && viewName.contains("!")){
+			viewName = viewName.replaceAll("!", "");
+		}
+		for(int i=0;i<LISTE_VIEWS_MOBILE.length;i++){
+			if(LISTE_VIEWS_MOBILE[i].equals(viewName)){
 				return true;
 			}
 		}

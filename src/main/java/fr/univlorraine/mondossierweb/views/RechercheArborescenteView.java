@@ -32,6 +32,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.Tree.ExpandEvent;
 import com.vaadin.ui.Tree.ExpandListener;
@@ -39,6 +40,7 @@ import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
@@ -147,7 +149,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	public void refresh() {
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant()){
+		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
 			//Actualiser de l'affiche du bouton de mise en favori
 			if(table!=null && hc!=null){
 

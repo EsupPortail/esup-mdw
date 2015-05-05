@@ -87,7 +87,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant() ){
+		if(UI.getCurrent() instanceof MdwTouchkitUI && userController.isEnseignant() ){
 			removeAllComponents();
 
 			//((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).checkMenuIsDisplayed();

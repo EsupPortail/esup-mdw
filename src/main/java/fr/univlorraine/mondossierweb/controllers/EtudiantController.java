@@ -133,6 +133,38 @@ public class EtudiantController {
 	/*@Resource
 	private SessionController sessionController;*/
 
+
+	public boolean isEtudiantExiste(String codetu){
+
+		if(monProxyEtu==null)
+			monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
+		try {
+			//informations générales :
+			IdentifiantsEtudiantDTO idetu;
+
+			if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
+				idetu = monProxyEtu.recupererIdentifiantsEtudiant(codetu, null, null, null, null, null, null, null, null, "N");
+			} else {
+				idetu = monProxyEtu.recupererIdentifiantsEtudiant(codetu, null, null, null, null, null, null, null, null, "O");
+			}
+			if(idetu!=null && idetu.getCodInd()!=0 && StringUtils.hasText(idetu.getCodInd().toString())){
+				return true;
+			}
+			return false;
+		} catch (WebBaseException ex) {
+			//Si on est dans un cas d'erreur non expliqué
+			/*if (ex.getNature().equals("technical.ws.remoteerror.global")){
+				LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);
+			}else{
+				LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);
+			}*/
+			return false;
+		} catch (Exception ex) {
+			//LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);
+			return false;
+		}
+	}
+
 	public void recupererEtatCivil() {
 
 		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){

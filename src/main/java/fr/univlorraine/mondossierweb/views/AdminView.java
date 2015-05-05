@@ -19,6 +19,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -26,7 +27,6 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.PreferencesApplication;
-import fr.univlorraine.mondossierweb.entities.PreferencesApplication_;
 import fr.univlorraine.mondossierweb.views.windows.PreferencesApplicationWindow;
 
 /**
@@ -38,7 +38,7 @@ public class AdminView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -2605429366219007314L;
 
-	public static final String[] CONF_APP_FIELDS_ORDER = {PreferencesApplication_.prefId.getName(), PreferencesApplication_.prefDesc.getName(), PreferencesApplication_.valeur.getName()};
+	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
 
 
 	public static final String NAME = "adminView";
@@ -138,7 +138,7 @@ public class AdminView extends VerticalLayout implements View {
 		for (String fieldName : CONF_APP_FIELDS_ORDER) {
 			confAppTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".confAppTable." + fieldName, null, getLocale()));
 		}
-		confAppTable.setSortContainerPropertyId(PreferencesApplication_.prefId.getName());
+		confAppTable.setSortContainerPropertyId("prefId");
 		confAppTable.setColumnCollapsingAllowed(true);
 		confAppTable.setColumnReorderingAllowed(true);
 		confAppTable.setSelectable(true);

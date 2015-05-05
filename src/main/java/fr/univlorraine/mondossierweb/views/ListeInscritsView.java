@@ -180,7 +180,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	public void refresh() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant()){
+		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
 			//Actualiser de l'affiche du bouton de mise en favori
 			if(btnAjoutFavori !=null && favoriLayout!=null && StringUtils.hasText(code) && StringUtils.hasText(typeFavori)){
 
@@ -202,7 +202,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	public void initListe() {
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant()){
+		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
 			// initialisation de la vue
 			removeAllComponents();
 			listeEtapes = null;
