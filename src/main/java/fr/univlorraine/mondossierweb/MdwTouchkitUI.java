@@ -218,7 +218,6 @@ public class MdwTouchkitUI extends GenericUI{
 					afficherMessageAccesRefuse();
 				}*/
 				
-				System.out.println("toto");
 				
 				//Si l'application est en maintenance on bloque l'accès
 				if(!configController.isApplicationMobileActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
@@ -246,7 +245,6 @@ public class MdwTouchkitUI extends GenericUI{
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 
-				System.out.println("titi : "+event.getViewName() +" "+configController.isApplicationMobileActive() );
 				
 				//On bloque l'accès aux vues desktop
 				if(!Utils.isViewMobile(event.getViewName())){

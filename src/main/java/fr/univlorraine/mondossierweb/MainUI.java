@@ -223,7 +223,6 @@ public class MainUI extends GenericUI {
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
 			public void uriFragmentChanged(UriFragmentChangedEvent source) {
 				
-				System.out.println("TOTO "+source.getUriFragment());
 				//Si l'application est en maintenance on bloque l'accès
 				if(!configController.isApplicationActive() &&
 						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
@@ -249,7 +248,6 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
-				System.out.println("TITI : "+event.getViewName() +" "+configController.isApplicationMobileActive() );
 				
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
@@ -264,7 +262,7 @@ public class MainUI extends GenericUI {
 				//Si l'application est en maintenance on bloque l'accès
 				if(!configController.isApplicationActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
 					displayViewFullScreen(AccesBloqueView.NAME);
-					return true;
+					return false;
 				}
 
 				//On bloque l'accès aux vues mobile
