@@ -234,7 +234,16 @@ public class MainUI extends GenericUI {
 					if(source.getUriFragment().contains("accesDossierEtudiant") 
 							&& userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
-					}
+						
+					}/*else{
+						if(source.getUriFragment().contains("accesNotesEtudiant") 
+								&& userController.isEnseignant()){
+							rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
+							navigator.navigateTo(NotesView.NAME);
+						}
+					}*/
+					
+					
 				}
 			}
 		});
@@ -411,6 +420,11 @@ public class MainUI extends GenericUI {
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigationComplete=true;
 					}
+					/*if(fragment.contains("accesNotesEtudiant") && userController.isEnseignant()){
+						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
+						navigator.navigateTo(NotesView.NAME);
+						navigationComplete=true;
+					}*/
 				}
 
 				if(!navigationComplete){
