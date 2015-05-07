@@ -9,9 +9,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.entities.Favoris;
-import fr.univlorraine.mondossierweb.entities.FavorisPK;
-import fr.univlorraine.mondossierweb.repositories.FavorisRepository;
+import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
+import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
+import fr.univlorraine.mondossierweb.repositories.mdw.FavorisRepository;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;

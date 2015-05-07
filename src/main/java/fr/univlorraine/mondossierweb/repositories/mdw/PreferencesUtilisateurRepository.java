@@ -1,11 +1,11 @@
-package fr.univlorraine.mondossierweb.repositories;
+package fr.univlorraine.mondossierweb.repositories.mdw;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateur;
-import fr.univlorraine.mondossierweb.entities.PreferencesUtilisateurPK;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateurPK;
 
 @Repository
 public interface PreferencesUtilisateurRepository extends JpaRepository<PreferencesUtilisateur, PreferencesUtilisateurPK> {

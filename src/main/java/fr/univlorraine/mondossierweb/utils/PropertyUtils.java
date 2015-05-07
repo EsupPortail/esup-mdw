@@ -7,9 +7,9 @@ import javax.annotation.Resource;
 
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.entities.PreferencesApplication;
-import fr.univlorraine.mondossierweb.repositories.PreferencesApplicationRepository;
-import fr.univlorraine.mondossierweb.repositories.UtilisateurSwapRepository;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepository;
+import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
 
 /**
  * @author Charlie Dubois

@@ -1,4 +1,4 @@
-package fr.univlorraine.mondossierweb.repositories;
+package fr.univlorraine.mondossierweb.repositories.mdw;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fr.univlorraine.mondossierweb.entities.Favoris;
-import fr.univlorraine.mondossierweb.entities.FavorisPK;
+import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
+import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 
 @Repository
 public interface FavorisRepository extends JpaRepository<Favoris, FavorisPK> {

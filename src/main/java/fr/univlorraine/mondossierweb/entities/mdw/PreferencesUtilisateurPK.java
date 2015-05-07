@@ -1,4 +1,4 @@
-package fr.univlorraine.mondossierweb.entities;
+package fr.univlorraine.mondossierweb.entities.mdw;
 
 import java.io.Serializable;
 

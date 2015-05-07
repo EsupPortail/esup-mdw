@@ -19,7 +19,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.entities.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
 
 
 
