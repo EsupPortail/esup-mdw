@@ -56,8 +56,7 @@
 		<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans -->
 	<Parameter name="showLoadingIndicator" value="true" />
 
-	<!--  SOLR -->
-	<Parameter name="solr.url" value="http://toto.univ-lorraine.fr:8181/solr/apogee" />
+
 	
 	<Parameter name="param.elasticsearch.url" value="172.0.0.0" />
 	<Parameter name="param.elasticsearch.port" value="9300" />

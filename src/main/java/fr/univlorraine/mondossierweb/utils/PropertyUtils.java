@@ -26,12 +26,6 @@ public class PropertyUtils {
 		return value;
 	}
 
-	/** Retourne l'url de l'application */
-	public static String getSolrUrl(){
-		String value = System.getProperty("context.solr.url");
-		if(!StringUtils.hasText(value)) throw new NullPointerException("solr.url cannot be null !");
-		return value;
-	}
 
 
 

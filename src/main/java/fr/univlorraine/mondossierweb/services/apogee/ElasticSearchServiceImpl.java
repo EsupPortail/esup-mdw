@@ -6,8 +6,6 @@ import java.util.Map;
 
 import lombok.Data;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -29,8 +27,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 
-	private HttpSolrServer server;
-	private SolrQuery query;
+
 	private Client client;
 
 

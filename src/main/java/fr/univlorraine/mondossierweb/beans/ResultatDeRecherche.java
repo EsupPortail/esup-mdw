@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.entities.apogee.VObjSeApogee;
-import fr.univlorraine.mondossierweb.entities.solr.ObjSolr;
 import lombok.Data;
 
 @Data
@@ -29,13 +28,6 @@ public class ResultatDeRecherche implements Serializable {
 		lib=o.getLibObj();
 	}
 	
-	public ResultatDeRecherche(ObjSolr o){
-		type=o.getType();
-		code=o.getCode();
-		if(o.getVersion()!=0)
-			code = o.getCode()+"/"+o.getVersion();
-		lib=o.getLibelle(); //On prend le libelle et non pas la description
-	}
 	
 	public ResultatDeRecherche(Map<String,Object> o){
 		type=(String)o.get("TYP_OBJ");

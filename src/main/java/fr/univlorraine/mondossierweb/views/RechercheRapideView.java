@@ -469,7 +469,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueElasticSearch, 0, false);
 
 			///////////////////////////////////////////////////////
-			// recuperation des obj SOLR
+			// recuperation des objets
 			///////////////////////////////////////////////////////
 			if(lobjresult!=null){
 
