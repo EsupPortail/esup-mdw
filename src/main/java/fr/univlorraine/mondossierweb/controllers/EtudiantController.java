@@ -366,102 +366,105 @@ public class EtudiantController {
 			try{
 				String[] annees =  monProxyAdministratif.recupererAnneesIa(GenericUI.getCurrent().getEtudiant().getCod_etu(), null);
 
-				//récupération de l'année la plus récente
-				String annee = "0";
-				for(int i=0; i<annees.length;i++){
-					if (Integer.parseInt(annees[i])>Integer.parseInt(annee)){
-						annee = annees[i];
+				if(annees!=null){
+					//récupération de l'année la plus récente
+					String annee = "0";
+					for(int i=0; i<annees.length;i++){
+						if (Integer.parseInt(annees[i])>Integer.parseInt(annee)){
+							annee = annees[i];
+						}
 					}
-				}
 
-				//récupération des coordonnées :
-				CoordonneesDTO2 cdto = monProxyEtu.recupererAdressesEtudiant_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), annee, "N");
+					//récupération des coordonnées :
+					CoordonneesDTO2 cdto = monProxyEtu.recupererAdressesEtudiant_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), annee, "N");
 
-				//récupération des adresses, annuelle et fixe :
-				annee = cdto.getAnnee();
-				GenericUI.getCurrent().getEtudiant().setEmailPerso(cdto.getEmail());
-				GenericUI.getCurrent().getEtudiant().setTelPortable(cdto.getNumTelPortable());
-
-
-				AdresseDTO2 ada = cdto.getAdresseAnnuelle();
-				AdresseDTO2 adf = cdto.getAdresseFixe();
-
-				if (ada != null) {
-					Adresse adresseAnnuelle=new Adresse();
+					//récupération des adresses, annuelle et fixe :
+					annee = cdto.getAnnee();
+					GenericUI.getCurrent().getEtudiant().setEmailPerso(cdto.getEmail());
+					GenericUI.getCurrent().getEtudiant().setTelPortable(cdto.getNumTelPortable());
 
 
-					adresseAnnuelle.setAnnee(Utils.getAnneeUniversitaireEnCours(annee));
-					//informations sur l'adresse annuelle :
-					if (ada.getLibAde() != null) {
-						adresseAnnuelle.setAdresseetranger(ada.getLibAde());
-						adresseAnnuelle.setCodePostal("");
-						adresseAnnuelle.setVille("");
-					} else {
-						adresseAnnuelle.setAdresseetranger(null);
-						if (ada.getCommune() != null) {
-							adresseAnnuelle.setCodePostal(ada.getCommune().getCodePostal());
-							adresseAnnuelle.setVille(ada.getCommune().getNomCommune());
-						} else {
+					AdresseDTO2 ada = cdto.getAdresseAnnuelle();
+					AdresseDTO2 adf = cdto.getAdresseFixe();
+
+					if (ada != null) {
+						Adresse adresseAnnuelle=new Adresse();
+
+
+						adresseAnnuelle.setAnnee(Utils.getAnneeUniversitaireEnCours(annee));
+						//informations sur l'adresse annuelle :
+						if (ada.getLibAde() != null) {
+							adresseAnnuelle.setAdresseetranger(ada.getLibAde());
 							adresseAnnuelle.setCodePostal("");
 							adresseAnnuelle.setVille("");
-						}
-					}
-
-					//TypeHebergementCourtDTO th = ada.getTypeHebergement();
-					TypeHebergementCourtDTO th = cdto.getTypeHebergement();
-					if (th != null) {
-						//adresseAnnuelle.setType(th.getLibTypeHebergement());
-						adresseAnnuelle.setType(th.getCodTypeHebergement());
-					} else {
-						adresseAnnuelle.setType("");
-					}
-					adresseAnnuelle.setAdresse1(ada.getLibAd1());
-					adresseAnnuelle.setAdresse2(ada.getLibAd2());
-					adresseAnnuelle.setAdresse3(ada.getLibAd3());
-					adresseAnnuelle.setNumerotel(ada.getNumTel());
-					if (ada.getPays() != null) {
-						adresseAnnuelle.setPays(ada.getPays().getLibPay());
-						adresseAnnuelle.setCodPays(ada.getPays().getCodPay());
-					} else {
-						adresseAnnuelle.setPays("");
-					}
-
-					GenericUI.getCurrent().getEtudiant().setAdresseAnnuelle(adresseAnnuelle);
-				}
-				if (adf != null) {
-
-					Adresse adresseFixe=new Adresse();
-
-					//informations sur l'adresse fixe :
-					adresseFixe.setAdresse1(adf.getLibAd1());
-					adresseFixe.setAdresse2(adf.getLibAd2());
-					adresseFixe.setAdresse3(adf.getLibAd3());
-					adresseFixe.setNumerotel(adf.getNumTel());
-
-					if (adf.getLibAde() != null) {
-						adresseFixe.setAdresseetranger(adf.getLibAde());
-						adresseFixe.setCodePostal("");
-						adresseFixe.setVille("");
-					} else {
-						adresseFixe.setAdresseetranger(null);
-						if (adf.getCommune() != null ) {
-							adresseFixe.setCodePostal(adf.getCommune().getCodePostal());
-							adresseFixe.setVille(adf.getCommune().getNomCommune());
 						} else {
+							adresseAnnuelle.setAdresseetranger(null);
+							if (ada.getCommune() != null) {
+								adresseAnnuelle.setCodePostal(ada.getCommune().getCodePostal());
+								adresseAnnuelle.setVille(ada.getCommune().getNomCommune());
+							} else {
+								adresseAnnuelle.setCodePostal("");
+								adresseAnnuelle.setVille("");
+							}
+						}
+
+						//TypeHebergementCourtDTO th = ada.getTypeHebergement();
+						TypeHebergementCourtDTO th = cdto.getTypeHebergement();
+						if (th != null) {
+							//adresseAnnuelle.setType(th.getLibTypeHebergement());
+							adresseAnnuelle.setType(th.getCodTypeHebergement());
+						} else {
+							adresseAnnuelle.setType("");
+						}
+						adresseAnnuelle.setAdresse1(ada.getLibAd1());
+						adresseAnnuelle.setAdresse2(ada.getLibAd2());
+						adresseAnnuelle.setAdresse3(ada.getLibAd3());
+						adresseAnnuelle.setNumerotel(ada.getNumTel());
+						if (ada.getPays() != null) {
+							adresseAnnuelle.setPays(ada.getPays().getLibPay());
+							adresseAnnuelle.setCodPays(ada.getPays().getCodPay());
+						} else {
+							adresseAnnuelle.setPays("");
+						}
+
+						GenericUI.getCurrent().getEtudiant().setAdresseAnnuelle(adresseAnnuelle);
+					}
+					if (adf != null) {
+
+						Adresse adresseFixe=new Adresse();
+
+						//informations sur l'adresse fixe :
+						adresseFixe.setAdresse1(adf.getLibAd1());
+						adresseFixe.setAdresse2(adf.getLibAd2());
+						adresseFixe.setAdresse3(adf.getLibAd3());
+						adresseFixe.setNumerotel(adf.getNumTel());
+
+						if (adf.getLibAde() != null) {
+							adresseFixe.setAdresseetranger(adf.getLibAde());
 							adresseFixe.setCodePostal("");
 							adresseFixe.setVille("");
+						} else {
+							adresseFixe.setAdresseetranger(null);
+							if (adf.getCommune() != null ) {
+								adresseFixe.setCodePostal(adf.getCommune().getCodePostal());
+								adresseFixe.setVille(adf.getCommune().getNomCommune());
+							} else {
+								adresseFixe.setCodePostal("");
+								adresseFixe.setVille("");
+							}
 						}
-					}
-					if (adf.getPays() != null) {
-						adresseFixe.setPays(adf.getPays().getLibPay());
-						adresseFixe.setCodPays(adf.getPays().getCodPay());
-					} else {
-						adresseFixe.setPays("");
-					}
+						if (adf.getPays() != null) {
+							adresseFixe.setPays(adf.getPays().getLibPay());
+							adresseFixe.setCodPays(adf.getPays().getCodPay());
+						} else {
+							adresseFixe.setPays("");
+						}
 
-					GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
+						GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
+					}
+				}else{
+					LOG.error("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}
-
 			} catch (WebBaseException ex) {
 				//Si on est dans un cas d'erreur non expliqué
 				if (ex.getNature().equals("technical.ws.remoteerror.global")){
