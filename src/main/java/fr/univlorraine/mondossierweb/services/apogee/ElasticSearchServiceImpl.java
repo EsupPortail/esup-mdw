@@ -9,6 +9,7 @@ import lombok.Data;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -16,9 +17,13 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 
@@ -26,6 +31,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 @Data
 public class ElasticSearchServiceImpl implements ElasticSearchService{
 
+	private Logger LOG = LoggerFactory.getLogger(ElasticSearchServiceImpl.class);
 
 
 	private Client client;
@@ -33,9 +39,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 	@SuppressWarnings("resource")
 	@Override
-	public void initConnexion(boolean fullInit) {
+	public boolean initConnexion(boolean fullInit) {
 		//initialise la connexion a ES
 		if(client==null){
+			try{
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
 			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
 
@@ -44,8 +51,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				//requete pour initialiser l'appel à ES 
 				findObj("toto", 10, true);
 			}
+			}catch(NoNodeAvailableException ex){
+				LOG.error("problème lors de l'initialisation de la connexion à ElasticSerch", ex);
+				return false;
+			}
 		}
-
+		return true;
 	}
 
 

@@ -11,5 +11,5 @@ public interface ElasticSearchService {
 	
 	public abstract List<Map<String, Object>> findObj(String value, int maxResult, boolean quickSearch);
 	
-	public abstract void initConnexion(boolean fullInit);
+	public abstract boolean initConnexion(boolean fullInit);
 }

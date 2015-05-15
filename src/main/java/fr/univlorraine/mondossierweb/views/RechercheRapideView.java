@@ -28,11 +28,13 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Notification.Type;
@@ -91,7 +93,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private Button btnRecherche;
 
 	private AutoComplete champRecherche;
-	
+
 	//private SuggestField search1= new SuggestField();
 
 	private HierarchicalContainer rrContainer;
@@ -109,7 +111,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private CheckBox casesAcocherEtudiant;
 
 	private Button resetButton;
-	
+
 	private List<ResultatDeRecherche> items = new ArrayList<ResultatDeRecherche>();
 
 	/**
@@ -160,7 +162,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 			//ADD-ON Suggestfield
-		/*	search1.setInputPrompt("Tapez votre recherche");
+			/*	search1.setInputPrompt("Tapez votre recherche");
 			search1.setEnabled(true);
 			search1.setWidth(700, Unit.PIXELS);
 			search1.setPopupWidth(700);
@@ -169,7 +171,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				@Override
 				public void handleAction(Object sender, Object target) {
 					if(target==search1){
-						
+
 						search(false);
 					}
 				}
@@ -184,167 +186,173 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
-			ElasticSearchService.initConnexion(true);
+			if(ElasticSearchService.initConnexion(true)){
 
-			//CHAMP DE RECHERCHE
-			champRecherche = new AutoComplete();
-			champRecherche.setWidth(700, Unit.PIXELS); //540
-			champRecherche.setEnabled(true);
-			champRecherche.setImmediate(true);
-			champRecherche.focus();
-			champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
-			champRecherche.addTextChangeListener(new TextChangeListener() {
-				@Override
-				public void textChange(TextChangeEvent event) {
-					if(event.getText()!=null){
-						resetButton.setIcon(FontAwesome.TIMES);
-					}
-					champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout,btnRecherche, false);
-
-				}
-			});
-			champRecherche.setImmediate(true);
-			champRecherche.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
-				@Override
-				public void handleAction(Object sender, Object target) {
-					if(target==champRecherche){
-						//Si on était sur une ligne proposée sous le champ de recherche
-						if(champRecherche.getSelectedItem()>0){
-							//On remplie d'abord le champ avec la ligne sélectionnée
-							champRecherche.setValue(champRecherche.getChoices().getItem(champRecherche.getSelectedItem()).getItemProperty("lib").getValue().toString());
+				//CHAMP DE RECHERCHE
+				champRecherche = new AutoComplete();
+				champRecherche.setWidth(700, Unit.PIXELS); //540
+				champRecherche.setEnabled(true);
+				champRecherche.setImmediate(true);
+				champRecherche.focus();
+				champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
+				champRecherche.addTextChangeListener(new TextChangeListener() {
+					@Override
+					public void textChange(TextChangeEvent event) {
+						if(event.getText()!=null){
+							resetButton.setIcon(FontAwesome.TIMES);
 						}
-						search(false);
+						champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout,btnRecherche, false);
+
 					}
-				}
-			});
-
-			champRecherche.addShortcutListener(new ShortcutListener("Bottom Arrow", ShortcutAction.KeyCode.ARROW_DOWN, null) {
-				@Override
-				public void handleAction(Object sender, Object target) {
-					if(target==champRecherche){
-						if(champRecherche.getChoices().getItemIds()!=null){
-							champRecherche.getChoicesPopup().setVisible(true);
-							champRecherche.getChoices().setValue(champRecherche.getNextItem());
-
-
-						}
-					}
-				}
-			});
-
-			champRecherche.addShortcutListener(new ShortcutListener("Top Arrow", ShortcutAction.KeyCode.ARROW_UP, null) {
-				@Override
-				public void handleAction(Object sender, Object target) {
-					if(target==champRecherche){
-						if(champRecherche.getChoices().getItemIds()!=null){
-							champRecherche.getChoicesPopup().setVisible(true);
-							Integer champSelectionne = champRecherche.getPreviousItem();
-							if(champSelectionne>0){
-								champRecherche.getChoices().setValue(champSelectionne);
-							}else{
-								champRecherche.getChoices().setValue(null);
+				});
+				champRecherche.setImmediate(true);
+				champRecherche.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
+					@Override
+					public void handleAction(Object sender, Object target) {
+						if(target==champRecherche){
+							//Si on était sur une ligne proposée sous le champ de recherche
+							if(champRecherche.getSelectedItem()>0){
+								//On remplie d'abord le champ avec la ligne sélectionnée
+								champRecherche.setValue(champRecherche.getChoices().getItem(champRecherche.getSelectedItem()).getItemProperty("lib").getValue().toString());
 							}
-
+							search(false);
 						}
 					}
-				}
-			});
+				});
 
-			//champRecherche.addBlurListener(e -> champRecherche.getChoicesPopup().setVisible(false));
+				champRecherche.addShortcutListener(new ShortcutListener("Bottom Arrow", ShortcutAction.KeyCode.ARROW_DOWN, null) {
+					@Override
+					public void handleAction(Object sender, Object target) {
+						if(target==champRecherche){
+							if(champRecherche.getChoices().getItemIds()!=null){
+								champRecherche.getChoicesPopup().setVisible(true);
+								champRecherche.getChoices().setValue(champRecherche.getNextItem());
 
-			HorizontalLayout layoutBordure = new HorizontalLayout();
-			layoutBordure.setWidth("100px");
-			champRechercheLayout.addComponent(layoutBordure);
-			champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
 
-			/*champRechercheLayout.addComponent(search1);
+							}
+						}
+					}
+				});
+
+				champRecherche.addShortcutListener(new ShortcutListener("Top Arrow", ShortcutAction.KeyCode.ARROW_UP, null) {
+					@Override
+					public void handleAction(Object sender, Object target) {
+						if(target==champRecherche){
+							if(champRecherche.getChoices().getItemIds()!=null){
+								champRecherche.getChoicesPopup().setVisible(true);
+								Integer champSelectionne = champRecherche.getPreviousItem();
+								if(champSelectionne>0){
+									champRecherche.getChoices().setValue(champSelectionne);
+								}else{
+									champRecherche.getChoices().setValue(null);
+								}
+
+							}
+						}
+					}
+				});
+
+				//champRecherche.addBlurListener(e -> champRecherche.getChoicesPopup().setVisible(false));
+
+				HorizontalLayout layoutBordure = new HorizontalLayout();
+				layoutBordure.setWidth("100px");
+				champRechercheLayout.addComponent(layoutBordure);
+				champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
+
+				/*champRechercheLayout.addComponent(search1);
 			champRechercheLayout.setComponentAlignment(search1, Alignment.MIDDLE_LEFT);*/
 
-			champRechercheLayout.addComponent(champRecherche);
-			champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
+				champRechercheLayout.addComponent(champRecherche);
+				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
 
-			//BOUTON RESET
-			champRecherche.addStyleName("textfield-resetable");
-			resetButton = new Button();
-			resetButton.setIcon(FontAwesome.TIMES);
-			resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-			resetButton.addStyleName("btn-reset");
-			resetButton.addClickListener(e->{
-				champRecherche.setValue("");
-				//search1.setValue("");
+				//BOUTON RESET
+				champRecherche.addStyleName("textfield-resetable");
+				resetButton = new Button();
 				resetButton.setIcon(FontAwesome.TIMES);
-			});
-			champRechercheLayout.addComponent(resetButton);
-			champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
+				resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+				resetButton.addStyleName("btn-reset");
+				resetButton.addClickListener(e->{
+					champRecherche.setValue("");
+					//search1.setValue("");
+					resetButton.setIcon(FontAwesome.TIMES);
+				});
+				champRechercheLayout.addComponent(resetButton);
+				champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
 
-			//Ajout du bouton de recherche au layout
-			champRechercheLayout.addComponent(btnRecherche);
-			mainVerticalLayout.addComponent(champRechercheLayout);
-			mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
-			champRechercheLayout.setMargin(true);
-
-
-
-			casesAcocherComposantes= new CheckBox("Composantes");
-			casesAcocherComposantes.setValue(true);
-			casesAcocherComposantes.setStyleName(ValoTheme.CHECKBOX_SMALL);
-			casesAcocherComposantes.addValueChangeListener(e -> tuneSearch());
-			casesAcocherVet= new CheckBox("Etapes");
-			casesAcocherVet.setValue(true);
-			casesAcocherVet.setStyleName(ValoTheme.CHECKBOX_SMALL);
-			casesAcocherVet.addValueChangeListener(e -> tuneSearch());
-			casesAcocherElp= new CheckBox("Eléments pédagogiques");
-			casesAcocherElp.setValue(true);
-			casesAcocherElp.setStyleName(ValoTheme.CHECKBOX_SMALL);
-			casesAcocherElp.addValueChangeListener(e -> tuneSearch());
-			casesAcocherEtudiant= new CheckBox("Etudiants");
-			casesAcocherEtudiant.setValue(true);
-			casesAcocherEtudiant.setStyleName(ValoTheme.CHECKBOX_SMALL);
-			casesAcocherEtudiant.addValueChangeListener(e -> tuneSearch());
-
-			HorizontalLayout checkBoxLayout=new HorizontalLayout();
-			checkBoxLayout.setMargin(true);
-			checkBoxLayout.setSpacing(true);
-			checkBoxLayout.addComponent(casesAcocherComposantes);
-			checkBoxLayout.addComponent(casesAcocherVet);
-			checkBoxLayout.addComponent(casesAcocherElp);
-			checkBoxLayout.addComponent(casesAcocherEtudiant);
+				//Ajout du bouton de recherche au layout
+				champRechercheLayout.addComponent(btnRecherche);
+				mainVerticalLayout.addComponent(champRechercheLayout);
+				mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
+				champRechercheLayout.setMargin(true);
 
 
-			mainVerticalLayout.addComponent(checkBoxLayout);
 
-			//TABLE DE RESULTATS
-			rrContainer = new HierarchicalContainer();
-			rrContainer.addContainerProperty("lib", String.class, "");
-			rrContainer.addContainerProperty("code", String.class, "");
-			rrContainer.addContainerProperty("type", String.class, "");
-			tableResultats = new TreeTable();
-			tableResultats.setSizeFull();
-			tableResultats.setSelectable(false);
-			tableResultats.setMultiSelect(false);
-			tableResultats.setImmediate(true);
-			columnHeaders = new String[FIELDS_ORDER.length];
-			for (int fieldIndex = 0; fieldIndex < FIELDS_ORDER.length; fieldIndex++){
-				columnHeaders[fieldIndex] = applicationContext.getMessage("result.table." + FIELDS_ORDER[fieldIndex], null, Locale.getDefault());
-			}
-			tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
-			tableResultats.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
-			tableResultats.setContainerDataSource(rrContainer);
-			tableResultats.setVisibleColumns(FIELDS_ORDER);
-			tableResultats.setColumnHeaders(columnHeaders);
-			/*mainVerticalLayout.addComponent(searchBoxFilter);
+				casesAcocherComposantes= new CheckBox("Composantes");
+				casesAcocherComposantes.setValue(true);
+				casesAcocherComposantes.setStyleName(ValoTheme.CHECKBOX_SMALL);
+				casesAcocherComposantes.addValueChangeListener(e -> tuneSearch());
+				casesAcocherVet= new CheckBox("Etapes");
+				casesAcocherVet.setValue(true);
+				casesAcocherVet.setStyleName(ValoTheme.CHECKBOX_SMALL);
+				casesAcocherVet.addValueChangeListener(e -> tuneSearch());
+				casesAcocherElp= new CheckBox("Eléments pédagogiques");
+				casesAcocherElp.setValue(true);
+				casesAcocherElp.setStyleName(ValoTheme.CHECKBOX_SMALL);
+				casesAcocherElp.addValueChangeListener(e -> tuneSearch());
+				casesAcocherEtudiant= new CheckBox("Etudiants");
+				casesAcocherEtudiant.setValue(true);
+				casesAcocherEtudiant.setStyleName(ValoTheme.CHECKBOX_SMALL);
+				casesAcocherEtudiant.addValueChangeListener(e -> tuneSearch());
+
+				HorizontalLayout checkBoxLayout=new HorizontalLayout();
+				checkBoxLayout.setMargin(true);
+				checkBoxLayout.setSpacing(true);
+				checkBoxLayout.addComponent(casesAcocherComposantes);
+				checkBoxLayout.addComponent(casesAcocherVet);
+				checkBoxLayout.addComponent(casesAcocherElp);
+				checkBoxLayout.addComponent(casesAcocherEtudiant);
+
+
+				mainVerticalLayout.addComponent(checkBoxLayout);
+
+				//TABLE DE RESULTATS
+				rrContainer = new HierarchicalContainer();
+				rrContainer.addContainerProperty("lib", String.class, "");
+				rrContainer.addContainerProperty("code", String.class, "");
+				rrContainer.addContainerProperty("type", String.class, "");
+				tableResultats = new TreeTable();
+				tableResultats.setSizeFull();
+				tableResultats.setSelectable(false);
+				tableResultats.setMultiSelect(false);
+				tableResultats.setImmediate(true);
+				columnHeaders = new String[FIELDS_ORDER.length];
+				for (int fieldIndex = 0; fieldIndex < FIELDS_ORDER.length; fieldIndex++){
+					columnHeaders[fieldIndex] = applicationContext.getMessage("result.table." + FIELDS_ORDER[fieldIndex], null, Locale.getDefault());
+				}
+				tableResultats.addGeneratedColumn("lib", new DisplayNameColumnGenerator());
+				tableResultats.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
+				tableResultats.setContainerDataSource(rrContainer);
+				tableResultats.setVisibleColumns(FIELDS_ORDER);
+				tableResultats.setColumnHeaders(columnHeaders);
+				/*mainVerticalLayout.addComponent(searchBoxFilter);
 		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
-			VerticalLayout tableVerticalLayout = new VerticalLayout();
-			tableVerticalLayout.setMargin(true);
-			tableVerticalLayout.setSizeFull();
-			tableVerticalLayout.addComponent(tableResultats);
-			mainVerticalLayout.addComponent(tableVerticalLayout);
-			mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
-			tableResultats.setVisible(false);
+				VerticalLayout tableVerticalLayout = new VerticalLayout();
+				tableVerticalLayout.setMargin(true);
+				tableVerticalLayout.setSizeFull();
+				tableVerticalLayout.addComponent(tableResultats);
+				mainVerticalLayout.addComponent(tableVerticalLayout);
+				mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
+				tableResultats.setVisible(false);
 
 
-			addComponent(mainVerticalLayout);
-			setSizeFull();
+				addComponent(mainVerticalLayout);
+				setSizeFull();
+			}else{
+
+				//Message fonctionnalité indisponible
+				/* Texte */
+				addComponent(new Label(applicationContext.getMessage(NAME + ".indisponible.message", null, getLocale()), ContentMode.HTML));
+			}
 		}
 	}
 
@@ -603,7 +611,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 
-/*
+	/*
 	private void setUpAutocomplete(final SuggestField search) {
 
 
@@ -614,9 +622,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				return new ArrayList<Object>(quickSearch(query));
 			}
 		});
-		
+
 		search.setSuggestionConverter(new ResultatDeRechercheSuggestionConverter());
-		
+
 		search.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
