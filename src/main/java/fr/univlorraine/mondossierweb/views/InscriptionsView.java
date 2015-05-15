@@ -253,13 +253,15 @@ public class InscriptionsView extends VerticalLayout implements View {
 			if(etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant())){
 				//On affiche le bouton pour éditer le certificat de scolarité
 				Button bCertificatInscription=new Button();
-				bCertificatInscription.setIcon(FontAwesome.FILE_TEXT);
+				//bCertificatInscription.setIcon(FontAwesome.FILE_TEXT);
+				bCertificatInscription.setIcon(FontAwesome.FILE_PDF_O);
 				bCertificatInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				bCertificatInscription.addStyleName("red-button-icon");
 				bCertificatInscription.setDescription(applicationContext.getMessage(NAME + ".certificatScolarite.link", null, getLocale()));
 				MyFileDownloader fd = new MyFileDownloader(inscriptionController.exportPdf(inscription));
 				fd.extend(bCertificatInscription);
 				libelleLayout.addComponent(bCertificatInscription);
-			}
+			}			
 
 
 

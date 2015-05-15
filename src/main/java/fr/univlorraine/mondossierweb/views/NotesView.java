@@ -118,6 +118,7 @@ public class NotesView extends VerticalLayout implements View {
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				pdfButton.addStyleName("button-big-icon");
+				pdfButton.addStyleName("red-button-icon");
 				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
 				MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfResume());

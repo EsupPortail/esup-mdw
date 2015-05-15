@@ -511,6 +511,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnExportTrombi.setIcon(FontAwesome.FILE_PDF_O);
 					btnExportTrombi.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 					btnExportTrombi.addStyleName("button-icon");
+					btnExportTrombi.addStyleName("red-button-icon");
 					btnExportTrombi.setDescription(applicationContext.getMessage(NAME + ".pdf.trombinoscope.link", null, getLocale()));
 
 					//methode qui permet de generer l'export à la demande
