@@ -350,7 +350,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			}else{
 
 				//Message fonctionnalité indisponible
-				/* Texte */
 				addComponent(new Label(applicationContext.getMessage(NAME + ".indisponible.message", null, getLocale()), ContentMode.HTML));
 			}
 		}
