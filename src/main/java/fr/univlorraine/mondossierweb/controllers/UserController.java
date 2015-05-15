@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.esupportail.portal.ws.client.PortalGroup;
@@ -25,10 +24,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.security.util.MethodInvocationUtils;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
@@ -36,15 +32,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
 import fr.univlorraine.mondossierweb.entities.mdw.Administrateurs;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
