@@ -58,9 +58,12 @@ font-size: xx-large;
 
 
 .valo-ul .red-button-icon {
-color: #bb382e;
+color: #ff0000;
 }
 
+.valo-ul .red-button-icon:hover {
+	color: #bb382e;
+}
 
 .valo-ul .button-icon {
 font-size: x-large;
