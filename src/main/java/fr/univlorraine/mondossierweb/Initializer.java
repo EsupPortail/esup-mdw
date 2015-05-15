@@ -138,7 +138,7 @@ public class Initializer implements WebApplicationInitializer {
 		springTouchkitVaadinServlet.addMapping("/m/*");
 		/* Défini le bean UI */
 		//springTouchkitVaadinServlet.setInitParameter("beanName", "mdwFallbackTouchkitUI");
-		springVaadinServlet.setInitParameter("UIProvider", "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
+		springTouchkitVaadinServlet.setInitParameter("UIProvider", "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
