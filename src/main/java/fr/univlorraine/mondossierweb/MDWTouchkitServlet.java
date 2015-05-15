@@ -29,7 +29,7 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 
 				@Override
 	            public void sessionInit(SessionInitEvent event) throws ServiceException {
-					event.getSession().addUIProvider(uiProvider);
+					//event.getSession().addUIProvider(uiProvider);
 	            	LOG.debug("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
 	            }
 	        });
