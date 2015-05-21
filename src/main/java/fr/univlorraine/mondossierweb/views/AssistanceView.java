@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.VaadinView;
 
@@ -56,40 +57,46 @@ public class AssistanceView extends VerticalLayout implements View {
 			setMargin(true);
 			setSpacing(true);
 
-			
-		
+
+
 			/* Titre */
 			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 			title.addStyleName(ValoTheme.LABEL_H1);
 			addComponent(title);
 
-			
+
 			/**
-			 * faire  : label en HTML + ne pas créer bouton si param de context pas renseignés
+			 * faire  : mettre les param en MYSQL OU changer la récupération pour passer par Utils !!!
 			 */
 			/* Texte */
 			addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
 
 			/* Accès à la documentation */
-			Button docBtn = new Button(applicationContext.getMessage(NAME + ".btnDoc", null, getLocale()), FontAwesome.FILE_TEXT);
-			docBtn.addStyleName(ValoTheme.BUTTON_LINK);
-			BrowserWindowOpener docBwo = new BrowserWindowOpener(environment.getRequiredProperty("assistance.documentation.url"));
-			docBwo.extend(docBtn);
-			addComponent(docBtn);
+			if(StringUtils.hasText(environment.getRequiredProperty("assistance.documentation.url"))){
+				Button docBtn = new Button(applicationContext.getMessage(NAME + ".btnDoc", null, getLocale()), FontAwesome.FILE_TEXT);
+				docBtn.addStyleName(ValoTheme.BUTTON_LINK);
+				BrowserWindowOpener docBwo = new BrowserWindowOpener(environment.getRequiredProperty("assistance.documentation.url"));
+				docBwo.extend(docBtn);
+				addComponent(docBtn);
+			}
 
 			/* Envoyer un ticket */
-			Button helpDeskBtn = new Button(applicationContext.getMessage(NAME + ".btnHelpdesk", null, getLocale()), FontAwesome.AMBULANCE);
-			helpDeskBtn.addStyleName(ValoTheme.BUTTON_LINK);
-			BrowserWindowOpener helpDeskBwo = new BrowserWindowOpener(environment.getRequiredProperty("assistance.helpdesk.url"));
-			helpDeskBwo.extend(helpDeskBtn);
-			addComponent(helpDeskBtn);
+			if(StringUtils.hasText(environment.getRequiredProperty("assistance.helpdesk.url"))){
+				Button helpDeskBtn = new Button(applicationContext.getMessage(NAME + ".btnHelpdesk", null, getLocale()), FontAwesome.AMBULANCE);
+				helpDeskBtn.addStyleName(ValoTheme.BUTTON_LINK);
+				BrowserWindowOpener helpDeskBwo = new BrowserWindowOpener(environment.getRequiredProperty("assistance.helpdesk.url"));
+				helpDeskBwo.extend(helpDeskBtn);
+				addComponent(helpDeskBtn);
+			}
 
 			/* Envoyer un mail */
-			Button contactBtn = new Button(applicationContext.getMessage(NAME + ".btnContact", new Object[] {environment.getRequiredProperty("assistance.contact.mail")}, getLocale()), FontAwesome.ENVELOPE);
-			contactBtn.addStyleName(ValoTheme.BUTTON_LINK);
-			BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto: " + environment.getRequiredProperty("assistance.contact.mail"));
-			contactBwo.extend(contactBtn);
-			addComponent(contactBtn);
+			if(StringUtils.hasText(environment.getRequiredProperty("assistance.contact.mail"))){
+				Button contactBtn = new Button(applicationContext.getMessage(NAME + ".btnContact", new Object[] {environment.getRequiredProperty("assistance.contact.mail")}, getLocale()), FontAwesome.ENVELOPE);
+				contactBtn.addStyleName(ValoTheme.BUTTON_LINK);
+				BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto: " + environment.getRequiredProperty("assistance.contact.mail"));
+				contactBwo.extend(contactBtn);
+				addComponent(contactBtn);
+			}
 		}
 	}
 
