@@ -343,15 +343,16 @@ public class EtudiantController {
 			} catch (WebBaseException ex) {
 				//Si on est dans un cas d'erreur non expliqué
 				if (ex.getNature().equals("technical.ws.remoteerror.global")){
-					LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+					LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+ex.getNature(),ex);
 				}else{
-					LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+					LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+ex.getNature(),ex);
 				}
 				//On met l'étudiant à null pour remonter le problème
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
-				throw(ex);
+				//On met l'étudiant à null pour remonter le problème
+				GenericUI.getCurrent().setEtudiant(null);
 			}
 		}
 

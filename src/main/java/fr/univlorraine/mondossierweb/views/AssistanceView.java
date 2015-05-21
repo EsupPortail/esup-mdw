@@ -56,11 +56,17 @@ public class AssistanceView extends VerticalLayout implements View {
 			setMargin(true);
 			setSpacing(true);
 
+			
+		
 			/* Titre */
 			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 			title.addStyleName(ValoTheme.LABEL_H1);
 			addComponent(title);
 
+			
+			/**
+			 * faire  : label en HTML + ne pas créer bouton si param de context pas renseignés
+			 */
 			/* Texte */
 			addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
 

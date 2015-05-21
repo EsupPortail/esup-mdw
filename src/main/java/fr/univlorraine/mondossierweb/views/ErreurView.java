@@ -16,6 +16,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
+
 /**
  * Page d'accueil
  */
@@ -35,18 +37,8 @@ public class ErreurView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		/* Style */
-		setMargin(true);
-		setSpacing(true);
+		addComponent(new BasicErreurMessageLayout(applicationContext));
 
-		/* Titre */
-		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
-
-		/* Texte */
-		addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
-		
 	}
 
 	/**
