@@ -31,7 +31,6 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
  */
 @Component @Scope("prototype")
 @VaadinView(AssistanceView.NAME)
-@PreAuthorize("hasRole('teacher')")
 public class AssistanceView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 7356887304797399383L;
 
@@ -52,7 +51,7 @@ public class AssistanceView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
+		if(userController.isEnseignant()){
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
@@ -67,9 +66,19 @@ public class AssistanceView extends VerticalLayout implements View {
 
 			/**
 			 * faire  : mettre les param en MYSQL OU changer la récupération pour passer par Utils !!!
+			 * QUAND CETTE VUE EST ELLE AFFICHEE????  => AJOUT BOUTON POUR AFFICHER DEPUIS INTERFACE ENSEIGNANT????
 			 */
 			/* Texte */
-			addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
+			if(StringUtils.hasText(applicationContext.getMessage(NAME + ".text", null, getLocale()))){
+				addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
+			}
+			
+			/* Afficher la pop-up de démarrage */
+			Button popupBtn = new Button(applicationContext.getMessage(NAME + ".btnPopUp", null, getLocale()), FontAwesome.INFO);
+			popupBtn.addStyleName(ValoTheme.BUTTON_LINK);
+			popupBtn.addClickListener(e-> MainUI.getCurrent().afficherMessageIntroEnseignants(true, false));
+			addComponent(popupBtn);
+
 
 			/* Accès à la documentation */
 			if(StringUtils.hasText(environment.getRequiredProperty("assistance.documentation.url"))){
@@ -93,7 +102,7 @@ public class AssistanceView extends VerticalLayout implements View {
 			if(StringUtils.hasText(environment.getRequiredProperty("assistance.contact.mail"))){
 				Button contactBtn = new Button(applicationContext.getMessage(NAME + ".btnContact", new Object[] {environment.getRequiredProperty("assistance.contact.mail")}, getLocale()), FontAwesome.ENVELOPE);
 				contactBtn.addStyleName(ValoTheme.BUTTON_LINK);
-				BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto: " + environment.getRequiredProperty("assistance.contact.mail"));
+				BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto:" + environment.getRequiredProperty("assistance.contact.mail"));
 				contactBwo.extend(contactBtn);
 				addComponent(contactBtn);
 			}

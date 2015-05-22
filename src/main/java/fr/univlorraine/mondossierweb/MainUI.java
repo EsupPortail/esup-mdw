@@ -42,6 +42,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -62,6 +63,7 @@ import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
+import fr.univlorraine.mondossierweb.views.AssistanceView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.EtatCivilView;
@@ -126,6 +128,9 @@ public class MainUI extends GenericUI {
 	private AdminView adminView;
 
 	@Resource
+	private AssistanceView assistanceView;
+	
+	@Resource
 	private RechercheRapideView rechercheRapideView;
 
 	@Resource
@@ -141,6 +146,9 @@ public class MainUI extends GenericUI {
 
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
 	private int rangTabDossierEtudiant;
+	
+	//tab Dossier Etudiant
+	private Tab tabDossierEtu;
 
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
@@ -369,8 +377,12 @@ public class MainUI extends GenericUI {
 					layoutOngletRecherche = new VerticalLayout();
 					ajoutOngletRecherche();
 					layoutOngletRecherche.setSizeFull();
-					tabSheetGlobal.addTab(layoutOngletRecherche, "Recherche", FontAwesome.SEARCH);
+					tabSheetGlobal.addTab(layoutOngletRecherche, applicationContext.getMessage("mainUI.recherche.title", null, getLocale()), FontAwesome.SEARCH);
 
+					//ajout de l'onglet principal 'assistance'
+					tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
+
+					
 					//ajout de l'onglet dossier étudiant
 					addTabDossierEtudiant();
 
@@ -440,17 +452,12 @@ public class MainUI extends GenericUI {
 							if(lfav!=null && lfav.size()>0){
 								//On affiche la vue des favoris
 								navigator.navigateTo(FavorisView.NAME);
-								//navigateToFavoris();
-								//Affichage du message d'intro si besoin
-								afficherMessageIntroEnseignants();
-
 							}else{
 								//On affiche la vue de recherche rapide
 								navigator.navigateTo(RechercheRapideView.NAME);
-								//navigateToRechercheRapide();
-								//Affichage du message d'intro si besoin
-								afficherMessageIntroEnseignants();
 							}
+							//Affichage du message d'intro si besoin
+							afficherMessageIntroEnseignants(false, true);
 						}else{
 							//Si utilisateur étudiant
 							if(userController.isEtudiant()){
@@ -494,14 +501,14 @@ public class MainUI extends GenericUI {
 	 * Affichage du message d'intro aux étudiants
 	 */
 	private void afficherMessageIntroEtudiants() {
-		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()));
+		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),false, true);
 	}
 
 	/**
 	 * Affichage du message d'intro aux enseignants
 	 */
-	private void afficherMessageIntroEnseignants() {
-		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.enseignant", null, getLocale()));
+	public void afficherMessageIntroEnseignants(boolean displayForced, boolean displayCheckBox) {
+		afficherMessageIntro(applicationContext.getMessage("helpWindow.text.enseignant", null, getLocale()),displayForced, displayCheckBox);
 
 	}
 
@@ -509,7 +516,7 @@ public class MainUI extends GenericUI {
 	 * Affichage d'un message d'intro
 	 * @param text
 	 */
-	private void afficherMessageIntro(String text){
+	private void afficherMessageIntro(String text, boolean displayForced, boolean displayCheckBox){
 
 		//On Recupere dans la base si l'utilisateur a indiqué une préférence pour l'affichage du message d'introduction
 		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE);
@@ -524,9 +531,9 @@ public class MainUI extends GenericUI {
 		}
 
 		//Si on doit afficher le message
-		if(afficherMessage){
+		if(displayForced || afficherMessage){
 			//Création de la pop-pup contenant le message
-			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
+			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),displayCheckBox);
 
 			//Sur la fermeture de la fenêtre
 			hbw.addCloseListener(g->{
@@ -631,12 +638,14 @@ public class MainUI extends GenericUI {
 	 */
 	private void addTabDossierEtudiant() {
 		//Ajout de l'onglet "Dossier"
-		tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
+		tabDossierEtu = tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
+		tabSheetGlobal.setTabPosition(tabDossierEtu, rangTabDossierEtudiant);
 		//On cache l'onglet par défaut
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(false);
 		//L'onglet possible une croix pour être fermé
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setClosable(true);
 
+		
 	}
 
 	/**
@@ -887,7 +896,7 @@ public class MainUI extends GenericUI {
 
 
 		//Si l'onglet a été closed
-		if(tabSheetGlobal.getTab(rangTabDossierEtudiant)==null){
+		if(tabDossierEtu==null || tabSheetGlobal.getTabPosition(tabDossierEtu)<0){
 			//On recréé l'onglet
 			addTabDossierEtudiant();
 		}
