@@ -24,11 +24,6 @@
 <!-- URL du CAS -->
 	<Parameter name="cas.url" value="https://auth.univ-lorraine.fr" />
 
-<!-- Assistance -->
-	<Parameter name="assistance.documentation.url" value="http://wikidocs.univ-lorraine.fr" />
-	<Parameter name="assistance.helpdesk.url" value="http://helpdesk.univ-lorraine.fr" />
-	<Parameter name="assistance.contact.mail" value="contact.mondossierweb@univ-lorraine.fr" />
-
 <!-- Configuration du LDAP -->
 	<Parameter name="ldap.url" value="ldap://ldaptest.univ-lorraine.fr:983/dc=univ-lorraine,dc=fr" />
 	<Parameter name="ldap.roleAttribute" value="udlGroup" />

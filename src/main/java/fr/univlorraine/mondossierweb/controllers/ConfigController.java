@@ -120,6 +120,19 @@ public class ConfigController {
 	}
 	
 	
+	public String getAssistanceDocUrl() {
+		return getValeurForParameter("assistanceDocUrl");
+	}
+	
+	
+	public String getAssistanceHelpdeskUrl() {
+		return getValeurForParameter("assistanceHelpdeskUrl");
+	}
+	
+	public String getAssistanceContactMail() {
+		return getValeurForParameter("assistanceContactMail");
+	}
+	
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");
 	}
