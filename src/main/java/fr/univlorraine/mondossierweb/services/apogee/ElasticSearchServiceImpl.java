@@ -51,7 +51,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				//requete pour initialiser l'appel à ES 
 				findObj("toto", 10, true);
 			}
-			}catch(NoNodeAvailableException ex){
+			//}catch(NoNodeAvailableException ex){
+			}catch(Exception ex){
 				LOG.error("problème lors de l'initialisation de la connexion à ElasticSerch", ex);
 				return false;
 			}
