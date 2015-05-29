@@ -17,6 +17,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -35,6 +36,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Page d'accueil
@@ -101,8 +103,13 @@ public class CalendrierView extends VerticalLayout implements View {
 				pdfButton.addStyleName("red-button-icon");
 				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-				MyFileDownloader fd = new MyFileDownloader(calendrierController.exportPdf());
+				if(PropertyUtils.isPushEnabled()){
+					MyFileDownloader fd = new MyFileDownloader(calendrierController.exportPdf());
 				fd.extend(pdfButton);
+				}else{
+					FileDownloader fd = new FileDownloader(calendrierController.exportPdf());
+					fd.extend(pdfButton);
+				}
 				titleLayout.addComponent(pdfButton);
 				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}

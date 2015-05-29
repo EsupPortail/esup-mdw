@@ -29,6 +29,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -534,7 +535,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					resource.setCacheTime(0);
 
 					//On ajoute le FD sur le bouton d'export
-					new MyFileDownloader(resource).extend(btnExportTrombi);
+					if(PropertyUtils.isPushEnabled()){
+						new MyFileDownloader(resource).extend(btnExportTrombi);
+					}else{
+						new FileDownloader(resource).extend(btnExportTrombi);
+					}
 
 					leftResumeLayout.addComponent(btnExportTrombi);
 					leftResumeLayout.setComponentAlignment(btnExportTrombi, Alignment.MIDDLE_LEFT);
@@ -571,7 +576,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					resourceXls.setCacheTime(0);
 					//On ajoute le FD sur le bouton d'export
-					new MyFileDownloader(resourceXls).extend(btnExportExcel);
+					if(PropertyUtils.isPushEnabled()){
+						new MyFileDownloader(resourceXls).extend(btnExportExcel);
+					}else{
+						new FileDownloader(resourceXls).extend(btnExportExcel);
+					}
 
 					if(!afficherTrombinoscope){
 						//On échange le bouton d'export pdf par le bouton export excel

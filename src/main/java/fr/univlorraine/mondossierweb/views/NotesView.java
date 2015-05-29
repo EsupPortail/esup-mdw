@@ -21,6 +21,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -42,6 +43,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
@@ -121,8 +123,13 @@ public class NotesView extends VerticalLayout implements View {
 				pdfButton.addStyleName("red-button-icon");
 				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-				MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfResume());
-				fd.extend(pdfButton);
+				if(PropertyUtils.isPushEnabled()){
+					MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfResume());
+					fd.extend(pdfButton);
+				}else{
+					FileDownloader fd = new FileDownloader(noteController.exportPdfResume());
+					fd.extend(pdfButton);
+				}
 				titleLayout.addComponent(pdfButton);
 				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}

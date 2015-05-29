@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -32,6 +33,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Fenêtre du détail des notes
@@ -143,8 +145,16 @@ public class DetailNotesWindow extends Window {
 				pdfButton.addStyleName("red-button-icon");
 				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-				MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfDetail(etape));
-				fd.extend(pdfButton);
+				
+				
+				if(PropertyUtils.isPushEnabled()){
+					MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfDetail(etape));
+					fd.extend(pdfButton);
+				}else{
+					FileDownloader fd = new FileDownloader(noteController.exportPdfDetail(etape));
+					fd.extend(pdfButton);
+				}
+				
 				titleLayout.addComponent(pdfButton);
 				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}

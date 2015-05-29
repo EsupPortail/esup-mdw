@@ -15,6 +15,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -35,6 +36,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.InscriptionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
 
 /**
@@ -258,8 +260,13 @@ public class InscriptionsView extends VerticalLayout implements View {
 				bCertificatInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				bCertificatInscription.addStyleName("red-button-icon");
 				bCertificatInscription.setDescription(applicationContext.getMessage(NAME + ".certificatScolarite.link", null, getLocale()));
-				MyFileDownloader fd = new MyFileDownloader(inscriptionController.exportPdf(inscription));
-				fd.extend(bCertificatInscription);
+				if(PropertyUtils.isPushEnabled()){
+					MyFileDownloader fd = new MyFileDownloader(inscriptionController.exportPdf(inscription));
+					fd.extend(bCertificatInscription);
+				}else{
+					FileDownloader fd = new FileDownloader(inscriptionController.exportPdf(inscription));
+					fd.extend(bCertificatInscription);
+				}
 				libelleLayout.addComponent(bCertificatInscription);
 			}			
 

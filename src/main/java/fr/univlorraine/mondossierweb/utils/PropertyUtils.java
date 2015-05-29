@@ -83,6 +83,15 @@ public class PropertyUtils {
 		}
 		return false;
 	}
+	
+	/** Retourne vrai on doit utiliser le push */
+	public static boolean isPushEnabled(){
+		if(StringUtils.hasText(System.getProperty("context.enablePush"))
+				&& System.getProperty("context.enablePush").equals("true")){
+			return true;
+		}
+		return false;
+	}
 
 	
 
