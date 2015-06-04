@@ -232,7 +232,7 @@ public class MainUI extends GenericUI {
 			public void uriFragmentChanged(UriFragmentChangedEvent source) {
 				
 				//Si l'application est en maintenance on bloque l'accès
-				if(!configController.isApplicationActive() &&
+				if(!applicationActive() &&
 						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
 						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
 					
@@ -277,7 +277,7 @@ public class MainUI extends GenericUI {
 				}
 
 				//Si l'application est en maintenance on bloque l'accès
-				if(!configController.isApplicationActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
+				if(!applicationActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
 					displayViewFullScreen(AccesBloqueView.NAME);
 					return false;
 				}
@@ -344,7 +344,7 @@ public class MainUI extends GenericUI {
 		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
-			if(!configController.isApplicationActive()){
+			if(!applicationActive()){
 				displayViewFullScreen(AccesBloqueView.NAME);
 			}else{
 				//On récupère l'IP du client
@@ -442,7 +442,7 @@ public class MainUI extends GenericUI {
 				if(!navigationComplete){
 					//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
 					//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
-					if(!configController.isApplicationActive()){
+					if(!applicationActive()){
 						displayViewFullScreen(AccesBloqueView.NAME);
 					}else{
 						//Si utilisateur enseignant
@@ -926,4 +926,10 @@ public class MainUI extends GenericUI {
 		loadingIndicatorWindow.close();
 	}
 
+	
+	private boolean applicationActive(){
+		return configController.isApplicationActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
+				|| (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+	}
+	
 }

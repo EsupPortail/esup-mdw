@@ -220,7 +220,7 @@ public class MdwTouchkitUI extends GenericUI{
 				
 				
 				//Si l'application est en maintenance on bloque l'accès
-				if(!configController.isApplicationMobileActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
+				if(!applicationActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
 					afficherMessageMaintenance();
 				}
 			}
@@ -252,7 +252,7 @@ public class MdwTouchkitUI extends GenericUI{
 				}
 				
 				//Si l'application est en maintenance on bloque l'accès
-				if(!configController.isApplicationMobileActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
+				if(!applicationActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
 					afficherMessageMaintenance();
 					return false;
 				}
@@ -281,7 +281,7 @@ public class MdwTouchkitUI extends GenericUI{
 		// Si l'utilisateur est enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
 
-			if(!configController.isApplicationMobileActive()){
+			if(!applicationActive()){
 				afficherMessageMaintenance();
 			}else{
 
@@ -577,6 +577,11 @@ public class MdwTouchkitUI extends GenericUI{
 	}
 
 
+	private boolean applicationActive(){
+		return configController.isApplicationMobileActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
+				|| (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+	}
+	
 	public void startBusyIndicator() {
 		addWindow(loadingIndicatorWindow);
 	}

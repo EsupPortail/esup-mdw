@@ -51,6 +51,14 @@ public class ConfigController {
 		return getBooleanValueForParameter("applicationMobileActive");
 	}
 	
+	public boolean isPartieEnseignantActive() {
+		return getBooleanValueForParameter("partieEnseignantActive");
+	}
+	
+	public boolean isPartieEtudiantActive() {
+		return getBooleanValueForParameter("partieEtudiantActive");
+	}
+	
 	public List<String> getListeCertScolTypDiplomeDesactive() {
 		return getListValeurForParameter("certScolTypDiplomeDesactive");
 		
