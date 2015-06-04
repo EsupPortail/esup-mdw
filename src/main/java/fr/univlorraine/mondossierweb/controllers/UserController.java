@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
@@ -269,7 +270,7 @@ public class UserController {
 			if(type!=null && type.equals(TEACHER_USER)){
 				return true;
 			}
-			
+
 			return false;
 		}
 	}
@@ -299,7 +300,7 @@ public class UserController {
 			return false;
 		}else{
 			//La GenericUI n'est pas encore initialisée
-			
+
 			//On va déterminer le type de l'utilisateur
 			String type =determineTypeUser(getCurrentUserName());
 			//Si c'est un enseignant
@@ -432,10 +433,13 @@ public class UserController {
 	public List<String> typeLdap(final String login) {
 		try {
 			if(ldapUserSearch.searchForUser(login)!=null){
-				String[] vals= ldapUserSearch.searchForUser(login).getStringAttributes(PropertyUtils.getAttributLdapEtudiant());
-				if(vals!=null){
-					List<String> listeValeurs = Arrays.asList(vals);
-					return listeValeurs;
+				DirContextOperations dco = ldapUserSearch.searchForUser(login);
+				if(dco!=null){
+					String[] vals= dco.getStringAttributes(PropertyUtils.getAttributLdapEtudiant());
+					if(vals!=null){
+						List<String> listeValeurs = Arrays.asList(vals);
+						return listeValeurs;
+					}
 				}
 			}
 			return null;
