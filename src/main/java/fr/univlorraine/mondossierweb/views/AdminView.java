@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import ru.xpoft.vaadin.VaadinView;
@@ -46,6 +47,8 @@ public class AdminView extends VerticalLayout implements View {
 
 	/* Injections */
 	@Resource
+	private transient Environment environment;
+	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
@@ -60,6 +63,7 @@ public class AdminView extends VerticalLayout implements View {
 	private Table confAppTable;
 	
 	private VerticalLayout layoutConfigApplication;
+	private HorizontalLayout topLayout = new HorizontalLayout();
 	
 	/**
 	 * Initialise la vue
@@ -72,13 +76,32 @@ public class AdminView extends VerticalLayout implements View {
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
+			
+			/* En-tete menu large */
+			topLayout.addStyleName(ValoTheme.MENU_TITLE);
+			topLayout.setWidth(100, Unit.PERCENTAGE);
+			topLayout.setSpacing(true);
 
-			/* Titre */
-			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
+			Label Apptitle = new Label(environment.getRequiredProperty("app.name"));
+			Apptitle.addStyleName(ValoTheme.LABEL_HUGE);
+			Apptitle.addStyleName(ValoTheme.LABEL_BOLD);
+
+			Label versionLabel = new Label("v" + environment.getRequiredProperty("app.version"));
+			versionLabel.addStyleName(ValoTheme.LABEL_TINY);
+
+			VerticalLayout appTitleLayout = new VerticalLayout(Apptitle, versionLabel);
+			topLayout.addComponent(appTitleLayout);
+			topLayout.setComponentAlignment(appTitleLayout, Alignment.MIDDLE_LEFT);
+			topLayout.setExpandRatio(appTitleLayout, 1);
+			
+			addComponent(topLayout);
+
+			// Titre 
+			/*Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 			title.addStyleName(ValoTheme.LABEL_H1);
-			addComponent(title);
+			addComponent(title);*/
 
-			/* Texte */
+			// Texte 
 			//addComponent(new Label(applicationContext.getMessage(NAME + ".message", null, getLocale()), ContentMode.HTML));
 			
 			tabSheetGlobal = new TabSheet();
