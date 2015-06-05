@@ -4,7 +4,9 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
+import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -16,26 +18,33 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.views.AssistanceView;
+
 /**
  * Fenêtre d'aide basique
  */
 @Configurable(preConstruction=true)
 public class HelpBasicWindow extends Window {
-	
+
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2974754443259576179L;
+	
+	public static final String NAME = "helpBasicWindow";
 
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
+	@Resource
+	private transient ConfigController configController;
 
 	/* Composants */
 	private Button btnFermer = new Button();
 
-	
+
 
 	public void addBtnNonListener(ClickListener clickListener) {
 		btnFermer.addClickListener(clickListener);
@@ -60,12 +69,15 @@ public class HelpBasicWindow extends Window {
 		this(message, null);
 	}
 
+	public HelpBasicWindow(String message, String titre) {
+		this(message, titre, false);
+	}
 	/**
 	 * Crée une fenêtre de confirmation
 	 * @param message
 	 * @param titre
 	 */
-	public HelpBasicWindow(String message, String titre) {
+	public HelpBasicWindow(String message, String titre,boolean displayLienContact) {
 		/* Style */
 		setWidth(900, Unit.PIXELS);
 		setModal(true);
@@ -75,11 +87,24 @@ public class HelpBasicWindow extends Window {
 		/* Layout */
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
-		layout.setSpacing(true);
+		layout.setSpacing(false);
 		setContent(layout);
 
 		/* Titre */
 		setCaption(titre);
+
+		// Lien de contact
+		if(displayLienContact){
+			String mailContact = configController.getAssistanceContactMail();
+			if(StringUtils.hasText(mailContact)){
+				Button contactBtn = new Button(applicationContext.getMessage(NAME + ".btnContact", null, getLocale()), FontAwesome.ENVELOPE);
+				contactBtn.addStyleName(ValoTheme.BUTTON_LINK);
+				BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto:" + mailContact);
+				contactBwo.extend(contactBtn);
+				layout.addComponent(contactBtn);
+				layout.setComponentAlignment(contactBtn, Alignment.TOP_RIGHT);
+			}
+		}
 
 		/* Texte */
 		Label textLabel = new Label(message,ContentMode.HTML);
