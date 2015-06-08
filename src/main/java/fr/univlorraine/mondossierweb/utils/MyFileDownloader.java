@@ -7,8 +7,10 @@ import com.vaadin.server.DownloadStream;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
+import com.vaadin.ui.UI;
 
 import fr.univlorraine.tools.vaadin.BusyIndicatorFileDownloader;
+import fr.univlorraine.tools.vaadin.BusyIndicatorFileDownloader.BusyIndicatorWindow;
 
 public class MyFileDownloader extends BusyIndicatorFileDownloader {
 
@@ -27,6 +29,9 @@ public class MyFileDownloader extends BusyIndicatorFileDownloader {
 
 	@Override
 	public boolean handleConnectorRequest(VaadinRequest request,VaadinResponse response, String path) throws IOException {
+		BusyIndicatorWindow busyIndicatorWindow = new BusyIndicatorWindow();
+		UI ui = UI.getCurrent();
+		ui.access(() -> ui.addWindow(busyIndicatorWindow));
 		try {
 			if (!path.matches("dl(/.*)?")) {
 				// Ignore if it isn't for us
@@ -66,7 +71,7 @@ public class MyFileDownloader extends BusyIndicatorFileDownloader {
 				return false;
 			}
 		} finally {
-			stopBusyIndicator();
+			busyIndicatorWindow.close();
 		}
 	}
 }

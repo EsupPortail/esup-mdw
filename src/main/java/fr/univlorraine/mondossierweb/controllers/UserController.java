@@ -413,11 +413,11 @@ public class UserController {
 
 		if(type!=null && type.equals(STUDENT_USER)){
 			GenericUI.getCurrent().setTypeUser(STUDENT_USER);
-			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant","Authentification d'un étudiant");
+			GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant");
 		}
 		if(type!=null && type.equals(TEACHER_USER)){
 			GenericUI.getCurrent().setTypeUser(TEACHER_USER);
-			GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant", "Authentification d'un enseignant");
+			GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant");
 		}
 		if(type!=null && type.equals(UNAUTHORIZED_USER)){
 			GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
@@ -504,7 +504,6 @@ public class UserController {
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
 			//On vérifie quand même que l'utilisateur est présent dans le ldap
 			if(estDansLeLdap(login)){
-				//GenericUI.getCurrent().getGoogleAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_admin","Authentification d'un admin");
 				return true;
 			}
 		}

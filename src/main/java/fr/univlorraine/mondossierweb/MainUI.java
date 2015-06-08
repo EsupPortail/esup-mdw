@@ -77,6 +77,8 @@ import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
+import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 
 /**
@@ -332,11 +334,25 @@ public class MainUI extends GenericUI {
 		});
 
 
-		/* Initialise Google Analytics */
-		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
-
-		/* Suis les changements de vue du navigator */
-		googleAnalyticsTracker.trackNavigator(navigator);
+		if(StringUtils.hasText(environment.getProperty("google.analytics.account"))){
+			/* Initialise Google Analytics */
+			analyticsTracker.setAccount(new String[]{environment.getProperty("analytics.account")});
+			/* Suis les changements de vue du navigator */
+			analyticsTracker.trackNavigator(navigator);
+		}else{
+			if(StringUtils.hasText(environment.getProperty("piwik.tracker.url")) && 
+					StringUtils.hasText("piwik.site.id")){
+				analyticsTracker = new PiwikAnalyticsTracker(this);
+				/* Initialise Piwik Analytics */
+				analyticsTracker.setAccount(new String[]{environment.getProperty("piwik.tracker.url"),environment.getProperty("piwik.site.id")});
+				/* Suis les changements de vue du navigator */
+				analyticsTracker.trackNavigator(navigator);
+			}
+		}
+			
+		
+		
+	
 
 		//mainVerticalLayout est le contenu principal de la page
 		setContent(mainVerticalLayout);

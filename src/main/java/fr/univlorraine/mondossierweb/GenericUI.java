@@ -23,6 +23,8 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.photo.PhotoNancy2ImplCodEtu;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 
 /**
  * UI générique, pour gérer les attributs communs aux UI desktop ou Mobile sans se soucier de la version de l'UI appelée
@@ -127,10 +129,17 @@ public class GenericUI  extends UI {
 	@Getter
 	private List<Inscrit> listeInscrits;
 
-	/** Tracker Google Analytics */
 	@Getter
 	@Setter
+	protected IAnalyticsTracker analyticsTracker = new GoogleAnalyticsTracker(this);;
+	
+	/*@Getter
+	@Setter
 	protected GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
+	
+	@Getter
+	@Setter
+	protected PiwikAnalyticsTracker piwikAnalyticsTracker = new PiwikAnalyticsTracker(this);*/
 
 	//Type (rôle) de l'utilisateur connecté
 	@Setter

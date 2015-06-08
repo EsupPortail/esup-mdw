@@ -69,10 +69,18 @@
 		<!-- l'extension au login pour l'e-mail des étudiants -->
 	<Parameter name="param.apogee.extesion.mail.etudiant" value="@etu.univ-ville.fr" />
 	
+	
+<!-- Décommenter l'analyser à utiliser -->
 <!-- Compte Google Analytics, facultatif -->
 <!-- 
-	<Parameter name="analytics.account" value="UA-XXXXXXXX-X" />
+	<Parameter name="google.analytics.account" value="UA-XXXXXXXX-X" />
  -->
+ 
+<!-- Compte Piwik Analytics, facultatif -->
+<!-- 
+<Parameter name="piwik.tracker.url" value="piwik.univ.fr" /> 
+<Parameter name="piwik.site.id" value="100" />
+-->
 
 
 <Parameter name="param.photoserver.ressourceurl" value="http://photoserver-test.univ-lorraine.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&amp;chksum=%chksum%" />

@@ -29,13 +29,11 @@ import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeListener;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.ui.Button;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -55,22 +53,18 @@ import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
-import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
-import fr.univlorraine.mondossierweb.views.FavorisView;
 import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsView;
 import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
-import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
@@ -161,11 +155,6 @@ public class MdwTouchkitUI extends GenericUI{
 
 	//Le contenu principal de la page
 	private CssLayout contentLayout = new CssLayout();
-
-
-	/** Tracker Google Analytics */
-	@Getter
-	private GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
 
 	/** Gestionnaire de vues étudiant*/
 	@Getter
@@ -269,10 +258,21 @@ public class MdwTouchkitUI extends GenericUI{
 		});
 
 
-		/* Initialise Google Analytics */
-		googleAnalyticsTracker.setAccount(environment.getProperty("analytics.account"));
-		/* Suis les changements de vue du navigator */
-		googleAnalyticsTracker.trackNavigator(navigator);
+		if(StringUtils.hasText(environment.getProperty("google.analytics.account"))){
+			/* Initialise Google Analytics */
+			analyticsTracker.setAccount(new String[]{environment.getProperty("analytics.account")});
+			/* Suis les changements de vue du navigator */
+			analyticsTracker.trackNavigator(navigator);
+		}else{
+			if(StringUtils.hasText(environment.getProperty("piwik.tracker.url")) && 
+					StringUtils.hasText("piwik.site.id")){
+				analyticsTracker = new PiwikAnalyticsTracker(this);
+				/* Initialise Piwik Analytics */
+				analyticsTracker.setAccount(new String[]{environment.getProperty("piwik.tracker.url"),environment.getProperty("piwik.site.id")});
+				/* Suis les changements de vue du navigator */
+				analyticsTracker.trackNavigator(navigator);
+			}
+		}
 
 		//contentLayout est le contenu principal de la page
 		setContent(contentLayout);
