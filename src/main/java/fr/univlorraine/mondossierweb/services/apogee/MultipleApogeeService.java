@@ -35,7 +35,7 @@ public interface MultipleApogeeService {
 	
 	public abstract List<Anonymat> getNumeroAnonymat(String cod_etu, String cod_anu);
 
-	
+	public abstract String getCategorieSocioProfessionnelle(String cod_ind, String cod_anu);
 
 
 }

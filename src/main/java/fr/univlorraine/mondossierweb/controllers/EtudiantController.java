@@ -274,8 +274,16 @@ public class EtudiantController {
 						if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
 							GenericUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
 						}
+						
+						String codeCatSocPro = multipleApogeeService.getCategorieSocioProfessionnelle(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours());
+						if(StringUtils.hasText(codeCatSocPro) && !codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
+								!codeCatSocPro.equals("99") &&
+								!codeCatSocPro.equals("A") ){
+							GenericUI.getCurrent().getEtudiant().setTemSalarie(true);
+						}
+						
 						//Si catégorie socio-professionnelle renseignée
-						if(iaad.getCatSocProfEtu()!=null && iaad.getCatSocProfEtu().getCodeCategorie()!=null){
+						/*if(iaad.getCatSocProfEtu()!=null && iaad.getCatSocProfEtu().getCodeCategorie()!=null){
 							String codeCatSocPro = iaad.getCatSocProfEtu().getCodeCategorie();
 							//test si la catégorie n'est pas une catégorie de non salarié
 							if(!codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
@@ -283,8 +291,7 @@ public class EtudiantController {
 									!codeCatSocPro.equals("A") ){
 								GenericUI.getCurrent().getEtudiant().setTemSalarie(true);
 							}
-
-						}
+						}*/
 					}else{
 						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 					}

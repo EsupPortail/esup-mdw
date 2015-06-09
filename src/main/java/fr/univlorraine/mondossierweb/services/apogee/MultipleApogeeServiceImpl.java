@@ -210,6 +210,18 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}
 		return null;
 	}
+	
+	
+	@Override
+	public String getCategorieSocioProfessionnelle(String cod_ind, String cod_anu) {
+		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
+			@SuppressWarnings("unchecked")
+			String codPcsEtu = (String)entityManagerApogee.createNativeQuery("select COD_PCS_ETUDIANT from ins_adm_anu "
+					+ " where cod_ind='"+cod_ind+"' and cod_anu="+cod_anu).getSingleResult();
+			return codPcsEtu;
+		}
+		return null;
+	}
 
 
 
