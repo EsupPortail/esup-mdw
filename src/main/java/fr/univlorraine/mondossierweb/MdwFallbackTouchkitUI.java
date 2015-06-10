@@ -13,6 +13,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
@@ -27,7 +28,7 @@ public class MdwFallbackTouchkitUI extends UI {
 	private Logger LOG = LoggerFactory.getLogger(MdwFallbackTouchkitUI.class);
 	
 	// FIXME review message
-    private static final String MSG = "<h1>Oups...</h1> <p>Vous accédez à MonDossierWeb depuis un appareil mobile et avec un navigateur compatible avec la version mobile de l'application</p>"+
+    private static final String MSG = "<p>Vous tentez d'accéder à MonDossierWeb depuis un appareil mobile et avec un navigateur compatible avec la version mobile de l'application</p>"+
     		"<p> Pour utiliser la <a href=\""+PropertyUtils.getAppUrl()+"/m\">version mobile</a> </p>";
 
 
@@ -35,7 +36,9 @@ public class MdwFallbackTouchkitUI extends UI {
     protected void init(VaadinRequest request) {
 
         Label label = new Label(MSG, ContentMode.HTML);
+        label.setStyleName(ValoTheme.LABEL_HUGE);
         VerticalLayout content = new VerticalLayout();
+        content.setSizeFull();
         content.setMargin(true);
         content.addComponent(label);
         setContent(content);
