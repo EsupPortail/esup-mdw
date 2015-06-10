@@ -43,6 +43,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("certScolAutorisePersonnel");
 	}
 	
+	public boolean isCertificatScolaritePiecesNonValidees() {
+		return getBooleanValueForParameter("certificatScolaritePJinvalide");
+	}
+	
 	public boolean isApplicationActive() {
 		return getBooleanValueForParameter("applicationActive");
 	}

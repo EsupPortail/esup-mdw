@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -221,6 +222,22 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			return codPcsEtu;
 		}
 		return null;
+	}
+
+	@Override
+	public int getNbPJnonValides(String cod_ind, String cod_anu) {
+		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
+			@SuppressWarnings("unchecked")
+			BigDecimal nbPJnonValides = (BigDecimal)entityManagerApogee.createNativeQuery("select count(*) from TELEM_IAA_TPJ tit, INS_ADM_ANU iaa "+
+					"where iaa.COD_ANU = "+cod_anu+" "+
+					"and iaa.cod_ind = tit.cod_ind "+
+					"and iaa.ETA_IAA = 'E' "+
+					"and tit.cod_anu= iaa.COD_ANU "+
+					"and tit.STATUT_PJ != 'V' "+
+					"and tit.cod_ind = "+cod_ind).getSingleResult();
+			return nbPJnonValides.intValue();
+		}
+		return 0;
 	}
 
 

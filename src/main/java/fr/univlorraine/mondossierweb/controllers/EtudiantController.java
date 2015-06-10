@@ -274,14 +274,14 @@ public class EtudiantController {
 						if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
 							GenericUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
 						}
-						
+
 						String codeCatSocPro = multipleApogeeService.getCategorieSocioProfessionnelle(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours());
 						if(StringUtils.hasText(codeCatSocPro) && !codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
 								!codeCatSocPro.equals("99") &&
 								!codeCatSocPro.equals("A") ){
 							GenericUI.getCurrent().getEtudiant().setTemSalarie(true);
 						}
-						
+
 						//Si catégorie socio-professionnelle renseignée
 						/*if(iaad.getCatSocProfEtu()!=null && iaad.getCatSocProfEtu().getCodeCategorie()!=null){
 							String codeCatSocPro = iaad.getCatSocProfEtu().getCodeCategorie();
@@ -1887,6 +1887,13 @@ public class EtudiantController {
 		//interdit l'edition de certificat pour les étudiants si l'inscription n'est pas payée
 		if ( !ins.isEstEnRegle() && userController.isEtudiant()){
 			return false;
+		}
+		//interdit l'édition de certificat pour les étudiants si il reste des pièces justificatives non validées
+		if(userController.isEtudiant() && !configController.isCertificatScolaritePiecesNonValidees()){
+			//Si il reste des PJ non valides
+			if(multipleApogeeService.getNbPJnonValides(etu.getCod_ind(), codAnuIns)>0){
+				return false;
+			}
 		}
 		//interdit l'edition de certificat pour les étudiants si l'inscription en cours est une cohabitation
 		List<String> listeCertScolProfilDesactive=configController.getListeCertScolProfilDesactive();
