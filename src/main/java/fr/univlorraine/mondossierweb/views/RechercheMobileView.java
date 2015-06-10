@@ -105,6 +105,8 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	private boolean casesAcocherElp=true;
 
 	private boolean casesAcocherEtudiant=true;
+	
+	private Button resetButton;
 
 
 
@@ -242,6 +244,21 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				champRechercheLayout.addComponent(champRecherche);
 				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
 
+				//BOUTON RESET
+				champRecherche.addStyleName("textfield-resetable");
+				resetButton = new Button();
+				resetButton.setIcon(FontAwesome.TIMES);
+				resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+				resetButton.addStyleName("v-popover-button");
+				resetButton.addStyleName("v-button-without-padding");
+				resetButton.addStyleName("btn-reset");
+				resetButton.addClickListener(e->{
+					champRecherche.setValue("");
+					//search1.setValue("");
+					resetButton.setIcon(FontAwesome.TIMES);
+				});
+				champRechercheLayout.addComponent(resetButton);
+				champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
 
 
 

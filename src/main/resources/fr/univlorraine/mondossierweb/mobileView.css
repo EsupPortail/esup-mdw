@@ -9,6 +9,13 @@ border-left: 0px solid #c5c5c5;
 border-top: 1px solid #c5c5c5;
 border-bottom: 1px solid #c5c5c5;
 height: 35px !important;
+background: white;
+height: 35px;
+}
+
+.valo-ul .v-button-btn-reset .v-button-wrap {
+	color: #464646;
+  	text-shadow: none;
 }
 
 .valo-ul .panel-without-bottom-line-separator {
