@@ -221,7 +221,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant() ){
+		if( userController.isEnseignant() ){
 			/* Style */
 			setMargin(false);
 			setSpacing(false);
@@ -269,8 +269,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 					comboBoxAnneeUniv.setItemCaption(anneeUniv,anneeUniv+"/"+anneenplusun);
 				}
 				if(annee==null){
-					//annee=etudiantController.getAnneeUnivEnCours();
-					annee = lanneeUniv.get(0);
+					annee=etudiantController.getAnneeUnivEnCours(MainUI.getCurrent());
+					//annee = lanneeUniv.get(0);
 				}
 			}
 			comboBoxAnneeUniv.setValue(annee);
