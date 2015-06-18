@@ -179,8 +179,8 @@ public class ListeInscritsController {
 					//On sélectionne cette année
 					e.setAnnee(anneeParam);
 				}else{
-					//On prend l'année la plus récente (la premiere de la liste)
-					e.setAnnee(annees.get(0));
+					//On prend l'année universitaire en cours
+					e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
 				}
 				ui.setAnneeInscrits(e.getAnnee());
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
@@ -234,8 +234,8 @@ public class ListeInscritsController {
 				//On sélectionne cette année
 				e.setAnnee(anneeParam);
 			}else{
-				//On prend l'année la plus récente (la premiere de la liste)
-				e.setAnnee(annees.get(0));
+				//On prend l'année en cours
+				e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
 			}
 			ui.setAnneeInscrits(e.getAnnee());
 			e.setLibelle(elementPedagogiqueService.getLibelleElp(code));

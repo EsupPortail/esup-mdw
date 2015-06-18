@@ -47,8 +47,10 @@ public class FiltreInscritsMobileWindow extends Window {
 	
 	private String typeFavori;
 	
+	@Getter
 	private NativeSelect listeEtapes;
 
+	@Getter
 	private NativeSelect listeGroupes;
 	
 	@Getter

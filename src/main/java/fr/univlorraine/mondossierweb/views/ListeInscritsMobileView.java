@@ -197,24 +197,28 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			//Bouton Filtre
 			//On a la possibilité de filtrer le trombinoscope que si on est positionné sur un ELP
 			if(typeIsElp()){
-				filterButton = new Button();
-				filterButton.setIcon(FontAwesome.ELLIPSIS_V);
-				filterButton.setStyleName("v-nav-button");
-				filterButton.addClickListener(e->{
-					FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
-					w.addCloseListener(f->{
-						//Si la personne a fermé la popup en appuyant sur le bouton FILTRER
-						if(w.isDemandeFiltrage()){
-							vetSelectionnee = w.getVetSelectionnee();
-							groupeSelectionne = w.getGroupeSelectionne();
-							displayTrombinoscope(false);
-						}
-					});
-					UI.getCurrent().addWindow(w);
+				FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
+				//Si on a des éléments à afficher dans la popup filtre
+				if((w.getListeEtapes()!=null && w.getListeEtapes().size()>0) || (w.getListeGroupes()!=null && w.getListeGroupes().size()>0)){
+					filterButton = new Button();
+					filterButton.setIcon(FontAwesome.ELLIPSIS_V);
+					filterButton.setStyleName("v-nav-button");
 
-				});
-				navbar.addComponent(filterButton);
-				navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+					filterButton.addClickListener(e->{
+						w.addCloseListener(f->{
+							//Si la personne a fermé la popup en appuyant sur le bouton FILTRER
+							if(w.isDemandeFiltrage()){
+								vetSelectionnee = w.getVetSelectionnee();
+								groupeSelectionne = w.getGroupeSelectionne();
+								displayTrombinoscope(false);
+							}
+						});
+						UI.getCurrent().addWindow(w);
+
+					});
+					navbar.addComponent(filterButton);
+					navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+				}
 			}
 
 			navbar.setExpandRatio(labelTrombi, 1);
@@ -294,11 +298,11 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 						layoutPagination.setExpandRatio(btnNext, 1);
 					}
 					verticalLayoutForTrombi.addComponent(layoutPagination);
-					
+
 					/*HorizontalLayout layoutPagination = new HorizontalLayout();
 					Label labelInfoPage= new Label("Page "+pageEnCours+"/"+pageMax);
 					layoutPagination.addComponent(labelInfoPage);
-					
+
 					HorizontalLayout layoutBtnPagination = new HorizontalLayout();
 
 					if(pageEnCours>1){
@@ -309,7 +313,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 							labelInfoPage.setCaption("Page "+pageEnCours+"/"+pageMax);
 						});
 						layoutBtnPagination.addComponent(btnPrec);
-						
+
 					}
 					if(pageEnCours<pageMax){
 						Button btnNext= new Button("Next");
@@ -323,8 +327,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					layoutPagination.addComponent(layoutBtnPagination);
 
 					verticalLayoutForTrombi.addComponent(layoutPagination);*/
-					
-					
+
+
 				}
 
 
