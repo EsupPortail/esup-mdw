@@ -73,7 +73,7 @@ public class FiltreInscritsMobileWindow extends Window {
 		setWidth("95%");
         setModal(true);
 		setResizable(false);
-		setClosable(false);
+		setClosable(true);
 
         setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
         setStyleName("v-popover-blank");
