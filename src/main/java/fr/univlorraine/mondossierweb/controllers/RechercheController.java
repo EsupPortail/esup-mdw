@@ -67,17 +67,19 @@ public class RechercheController {
 		//On vérifie que l'étudiant avec ce code existe
 		if(etudiantController.isEtudiantExiste(code)){
 			//On accède au dossier
-			accessToDetail(code,Utils.ETU);
+			accessToDetail(code,Utils.ETU, null);
 		}else{
 			Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()), Notification.Type.WARNING_MESSAGE);
 		}
 		
 	}
+
 	
-	public void accessToDetail(String code, String type) {
+	public void accessToDetail(String code, String type, String annee) {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
+		parameterMap.put("annee",annee);
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			parameterMap.replace("type",Utils.CMP);
 			MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);

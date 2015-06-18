@@ -130,7 +130,7 @@ public class ListeInscritsController {
 	 * proxy pour faire appel aux infos sur l'étudiant WS .
 	 */
 	private OffreFormationMetierServiceInterface monProxyOffreDeFormation;
-	
+
 	/*@Resource(name="photoProvider")
 	private IPhoto photo;*/
 
@@ -146,7 +146,8 @@ public class ListeInscritsController {
 	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee, GenericUI ui){
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
-		
+		String anneeParam = parameterMap.get("annee");
+
 		if (type.equals(Utils.VET)) {
 
 
@@ -159,10 +160,28 @@ public class ListeInscritsController {
 			if(annee==null){
 				e.setCode(code.split("/")[0]);
 				e.setVersion(code.split("/")[1]);
-				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours(ui)));
+
+				//Récupération de l'année en cours
+				int anneeMax = Integer.parseInt(etudiantController.getAnneeUnivEnCours(ui));
+				//Si l'année présélectionnée et supérieure à l'année en cours
+				if(anneeParam!=null && Integer.parseInt(anneeParam)>anneeMax){
+					//l'année sélectionnée sera l'année max.
+					anneeMax = Integer.parseInt(anneeParam);
+				}
+				//Récupération des années pour la vet
+				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e,anneeMax);
+
+				//On stocke laliste des année dans l'ui
 				ui.setListeAnneeInscrits(annees);
-				//On prend l'année la plus récente (la premiere de la liste)
-				e.setAnnee(annees.get(0));
+				
+				//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
+				if(anneeParam!=null){
+					//On sélectionne cette année
+					e.setAnnee(anneeParam);
+				}else{
+					//On prend l'année la plus récente (la premiere de la liste)
+					e.setAnnee(annees.get(0));
+				}
 				ui.setAnneeInscrits(e.getAnnee());
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
 				ui.setEtapeListeInscrits(e);
@@ -198,6 +217,7 @@ public class ListeInscritsController {
 
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
+		String anneeParam = parameterMap.get("annee");
 
 		initMainUIAttributesValues(code, type,annee, ui);
 
@@ -209,9 +229,14 @@ public class ListeInscritsController {
 			e.setCode(code);
 			List<String> annees = multipleApogeeService.getDixDernieresAnneesUniversitaires();
 			ui.setListeAnneeInscrits(annees);
-			//On prend l'année la plus récente (la premiere de la liste)
-			annee = annees.get(0);
-			e.setAnnee(annees.get(0));
+			//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
+			if(anneeParam!=null){
+				//On sélectionne cette année
+				e.setAnnee(anneeParam);
+			}else{
+				//On prend l'année la plus récente (la premiere de la liste)
+				e.setAnnee(annees.get(0));
+			}
 			ui.setAnneeInscrits(e.getAnnee());
 			e.setLibelle(elementPedagogiqueService.getLibelleElp(code));
 			ui.setElpListeInscrits(e);
@@ -223,7 +248,7 @@ public class ListeInscritsController {
 		}
 
 		//Récupération de tous les inscrit à l'ELP quelque soit l'étape d'appartenance choisie dans la vue ListeInscritView
-		listeInscrits = (List<Inscrit>) elementPedagogiqueService.getInscritsFromElp(code, annee);
+		listeInscrits = (List<Inscrit>) elementPedagogiqueService.getInscritsFromElp(code, e.getAnnee());
 
 
 		List<VersionEtape> letape = null;
@@ -276,7 +301,7 @@ public class ListeInscritsController {
 			ui.setListeAnneeInscrits(null);
 			ui.setEtapeListeInscrits(null);
 		}
-		
+
 		ui.setEtapeInscrits(null);
 		ui.setGroupeInscrits(null);
 		ui.setListeEtapesInscrits(null);
@@ -381,8 +406,8 @@ public class ListeInscritsController {
 			i.setUrlphoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 		}
 	}
-	
-	
+
+
 
 
 
@@ -515,22 +540,22 @@ public class ListeInscritsController {
 				sheet.setColumnWidth((short) 12, (short) (3000));
 
 			} else {*/
-				sheet.setColumnWidth((short) 6, (short) (2000));
-				sheet.setColumnWidth((short) 7, (short) (3000));
-				sheet.setColumnWidth((short) 8, (short) (2000));
-				sheet.setColumnWidth((short) 9, (short) (3000));
+			sheet.setColumnWidth((short) 6, (short) (2000));
+			sheet.setColumnWidth((short) 7, (short) (3000));
+			sheet.setColumnWidth((short) 8, (short) (2000));
+			sheet.setColumnWidth((short) 9, (short) (3000));
 			//}
 
 		} else {
 			//if (isEtape) {
-				sheet.setColumnWidth((short) 5, (short) (2000));
-				sheet.setColumnWidth((short) 6, (short) (3000));
-				sheet.setColumnWidth((short) 7, (short) (8000));
+			sheet.setColumnWidth((short) 5, (short) (2000));
+			sheet.setColumnWidth((short) 6, (short) (3000));
+			sheet.setColumnWidth((short) 7, (short) (8000));
 
-				sheet.setColumnWidth((short) 8, (short) (2000));
-				sheet.setColumnWidth((short) 9, (short) (3000));
-				sheet.setColumnWidth((short) 10, (short) (2000));
-				sheet.setColumnWidth((short) 11, (short) (3000));
+			sheet.setColumnWidth((short) 8, (short) (2000));
+			sheet.setColumnWidth((short) 9, (short) (3000));
+			sheet.setColumnWidth((short) 10, (short) (2000));
+			sheet.setColumnWidth((short) 11, (short) (3000));
 
 			/*} else {
 				sheet.setColumnWidth((short) 5, (short) (2000));
@@ -598,7 +623,7 @@ public class ListeInscritsController {
 			rang_cellule++;
 		}
 		if (!isTraiteEtape) {
-		//if (isEtape) {
+			//if (isEtape) {
 			HSSFCell cellLib7 = row.createCell((short) rang_cellule);
 			cellLib7.setCellStyle(headerStyle);
 			cellLib7.setCellValue(applicationContext.getMessage("xls.code", null, Locale.getDefault()).toUpperCase() );
@@ -613,7 +638,7 @@ public class ListeInscritsController {
 			cellLib9.setCellStyle(headerStyle);
 			cellLib9.setCellValue(applicationContext.getMessage("xls.etape", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
-		//}
+			//}
 		}
 		if (isSession1) {
 			HSSFCell cellLib10 = row.createCell((short) rang_cellule);
@@ -673,7 +698,7 @@ public class ListeInscritsController {
 					rang_cellule_inscrit++;
 				}
 				if (!isTraiteEtape) {
-				//if (isEtape) {
+					//if (isEtape) {
 					HSSFCell cellLibInscrit6 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit6.setCellValue(inscrit.getCod_etp());
 					rang_cellule_inscrit++;
@@ -685,7 +710,7 @@ public class ListeInscritsController {
 					HSSFCell cellLibInscrit8 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit8.setCellValue(inscrit.getLib_etp());
 					rang_cellule_inscrit++;
-				//}
+					//}
 				}
 				if (isSession1) {
 					HSSFCell cellLibInscrit9 = rowInscrit.createCell((short) rang_cellule_inscrit);

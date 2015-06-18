@@ -863,7 +863,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					fotoEtudiant.setHeight("153px");
 					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
 					fotoEtudiant.addClickListener(e->{
-						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,null);
 					});
 
 					photoLayout.addComponent(fotoEtudiant);
@@ -883,7 +883,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnNomEtudiant.addStyleName("v-link");
 				nomCodeLayout.addComponent(btnNomEtudiant);
 				btnNomEtudiant.addClickListener(e->{
-					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU);
+					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU, null);
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
 				nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
@@ -1026,7 +1026,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			btnCodEtu.setStyleName("link"); 
 			btnCodEtu.addStyleName("v-link");
 			btnCodEtu.addClickListener(e->{
-				rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU);
+				rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null);
 			});
 
 			return btnCodEtu;

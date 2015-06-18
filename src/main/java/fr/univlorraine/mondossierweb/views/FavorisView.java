@@ -272,7 +272,7 @@ public class FavorisView extends VerticalLayout implements View {
 								MainUI.getCurrent().access(new Runnable() {
 									@Override
 									public void run() {
-										rechercheController.accessToDetail(idObj,typeObj);
+										rechercheController.accessToDetail(idObj,typeObj,null);
 										//close de la pop-up de loading
 										MainUI.getCurrent().stopBusyIndicator();
 									}
@@ -281,7 +281,7 @@ public class FavorisView extends VerticalLayout implements View {
 						});
 					}else{
 						//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
-						rechercheController.accessToDetail(idObj,typeObj);
+						rechercheController.accessToDetail(idObj,typeObj,null);
 					}
 
 				});

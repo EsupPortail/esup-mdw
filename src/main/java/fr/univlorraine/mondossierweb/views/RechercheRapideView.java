@@ -509,7 +509,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				//la recherche porte sur une suggestion proposée par la pop_up et on a bien un seul résultat
 				if(suggestionValidee && lobjresult.size()==1 && rrContainer.size()==1 && code!=null && type!=null){
 					//On accède directemet au détail
-					rechercheController.accessToDetail(code,type);
+					rechercheController.accessToDetail(code,type, null);
 
 				}
 			}
@@ -553,7 +553,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			b.setStyleName("link"); 
 			b.addStyleName("v-link");
 
-			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString()));
+			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(), null));
 
 			return b;
 		}
