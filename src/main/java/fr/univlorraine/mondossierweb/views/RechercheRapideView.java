@@ -28,6 +28,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
@@ -337,7 +338,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				/*mainVerticalLayout.addComponent(searchBoxFilter);
 		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
 				VerticalLayout tableVerticalLayout = new VerticalLayout();
-				tableVerticalLayout.setMargin(true);
+				tableVerticalLayout.setMargin(new MarginInfo(false, true, true, true));
 				tableVerticalLayout.setSizeFull();
 				tableVerticalLayout.addComponent(tableResultats);
 				mainVerticalLayout.addComponent(tableVerticalLayout);

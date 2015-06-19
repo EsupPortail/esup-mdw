@@ -23,6 +23,7 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -275,6 +276,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				}
 			}
 			comboBoxAnneeUniv.setValue(annee);
+			comboBoxAnneeUniv.setStyleName(ValoTheme.COMBOBOX_SMALL);
 			comboBoxAnneeUniv.addValueChangeListener(e -> changerAnnee((String)comboBoxAnneeUniv.getValue()));
 
 			reinitButton = new Button();
@@ -386,7 +388,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 			VerticalLayout tableVerticalLayout = new VerticalLayout();
-			tableVerticalLayout.setMargin(true);
+			tableVerticalLayout.setMargin(new MarginInfo(false, true, true, true));
 			tableVerticalLayout.setSizeFull();
 			tableVerticalLayout.addComponent(table);
 			tableVerticalLayout.setExpandRatio(table, 1);
