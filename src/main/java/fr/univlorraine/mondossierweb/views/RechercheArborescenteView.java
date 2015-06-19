@@ -427,7 +427,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 		}else{
 
-			//On ajoute l'objet racine et on déplie le premier niveau
+			//On ajoute l'objet racine et on déplira ci-dessous le premier niveau
 			ObjetBase obj = rechercheArborescenteController.getObj(code,type);
 			Item i = hc.addItem(obj.getId());
 			renseignerItem(i,obj);
