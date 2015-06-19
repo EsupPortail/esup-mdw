@@ -84,6 +84,14 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 		return lannee;
 	}
+	
+	@Override
+	public int getDerniereAnneeUniversitaire() {
+		@SuppressWarnings("unchecked")
+		String annee = (String)entityManagerApogee.createNativeQuery("select max(cod_anu) from annee_uni").getSingleResult();
+
+		return Integer.parseInt(annee);
+	}
 
 	@Override
 	public Signataire getSignataire(String codeSignataire) {
@@ -161,7 +169,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	}
 
 	@Override
-	public List<String> getAnneesFromVetDesc(Etape e, int anneeEnCours) {
+	public List<String> getAnneesFromVetDesc(Etape e, int anneeMaximum) {
 		@SuppressWarnings("unchecked")
 		int anneeMin = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MIN(DAA_DEB_RCT_VET) "+
 				" from vdi_fractionner_vet vfv "+
@@ -174,7 +182,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 		List<String> lannee = new LinkedList<String>();
 		for(int i=anneeMax; i>=anneeMin;i--){
-			if(i<=anneeEnCours){
+			if(i<=anneeMaximum){
 				lannee.add(""+i);
 			}
 		}

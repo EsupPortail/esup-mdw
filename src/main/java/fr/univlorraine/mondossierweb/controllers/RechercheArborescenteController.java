@@ -65,7 +65,7 @@ public class RechercheArborescenteController {
 		return lanneeUniv;
 	}
 
-	public List<String> recupererListeDesAnnees(Map<String, String> parameterMap){
+	/*public List<String> recupererListeDesAnnees(Map<String, String> parameterMap){
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
 		List<String> annees = new LinkedList<String>();
@@ -76,11 +76,11 @@ public class RechercheArborescenteController {
 			Etape e = new Etape();
 			e.setCode(code.split("/")[0]);
 			e.setVersion(code.split("/")[1]);
-			annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent())));
+			annees = multipleApogeeService.getAnneesFromVetDesc(e);
 
 		}
 		return annees;
-	}
+	}*/
 	
 	public void renseigneObjFromGroupe(ObjetBase obj, Groupe g,String itemId){
 		obj.setType(Utils.GRP);

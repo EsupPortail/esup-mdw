@@ -18,6 +18,8 @@ public interface MultipleApogeeService {
 	public abstract String getLibEtablissementDef();
 	
 	public abstract List<Examen> getCalendrierExamens(String cod_ind);
+	
+	public abstract int getDerniereAnneeUniversitaire();
 
 	public abstract List<String> getDixDernieresAnneesUniversitaires();
 	
@@ -31,7 +33,7 @@ public interface MultipleApogeeService {
 	
 	public abstract String getNatureElp(String codElp);
 
-	public abstract List<String> getAnneesFromVetDesc(Etape e,int anneeEnCours);
+	public abstract List<String> getAnneesFromVetDesc(Etape e, int anneeMaximum);
 	
 	public abstract List<Anonymat> getNumeroAnonymat(String cod_etu, String cod_anu);
 

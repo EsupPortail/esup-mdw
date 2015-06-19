@@ -148,28 +148,29 @@ public class ListeInscritsController {
 		String type = parameterMap.get("type");
 		String anneeParam = parameterMap.get("annee");
 
+		//Si on cherche des inscrits à une VET
 		if (type.equals(Utils.VET)) {
 
-
+			//init des attributs de la mainUI
 			initMainUIAttributesValues(code, type,annee, ui);
 
+			//init d'une liste d'inscrit vide
 			List<Inscrit> listeInscrits = null;
 
 			//On part d'une Etape pour établir une liste d'étudiant
 			Etape e = new Etape();
+			
+			//On a une annee en parametre (on a choisi une année dans la liste déroulante)
 			if(annee==null){
+				//Renseignement de l'objet Etape
 				e.setCode(code.split("/")[0]);
 				e.setVersion(code.split("/")[1]);
 
-				//Récupération de l'année en cours
-				int anneeMax = Integer.parseInt(etudiantController.getAnneeUnivEnCours(ui));
-				//Si l'année présélectionnée et supérieure à l'année en cours
-				if(anneeParam!=null && Integer.parseInt(anneeParam)>anneeMax){
-					//l'année sélectionnée sera l'année max.
-					anneeMax = Integer.parseInt(anneeParam);
-				}
+				//Récupération derniere année universitaire dans Apogée
+				int anneeMax = multipleApogeeService.getDerniereAnneeUniversitaire();
+
 				//Récupération des années pour la vet
-				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e,anneeMax);
+				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e, anneeMax);
 
 				//On stocke laliste des année dans l'ui
 				ui.setListeAnneeInscrits(annees);
@@ -179,25 +180,46 @@ public class ListeInscritsController {
 					//On sélectionne cette année
 					e.setAnnee(anneeParam);
 				}else{
-					//On prend l'année universitaire en cours
-					e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
+					//Si l'année universitaire est dans la liste des années retournées
+					if(annees.contains(etudiantController.getAnneeUnivEnCours(ui))){
+						//On prend l'année universitaire en cours
+						e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
+					}else{
+						//Sinon on sélectionne la première année de la liste
+						e.setAnnee(annees.get(0));
+					}
 				}
+				//On garde l'année positionnée au niveau de l'ui
 				ui.setAnneeInscrits(e.getAnnee());
+				
+				//On renseigne le libellé de l'étape
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
+				
+				//On garde l'étape au niveau de l'ui
 				ui.setEtapeListeInscrits(e);
+				
 			}else{
+				//Récupération de l'étape
 				e = ui.getEtapeListeInscrits();
+				
+				//On modifie l'année de l'étape
 				e.setAnnee(annee);
+				
+				//On met à jour l'étape au niveau de l'ui
 				ui.setEtapeListeInscrits(e);
+				
+				//On met à jour l'année au niveau de l'ui
 				ui.setAnneeInscrits(e.getAnnee());
 			}
 
-
+			//Récupération de la liste des inscrits
 			listeInscrits = (List<Inscrit>) multipleApogeeService.getInscritsEtapeJuinSep(e);
 
+			//Maj des mails/photo et des groupes en fonction de la liste d'inscrits en paramètre
 			finaliserListeInscrits(listeInscrits, null,annee, ui);
 
 		} else {
+			//On cherche les inscrits à un ELP.
 			recupererLaListeDesInscritsELP(parameterMap, annee,ui);
 
 		}
@@ -219,68 +241,110 @@ public class ListeInscritsController {
 		String type = parameterMap.get("type");
 		String anneeParam = parameterMap.get("annee");
 
+		//init des attributs de la mainUI
 		initMainUIAttributesValues(code, type,annee, ui);
 
+		//init d'une liste d'inscrit vide
 		List<Inscrit> listeInscrits = null;
 
-		//On part d'une Etape pour établir une liste d'étudiant
+		//On part d'un ELP pour établir une liste d'étudiant
 		ElementPedagogique e = new ElementPedagogique();
+		
+		//On a une annee en parametre (on a choisi une année dans la liste déroulante)
 		if(annee==null){
+			//On renseigne le cod_elp
 			e.setCode(code);
+			
+			//Récupération derniere année universitaire dans Apogée
 			List<String> annees = multipleApogeeService.getDixDernieresAnneesUniversitaires();
+			
+			//On stocke laliste des année dans l'ui
 			ui.setListeAnneeInscrits(annees);
+			
 			//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
 			if(anneeParam!=null){
 				//On sélectionne cette année
 				e.setAnnee(anneeParam);
 			}else{
-				//On prend l'année en cours
-				e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
+				//Si l'année universitaire est dans la liste des années retournées
+				if(annees.contains(etudiantController.getAnneeUnivEnCours(ui))){
+					//On prend l'année universitaire en cours
+					e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
+				}else{
+					//Sinon on sélectionne la première année de la liste
+					e.setAnnee(annees.get(0));
+				}
 			}
+			
+			//On garde l'année positionnée au niveau de l'ui
 			ui.setAnneeInscrits(e.getAnnee());
+			
+			//On renseigne le libellé de l'ELP
 			e.setLibelle(elementPedagogiqueService.getLibelleElp(code));
+			
+			//On stocke l'ELP au niveau de l'ui
 			ui.setElpListeInscrits(e);
+			
 		}else{
+			//Récupération de l'ELP
 			e = ui.getElpListeInscrits();
+			
+			//Modification de l'année de l'ELP
 			e.setAnnee(annee);
+			
+			//On met à jour l'ELP au niveau de l'ui
 			ui.setElpListeInscrits(e);
+			
+			//On garde l'année positionnée au niveau de l'ui
 			ui.setAnneeInscrits(e.getAnnee());
 		}
 
 		//Récupération de tous les inscrit à l'ELP quelque soit l'étape d'appartenance choisie dans la vue ListeInscritView
 		listeInscrits = (List<Inscrit>) elementPedagogiqueService.getInscritsFromElp(code, e.getAnnee());
 
-
+		//On créé une liste de VET vide pour crééer la liste des étapes d'appartenance
 		List<VersionEtape> letape = null;
+		
 		//test si on a des inscrits
 		if(listeInscrits!=null && listeInscrits.size()>0){
+			//on init la liste de VET à vide
 			letape = new LinkedList<VersionEtape>();
+			
 			//Pour chaque inscrit
 			for(Inscrit i : listeInscrits){
 				//Test si l'étape est renseignée pour l'inscrit
 				if(StringUtils.hasText(i.getCod_etp()) && StringUtils.hasText(i.getCod_vrs_vet()) && StringUtils.hasText(i.getLib_etp())){
+					//Récupération de la VET
 					VersionEtape vet = new VersionEtape();
 					VersionEtapePK vetpk = new VersionEtapePK();
 					vetpk.setCod_etp(i.getCod_etp());
 					vetpk.setCod_vrs_vet(i.getCod_vrs_vet());
 					vet.setId(vetpk);
 					vet.setLib_web_vet(i.getLib_etp());
+					//Si la liste de VET de contient pas la VET de l'étudiant
 					if(!letape.contains(vet)){
+						//On ajoute la vet à la liste des étapes d'appartenance
 						letape.add(vet);
 					}
 				}
 			}
 		}
+		//On stocket la liste des étapes d'appartenance au niveau de l'ui
 		ui.setListeEtapesInscrits(letape);
+		
+		//Aucune étape n'est présélectionnée par défaut.
 		ui.setEtapeInscrits(null);
 
 
-		//Récupération des groupes
+		//Récupération des groupes de l'ELP
 		List<ElpDeCollection> listeGroupes = recupererGroupes(annee, code);
+		//Si on a récupérer des groupes
 		if(listeGroupes!=null && listeGroupes.size()>0){
+			//On stocke la liste des groupes au niveau de l'ui
 			ui.setListeGroupesInscrits(listeGroupes);
 		}
 
+		//Maj des mails/photo et des groupes en fonction de la liste d'inscrits en paramètre
 		finaliserListeInscrits(listeInscrits,listeGroupes,annee,ui);
 
 	}
