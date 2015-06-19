@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.poi.hssf.record.RightMarginRecord;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -297,8 +298,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			btnLeftLayout.setMargin(true);
 			btnLeftLayout.addComponent(comboBoxAnneeUniv);
 			btnLeftLayout.setComponentAlignment(comboBoxAnneeUniv, Alignment.MIDDLE_LEFT);
-			btnLeftLayout.addComponent(reinitButton);
-			btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_RIGHT);
+			/*btnLeftLayout.addComponent(reinitButton);
+			btnLeftLayout.setComponentAlignment(reinitButton, Alignment.BOTTOM_RIGHT);*/
 			btnLeftLayout.addComponent(labelLigneSelectionneeLabel);
 			btnLeftLayout.setComponentAlignment(labelLigneSelectionneeLabel, Alignment.MIDDLE_CENTER);
 			btnLayout.addComponent(btnLeftLayout);
@@ -317,9 +318,17 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			ligneLayout.addComponent(ligneSelectionneeLabel);
 			ligneLayout.addComponent(elpLayout);
 
-
-			btnLayout.addComponent(ligneLayout);
-			btnLayout.setComponentAlignment(ligneLayout, Alignment.MIDDLE_LEFT);
+			HorizontalLayout rightLayout = new HorizontalLayout();
+			rightLayout.setSizeFull();
+			rightLayout.setSpacing(true);
+			rightLayout.setMargin(true);
+			rightLayout.addComponent(ligneLayout);
+			rightLayout.setComponentAlignment(ligneLayout, Alignment.MIDDLE_LEFT);
+			rightLayout.addComponent(reinitButton);
+			rightLayout.setComponentAlignment(reinitButton, Alignment.MIDDLE_RIGHT);
+			rightLayout.setExpandRatio(ligneLayout, 1);
+			btnLayout.addComponent(rightLayout);
+			btnLayout.setComponentAlignment(rightLayout, Alignment.MIDDLE_LEFT);
 
 			addComponent(btnLayout);
 
