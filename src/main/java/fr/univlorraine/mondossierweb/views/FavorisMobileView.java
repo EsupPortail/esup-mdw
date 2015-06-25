@@ -281,9 +281,13 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelAucunFavoriLayout = new HorizontalLayout();
 			labelAucunFavoriLayout.setMargin(true);
 			labelAucunFavoriLayout.setSizeFull();
-			Label aucunFavoris = new Label(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
-			aucunFavoris.setStyleName(ValoTheme.LABEL_COLORED);
-			aucunFavoris.addStyleName(ValoTheme.LABEL_BOLD);
+			Button aucunFavoris = new Button(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
+			aucunFavoris.setStyleName("v-nav-button");
+			aucunFavoris.addStyleName(ValoTheme.BUTTON_LINK);
+			aucunFavoris.addClickListener(e->{
+				((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche(NAME);
+			});
+			
 			labelAucunFavoriLayout.addComponent(aucunFavoris);
 			labelAucunFavoriLayout.setVisible(false);
 			globalLayout.addComponent(labelAucunFavoriLayout);
