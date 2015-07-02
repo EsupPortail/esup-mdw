@@ -190,7 +190,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 					int vrsres =(Integer)result.get("COD_VRS_OBJ");
 
-					//cas or VET
+					//cas hors VET
 					if(!value.contains("/") && codres.equals(value)){
 						//Ajout du résultat dans la liste
 						listeResultats.add(result);
