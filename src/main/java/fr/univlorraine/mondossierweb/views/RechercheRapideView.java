@@ -373,9 +373,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
 
-			valueselasticSearch = valueselasticSearch+"*";
+	
+			//valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
+		
+			
 			//Liste des types autorisés
 			LinkedList<String> listeTypeAutorise=new LinkedList();
 			if(casesAcocherComposantes.getValue()){
@@ -407,7 +410,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 									while(triOk && rang<listeReponses.size()){
 										//En quickSearch on prend la description et non pas le libelle
 										ResultatDeRecherche r = (ResultatDeRecherche) listeReponses.get(rang);
-										if((r.lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										//if((r.lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										if((r.lib.toUpperCase()).equals((new ResultatDeRecherche(obj)).lib.toUpperCase())){
 											triOk=false;
 										}
 										rang++;

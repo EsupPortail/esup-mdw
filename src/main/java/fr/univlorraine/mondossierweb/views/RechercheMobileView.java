@@ -445,7 +445,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
 
-			valueselasticSearch = valueselasticSearch+"*";
+			//valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
 			//Liste des types autorisés
@@ -475,7 +475,8 @@ public class RechercheMobileView extends VerticalLayout implements View {
 									//On evite des doublons
 									while(triOk && rang<listeReponses.size()){
 										//En quickSearch on prend la description et non pas le libelle
-										if((listeReponses.get(rang).lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										//if((listeReponses.get(rang).lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										if((listeReponses.get(rang).lib.toUpperCase()).equals((new ResultatDeRecherche(obj)).lib.toUpperCase())){
 											triOk=false;
 										}
 										rang++;

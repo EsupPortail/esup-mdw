@@ -14,6 +14,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -43,15 +44,15 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 		//initialise la connexion a ES
 		if(client==null){
 			try{
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
-			client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
+				Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", PropertyUtils.getElasticSearchCluster()).build();
+				client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(PropertyUtils.getElasticSearchUrl(), PropertyUtils.getElasticSearchPort()));
 
-			//Si on doit faire un init complet (avec requête à ES)
-			if(fullInit){
-				//requete pour initialiser l'appel à ES 
-				findObj("toto", 10, true);
-			}
-			//}catch(NoNodeAvailableException ex){
+				//Si on doit faire un init complet (avec requête à ES)
+				if(fullInit){
+					//requete pour initialiser l'appel à ES 
+					findObj("toto", 10, true);
+				}
+				//}catch(NoNodeAvailableException ex){
 			}catch(Exception ex){
 				LOG.error("problème lors de l'initialisation de la connexion à ElasticSerch", ex);
 				return false;
@@ -72,6 +73,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 		//Si value a du texte
 		if(StringUtils.hasText(value)){
 			boolean rechercherParCode = false;
+			String lastWordCompletion = "*";
 
 			//On supprime les crochets dans le cas où la value soit une des lignes proposée par le champ AutoComplete (contenant le code de l'élément entre cochets)
 			if(value.contains("[") && value.contains("]")){
@@ -84,7 +86,18 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				value=value.replaceAll("\\]", "");
 
 				//on supprime l'étoile
-				value=value.replaceAll("\\*", "");
+				//value=value.replaceAll("\\*", "");
+
+				//Si la chaine termine par un espace : on a saisi un mot entier (il ne faudra pas mettre d'étoile à la fin de ce mot lors de la recherche)
+				if(value.substring(value.length()-1).equals(" ")){
+					lastWordCompletion = "";
+				}
+				value = value.trim();
+				
+				//On remplace les tirets par espace
+				//value=value.replaceAll("-", " ");
+				
+				value=value.replaceAll("-", "\\-");
 			}
 			//On passe la value en minuscule
 			value=value.toLowerCase();
@@ -136,8 +149,36 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				//Si on est en recherche rapide (après avoir entrée une lettre dans le champAutoComplete)
 				if(quickSearck){
 					//On paramètre la query différemment (matchPhrasePrefixQuery ou fuzzyQuery)
-					qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+					//qb=QueryBuilders.matchPhrasePrefixQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
 					//qb=QueryBuilders.fuzzyQuery(PropertyUtils.getElasticSearchChampRecherche(), value);
+					//qb=QueryBuilders.queryString("default_field : "+PropertyUtils.getElasticSearchChampRecherche()+", query : "+value);
+					//qb=QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), value+"*");
+
+					//qb=QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), "dubois")).must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), "c*"));
+
+					String[] mots = value.split(" ");
+
+					//Test si il n'y a qu'un seul mot de saisi
+					if(mots.length==1){
+						//Il n'y a qu'un mot. On l'ajoute avec * si il n'y avait pas d'espace apres (lastWordCompletion)
+						qb=QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[0]+lastWordCompletion));
+
+					}else{
+						//On init la query avec le premier mot
+						BoolQueryBuilder bqb=QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[0]));
+					
+						for(int i=1; i<mots.length;i++){
+							//Si ce n'est pas le dernier mot
+							if(i<(mots.length-1)){
+								bqb.must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[i]));
+							}else{
+								//c'est le dernier, on ajoute * si il n'y avait pas d'espace apres (lastWordCompletion)
+								bqb.must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[i]+lastWordCompletion));
+							}
+						}
+						qb = bqb;
+						
+					}
 				}
 
 				/*

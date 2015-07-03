@@ -34,12 +34,13 @@ public class ResultatDeRecherche implements Serializable {
 		code=(String)o.get("COD_OBJ");
 		if(((Integer)o.get("COD_VRS_OBJ"))!=0)
 			code = o.get("COD_OBJ")+"/"+o.get("COD_VRS_OBJ");
-		if(StringUtils.hasText((String)o.get("LIB_DESC_OBJ"))){
+		/*if(StringUtils.hasText((String)o.get("LIB_DESC_OBJ"))){
 			lib=(String)o.get("LIB_DESC_OBJ"); //On prend  la description
 		}else{
 			//C'est un elp
 			lib="["+code+"] "+(String)o.get("LIB_OBJ"); //On prend le libelle
-		}
+		}*/
+		lib="["+code+"] "+(String)o.get("LIB_OBJ"); //On prend le libelle
 	}
 	
 
