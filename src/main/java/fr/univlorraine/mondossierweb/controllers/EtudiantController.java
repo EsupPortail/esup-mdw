@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
+import javax.sql.rowset.serial.SerialArray;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -645,6 +646,9 @@ public class EtudiantController {
 
 
 
+	public String getFormationEnCours(String codetu){
+		return inscriptionService.getFormationEnCours(codetu);
+	}
 
 	/**
 	 * va chercher et renseigne les notes de
@@ -810,9 +814,18 @@ public class EtudiantController {
 	public void setNotesEtResultats(Etudiant e, ContratPedagogiqueResultatVdiVetDTO[] resultatVdiVet) {
 		try {
 
+			if(e.getDiplomes()!=null){
+				e.getDiplomes().clear();
+			}else{
+				e.setDiplomes(new LinkedList<Diplome>());
+			}
 
-			e.getDiplomes().clear();
-			e.getEtapes().clear();
+			if(e.getEtapes()!=null){
+				e.getEtapes().clear();
+			}else{
+				e.setEtapes(new LinkedList<Etape>());
+			}
+
 			//Si on a configure pour toujours afficher le rang, on affichera les rangs de l'étudiant.
 			e.setAfficherRang(configController.isAffRangEtudiant());
 
@@ -1494,7 +1507,7 @@ public class EtudiantController {
 				}
 				if (et.getResultats().get(0).getAdmission() != null)
 					ep.setRes1(et.getResultats().get(0).getAdmission());
-				
+
 			}
 			if (et.getResultats().size() > 1) {
 				if (et.getResultats().get(1).getNote() != null){

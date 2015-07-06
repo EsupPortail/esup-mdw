@@ -1,5 +1,7 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -54,6 +56,28 @@ public class InscriptionServiceImpl implements InscriptionService{
 				" and iae.cod_vrs_vet = "+vrsVet+"  "+
 				" and iae.eta_iae = 'E' ").getSingleResult();
 		return codCmp;
+	}
+
+
+	@Override
+	public String getFormationEnCours(String codetu) {
+		@SuppressWarnings("unchecked")
+		List<String>  llib = (List<String>) entityManagerApogee.createNativeQuery("select LIB_WEB_VET "+
+				"from ins_adm_etp ins, etape e, version_etape ve, individu ind "+
+				"where e.cod_etp = ins.cod_etp  "+
+				"and ve.cod_etp = e.cod_etp "+
+				"and ve.cod_vrs_vet = ins.cod_vrs_vet "+
+				"and ind.cod_etu = "+codetu+" "+
+				"and ins.cod_ind = ind.cod_ind "+
+				"and   eta_iae = 'E' "+
+				"ORDER BY COD_ANU DESC").getResultList();
+
+		if(llib!=null && llib.size()>0){
+			return llib.get(0);
+		}
+
+		return null;
+
 	}
 
 

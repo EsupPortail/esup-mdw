@@ -46,6 +46,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -79,6 +80,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient RechercheArborescenteController rechercheArborescenteController;
+	@Resource
+	private transient EtudiantController etudiantController;
 
 
 
@@ -320,6 +323,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				rrContainer = new HierarchicalContainer();
 				rrContainer.addContainerProperty("lib", String.class, "");
 				rrContainer.addContainerProperty("code", String.class, "");
+				rrContainer.addContainerProperty("info", String.class, "");
 				rrContainer.addContainerProperty("type", String.class, "");
 				tableResultats = new TreeTable();
 				tableResultats.setSizeFull();
@@ -478,7 +482,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueElasticSearch = value;
-			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueElasticSearch, 0, false);
+			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueElasticSearch, Utils.NB_MAX_RESULT_SEARCH, false);
 
 			///////////////////////////////////////////////////////
 			// recuperation des objets
@@ -497,11 +501,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 						Item i=rrContainer.addItem(rr);
 						if(i!=null){
 							//En search, on prend le libelle et non pas la description, à la différence du quickSearch
-							i.getItemProperty("lib").setValue(rr.getLib());
-							i.getItemProperty("code").setValue(rr.getCode());
-							i.getItemProperty("type").setValue(rr.type);
 							code=rr.getCode();
 							type=rr.type;
+							i.getItemProperty("lib").setValue(rr.getLib());
+							if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
+								i.getItemProperty("info").setValue(etudiantController.getFormationEnCours(code));	
+							}
+							i.getItemProperty("code").setValue(rr.getCode());
+							i.getItemProperty("type").setValue(rr.type);
+							
 							rrContainer.setChildrenAllowed(rr, false);
 						}
 
@@ -560,6 +568,23 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(), null));
 
+			if(item.getItemProperty("info") !=null && item.getItemProperty("info").getValue()!=null  && 
+					StringUtils.hasText(item.getItemProperty("info").getValue().toString())){
+				
+				HorizontalLayout libhl = new HorizontalLayout();
+				libhl.setSizeFull();
+				libhl.addComponent(b);
+				libhl.setComponentAlignment(b, Alignment.MIDDLE_LEFT);
+				
+				Label formation = new Label(item.getItemProperty("info").getValue().toString());
+				formation.setStyleName(ValoTheme.LABEL_SMALL);
+				libhl.addComponent(formation);
+				libhl.setComponentAlignment(formation, Alignment.MIDDLE_RIGHT);
+				
+				return libhl;
+				
+			}
+			
 			return b;
 		}
 	}

@@ -93,10 +93,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 					lastWordCompletion = "";
 				}
 				value = value.trim();
-				
+
 				//On remplace les tirets par espace
 				//value=value.replaceAll("-", " ");
-				
+
 				value=value.replaceAll("-", "\\-");
 			}
 			//On passe la value en minuscule
@@ -166,7 +166,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 					}else{
 						//On init la query avec le premier mot
 						BoolQueryBuilder bqb=QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[0]));
-					
+
 						for(int i=1; i<mots.length;i++){
 							//Si ce n'est pas le dernier mot
 							if(i<(mots.length-1)){
@@ -177,7 +177,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 							}
 						}
 						qb = bqb;
-						
+
 					}
 				}
 
@@ -218,30 +218,33 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 			//Pour chaque résultat du tableau de résultats
 			for (SearchHit hit : results) {
-				//Récupération du résultat
-				Map<String,Object> result = hit.getSource();  
 
-				//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
-				if(!rechercherParCode){
-					listeResultats.add(result);
-				}else{
+				if(listeResultats.size()<(maxResult + 1)){
+					//Récupération du résultat
+					Map<String,Object> result = hit.getSource();  
 
-					String codres = (String)result.get("COD_OBJ");
-					codres = codres.toLowerCase();
-
-					int vrsres =(Integer)result.get("COD_VRS_OBJ");
-
-					//cas hors VET
-					if(!value.contains("/") && codres.equals(value)){
-						//Ajout du résultat dans la liste
+					//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
+					if(!rechercherParCode){
 						listeResultats.add(result);
-					}
-					//cas VET
-					if(value.contains("/") && (codres+"/"+vrsres).equals(value)){
-						//Ajout du résultat dans la liste
-						listeResultats.add(result);
-					}
+					}else{
 
+						String codres = (String)result.get("COD_OBJ");
+						codres = codres.toLowerCase();
+
+						int vrsres =(Integer)result.get("COD_VRS_OBJ");
+
+						//cas hors VET
+						if(!value.contains("/") && codres.equals(value)){
+							//Ajout du résultat dans la liste
+							listeResultats.add(result);
+						}
+						//cas VET
+						if(value.contains("/") && (codres+"/"+vrsres).equals(value)){
+							//Ajout du résultat dans la liste
+							listeResultats.add(result);
+						}
+
+					}
 				}
 			}
 
