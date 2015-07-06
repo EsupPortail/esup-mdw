@@ -1488,14 +1488,19 @@ public class EtudiantController {
 			ep.setLibelle(et.getLibelle());
 			e.setDeliberationTerminee(et.isDeliberationTerminee());
 			if (et.getResultats().size() > 0) {
-				if (et.getResultats().get(0).getNote() != null)
+				if (et.getResultats().get(0).getNote() != null){
 					ep.setNote1(et.getResultats().get(0).getNote().toString());
+					ep.setBareme1(et.getResultats().get(0).getBareme());
+				}
 				if (et.getResultats().get(0).getAdmission() != null)
 					ep.setRes1(et.getResultats().get(0).getAdmission());
+				
 			}
 			if (et.getResultats().size() > 1) {
-				if (et.getResultats().get(1).getNote() != null)
+				if (et.getResultats().get(1).getNote() != null){
 					ep.setNote2(et.getResultats().get(1).getNote().toString());
+					ep.setBareme2(et.getResultats().get(1).getBareme());
+				}
 				if (et.getResultats().get(1).getAdmission() != null)
 					ep.setRes2(et.getResultats().get(1).getAdmission());
 			}
