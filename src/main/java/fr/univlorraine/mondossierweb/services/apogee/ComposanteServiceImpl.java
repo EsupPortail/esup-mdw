@@ -62,7 +62,7 @@ public class ComposanteServiceImpl implements ComposanteService{
 
 
 	@Override
-	public List<VersionEtape> findVetFromVdi(String annee,String cod_vdi, String vrs_vdi) {
+	public List<VersionEtape> findVetFromVdiAndCmp(String annee,String cod_vdi, String vrs_vdi, String codcmp) {
 
 		@SuppressWarnings("unchecked")
 		List<VersionEtape> lvdi = (List<VersionEtape>)entityManagerApogee.createNativeQuery(
@@ -71,6 +71,7 @@ public class ComposanteServiceImpl implements ComposanteService{
 						"where ("+annee+" >= vfv.DAA_DEB_RCT_VET and vfv.DAA_FIN_RCT_VET >= "+annee+")  "+
 						"and e.cod_etp = vfv.cod_etp  "+
 						"and ve.cod_etp = e.cod_etp "+
+						"and ve.cod_cmp= '" +codcmp+"' "+
 						"and ve.cod_vrs_vet = vfv.cod_vrs_vet "+
 						"and vdi.cod_dip = vfv.cod_dip and vdi.cod_vrs_vdi = vfv.cod_vrs_vdi  "+
 						"and vdi.cod_dip = '"+cod_vdi+"' and vdi.cod_vrs_vdi = '"+vrs_vdi+"'  "+

@@ -17,7 +17,7 @@ public interface ComposanteService {
 	
 	public List<VersionDiplome> findVdiFromComposante(String annee, String cod_cmp);
 	
-	public List<VersionEtape> findVetFromVdi(String annee,String cod_vdi, String vrs_vdi);
+	public List<VersionEtape> findVetFromVdiAndCmp(String annee,String cod_vdi, String vrs_vdi, String codcmp);
 	
 	public List<ElementPedagogique> findElpFromVet(String codEtp, String vrsEtp);
 	

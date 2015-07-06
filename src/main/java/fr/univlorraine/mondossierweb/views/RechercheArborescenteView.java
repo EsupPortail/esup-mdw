@@ -683,6 +683,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			String type =(String) hc.getItem(itemId).getItemProperty(TYPE_PROPERTY).getValue();
 			String deplie =(String) hc.getItem(itemId).getItemProperty(DEPLIE_PROPERTY).getValue();
 			String trueObjectId =(String) hc.getItem(itemId).getItemProperty(TRUE_ID_PROPERTY).getValue();
+			String objectId = (String) hc.getItem(itemId).getItemProperty(ID_PROPERTY).getValue();
 
 			//Si on n'a pas déjà déplié ou tenté de déplier cette élément
 			if(deplie.equals("false")){
@@ -725,7 +726,12 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 						String[] tabs=trueObjectId.split("/");
 						String codDip=tabs[0];
 						String vrsDip=tabs[1];
-						List<VersionEtape> lvet = composanteService.findVetFromVdi(annee, codDip, vrsDip);
+						
+						String[] tabs2=objectId.split("CMP:");
+						String codCmp=tabs2[1];
+						
+						
+						List<VersionEtape> lvet = composanteService.findVetFromVdiAndCmp(annee, codDip, vrsDip, codCmp);
 						List<ObjetBase> lobj = new LinkedList<ObjetBase>();
 						if(lvet!=null && lvet.size()>0){
 							for(VersionEtape vet : lvet){
