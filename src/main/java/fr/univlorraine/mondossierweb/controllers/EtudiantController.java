@@ -828,213 +828,215 @@ public class EtudiantController {
 
 			//Si on a configure pour toujours afficher le rang, on affichera les rangs de l'étudiant.
 			e.setAfficherRang(configController.isAffRangEtudiant());
+			
+			if(resultatVdiVet!=null && resultatVdiVet.length>0){
+				for (int i = 0; i < resultatVdiVet.length; i++ ) {
+					//information sur le diplome:
+					ContratPedagogiqueResultatVdiVetDTO rdto = resultatVdiVet[i];
 
-			for (int i = 0; i < resultatVdiVet.length; i++ ) {
-				//information sur le diplome:
-				ContratPedagogiqueResultatVdiVetDTO rdto = resultatVdiVet[i];
+					if(rdto.getDiplome() != null){
+						Diplome d = new Diplome();
 
-				if(rdto.getDiplome() != null){
-					Diplome d = new Diplome();
+						d.setLib_web_vdi(rdto.getDiplome().getLibWebVdi());
+						d.setCod_dip(rdto.getDiplome().getCodDip());
+						d.setCod_vrs_vdi(rdto.getDiplome().getCodVrsVdi().toString());
 
-					d.setLib_web_vdi(rdto.getDiplome().getLibWebVdi());
-					d.setCod_dip(rdto.getDiplome().getCodDip());
-					d.setCod_vrs_vdi(rdto.getDiplome().getCodVrsVdi().toString());
-
-					int annee2 = new Integer(rdto.getAnnee()) + 1;
-
-
-					d.setAnnee(rdto.getAnnee() + "/" + annee2);
-					//information sur les résultats obtenus au diplome:
-					ResultatVdiDTO[] tabres = rdto.getResultatVdi();
-
-					if (tabres != null && tabres.length > 0) {
+						int annee2 = new Integer(rdto.getAnnee()) + 1;
 
 
-						for (int j = 0; j < tabres.length; j++ ) {
-							Resultat r = new Resultat();
-							ResultatVdiDTO res = tabres[j];
+						d.setAnnee(rdto.getAnnee() + "/" + annee2);
+						//information sur les résultats obtenus au diplome:
+						ResultatVdiDTO[] tabres = rdto.getResultatVdi();
 
-							r.setSession(res.getSession().getLibSes());
-							if(res.getNatureResultat() != null && res.getNatureResultat().getCodAdm() != null && res.getNatureResultat().getCodAdm().equals("0")){
-								//on est en Admissibilité à l'étape.Pas en admission.
-								//on le note pour que ce soit plus clair pour l'étudiant
-								r.setNote(res.getNatureResultat().getLibAdm());
+						if (tabres != null && tabres.length > 0) {
 
 
-							}
+							for (int j = 0; j < tabres.length; j++ ) {
+								Resultat r = new Resultat();
+								ResultatVdiDTO res = tabres[j];
 
-							//recuperation de la mention
-							if(res.getMention() != null){
-								r.setCodMention(res.getMention().getCodMen());
-								r.setLibMention(res.getMention().getLibMen());
-							}
+								r.setSession(res.getSession().getLibSes());
+								if(res.getNatureResultat() != null && res.getNatureResultat().getCodAdm() != null && res.getNatureResultat().getCodAdm().equals("0")){
+									//on est en Admissibilité à l'étape.Pas en admission.
+									//on le note pour que ce soit plus clair pour l'étudiant
+									r.setNote(res.getNatureResultat().getLibAdm());
 
-							String result="";
-							if( res.getTypResultat()!=null){
-								result= res.getTypResultat().getCodTre();
-								r.setAdmission(result);
-							}
-							if (res.getNotVdi() != null) {
-								r.setNote(res.getNotVdi().toString());
-								//ajout pour note Jury
-								if(res.getNotPntJurVdi() != null && !res.getNotPntJurVdi().equals(new BigDecimal(0))){
-									r.setNote(r.getNote()+"(+"+res.getNotPntJurVdi()+")");
+
 								}
-							} else {
-								if (result.equals("DEF")) {
-									r.setNote("DEF");
+
+								//recuperation de la mention
+								if(res.getMention() != null){
+									r.setCodMention(res.getMention().getCodMen());
+									r.setLibMention(res.getMention().getLibMen());
+								}
+
+								String result="";
+								if( res.getTypResultat()!=null){
+									result= res.getTypResultat().getCodTre();
+									r.setAdmission(result);
+								}
+								if (res.getNotVdi() != null) {
+									r.setNote(res.getNotVdi().toString());
+									//ajout pour note Jury
+									if(res.getNotPntJurVdi() != null && !res.getNotPntJurVdi().equals(new BigDecimal(0))){
+										r.setNote(r.getNote()+"(+"+res.getNotPntJurVdi()+")");
+									}
+								} else {
+									if (result.equals("DEF")) {
+										r.setNote("DEF");
+									}
+								}
+
+								//Gestion du barème:
+								if(res.getBarNotVdi() != null){
+									r.setBareme(res.getBarNotVdi());
+								}
+
+
+								//ajout de la signification du résultat dans la map
+								if ((result != null && !result.equals("")) && !e.getSignificationResultats().containsKey(r.getAdmission())) {
+									e.getSignificationResultats().put(r.getAdmission(), res.getTypResultat().getLibTre());
+								}
+
+								//ajout du résultat au diplome:
+								d.getResultats().add(r);
+								if(res.getNbrRngEtuVdi() != null && !res.getNbrRngEtuVdi().equals("")){
+									d.setRang(res.getNbrRngEtuVdi()+"/"+res.getNbrRngEtuVdiTot());
+									//On indique si on affiche le rang du diplome.
+									d.setAfficherRang(configController.isAffRangEtudiant());
+
 								}
 							}
-
-							//Gestion du barème:
-							if(res.getBarNotVdi() != null){
-								r.setBareme(res.getBarNotVdi());
-							}
-
-
-							//ajout de la signification du résultat dans la map
-							if ((result != null && !result.equals("")) && !e.getSignificationResultats().containsKey(r.getAdmission())) {
-								e.getSignificationResultats().put(r.getAdmission(), res.getTypResultat().getLibTre());
-							}
-
-							//ajout du résultat au diplome:
-							d.getResultats().add(r);
-							if(res.getNbrRngEtuVdi() != null && !res.getNbrRngEtuVdi().equals("")){
-								d.setRang(res.getNbrRngEtuVdi()+"/"+res.getNbrRngEtuVdiTot());
-								//On indique si on affiche le rang du diplome.
-								d.setAfficherRang(configController.isAffRangEtudiant());
-
-							}
+							//ajout du diplome si on a au moins un résultat
+							//e.getDiplomes().add(0, d);
 						}
-						//ajout du diplome si on a au moins un résultat
-						//e.getDiplomes().add(0, d);
+						e.getDiplomes().add(0, d);
 					}
-					e.getDiplomes().add(0, d);
-				}
-				//information sur les etapes:
-				EtapeResVdiVetDTO[] etapes = rdto.getEtapes();
-				if (etapes != null && etapes.length > 0) {
+					//information sur les etapes:
+					EtapeResVdiVetDTO[] etapes = rdto.getEtapes();
+					if (etapes != null && etapes.length > 0) {
 
-					for (int j = 0; j < etapes.length; j++ ) {
-						EtapeResVdiVetDTO etape = etapes[j];
+						for (int j = 0; j < etapes.length; j++ ) {
+							EtapeResVdiVetDTO etape = etapes[j];
 
-						//29/01/10
-						//on rejete les etapes annulée. MAJ sur proposition de Rennes1
-						if((etape.getCodEtaIae()== null) || (etape.getCodEtaIae()!= null && !etape.getCodEtaIae().equals("A"))){
+							//29/01/10
+							//on rejete les etapes annulée. MAJ sur proposition de Rennes1
+							if((etape.getCodEtaIae()== null) || (etape.getCodEtaIae()!= null && !etape.getCodEtaIae().equals("A"))){
 
-							Etape et = new Etape();
-							int anneeEtape = new Integer(etape.getCodAnu());
-							et.setAnnee(anneeEtape + "/" + (anneeEtape + 1));
-							et.setCode(etape.getEtape().getCodEtp());
-							et.setVersion(etape.getEtape().getCodVrsVet().toString());
-							et.setLibelle(etape.getEtape().getLibWebVet());
+								Etape et = new Etape();
+								int anneeEtape = new Integer(etape.getCodAnu());
+								et.setAnnee(anneeEtape + "/" + (anneeEtape + 1));
+								et.setCode(etape.getEtape().getCodEtp());
+								et.setVersion(etape.getEtape().getCodVrsVet().toString());
+								et.setLibelle(etape.getEtape().getLibWebVet());
 
-							//ajout 16/02/2012 pour WS exposés pour la version mobile en HttpInvoker
-							if(rdto.getDiplome()!= null){
-								et.setCod_dip(rdto.getDiplome().getCodDip());
-								et.setVers_dip(rdto.getDiplome().getCodVrsVdi());
-							}
+								//ajout 16/02/2012 pour WS exposés pour la version mobile en HttpInvoker
+								if(rdto.getDiplome()!= null){
+									et.setCod_dip(rdto.getDiplome().getCodDip());
+									et.setVers_dip(rdto.getDiplome().getCodVrsVdi());
+								}
 
-							//résultats de l'étape:
-							ResultatVetDTO[] tabresetape = etape.getResultatVet();
-							if (tabresetape != null && tabresetape.length > 0) {
-								for (int k = 0; k < tabresetape.length; k++ ) {
-									ResultatVetDTO ret = tabresetape[k];
-									Resultat r = new Resultat();
-									if(!ret.getEtatDelib().getCodEtaAvc().equals("T")) {
-										et.setDeliberationTerminee(false);
-									} else {
-										et.setDeliberationTerminee(true);
-									}
-
-									r.setSession(ret.getSession().getLibSes());
-									if(ret.getNatureResultat() != null && ret.getNatureResultat().getCodAdm()!= null && ret.getNatureResultat().getCodAdm().equals("0")){
-										//on est en Admissibilité à l'étape.Pas en admission.
-										//on le note pour que ce soit plus clair pour l'étudiant
-										r.setNote(ret.getNatureResultat().getLibAdm());
-
-									}
-									//recuperation de la mention
-									if(ret.getMention() != null){
-										r.setCodMention(ret.getMention().getCodMen());
-										r.setLibMention(ret.getMention().getLibMen());
-									}
-
-									String result="";
-									if(ret.getTypResultat() != null){
-										result = ret.getTypResultat().getCodTre();
-										r.setAdmission(result);
-									}
-									if (ret.getNotVet() != null) {
-										r.setNote(ret.getNotVet().toString());
-										//ajout note jury
-										if(ret.getNotPntJurVet() != null && !ret.getNotPntJurVet().equals(new BigDecimal(0))){
-											r.setNote(r.getNote()+"(+"+ret.getNotPntJurVet()+")");
+								//résultats de l'étape:
+								ResultatVetDTO[] tabresetape = etape.getResultatVet();
+								if (tabresetape != null && tabresetape.length > 0) {
+									for (int k = 0; k < tabresetape.length; k++ ) {
+										ResultatVetDTO ret = tabresetape[k];
+										Resultat r = new Resultat();
+										if(!ret.getEtatDelib().getCodEtaAvc().equals("T")) {
+											et.setDeliberationTerminee(false);
+										} else {
+											et.setDeliberationTerminee(true);
 										}
 
-									} else {
-										if (result.equals("DEF")) {
-											r.setNote("DEF");
+										r.setSession(ret.getSession().getLibSes());
+										if(ret.getNatureResultat() != null && ret.getNatureResultat().getCodAdm()!= null && ret.getNatureResultat().getCodAdm().equals("0")){
+											//on est en Admissibilité à l'étape.Pas en admission.
+											//on le note pour que ce soit plus clair pour l'étudiant
+											r.setNote(ret.getNatureResultat().getLibAdm());
+
 										}
-									}
-
-									//Gestion du barème:
-									if(ret.getBarNotVet() != null){
-										r.setBareme(ret.getBarNotVet());
-									}
-
-									//ajout de la signification du résultat dans la map
-									if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(r.getAdmission())) {
-										e.getSignificationResultats().put(r.getAdmission(), ret.getTypResultat().getLibTre());
-									}
-
-
-									//ajout du résultat par ordre de code session (Juillet 2014)
-									//ajout du resultat en fin de liste
-									//et.getResultats().add(r);
-									try{
-										int session = Integer.parseInt(ret.getSession().getCodSes());
-										if(et.getResultats().size()>0 && et.getResultats().size()>=session){
-											//ajout du résultat à la bonne place dans la liste
-											et.getResultats().add((session-1),r);
-										}else{
-											//ajout du résultat en fin de liste
-											et.getResultats().add(r);
+										//recuperation de la mention
+										if(ret.getMention() != null){
+											r.setCodMention(ret.getMention().getCodMen());
+											r.setLibMention(ret.getMention().getLibMen());
 										}
-									}catch(Exception excep){
-										et.getResultats().add(r);
-									}
 
-									//ajout du rang
-									if(ret.getNbrRngEtuVet() != null && !ret.getNbrRngEtuVet().equals("")){
-										et.setRang(ret.getNbrRngEtuVet()+"/"+ret.getNbrRngEtuVetTot());
-										//On calcule si on affiche ou non le rang.
-										boolean cetteEtapeDoitEtreAffiche=false;
-										for(String codetape : configController.getListeCodesEtapeAffichageRang()){
-											if(codetape.equals(et.getCode())){
-												cetteEtapeDoitEtreAffiche=true;
+										String result="";
+										if(ret.getTypResultat() != null){
+											result = ret.getTypResultat().getCodTre();
+											r.setAdmission(result);
+										}
+										if (ret.getNotVet() != null) {
+											r.setNote(ret.getNotVet().toString());
+											//ajout note jury
+											if(ret.getNotPntJurVet() != null && !ret.getNotPntJurVet().equals(new BigDecimal(0))){
+												r.setNote(r.getNote()+"(+"+ret.getNotPntJurVet()+")");
+											}
+
+										} else {
+											if (result.equals("DEF")) {
+												r.setNote("DEF");
 											}
 										}
-										if(configController.isAffRangEtudiant() || cetteEtapeDoitEtreAffiche){
-											//On affichera le rang de l'étape.
-											et.setAfficherRang(true);
-											//On remonte au niveau de l'étudiant qu'on affiche le rang
-											e.setAfficherRang(true);
+
+										//Gestion du barème:
+										if(ret.getBarNotVet() != null){
+											r.setBareme(ret.getBarNotVet());
 										}
+
+										//ajout de la signification du résultat dans la map
+										if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(r.getAdmission())) {
+											e.getSignificationResultats().put(r.getAdmission(), ret.getTypResultat().getLibTre());
+										}
+
+
+										//ajout du résultat par ordre de code session (Juillet 2014)
+										//ajout du resultat en fin de liste
+										//et.getResultats().add(r);
+										try{
+											int session = Integer.parseInt(ret.getSession().getCodSes());
+											if(et.getResultats().size()>0 && et.getResultats().size()>=session){
+												//ajout du résultat à la bonne place dans la liste
+												et.getResultats().add((session-1),r);
+											}else{
+												//ajout du résultat en fin de liste
+												et.getResultats().add(r);
+											}
+										}catch(Exception excep){
+											et.getResultats().add(r);
+										}
+
+										//ajout du rang
+										if(ret.getNbrRngEtuVet() != null && !ret.getNbrRngEtuVet().equals("")){
+											et.setRang(ret.getNbrRngEtuVet()+"/"+ret.getNbrRngEtuVetTot());
+											//On calcule si on affiche ou non le rang.
+											boolean cetteEtapeDoitEtreAffiche=false;
+											for(String codetape : configController.getListeCodesEtapeAffichageRang()){
+												if(codetape.equals(et.getCode())){
+													cetteEtapeDoitEtreAffiche=true;
+												}
+											}
+											if(configController.isAffRangEtudiant() || cetteEtapeDoitEtreAffiche){
+												//On affichera le rang de l'étape.
+												et.setAfficherRang(true);
+												//On remonte au niveau de l'étudiant qu'on affiche le rang
+												e.setAfficherRang(true);
+											}
+										}
+
 									}
-
 								}
+
+								//ajout de l'étape a la liste d'étapes de l'étudiant:
+								//e.getEtapes().add(0, et);
+								//en attendant la maj du WS :
+								insererEtapeDansListeTriee(e, et);
+
 							}
-
-							//ajout de l'étape a la liste d'étapes de l'étudiant:
-							//e.getEtapes().add(0, et);
-							//en attendant la maj du WS :
-							insererEtapeDansListeTriee(e, et);
-
 						}
 					}
-				}
 
+				}
 			}
 		} catch (WebBaseException ex) {
 			//Si on est dans un cas d'erreur non expliqué
