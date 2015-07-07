@@ -535,7 +535,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueElasticSearch = value;
-			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueElasticSearch, 0, false);
+			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueElasticSearch, Utils.NB_MAX_RESULT_SEARCH, false);
 
 			///////////////////////////////////////////////////////
 			// recuperation des objets
