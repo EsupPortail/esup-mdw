@@ -445,7 +445,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnMasquerFiltre.setDescription(applicationContext.getMessage(NAME+".btn.btnMasquerFiltre", null, getLocale()));
 					btnMasquerFiltre.addClickListener(e->{
 						panelFormInscrits.setContent(null);
-						btnDisplayFiltres.setVisible(true);
+						if(btnDisplayFiltres!=null){
+							btnDisplayFiltres.setVisible(true);
+						}
 					});
 					favoriLayout.addComponent(btnMasquerFiltre);
 					favoriLayout.setComponentAlignment(btnMasquerFiltre, Alignment.BOTTOM_RIGHT);
