@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
-import javax.sql.rowset.serial.SerialArray;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
