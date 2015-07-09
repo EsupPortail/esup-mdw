@@ -379,8 +379,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				private static final long serialVersionUID = 8532342540008245348L;
 				@Override
 				public void nodeExpand(ExpandEvent event) {
-					selectionnerLigne(event.getItemId());
-					deplierNoeud((String)event.getItemId(), true);
+					if(event!=null && event.getItemId()!=null && hc!=null && hc.getItem(event.getItemId())!=null
+							&& hc.getItem(event.getItemId()).getItemProperty(TYPE_PROPERTY)!=null){
+						selectionnerLigne(event.getItemId());
+						deplierNoeud((String)event.getItemId(), true);
+					}
 				}
 			});
 
@@ -500,7 +503,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			Item item = source.getItem(itemId);
 			String typeObj = (String)item.getItemProperty(TYPE_PROPERTY).getValue();
 			String idObj = (String)item.getItemProperty(TRUE_ID_PROPERTY).getValue();
-			
+
 			return rechercheArborescenteController.getTypeObj(typeObj,idObj);
 		}
 	}
@@ -726,11 +729,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 						String[] tabs=trueObjectId.split("/");
 						String codDip=tabs[0];
 						String vrsDip=tabs[1];
-						
+
 						String[] tabs2=objectId.split("CMP:");
 						String codCmp=tabs2[1];
-						
-						
+
+
 						List<VersionEtape> lvet = composanteService.findVetFromVdiAndCmp(annee, codDip, vrsDip, codCmp);
 						List<ObjetBase> lobj = new LinkedList<ObjetBase>();
 						if(lvet!=null && lvet.size()>0){
