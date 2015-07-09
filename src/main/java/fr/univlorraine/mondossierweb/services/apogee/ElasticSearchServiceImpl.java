@@ -15,6 +15,7 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 
 @Component
@@ -195,10 +197,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				//Execution de la requête
 				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
 						.setSearchType(SearchType.QUERY_AND_FETCH)
+						.setTypes(Utils.CMP,Utils.VET,Utils.ELP,Utils.ETU)
 						.setQuery(qb)
 						.setFrom(0).setSize(60).setExplain(true)
 						.execute()
 						.actionGet();
+				
 				//Récupération des résultats dans un tableau
 				results = response.getHits().getHits();
 			}
@@ -209,6 +213,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				qb=QueryBuilders.matchQuery("COD_OBJ", value);
 				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
 						.setSearchType(SearchType.QUERY_AND_FETCH)
+						.setTypes(Utils.CMP,Utils.VET,Utils.ELP,Utils.ETU)
 						.setQuery(qb)
 						.setFrom(0).setSize(60).setExplain(true)
 						.execute()
@@ -222,6 +227,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				if(listeResultats.size()<(maxResult + 1)){
 					//Récupération du résultat
 					Map<String,Object> result = hit.getSource();  
+					
+					//On rajoute le type de l'objet dans la hashMap retournée
+					result.put("TYP_OBJ", hit.getType());
 
 					//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
 					if(!rechercherParCode){

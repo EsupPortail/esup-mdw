@@ -260,10 +260,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 			comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
+			comboBoxAnneeUniv.setPageLength(5);
 			comboBoxAnneeUniv.setTextInputAllowed(false);
 			comboBoxAnneeUniv.setNullSelectionAllowed(false);
 			//Initialisation de la liste des années
-			List<String> lanneeUniv = rechercheArborescenteController.recupererLesDixDernieresAnneeUniversitaire();
+			List<String> lanneeUniv = rechercheArborescenteController.recupererLesDernieresAnneeUniversitaire();
 			if(lanneeUniv!=null && lanneeUniv.size()>0){
 				for(String anneeUniv : lanneeUniv){
 					comboBoxAnneeUniv.addItem(anneeUniv);

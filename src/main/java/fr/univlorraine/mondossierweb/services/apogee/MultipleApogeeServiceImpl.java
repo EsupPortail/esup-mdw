@@ -73,7 +73,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	@Override
 	public List<String> getDixDernieresAnneesUniversitaires() {
 		@SuppressWarnings("unchecked")
-		List<String> lannee = (List<String>)entityManagerApogee.createNativeQuery("select cod_anu from annee_uni order by cod_anu DESC").getResultList();
+		List<String> lannee = getDernieresAnneesUniversitaires();
 
 		//On garde 10 annees maxi
 		if(lannee!=null && lannee.size()>10){
@@ -81,6 +81,14 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				lannee.remove(i);
 			}
 		}
+
+		return lannee;
+	}
+	
+	@Override
+	public List<String> getDernieresAnneesUniversitaires() {
+		@SuppressWarnings("unchecked")
+		List<String> lannee = (List<String>)entityManagerApogee.createNativeQuery("select cod_anu from annee_uni order by cod_anu DESC").getResultList();
 
 		return lannee;
 	}

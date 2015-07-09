@@ -256,7 +256,7 @@ public class ListeInscritsController {
 			e.setCode(code);
 			
 			//Récupération derniere année universitaire dans Apogée
-			List<String> annees = multipleApogeeService.getDixDernieresAnneesUniversitaires();
+			List<String> annees = multipleApogeeService.getDernieresAnneesUniversitaires();
 			
 			//On stocke laliste des année dans l'ui
 			ui.setListeAnneeInscrits(annees);

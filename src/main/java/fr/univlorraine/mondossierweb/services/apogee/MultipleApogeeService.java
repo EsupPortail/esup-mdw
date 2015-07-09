@@ -23,6 +23,8 @@ public interface MultipleApogeeService {
 
 	public abstract List<String> getDixDernieresAnneesUniversitaires();
 	
+	public abstract List<String> getDernieresAnneesUniversitaires();
+	
 	public abstract Signataire getSignataire(String codeSignataire);
 	
 	public abstract String getCodCivFromCodInd(String cod_ind);

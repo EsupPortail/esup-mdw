@@ -59,9 +59,17 @@ public class RechercheArborescenteController {
 
 	private List<String> lanneeUniv;
 
+	//On utilise soit recupererLesDixDernieresAnneeUniversitaire soit recupererLesDernieresAnneeUniversitaire
 	public List<String> recupererLesDixDernieresAnneeUniversitaire(){
 		if(lanneeUniv==null)
 			lanneeUniv = multipleApogeeService.getDixDernieresAnneesUniversitaires();
+		return lanneeUniv;
+	}
+	
+	//On utilise soit recupererLesDixDernieresAnneeUniversitaire soit recupererLesDernieresAnneeUniversitaire
+	public List<String> recupererLesDernieresAnneeUniversitaire(){
+		if(lanneeUniv==null)
+			lanneeUniv = multipleApogeeService.getDernieresAnneesUniversitaires();
 		return lanneeUniv;
 	}
 
@@ -189,17 +197,13 @@ public class RechercheArborescenteController {
 		return obj;
 	}
 
+	/*
 	public List<String> recupererListeAnnees(String code, String type){
 
 		List<String> annees = new LinkedList<String>();
 		if(type!=null){
 			if (type.equals(Utils.VET)) {
-				annees = recupererLesDixDernieresAnneeUniversitaire();
-				/*Etape e = new Etape();
-				e.setCode(code.split("/")[0]);
-				e.setVersion(code.split("/")[1]);
-				annees = multipleApogeeService.getAnneesFromVetDesc(e,Integer.parseInt(etudiantController.getAnneeUnivEnCours()));
-			*/
+				annees = recupererLesDernieresAnneeUniversitaire();
 			}
 			if (type.equals(Utils.CMP) || type.equals(Utils.ELP)) {
 				annees = recupererLesDixDernieresAnneeUniversitaire();
@@ -207,6 +211,6 @@ public class RechercheArborescenteController {
 		}
 
 		return annees;
-	}
+	}*/
 
 }

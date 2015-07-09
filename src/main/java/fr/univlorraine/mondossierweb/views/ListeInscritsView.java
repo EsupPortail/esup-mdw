@@ -36,6 +36,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -135,11 +136,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private boolean afficherTrombinoscope;
 
-	private NativeSelect listeAnnees;
+	private ComboBox listeAnnees;
 
-	private NativeSelect listeEtapes;
+	private ComboBox listeEtapes;
 
-	private NativeSelect listeGroupes;
+	private ComboBox listeGroupes;
 
 	//liste contenant tous les codind à afficher (apres application du filtre)
 	private List<String> listecodind;
@@ -244,10 +245,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				//Affichage d'une liste déroulante contenant la liste des années
 				List<String> lannees = MainUI.getCurrent().getListeAnneeInscrits();
 				if(lannees != null && lannees.size()>0){
-					listeAnnees = new NativeSelect();
-					listeAnnees.setCaption(applicationContext.getMessage(NAME+".annee", null, getLocale()));
+					listeAnnees = new ComboBox(applicationContext.getMessage(NAME+".annee", null, getLocale()));
+					listeAnnees.setPageLength(5);
+					listeAnnees.setTextInputAllowed(false);
 					listeAnnees.setNullSelectionAllowed(false);
-					listeAnnees.setRequired(false);
 					listeAnnees.setWidth("150px");
 					for(String annee : lannees){
 						listeAnnees.addItem(annee);
@@ -289,9 +290,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				if(typeIsElp()){
 					List<VersionEtape> letapes = MainUI.getCurrent().getListeEtapesInscrits();
 					if(letapes != null && letapes.size()>0){
-						listeEtapes = new NativeSelect();
-						listeEtapes.setCaption(applicationContext.getMessage(NAME+".etapes", null, getLocale()));
+						listeEtapes = new ComboBox(applicationContext.getMessage(NAME+".etapes", null, getLocale()));
+						listeEtapes.setPageLength(5);
 						listeEtapes.setNullSelectionAllowed(false);
+						listeEtapes.setTextInputAllowed(false);
 						listeEtapes.setRequired(false);
 						listeEtapes.setWidth("400px");
 						listeEtapes.addItem(TOUTES_LES_ETAPES_LABEL);
@@ -334,10 +336,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					List<ElpDeCollection> lgroupes = MainUI.getCurrent().getListeGroupesInscrits();
 					if(lgroupes != null && lgroupes.size()>0){
-						listeGroupes = new NativeSelect();
-
+						listeGroupes = new ComboBox();
+						listeGroupes.setPageLength(5);
 						listeGroupes.setNullSelectionAllowed(false);
+						listeGroupes.setTextInputAllowed(false);
 						listeGroupes.setRequired(false);
+						listeGroupes.setStyleName(ValoTheme.COMBOBOX_BORDERLESS);
 						listeGroupes.setWidth("348px");
 						listeGroupes.addItem(TOUS_LES_GROUPES_LABEL);
 						listeGroupes.setItemCaption(TOUS_LES_GROUPES_LABEL,TOUS_LES_GROUPES_LABEL);
