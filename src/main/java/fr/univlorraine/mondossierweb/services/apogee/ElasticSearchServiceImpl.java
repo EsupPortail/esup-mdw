@@ -197,7 +197,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				//Execution de la requête
 				response = client.prepareSearch(PropertyUtils.getElasticSearchIndex())
 						.setSearchType(SearchType.QUERY_AND_FETCH)
-						.setTypes(Utils.CMP,Utils.VET,Utils.ELP,Utils.ETU)
+						.setTypes(Utils.CMP,Utils.VET,Utils.ETU)
 						.setQuery(qb)
 						.setFrom(0).setSize(60).setExplain(true)
 						.execute()
