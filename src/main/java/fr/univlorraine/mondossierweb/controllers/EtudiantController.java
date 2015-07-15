@@ -471,7 +471,7 @@ public class EtudiantController {
 						GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
 					}
 				}else{
-					LOG.error("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					LOG.info("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}
 			} catch (WebBaseException ex) {
 				//Si on est dans un cas d'erreur non expliqué
