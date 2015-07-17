@@ -21,6 +21,7 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import groovy.transform.Synchronized;
 
 /**
  * Gestion de la recherche
@@ -107,6 +108,7 @@ public class RechercheController {
 	}
 
 	public void accessToMobileDetail(String code, String type, boolean fromSearch) {
+
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);

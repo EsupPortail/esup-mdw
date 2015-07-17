@@ -308,6 +308,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 		tf.setSizeFull();
 		tf.setNullRepresentation("");
 		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+		tf.addStyleName("bold-label");
 
 	}
 

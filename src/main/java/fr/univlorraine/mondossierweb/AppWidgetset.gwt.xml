@@ -30,4 +30,5 @@
     <inherits name="com.vaadin.addon.touchkit.gwt.TouchKitWidgetSet" />
 
     <inherits name="org.vaadin.suggestfield.WidgetSet" />
+
 </module>

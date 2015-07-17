@@ -460,7 +460,7 @@
 		<dependency>
 			<groupId>com.vaadin.addon</groupId>
 			<artifactId>vaadin-touchkit-agpl</artifactId>
-			<version>3.0.0</version>
+			<version>4.0.2</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

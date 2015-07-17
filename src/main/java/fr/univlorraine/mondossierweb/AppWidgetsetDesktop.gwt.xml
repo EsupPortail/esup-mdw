@@ -29,4 +29,5 @@
 
     <inherits name="org.vaadin.suggestfield.WidgetSet" />
     
+
 </module>

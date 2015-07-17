@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
@@ -201,6 +202,16 @@ public class Utils {
 		}
 		return false;
 	}
+	
+	//Formate bouton/lien pour appli mobile
+	public static void setButtonStyle(Button b){
+		b.setStyleName("v-nav-button");
+		b.addStyleName("v-button-multiline");
+		b.addStyleName("link"); 
+		b.addStyleName("v-link");
+	}
+	
+
 
 }
 

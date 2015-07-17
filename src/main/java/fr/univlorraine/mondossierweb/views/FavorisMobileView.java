@@ -187,8 +187,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							favVetLayout.setHeight("100%");
 
 							Button codeButton = new Button(fav.getId().getIdfav());
-							codeButton.setStyleName("link"); 
-							codeButton.addStyleName("v-link");
+							codeButton.setCaption(fav.getId().getIdfav());
+							Utils.setButtonStyle(codeButton);
 							codeButton.setWidth("90px");
 							codeButton.addClickListener(e->{
 								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
@@ -196,9 +196,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 
 							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							libButton.setStyleName("v-button-multiline");
-							libButton.addStyleName("link"); 
-							libButton.addStyleName("v-link");
+							Utils.setButtonStyle(libButton);
 							libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{
@@ -242,17 +240,14 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 
 							Button codeButton = new Button(fav.getId().getIdfav());
-							codeButton.setStyleName("link"); 
-							codeButton.addStyleName("v-link");
+							Utils.setButtonStyle(codeButton);
 							codeButton.setWidth("90px");
 							codeButton.addClickListener(e->{
 								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 							});
 
 							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							libButton.setStyleName("v-button-multiline");
-							libButton.addStyleName("link"); 
-							libButton.addStyleName("v-link");
+							Utils.setButtonStyle(libButton);
 							libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{
@@ -304,7 +299,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 		}
 	}
-
 
 
 	private void accessToDetail(String id, String type) {

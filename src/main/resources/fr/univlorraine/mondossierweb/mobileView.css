@@ -138,6 +138,7 @@ background-color: rgb(85,96,164);
 line-height: normal;
 white-space: normal;
 height: 100%;
+font-size: 15px;
 }
 
 .valo-ul .v-disabled {
@@ -189,10 +190,11 @@ vertical-align: middle !important;
 	overflow-y: auto;
 }
 
+/*
 .valo-ul .v-treetable [class*="cell-wrapper"] {
 height: 100% !important;
 }
-
+*/
 .valo-ul .v-table-cell-wrapper > .v-widget {
 margin: 0px -15px 2px -10px !important;
 }
@@ -200,6 +202,8 @@ margin: 0px -15px 2px -10px !important;
 .valo-ul .v-treetable [class*="cell-content"] {
  padding-left: 0px !important; 
  padding-right: 0px !important; 
+ padding-top: 0px !important; 
+ padding-bottom: 0px !important; 
 }
 
 .valo-ul .v-scrollableelement{
@@ -221,14 +225,17 @@ overflow-x: hidden;
 .valo-ul .v-nav-button {
 	padding: 0 0px;
 	border: none;
+	color: white;
 	background-image: none;
 	background-color : transparent;
 	border-radius: 0;
+	text-decoration: none;
 }
 
 .valo-ul .v-nav-button .v-button-wrap {
 	background-image: none;
 	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0);
+	text-decoration: none;
 }
 
 
@@ -289,14 +296,34 @@ transition: none;
 	border-bottom: 1px solid #d1d1ce;
 }
 
+.valo-ul .v-button-caption {
+text-shadow: none;
+}
 
+.valo-ul .v-touchkit-toolbar .v-button {
+	height: 100%;
+	font-weight: bold;
+}	
+
+.valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar .v-button-selected {
+	color: white;
+  background: rgba(85, 96, 164, 1.0);
+	font-weight: bold;
+}
+.valo-ul .v-touchkit-toolbar .v-button-wrap {
+	display: inline-block;
+	line-height: 0.7;
+}
+.valo-ul .v-icon + .v-captiontext, .valo-ul .v-icon + span {
+  margin-left: -5px;
+}
+/*
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar {
 position: absolute;
 bottom: 0;
 left: 0;
 right: 0;
 border-top: 1px solid #d1d1ce;
-/* box-shadow: 0 -2px rgba(209, 209, 206, 0.5); */
 padding-top: 0px;
 }
 
@@ -306,11 +333,6 @@ height: 48px;
 display: -webkit-box;
 display: -ms-flexbox;
 display: flex;
-/* box-shadow: 0 2px rgba(209, 209, 206, 0.5); */
-}
-
-.valo-ul .v-button-caption {
-text-shadow: none;
 }
 
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar .v-button-selected .v-button-wrap {
@@ -349,7 +371,7 @@ border-radius: 0;
 color: rgb(85,96,164);
 }
 
-
+*/
 .valo-ul .v-formlayout-captioncell>.v-caption {
  font-size: inherit; 
 }
@@ -358,6 +380,9 @@ color: rgb(85,96,164);
 text-align:right;
 }
 
+.valo-ul .v-app-loading:after, .v-loading-indicator:after {
+	display: none;
+}
 .valo-ul .v-window-loadingIndicatorWindow .v-window-outerheader {
 	display: none;
 }

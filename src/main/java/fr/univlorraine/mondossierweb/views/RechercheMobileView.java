@@ -635,19 +635,23 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				lib=tab[1].trim();
 			}
 			Button b = new Button(lib);
-			b.setStyleName("v-button-multiline");
-			b.addStyleName("link"); 
-			b.addStyleName("v-link");
+			Utils.setButtonStyle(b);
 			b.setHeight("100%");
 			b.setWidth("100%");
 			b.addClickListener(e->{
 				rechercheController.accessToMobileDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(),true);
 			});
-
-			return b;
+			
+			
+			VerticalLayout vl = new VerticalLayout();
+			vl.setSizeFull();
+			vl.addComponent(b);
+			//vl.setComponentAlignment(b, Alignment.MIDDLE_CENTER);
+			return vl;
 		}
 	}
 
+	
 
 	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
 

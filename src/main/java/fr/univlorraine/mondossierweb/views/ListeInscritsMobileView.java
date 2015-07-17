@@ -442,10 +442,11 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					// Bouton contenant le nom/prénom
 					Button btnNomEtudiant = new Button(inscrit.getPrenom()+" "+inscrit.getNom());
 					btnNomEtudiant.setSizeFull();
-					btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+					Utils.setButtonStyle(btnNomEtudiant);
+					/*btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
 					btnNomEtudiant.addStyleName("link"); 
 					btnNomEtudiant.addStyleName("v-link");
-					btnNomEtudiant.addStyleName("v-button-multiline");
+					btnNomEtudiant.addStyleName("v-button-multiline");*/
 					// Ajout du bouton au layout
 					nomCodeLayout.addComponent(btnNomEtudiant);
 					//Gestion du clic sur le bouton

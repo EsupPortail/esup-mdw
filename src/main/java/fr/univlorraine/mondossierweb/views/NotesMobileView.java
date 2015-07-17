@@ -33,6 +33,7 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 
 /**
@@ -251,9 +252,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 					libelleLayout.setSizeFull();
 
 					Button libelleButton = new Button(etape.getLibelle());
-					libelleButton.setStyleName("v-button-multiline");
-					libelleButton.addStyleName("link"); 
-					libelleButton.addStyleName("v-link");
+					Utils.setButtonStyle(libelleButton);
 					libelleButton.setHeight("100%");
 					libelleButton.setWidth("100%");
 
