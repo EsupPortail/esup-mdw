@@ -116,7 +116,7 @@ public class Initializer implements WebApplicationInitializer {
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(120));
+		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(15));
 		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "com.vaadin.DefaultWidgetSet");
 		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetsetDesktop");
 		//springVaadinServlet.setInitParameter(Constants.DEFAULT_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
@@ -142,7 +142,7 @@ public class Initializer implements WebApplicationInitializer {
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(120));
+		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(20));
 		//springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "com.vaadin.DefaultWidgetSet");
 		springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 		//springTouchkitVaadinServlet.setInitParameter(Constants.DEFAULT_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
