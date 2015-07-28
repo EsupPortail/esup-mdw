@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.util.StringUtils;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import org.springframework.util.StringUtils;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
@@ -24,7 +24,6 @@ import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.photo.PhotoNancy2ImplCodEtu;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
-import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 
 /**
  * UI générique, pour gérer les attributs communs aux UI desktop ou Mobile sans se soucier de la version de l'UI appelée

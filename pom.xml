@@ -495,17 +495,6 @@
 			<artifactId>spring-vaadin-integration</artifactId>
 			<version>3.1</version>
 		</dependency>
-		<dependency>
-   			<groupId>org.vaadin</groupId>
-   			<artifactId>suggestfield</artifactId>
-   			<version>0.0.4</version>
-		</dependency>
-
-<dependency>
-  <groupId>com.zybnet</groupId>
-  <artifactId>vaadin-autocomplete</artifactId>
-  <version>1.0.0</version>
-</dependency>
 	
 	
 		<!-- Servlet 3 -->

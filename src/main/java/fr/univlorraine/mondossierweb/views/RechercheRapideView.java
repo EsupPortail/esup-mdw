@@ -37,14 +37,12 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
@@ -98,8 +96,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	private AutoComplete champRecherche;
 
-	//private SuggestField search1= new SuggestField();
-
 	private HierarchicalContainer rrContainer;
 
 	private TreeTable tableResultats;
@@ -137,49 +133,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			champRechercheLayout = new HorizontalLayout();
 			mainVerticalLayout.setImmediate(true);
 			mainVerticalLayout.setSizeFull();
-
-			//CHAMP NEW RECHERCHE
-			/*AutocompleteField<String> search = new AutocompleteField<>();
-		search.addStyleName("v-textfield v-widget");
-		search.setWidth(450, Unit.PIXELS);
-		search.setEnabled(true);
-		search.setImmediate(true);
-		search.focus();
-		search.setQueryListener(new AutocompleteQueryListener<String>() {
-			  @Override
-			  public void handleUserQuery(AutocompleteField<String> field, String query) {
-			    for (String page : quickSearch(query)) {
-			      field.addSuggestion(page, page);
-			    }
-			  }
-			});
-
-			search.setSuggestionPickedListener(new AutocompleteSuggestionPickedListener<String>() {
-			  @Override
-			  public void onSuggestionPicked(String page) {
-				 LOG.debug("handleSuggestionSelection "+page);
-				  search(false, page);
-			  }
-			});
-
-		mainVerticalLayout.addComponent(search);*/
-
-
-			//ADD-ON Suggestfield
-			/*	search1.setInputPrompt("Tapez votre recherche");
-			search1.setEnabled(true);
-			search1.setWidth(700, Unit.PIXELS);
-			search1.setPopupWidth(700);
-			setUpAutocomplete(search1);
-			search1.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
-				@Override
-				public void handleAction(Object sender, Object target) {
-					if(target==search1){
-
-						search(false);
-					}
-				}
-			});*/
 
 
 			//BOUTON DE RECHERCHE
@@ -640,67 +593,4 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	}
 
 
-
-	/*
-	private void setUpAutocomplete(final SuggestField search) {
-
-
-		search.setSuggestionHandler(new SuggestionHandler() {
-			@Override
-			public List<Object> searchItems(String query) {
-				System.out.println("Query: " + query);
-				return new ArrayList<Object>(quickSearch(query));
-			}
-		});
-
-		search.setSuggestionConverter(new ResultatDeRechercheSuggestionConverter());
-
-		search.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				System.out.println("SuugestField value changed");
-				Notification.show("Selected " + search.getValue());
-			}
-		});
-		search.setNewItemsAllowed(true);
-		search.addFocusListener(new FocusListener() {
-			@Override
-			public void focus(FocusEvent event) {
-				System.out.println("Focus event");
-			}
-		});
-		search.addBlurListener(new BlurListener() {
-			@Override
-			public void blur(BlurEvent event) {
-				System.out.println("Blur event");
-			}
-		});
-	}
-
-
-	protected void handleSuggestionSelection(Integer suggestion) {
-		Notification.show("Selected " + suggestion);
-	}
-
-
-	private class ResultatDeRechercheSuggestionConverter extends BeanSuggestionConverter {
-
-		public ResultatDeRechercheSuggestionConverter() {
-			super(ResultatDeRecherche.class, "code", "lib","type");
-		}
-
-		@Override
-		public Object toItem(SuggestFieldSuggestion suggestion) {
-			System.out.println("toItem : "+suggestion.getId());
-			ResultatDeRecherche result = null;
-			for (ResultatDeRecherche bean : items) {
-				if (bean.getCode().toString().equals(suggestion.getId())) {
-					result = bean;
-					break;
-				}
-			}
-			assert result != null : "This should not be happening";
-			return result;
-		}
-	}*/
 }

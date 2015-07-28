@@ -77,7 +77,6 @@ import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
-import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 

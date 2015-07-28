@@ -63,7 +63,6 @@ import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
-import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
