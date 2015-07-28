@@ -69,7 +69,8 @@ public class Initializer implements WebApplicationInitializer {
 		servletContext.addListener(new HttpSessionListener() {
 			@Override
 			public void sessionCreated(HttpSessionEvent httpSessionEvent) {
-				httpSessionEvent.getSession().setMaxInactiveInterval(60);
+				// sans nouvelle requête, on garde la session active 4 minutes
+				httpSessionEvent.getSession().setMaxInactiveInterval(240);
 			}
 
 			@Override
@@ -101,9 +102,9 @@ public class Initializer implements WebApplicationInitializer {
 		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");
 
 		/* Servlet REST */
-		ServletRegistration.Dynamic restServlet = servletContext.addServlet("rest", new DispatcherServlet(springContext));
+	/*	ServletRegistration.Dynamic restServlet = servletContext.addServlet("rest", new DispatcherServlet(springContext));
 		restServlet.setLoadOnStartup(1);
-		restServlet.addMapping("/rest", "/rest/*");
+		restServlet.addMapping("/rest", "/rest/*");*/
 
 		/* Servlet Spring-Vaadin */
 		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);
@@ -111,12 +112,11 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");
 		/* Défini le bean UI */
-		//springVaadinServlet.setInitParameter("beanName", "mainUI");
-		springVaadinServlet.setInitParameter("UIProvider", "fr.univlorraine.mondossierweb.MdwUIProvider");
+		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(5));
+		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
 
 		
 		/* Configure le Push */
@@ -134,12 +134,9 @@ public class Initializer implements WebApplicationInitializer {
 		//springTouchkitVaadinServlet.setLoadOnStartup(1);
 		springTouchkitVaadinServlet.addMapping("/m/*");
 		/* Défini le bean UI */
-		//springTouchkitVaadinServlet.setInitParameter("beanName", "mdwFallbackTouchkitUI");
-		springTouchkitVaadinServlet.setInitParameter("UIProvider", "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
+		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
-		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(20));
 		springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 
 		

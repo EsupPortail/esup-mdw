@@ -17,7 +17,7 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 
 	private Logger LOG = LoggerFactory.getLogger(MDWTouchkitServlet.class);
 	
-	 private MdwTouchkitUIProvider uiProvider = new MdwTouchkitUIProvider();
+	// private MdwTouchkitUIProvider uiProvider = new MdwTouchkitUIProvider();
 
 	    @Override
 	    protected void servletInitialized() throws ServletException {
@@ -37,11 +37,9 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 
 	        TouchKitSettings s = getTouchKitSettings();
 	        s.getWebAppSettings().setWebAppCapable(true);
-	        s.getWebAppSettings().setStatusBarStyle("black");
 
 	        s.getApplicationCacheSettings().setCacheManifestEnabled(true);
-	        
-
+	        s.getApplicationCacheSettings().setOfflineModeEnabled(false);
 	    }
 	
 }
