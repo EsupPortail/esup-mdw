@@ -3,27 +3,29 @@
 }
 
 .valo-ul .v-slot-btn-reset {
-border-right: 1px solid #c5c5c5;
-border-left: 0px solid #c5c5c5;
-border-top: 1px solid #c5c5c5;
-border-bottom: 1px solid #c5c5c5;
+border-right: 1px solid #c5c5c5 !important;
+border-left: 0px solid #c5c5c5 !important;
+border-top: 1px solid #c5c5c5 !important;
+border-bottom: 1px solid #c5c5c5 !important;
 height: 35px !important;
 }
 
 .valo-ul .textfield-resetable {
-border-radius: 0px; 
-border-right: 0px;
-border-left: 1px solid #c5c5c5;
-border-top: 1px solid #c5c5c5;
-border-bottom: 1px solid #c5c5c5;
+border-radius: 0px !important;
+border-right: 0px !important;
+border-left: 1px solid #c5c5c5 !important;
+border-top: 1px solid #c5c5c5 !important;
+border-bottom: 1px solid #c5c5c5 !important;
 }
 
 .v-slot-googlepopupview {
 	position: absolute;
 	/* left:112px; */
 	/* top: 54px; */
-	 left:137px; 
-	 top: 66px;
+	/* left:137px; 
+	 top: 66px; */
+	 left:122px; 
+	 top: 61px;
 	z-index: 2;
 }
 
@@ -48,8 +50,8 @@ font-weight: bold;
 }
 
 .valo-ul .v-textfield.v-disabled {
-	opacity: inherit;
-	font-weight: bold;
+	opacity: inherit !important;
+	font-weight: bold !important;
 }
 
 .valo-ul .button-big-icon {
@@ -89,17 +91,16 @@ font-size: x-large;
 }
 
 .valo-ul .v-panel {
-	border-radius: 5px;
+	border-radius: 5px !important;
 }
 
 .valo-ul .v-panel-caption {
-/*background-color: #4b4b4b;*/
-background-color: #6E6E6E;
-background-image: none;
-color: white;
- font-size: inherit; 
- border-top-right-radius: 5px;
-border-top-left-radius: 5px;
+background-color: #6E6E6E !important;
+background-image: none !important;
+color: white !important;
+ font-size: inherit !important;
+ border-top-right-radius: 5px !important;
+border-top-left-radius: 5px !important;
 }
 
 
@@ -115,10 +116,10 @@ border-top-left-radius: 5px;
 
 
 .valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
-	background : rgb(85,96,164);
-	color: white;
-	height: 37px;
-	font: 400 12px/1.55 "Open Sans", sans-serif;
+	background : rgb(85,96,164) !important;
+	color: white !important;
+	height: 37px !important;
+	font: 400 12px/1.55 "Open Sans", sans-serif !important;
 }
 
 .valo-ul .v-link {

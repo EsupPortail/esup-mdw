@@ -1,144 +1,143 @@
 
 .valo-ul.v-app {
-background: #F0F0F0;
+background: #F0F0F0 !important;
 }
 
 .valo-ul .v-slot-btn-reset {
-border-right: 1px solid #c5c5c5;
-border-left: 0px solid #c5c5c5;
-border-top: 1px solid #c5c5c5;
-border-bottom: 1px solid #c5c5c5;
+border-right: 1px solid #c5c5c5 !important;
+border-left: 0px solid #c5c5c5 !important;
+border-top: 1px solid #c5c5c5 !important;
+border-bottom: 1px solid #c5c5c5 !important;
 height: 35px !important;
-background: white;
-height: 35px;
+background: white !important;
+height: 35px !important;
 }
 
 .valo-ul .v-button-btn-reset .v-button-wrap {
-	color: #464646;
-  	text-shadow: none;
+	color: #464646 !important;
+  	text-shadow: none !important;
 }
 
 .valo-ul .panel-without-bottom-line-separator {
-	border-right: 1px solid #c5c5c5;
-	border-left: 1px solid #c5c5c5;
-	border-top: 1px solid #c5c5c5;
-	border-bottom: 0px solid #c5c5c5;
+	border-right: 1px solid #c5c5c5 !important;
+	border-left: 1px solid #c5c5c5 !important;
+	border-top: 1px solid #c5c5c5 !important;
+	border-bottom: 0px solid #c5c5c5 !important;
 }
 
 .valo-ul .textfield-resetable {
-border-radius: 0px; 
-border-right: 0px;
-border-left: 1px solid #c5c5c5;
-border-top: 1px solid #c5c5c5;
-border-bottom: 1px solid #c5c5c5;
+border-radius: 0px !important;
+border-right: 0px !important;
+border-left: 1px solid #c5c5c5 !important;
+border-top: 1px solid #c5c5c5 !important;
+border-bottom: 1px solid #c5c5c5 !important;
 }
 
 .valo-ul .v-popupview-popup-googlepopupview {
 	position: absolute;
 	left: 0px !important;
 	top: 87px !important;
-	width: 100%;
-	padding: 0px 0px;
-	z-index: 2;
+	width: 100% !important;
+	padding: 0px 0px !important;
+	z-index: 2 !important;
 }
 
 .valo-ul .v-table-googletable{
 	 width: 100% !important;
-    overflow-x: hidden;
-	overflow-y: hidden;
+    overflow-x: hidden !important;
+	overflow-y: hidden !important;
 }
 .valo-ul .v-table-body-googletable{
-     /*  overflow: hidden !important; */
      width: 100% !important;
-    overflow-x: hidden;
-	overflow-y: hidden;
+    overflow-x: hidden !important;
+	overflow-y: hidden !important;
 }
 
 .valo-ul .layout-checkbox-checked{
-	border-bottom: 4px solid rgb(85,96,164);
-	height: 50px;
-	text-align: center;
+	border-bottom: 4px solid rgb(85,96,164) !important;
+	height: 25px !important;
 }
 
 .valo-ul .layout-checkbox-unchecked{
-	border-bottom: 1px solid rgb(85,96,164);
-	height: 50px;
-	text-align: center;
+	border-bottom: 1px solid rgb(85,96,164) !important;
+	height: 25px !important;
 }
 
 .valo-ul .label-line-through {
-	text-decoration: line-through;
+	text-decoration: line-through !important;
 }
 
 .valo-ul .v-touchkit-navpanel-container{
-	background: #F0F0F0;
+	background: #F0F0F0 !important;
 }
 
 .valo-ul .v-horizontallayout-v-layout-multiline {
-height: 100%;
+height: 100% !important;
 }
 
 .valo-ul .v-button-multiline {
-height: 100%;
-text-align: center;
+height: 100% !important;
+text-align: center !important;
 }
 
 
 .valo-ul .v-image-link {
-	cursor: pointer;
+	cursor: pointer !important;
 }
 
 .valo-ul .layout-bottom-line-separator{
-	border-bottom: 1px solid #d1d1ce;
-	background-color: white;
+	border-bottom: 1px solid #d1d1ce !important;
+	background-color: white !important;
 }
 
 .valo-ul .bold-label{
-	font-weight: bold;
+	font-weight: bold !important;
 }
 
 .valo-ul .bold-italic-label{
-	font-weight: bold;
-	font-style: italic;
+	font-weight: bold !important;
+	font-style: italic !important;
 }
 
 .valo-ul .main-layout-bottom-line-separator{
-	border-bottom: 1px solid #d1d1ce;
-	background-color: rgb(194, 197, 199);
+	border-bottom: 1px solid #d1d1ce !important;
+	background-color: rgb(194, 197, 199) !important;
 }
 
 .valo-ul .root-layout-bottom-line-separator{
-	border-bottom: 1px solid #d1d1ce;
-	background-color: rgb(85,96,164);
+	border-bottom: 1px solid #d1d1ce !important;
+	background-color: rgb(85,96,164) !important;
 	/* background-color: rgb(67, 69, 69); */
-	color: white;
+	color: white !important;
 }
 
 .valo-ul .level-indicator-layout .v-spacing {
-	width: 5px;
+	width: 5px !important;
 }
 
 .valo-ul .layout-level-blue-indicator{
-	border-top: 4px solid #3057ED;
+	border-top: 4px solid #3057ED !important;
+	vertical-align: bottom !important;
 }
 
 .valo-ul .layout-level-green-indicator{
-	border-top: 4px solid #0DA50D;
+	border-top: 4px solid #0DA50D !important;
+	vertical-align: bottom !important;
 }
 
 .valo-ul .line-separator{
-border-top: 1px solid #d5d5d5;
+border-top: 1px solid #d5d5d5 !important;
 }
 
 .valo-ul .navigation-bar{
-background-color: rgb(85,96,164);
+background-color: rgb(85,96,164) !important;
 }
 
 .valo-ul .v-button-multiline .v-button-wrap .v-button-caption {
-line-height: normal;
-white-space: normal;
-height: 100%;
-font-size: 15px;
+line-height: normal !important;
+white-space: normal !important;
+height: 100% !important;
+font-size: 15px !important;
 }
 
 .valo-ul .v-disabled {
@@ -146,30 +145,30 @@ opacity: 1.0 !important;
 }
 
 .valo-ul .v-panel-caption-v-colored-panel-caption {
-	background: rgb(85,96,164);
-	color: #FFFFFF;
+	background: rgb(85,96,164) !important;
+	color: #FFFFFF !important;
 }
 
 .valo-ul .v-panel-caption-centertitle-panel {
-text-align: center;
-  border-right: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
+text-align: center !important;
+  border-right: 0px !important;
+  border-left: 0px !important;
+  border-bottom: 0px !important;
 }
 
 .valo-ul .v-panel-caption-v-panel-caption-centertitle-panel {
-text-align: center;
-font-size: 14px;
-font-weight: bold;
+text-align: center !important;
+font-size: 14px !important;
+font-weight: bold !important;
 }
 
 .valo-ul .label-centre {
-	text-align: center;
+	text-align: center !important;
 }
 
 .valo-ul .label-centre-bold {
-	text-align: center;
-	font-weight: bold;
+	text-align: center !important;
+	font-weight: bold !important;
 }
 
 .valo-ul .v-table-cell-wrapper {
@@ -181,13 +180,13 @@ vertical-align: middle !important;
 }
 
 .valo-ul .v-table-nohscrollabletable{
-	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-x: hidden !important;
+	overflow-y: auto !important;
 }
 
 .valo-ul .v-table-body-nohscrollabletable{
-	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-x: hidden !important;
+	overflow-y: auto !important;
 }
 
 /*
@@ -207,115 +206,123 @@ margin: 0px -15px 2px -10px !important;
 }
 
 .valo-ul .v-scrollableelement{
-overflow-y: auto;
-overflow-x: hidden;
+overflow-y: auto !important;
+overflow-x: hidden !important;
 }
 
 .valo-ul .v-slot-v-scrollableelement{
-	overflow-y: auto;
-	overflow-x: hidden;
+	overflow-y: auto !important;
+	overflow-x: hidden !important;
 }
 
 .valo-ul .v-noscrollableelement{
-	overflow-x: hidden;
-	overflow-y: hidden;
+	overflow-x: hidden !important;
+	overflow-y: hidden !important;
 }
 
 
 .valo-ul .v-nav-button {
-	padding: 0 0px;
-	border: none;
-	color: white;
-	background-image: none;
-	background-color : transparent;
-	border-radius: 0;
-	text-decoration: none;
+	padding: 0 0px !important;
+	border: none !important;
+	color: white !important;
+	background-image: none !important;
+	background-color : transparent !important;
+	border-radius: 0 !important;
+	text-decoration: none !important;
 }
 
 .valo-ul .v-nav-button .v-button-wrap {
-	background-image: none;
-	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0);
-	text-decoration: none;
+	background-image: none !important;
+	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0) !important;
+	text-decoration: none !important;
 }
 
 
 .valo-ul .v-button-without-padding{
-	padding: 0 5px;
+	padding: 0 5px !important;
 }
 
 .valo-ul .v-popover-button:before {
-content: none;
+content: none !important;
 
 }
 
 
 .valo-ul .v-popover-button .v-button-wrap {
-	background-image: none;
-	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0);
+	background-image: none !important;
+	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0) !important;
 }
 
 
 .valo-ul .v-nav-button:before {
-content: none;
+content: none !important;
 
 }
 
 
 .valo-ul .v-popover-blank {
-	background-color: white;
-	background-image: none;
+	background-color: white !important;
+	background-image: none !important;
 }
 
 .valo-ul .v-label-navbar {
-color: #FFFFFF;
-text-align: center;
+color: #FFFFFF !important;
+text-align: center !important;
 }
 
 
 .valo-ul .v-window-header {
- line-height: normal;
+ line-height: normal !important;
 }
 
 
 
 .valo-ul .v-window-modalitycurtain {
--webkit-animation: none;
--moz-animation: none;
-animation: none;
+-webkit-animation: none !important;
+-moz-animation: none !important;
+animation: none !important;
 }
 
 
 .valo-ul .v-window {
--webkit-transition: none;
--moz-transition: none;
-transition: none;
+-webkit-transition: none !important;
+-moz-transition: none !important;
+transition: none !important;
 }
 
 .valo-ul .label-bold-with-bottom{
-	font-weight: bold;
-	border-bottom: 1px solid #d1d1ce;
+	font-weight: bold !important;
+	border-bottom: 1px solid #d1d1ce !important;
 }
 
 .valo-ul .v-button-caption {
-text-shadow: none;
+text-shadow: none !important;
 }
 
+
+
+.valo-ul .v-touchkit-toolbar {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}	
+
 .valo-ul .v-touchkit-toolbar .v-button {
-	height: 100%;
-	font-weight: bold;
+	height: 100% !important;
+	font-weight: bold !important;
 }	
 
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar .v-button-selected {
-	color: white;
-  background: rgba(85, 96, 164, 1.0);
-	font-weight: bold;
+	color: white !important;
+  background: rgba(85, 96, 164, 1.0) !important;
+	font-weight: bold !important;
 }
 .valo-ul .v-touchkit-toolbar .v-button-wrap {
-	display: inline-block;
-	line-height: 0.7;
+	display: inline-block !important;
+	line-height: 0.7 !important;
 }
 .valo-ul .v-icon + .v-captiontext, .valo-ul .v-icon + span {
-  margin-left: -5px;
+  margin-left: -5px !important;
 }
 /*
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar {
@@ -373,11 +380,11 @@ color: rgb(85,96,164);
 
 */
 .valo-ul .v-formlayout-captioncell>.v-caption {
- font-size: inherit; 
+ font-size: inherit !important;
 }
 
 .valo-ul .v-label-align-right {
-text-align:right;
+text-align:right !important;
 }
 
 .valo-ul .v-app-loading:after, .v-loading-indicator:after {

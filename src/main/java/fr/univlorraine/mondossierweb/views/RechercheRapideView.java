@@ -279,6 +279,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					champRecherche.setValue("");
 					//search1.setValue("");
 					resetButton.setIcon(FontAwesome.TIMES);
+					champRecherche.focus();
 				});
 				champRechercheLayout.addComponent(resetButton);
 				champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
