@@ -1,6 +1,8 @@
 package fr.univlorraine.mondossierweb;
 
 import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringUIProvider;
@@ -14,23 +16,25 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 
 	private static final long serialVersionUID = -1535055076149004931L;
+	
+	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUIProvider.class);
 
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
 		//Récupération du userAgent
 		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-		Log.debug("UA : "+userAgent);
+		LOG.debug("UA : "+userAgent);
 
 		// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
 		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
 	            || userAgent.contains("windows phone 9")) {
 			//On va vers la version mobile
-			Log.debug("Touckit UI provided ("+userAgent+")");
+			LOG.debug("Touckit UI provided ("+userAgent+")");
 			return MdwTouchkitUI.class;
 		} else {
 			//On affiche la page proposant une redirection vers la version Desktop
-			Log.debug("Fallback UI provided ("+userAgent+")");
+			LOG.debug("Fallback UI provided ("+userAgent+")");
 			return MdwFallbackUI.class;
 		}
 	}
@@ -54,11 +58,11 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
 	            || userAgent.contains("windows phone 9")) {
 			//On va vers la version mobile
-			Log.debug("-uiBeanNameObj = mdwTouchkitUI");
+			LOG.debug("-uiBeanNameObj = mdwTouchkitUI");
 			uiBeanNameObj = "mdwTouchkitUI";
 		} else {
 			//On affiche la page proposant une redirection vers la version Desktop
-			Log.debug("-uiBeanNameObj = mdwFallbackUI");
+			LOG.debug("-uiBeanNameObj = mdwFallbackUI");
 			uiBeanNameObj = "mdwFallbackUI";
 		}
 

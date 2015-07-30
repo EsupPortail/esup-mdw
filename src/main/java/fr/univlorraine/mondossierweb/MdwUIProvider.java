@@ -3,6 +3,8 @@ package fr.univlorraine.mondossierweb;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 
@@ -19,12 +21,14 @@ public class MdwUIProvider extends SpringUIProvider  {
 
 	private static final long serialVersionUID = -1535055076149004931L;
 
+	private Logger LOG = LoggerFactory.getLogger(MdwUIProvider.class);
+	
 	@Override
     public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 		
 		//Récupération du userAgent
         String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-        Log.debug("UA : "+userAgent);
+        LOG.debug("UA : "+userAgent);
         
         /* Device Detection */
 		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
@@ -33,11 +37,11 @@ public class MdwUIProvider extends SpringUIProvider  {
 				|| userAgent.contains("windows phone 8")
 	            || userAgent.contains("windows phone 9"))){
 			//On affiche la page proposant une redirection vers la version Mobile
-			Log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
+			LOG.debug("-FallbackTouchkit UI provided ("+userAgent+")");
             return MdwFallbackTouchkitUI.class;
 		}else{
 			//On va vers la version desktop
-        	Log.debug("-Fallback UI provided ("+userAgent+")");
+        	LOG.debug("-Fallback UI provided ("+userAgent+")");
             return MainUI.class;
 		}
     }
@@ -62,11 +66,11 @@ public class MdwUIProvider extends SpringUIProvider  {
 					|| userAgent.contains("windows phone 8")
 		            || userAgent.contains("windows phone 9"))){
 				//On affiche la page proposant une redirection vers la version Mobile
-				Log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
+				LOG.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 				uiBeanNameObj = "mdwFallbackTouchkitUI";
 			}else{
 				//On va vers la version desktop
-	        	Log.debug("-uiBeanNameObj = mainUI");
+	        	LOG.debug("-uiBeanNameObj = mainUI");
 	        	uiBeanNameObj = "mainUI";
 			}
 
