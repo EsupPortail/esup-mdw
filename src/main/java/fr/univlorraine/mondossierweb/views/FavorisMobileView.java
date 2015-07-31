@@ -19,12 +19,14 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -112,15 +114,27 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			navbar.setHeight("40px");
 			navbar.setStyleName("navigation-bar");
 
-			//Bouton retour
+			//Bouton info
 			infoButton = new Button();
 			infoButton.setIcon(FontAwesome.INFO);
 			infoButton.setStyleName("v-nav-button");
 			infoButton.addClickListener(e->{
+				/**
+				 * NOUVELLE VERSION
+				 */
+				Notification note = new Notification(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()), "", Notification.TYPE_TRAY_NOTIFICATION, true);
+				note.setPosition(Position.MIDDLE_CENTER);
+				note.setDelayMsec(6000);
+				note.show(UI.getCurrent().getPage());
+				/**
+				 * ANCIENNE VERSION
+				 */
+				/*
 				//afficher message
 				HelpMobileWindow hbw = new HelpMobileWindow(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),false);
 
 				UI.getCurrent().addWindow(hbw);
+				*/
 			});
 			navbar.addComponent(infoButton);
 			navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
