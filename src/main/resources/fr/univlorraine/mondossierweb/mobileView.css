@@ -324,6 +324,18 @@ text-shadow: none !important;
 .valo-ul .v-icon + .v-captiontext, .valo-ul .v-icon + span {
   margin-left: -5px !important;
 }
+
+
+
+.valo-ul .v-Notification {
+	background: rgb(32, 32, 35) !important;
+	    border-radius: 8px;
+	    width: 98%;
+}
+
+.valo-ul .v-Notification h1 {
+    color: white;
+}
 /*
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar {
 position: absolute;

@@ -34,6 +34,8 @@ import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.ui.NotificationRole;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -355,6 +357,19 @@ public class MdwTouchkitUI extends GenericUI{
 	 * Affiche du message d'intro
 	 */
 	private void afficherMessageIntro(String text){
+		/**
+		 * NOUVELLE VERSION AVEC NOTIFICATION ATTENTION CHANGEMENT MESSAGES.PROPERTIES ET CSS
+		 */
+		Notification note = new Notification(text, "", Notification.TYPE_TRAY_NOTIFICATION, true);
+		note.setPosition(Position.MIDDLE_CENTER);
+		note.setDelayMsec(6000);
+		note.show(this.getPage());
+		
+		
+		/**
+		 * ANCIENNE VERSION AVEC POPUP WINDOW
+		 */
+		/*
 		//Recuperer dans la base si l'utilisateur a une préférence pour l'affichage le message
 		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
 
@@ -369,6 +384,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 		//Si on doit afficher le message
 		if(afficherMessage){
+
 			//Création de la pop-pup contenant le message
 			HelpMobileWindow hbw = new HelpMobileWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
 
@@ -385,7 +401,9 @@ public class MdwTouchkitUI extends GenericUI{
 
 			//Affichage de la pop_up
 			UI.getCurrent().addWindow(hbw);
+			
 		}
+		*/
 	}
 
 	/**
