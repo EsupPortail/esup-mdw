@@ -541,7 +541,7 @@ public class ListeInscritsController {
 			}
 
 		}catch(Exception e){
-			LOG.error("Aucun Groupe pour "+codElp+ " - "+annee);
+			LOG.debug("Aucun Groupe pour "+codElp+ " - "+annee);
 		}
 		return listeElp;
 	}
