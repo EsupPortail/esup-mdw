@@ -277,46 +277,6 @@ text-align: center !important;
 
 
 
-.valo-ul .v-window-modalitycurtain {
--webkit-animation: none !important;
--moz-animation: none !important;
-animation: none !important;
--webkit-transition: none !important;
--moz-transition: none !important;
-transition: none !important;
-}
-
-
-.valo-ul .v-window {
--webkit-animation: none !important;
--moz-animation: none !important;
-animation: none !important;
--webkit-transition: none !important;
--moz-transition: none !important;
-transition: none !important;
-}
-
-.valo-ul .v-window-closebox, .valo-ul .v-window-maximizebox, .valo-ul .v-window-restorebox {
-	-webkit-animation: none !important;
--moz-animation: none !important;
-animation: none !important;
--webkit-transition: none !important;
--moz-transition: none !important;
-transition: none !important;
-}
-
-.valo-ul .v-Notification-animate-out {
-	-webkit-animation: none !important;
-	-moz-animation: none !important;
-	animation: none !important;
-}
-
-.valo-ul .v-Notification-animate-out.v-position-top, .valo-ul .v-Notification-animate-out.v-position-bottom {
-	-webkit-animation: none !important;
-	-moz-animation: none !important;
-	animation: none !important;
-}
-
 .valo-ul .label-bold-with-bottom{
 	font-weight: bold !important;
 	border-bottom: 1px solid #d1d1ce !important;
