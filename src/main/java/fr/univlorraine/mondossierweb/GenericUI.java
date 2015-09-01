@@ -130,7 +130,8 @@ public class GenericUI  extends UI {
 
 	@Getter
 	@Setter
-	protected IAnalyticsTracker analyticsTracker = new GoogleAnalyticsTracker(this);;
+	//protected IAnalyticsTracker analyticsTracker = new GoogleAnalyticsTracker(this);
+	protected IAnalyticsTracker analyticsTracker;
 	
 	/*@Getter
 	@Setter

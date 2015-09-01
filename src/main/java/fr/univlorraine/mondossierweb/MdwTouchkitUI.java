@@ -65,6 +65,8 @@ import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
+import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
@@ -258,22 +260,8 @@ public class MdwTouchkitUI extends GenericUI{
 			
 		});
 
-
-		if(StringUtils.hasText(environment.getProperty("google.analytics.account"))){
-			/* Initialise Google Analytics */
-			analyticsTracker.setAccount(new String[]{environment.getProperty("analytics.account")});
-			/* Suis les changements de vue du navigator */
-			analyticsTracker.trackNavigator(navigator);
-		}else{
-			if(StringUtils.hasText(environment.getProperty("piwik.tracker.url")) && 
-					StringUtils.hasText("piwik.site.id")){
-				analyticsTracker = new PiwikAnalyticsTracker(this);
-				/* Initialise Piwik Analytics */
-				analyticsTracker.setAccount(new String[]{environment.getProperty("piwik.tracker.url"),environment.getProperty("piwik.site.id")});
-				/* Suis les changements de vue du navigator */
-				analyticsTracker.trackNavigator(navigator);
-			}
-		}
+		//init du tracker
+		initAnalyticsTracker();
 
 		//contentLayout est le contenu principal de la page
 		setContent(contentLayout);
@@ -607,6 +595,18 @@ public class MdwTouchkitUI extends GenericUI{
 		loadingIndicatorWindow.close();
 	}
 
-
+	/**
+	 * Initialise le tracker d'activité.
+	 */
+	private void initAnalyticsTracker() {
+		if (environment.getProperty("piwik.tracker.url") instanceof String && environment.getProperty("piwik.site.id") instanceof String) {
+			analyticsTracker = new PiwikAnalyticsTracker(this, environment.getProperty("piwik.tracker.url"), environment.getProperty("piwik.site.id"));
+		} else if (environment.getProperty("google.analytics.account") instanceof String) {
+			analyticsTracker = new GoogleAnalyticsTracker(this, environment.getProperty("google.analytics.account"));
+		} else {
+			analyticsTracker = new LogAnalyticsTracker();
+		}
+		analyticsTracker.trackNavigator(navigator);
+	}
 
 }

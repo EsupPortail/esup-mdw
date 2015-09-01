@@ -77,6 +77,8 @@ import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
+import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
+import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 
@@ -130,7 +132,7 @@ public class MainUI extends GenericUI {
 
 	@Resource
 	private AssistanceView assistanceView;
-	
+
 	@Resource
 	private RechercheRapideView rechercheRapideView;
 
@@ -147,7 +149,7 @@ public class MainUI extends GenericUI {
 
 	//rang de l'onglet contenant le dossier etudiant dans le conteneur principal
 	private int rangTabDossierEtudiant;
-	
+
 	//tab Dossier Etudiant
 	private Tab tabDossierEtu;
 
@@ -231,19 +233,19 @@ public class MainUI extends GenericUI {
 		//car le fragment ne correspond pas à une vue existante)
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
 			public void uriFragmentChanged(UriFragmentChangedEvent source) {
-				
+
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
 						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
 						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
-					
+
 					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
-					
+
 					if(source.getUriFragment().contains("accesDossierEtudiant") 
 							&& userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
-						
+
 					}/*else{
 						if(source.getUriFragment().contains("accesNotesEtudiant") 
 								&& userController.isEnseignant()){
@@ -251,8 +253,8 @@ public class MainUI extends GenericUI {
 							navigator.navigateTo(NotesView.NAME);
 						}
 					}*/
-					
-					
+
+
 				}
 			}
 		});
@@ -266,10 +268,10 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
-				
+
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
-				
+
 				//Si on tente d'accéder à la vue admin et que l'utilisateur est admin
 				if(event.getViewName().equals(AdminView.NAME) && userController.isAdmin()){
 					//Afficher la vue admin
@@ -321,10 +323,10 @@ public class MainUI extends GenericUI {
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
-				
+
 				//On récupère l'élément du menu concerné par la vue à afficher
 				Button button = viewButtons.get(event.getViewName());
-				
+
 				if (button instanceof Button) {
 					//on applique le style "selected" sur l'objet du menu concerné par la vue affichée
 					button.addStyleName(SELECTED_ITEM);
@@ -333,25 +335,11 @@ public class MainUI extends GenericUI {
 		});
 
 
-		if(StringUtils.hasText(environment.getProperty("google.analytics.account"))){
-			/* Initialise Google Analytics */
-			analyticsTracker.setAccount(new String[]{environment.getProperty("analytics.account")});
-			/* Suis les changements de vue du navigator */
-			analyticsTracker.trackNavigator(navigator);
-		}else{
-			if(StringUtils.hasText(environment.getProperty("piwik.tracker.url")) && 
-					StringUtils.hasText("piwik.site.id")){
-				analyticsTracker = new PiwikAnalyticsTracker(this);
-				/* Initialise Piwik Analytics */
-				analyticsTracker.setAccount(new String[]{environment.getProperty("piwik.tracker.url"),environment.getProperty("piwik.site.id")});
-				/* Suis les changements de vue du navigator */
-				analyticsTracker.trackNavigator(navigator);
-			}
-		}
-			
-		
-		
-	
+		//init du tracker
+		initAnalyticsTracker();
+
+
+
 
 		//mainVerticalLayout est le contenu principal de la page
 		setContent(mainVerticalLayout);
@@ -397,7 +385,7 @@ public class MainUI extends GenericUI {
 					//ajout de l'onglet principal 'assistance'
 					tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
 
-					
+
 					//ajout de l'onglet dossier étudiant
 					addTabDossierEtudiant();
 
@@ -660,7 +648,7 @@ public class MainUI extends GenericUI {
 		//L'onglet possible une croix pour être fermé
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setClosable(true);
 
-		
+
 	}
 
 	/**
@@ -941,10 +929,23 @@ public class MainUI extends GenericUI {
 		loadingIndicatorWindow.close();
 	}
 
-	
+
 	private boolean applicationActive(){
 		return configController.isApplicationActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
 				|| (userController.isEnseignant() && configController.isPartieEnseignantActive()));
 	}
-	
+
+	/**
+	 * Initialise le tracker d'activité.
+	 */
+	private void initAnalyticsTracker() {
+		if (environment.getProperty("piwik.tracker.url") instanceof String && environment.getProperty("piwik.site.id") instanceof String) {
+			analyticsTracker = new PiwikAnalyticsTracker(this, environment.getProperty("piwik.tracker.url"), environment.getProperty("piwik.site.id"));
+		} else if (environment.getProperty("google.analytics.account") instanceof String) {
+			analyticsTracker = new GoogleAnalyticsTracker(this, environment.getProperty("google.analytics.account"));
+		} else {
+			analyticsTracker = new LogAnalyticsTracker();
+		}
+		analyticsTracker.trackNavigator(navigator);
+	}
 }

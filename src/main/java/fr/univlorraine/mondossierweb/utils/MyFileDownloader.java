@@ -10,7 +10,8 @@ import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.tools.vaadin.BusyIndicatorFileDownloader;
-import fr.univlorraine.tools.vaadin.BusyIndicatorFileDownloader.BusyIndicatorWindow;
+import fr.univlorraine.tools.vaadin.BusyIndicatorWindow;
+
 
 public class MyFileDownloader extends BusyIndicatorFileDownloader {
 
