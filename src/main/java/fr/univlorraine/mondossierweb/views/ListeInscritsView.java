@@ -1027,15 +1027,18 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
-			Inscrit i = (Inscrit) bins.getBean();
-			Button btnCodEtu = new Button(i.getCod_etu());
-			btnCodEtu.setStyleName("link"); 
-			btnCodEtu.addStyleName("v-link");
-			btnCodEtu.addClickListener(e->{
-				rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null);
-			});
+			if(bins!=null){
+				Inscrit i = (Inscrit) bins.getBean();
+				Button btnCodEtu = new Button(i.getCod_etu());
+				btnCodEtu.setStyleName("link"); 
+				btnCodEtu.addStyleName("v-link");
+				btnCodEtu.addClickListener(e->{
+					rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null);
+				});
 
-			return btnCodEtu;
+				return btnCodEtu;
+			}
+			return null;
 		}
 	}
 
