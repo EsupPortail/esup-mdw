@@ -31,6 +31,10 @@ public class Groupe {
 	 */
 	private int capIntGpe;
 	/**
+	 * nombre d'inscrits dans le groupe
+	 */
+	private int nbInscrits;
+	/**
 	 * vrai si capInt superieure a zero, donc on l'affiche
 	 */
 	private boolean affCapIntGpe;

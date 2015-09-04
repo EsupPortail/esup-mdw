@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -83,9 +84,9 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 
 
 	@Override
-	public List<String> getCodIndInscritsFromGroupe(String code, String annee) {
+	public List<BigDecimal> getCodIndInscritsFromGroupe(String code, String annee) {
 		@SuppressWarnings("unchecked")
-		List<String> lCodindInscrits = (List<String>)entityManagerApogee.createNativeQuery("select distinct ind.cod_ind "+
+		List<BigDecimal> lCodindInscrits = (List<BigDecimal>)entityManagerApogee.createNativeQuery("select distinct ind.cod_ind "+
     "from IND_AFFECTE_GPE ind, GROUPE g "+
     "where ind.COD_GPE = g.cod_gpe  "+
     "and g.COD_GPE = "+code+ " "+

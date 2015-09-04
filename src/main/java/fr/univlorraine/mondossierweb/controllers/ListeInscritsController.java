@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -159,7 +160,7 @@ public class ListeInscritsController {
 
 			//On part d'une Etape pour établir une liste d'étudiant
 			Etape e = new Etape();
-			
+
 			//On a une annee en parametre (on a choisi une année dans la liste déroulante)
 			if(annee==null){
 				//Renseignement de l'objet Etape
@@ -174,7 +175,7 @@ public class ListeInscritsController {
 
 				//On stocke laliste des année dans l'ui
 				ui.setListeAnneeInscrits(annees);
-				
+
 				//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
 				if(anneeParam!=null){
 					//On sélectionne cette année
@@ -191,23 +192,23 @@ public class ListeInscritsController {
 				}
 				//On garde l'année positionnée au niveau de l'ui
 				ui.setAnneeInscrits(e.getAnnee());
-				
+
 				//On renseigne le libellé de l'étape
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
-				
+
 				//On garde l'étape au niveau de l'ui
 				ui.setEtapeListeInscrits(e);
-				
+
 			}else{
 				//Récupération de l'étape
 				e = ui.getEtapeListeInscrits();
-				
+
 				//On modifie l'année de l'étape
 				e.setAnnee(annee);
-				
+
 				//On met à jour l'étape au niveau de l'ui
 				ui.setEtapeListeInscrits(e);
-				
+
 				//On met à jour l'année au niveau de l'ui
 				ui.setAnneeInscrits(e.getAnnee());
 			}
@@ -249,18 +250,18 @@ public class ListeInscritsController {
 
 		//On part d'un ELP pour établir une liste d'étudiant
 		ElementPedagogique e = new ElementPedagogique();
-		
+
 		//On a une annee en parametre (on a choisi une année dans la liste déroulante)
 		if(annee==null){
 			//On renseigne le cod_elp
 			e.setCode(code);
-			
+
 			//Récupération derniere année universitaire dans Apogée
 			List<String> annees = multipleApogeeService.getDernieresAnneesUniversitaires();
-			
+
 			//On stocke laliste des année dans l'ui
 			ui.setListeAnneeInscrits(annees);
-			
+
 			//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
 			if(anneeParam!=null){
 				//On sélectionne cette année
@@ -275,26 +276,26 @@ public class ListeInscritsController {
 					e.setAnnee(annees.get(0));
 				}
 			}
-			
+
 			//On garde l'année positionnée au niveau de l'ui
 			ui.setAnneeInscrits(e.getAnnee());
-			
+
 			//On renseigne le libellé de l'ELP
 			e.setLibelle(elementPedagogiqueService.getLibelleElp(code));
-			
+
 			//On stocke l'ELP au niveau de l'ui
 			ui.setElpListeInscrits(e);
-			
+
 		}else{
 			//Récupération de l'ELP
 			e = ui.getElpListeInscrits();
-			
+
 			//Modification de l'année de l'ELP
 			e.setAnnee(annee);
-			
+
 			//On met à jour l'ELP au niveau de l'ui
 			ui.setElpListeInscrits(e);
-			
+
 			//On garde l'année positionnée au niveau de l'ui
 			ui.setAnneeInscrits(e.getAnnee());
 		}
@@ -304,12 +305,12 @@ public class ListeInscritsController {
 
 		//On créé une liste de VET vide pour crééer la liste des étapes d'appartenance
 		List<VersionEtape> letape = null;
-		
+
 		//test si on a des inscrits
 		if(listeInscrits!=null && listeInscrits.size()>0){
 			//on init la liste de VET à vide
 			letape = new LinkedList<VersionEtape>();
-			
+
 			//Pour chaque inscrit
 			for(Inscrit i : listeInscrits){
 				//Test si l'étape est renseignée pour l'inscrit
@@ -331,13 +332,13 @@ public class ListeInscritsController {
 		}
 		//On stocket la liste des étapes d'appartenance au niveau de l'ui
 		ui.setListeEtapesInscrits(letape);
-		
+
 		//Aucune étape n'est présélectionnée par défaut.
 		ui.setEtapeInscrits(null);
 
 
 		//Récupération des groupes de l'ELP
-		List<ElpDeCollection> listeGroupes = recupererGroupes(annee, code);
+		List<ElpDeCollection> listeGroupes = recupererGroupes(e.getAnnee(), code);
 		//Si on a récupérer des groupes
 		if(listeGroupes!=null && listeGroupes.size()>0){
 			//On stocke la liste des groupes au niveau de l'ui
@@ -345,7 +346,7 @@ public class ListeInscritsController {
 		}
 
 		//Maj des mails/photo et des groupes en fonction de la liste d'inscrits en paramètre
-		finaliserListeInscrits(listeInscrits,listeGroupes,annee,ui);
+		finaliserListeInscrits(listeInscrits,listeGroupes,e.getAnnee(),ui);
 
 	}
 
@@ -412,22 +413,27 @@ public class ListeInscritsController {
 		//On parcourt les groupes, on recup les inscrit puis 
 		//pour chaque inscrit on ajoute les id des groupes auxquels il appartient dans un attribut ";codgpe;"
 		if(listeGroupes!=null && listeGroupes.size()>0){
+
 			for(ElpDeCollection edc : listeGroupes){
 				for(CollectionDeGroupes cdg : edc.getListeCollection()){
 					for(Groupe groupe : cdg.getListeGroupes()){
 
-						List<String> lcodindinscrits = elementPedagogiqueService.getCodIndInscritsFromGroupe(groupe.getCleGroupe(), annee);
+						List<BigDecimal> lcodindinscrits = elementPedagogiqueService.getCodIndInscritsFromGroupe(groupe.getCleGroupe(), annee);
 
+						int nbins=0;
 						for (Inscrit i : listeInscrits) {
-							if(lcodindinscrits.contains(i.getCod_ind())){
+							if(lcodindinscrits!=null && listeContient(lcodindinscrits,i.getCod_ind())){	
 								//ajout codgroupe dans attribut de l'inscrit";codgpe;"
 								if(!StringUtils.hasText(i.getCodes_groupes())){
-									i.setCodes_groupes(Utils.SEPARATEUR_CODE_GROUPE+groupe.getCodGroupe()+Utils.SEPARATEUR_CODE_GROUPE);
+									i.setCodes_groupes(Utils.SEPARATEUR_CODE_GROUPE+groupe.getCleGroupe()+Utils.SEPARATEUR_CODE_GROUPE);
 								}else{
-									i.setCodes_groupes(i.getCodes_groupes()+Utils.SEPARATEUR_CODE_GROUPE+groupe.getCodGroupe()+Utils.SEPARATEUR_CODE_GROUPE);
+									i.setCodes_groupes(i.getCodes_groupes()+Utils.SEPARATEUR_CODE_GROUPE+groupe.getCleGroupe()+Utils.SEPARATEUR_CODE_GROUPE);
 								}
+
+								nbins++;
 							}
 						}
+						groupe.setNbInscrits(nbins);
 					}
 				}
 			}
@@ -435,6 +441,18 @@ public class ListeInscritsController {
 
 		ui.setListeInscrits(listeInscrits);
 
+	}
+
+
+	private boolean listeContient(List<BigDecimal> lcodindinscrits, String cod_ind) {
+		if(lcodindinscrits.size()>0 && cod_ind!=null){
+			for(BigDecimal s: lcodindinscrits){
+				if(s.toString().equals(cod_ind)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 
@@ -505,6 +523,7 @@ public class ListeInscritsController {
 							//On récupère les infos sur le groupe
 							Groupe groupe = new Groupe(gd2.getCodExtGpe());
 							groupe.setLibGroupe(gd2.getLibGpe());
+
 							//on récupère le codeGpe
 							groupe.setCleGroupe(""+gd2.getCodGpe());
 

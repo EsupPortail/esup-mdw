@@ -1077,6 +1077,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 
 	private void filtrerInscrits(String idEtape, String idgroupe) {
+
 		if(inscritstable!=null){
 
 			BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();

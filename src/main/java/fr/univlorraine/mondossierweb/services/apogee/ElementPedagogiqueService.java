@@ -1,5 +1,6 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
@@ -13,7 +14,7 @@ public interface ElementPedagogiqueService {
 
 	public List<Inscrit> getInscritsFromElp(String code, String annee);
 	
-	public List<String> getCodIndInscritsFromGroupe(String code, String annee);
+	public List<BigDecimal> getCodIndInscritsFromGroupe(String code, String annee);
 	
 	
 }

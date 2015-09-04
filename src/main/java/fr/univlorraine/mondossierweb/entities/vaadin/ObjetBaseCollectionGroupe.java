@@ -11,6 +11,7 @@ public class ObjetBaseCollectionGroupe {
 	private String lib_gpe;
 	private String cap_max;
 	private String cap_int;
+	private String nb_inscrits;
 	
 
 }

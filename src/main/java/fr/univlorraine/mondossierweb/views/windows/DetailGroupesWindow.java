@@ -48,9 +48,11 @@ public class DetailGroupesWindow extends Window {
 	public static final String LIBELLE_GROUPE_PROPERTY = "lib_gpe";
 	public static final String CAP_MAX_PROPERTY = "cap_max";
 	public static final String CAP_INT_PROPERTY = "cap_int";
+	public static final String NB_INSCRITS_PROPERTY = "nb_inscrits";
 
 	/* les champs de la table */
-	public static final String[] DETAIL_FIELDS_ORDER = {"cod_coll", "cod_gpe","lib_gpe","cap_max","cap_int"};
+	public static final String[] DETAIL_FIELDS_ORDER = {CODE_COLLECTION_PROPERTY, CODE_GROUPE_PROPERTY,LIBELLE_GROUPE_PROPERTY,
+		CAP_MAX_PROPERTY,CAP_INT_PROPERTY,NB_INSCRITS_PROPERTY};
 
 
 	@Resource
@@ -134,6 +136,7 @@ public class DetailGroupesWindow extends Window {
 			hc.addContainerProperty(LIBELLE_GROUPE_PROPERTY, String.class, "");
 			hc.addContainerProperty(CAP_MAX_PROPERTY, String.class, "");
 			hc.addContainerProperty(CAP_INT_PROPERTY, String.class, "");
+			hc.addContainerProperty(NB_INSCRITS_PROPERTY, String.class, "");
 			detailGroupesTable.setContainerDataSource(hc);
 			int id = 0;
 			for(ElpDeCollection edc : lgroupes){
@@ -145,6 +148,7 @@ public class DetailGroupesWindow extends Window {
 					obj.setCod_coll(cdg.getCodCollection());
 					obj.setCap_max("");
 					obj.setCap_int("");
+					obj.setNb_inscrits("");
 					Item itemCollection = hc.addItem(obj.getId());
 					renseignerItem(itemCollection,obj);
 
@@ -156,6 +160,7 @@ public class DetailGroupesWindow extends Window {
 						objgpe.setLib_gpe(gpe.getLibGroupe());
 						objgpe.setCap_max(""+gpe.getCapMaxGpe());
 						objgpe.setCap_int(""+gpe.getCapIntGpe());
+						objgpe.setNb_inscrits(""+gpe.getNbInscrits());
 						Item i = hc.addItem(objgpe.getId());
 						renseignerItem(i,objgpe);
 						detailGroupesTable.setParent(objgpe.getId(), obj.getId());
@@ -174,6 +179,7 @@ public class DetailGroupesWindow extends Window {
 			detailGroupesTable.addContainerProperty(LIBELLE_GROUPE_PROPERTY, String.class, "");
 			detailGroupesTable.addContainerProperty(CAP_MAX_PROPERTY, String.class, "");
 			detailGroupesTable.addContainerProperty(CAP_INT_PROPERTY, String.class, "");
+			detailGroupesTable.addContainerProperty(NB_INSCRITS_PROPERTY, String.class, "");
 
 			detailGroupesTable.setVisibleColumns(DETAIL_FIELDS_ORDER);
 
@@ -182,7 +188,8 @@ public class DetailGroupesWindow extends Window {
 			detailGroupesTable.setColumnHeader(LIBELLE_GROUPE_PROPERTY, applicationContext.getMessage(NAME+".table.libgroupe", null, getLocale()));
 			detailGroupesTable.setColumnHeader(CAP_MAX_PROPERTY, applicationContext.getMessage(NAME+".table.capmax", null, getLocale()));
 			detailGroupesTable.setColumnHeader(CAP_INT_PROPERTY, applicationContext.getMessage(NAME+".table.capint", null, getLocale()));
-
+			detailGroupesTable.setColumnHeader(NB_INSCRITS_PROPERTY, applicationContext.getMessage(NAME+".table.nbinscrits", null, getLocale()));
+			
 			detailGroupesTable.setColumnCollapsingAllowed(true);
 			detailGroupesTable.setColumnReorderingAllowed(false);
 			detailGroupesTable.setSelectable(false);
@@ -240,6 +247,7 @@ public class DetailGroupesWindow extends Window {
 		i.getItemProperty(LIBELLE_GROUPE_PROPERTY).setValue(obj.getLib_gpe());
 		i.getItemProperty(CAP_MAX_PROPERTY).setValue(""+obj.getCap_max());
 		i.getItemProperty(CAP_INT_PROPERTY).setValue(""+obj.getCap_int());
+		i.getItemProperty(NB_INSCRITS_PROPERTY).setValue(""+obj.getNb_inscrits());
 
 	}
 
