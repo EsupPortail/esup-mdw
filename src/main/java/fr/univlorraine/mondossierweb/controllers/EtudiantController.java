@@ -515,45 +515,46 @@ public class EtudiantController {
 
 			InsAdmEtpDTO2[] insdtotab = monProxyAdministratif.recupererIAEtapes_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
 
-			for (int i = 0; i < insdtotab.length; i++) {
-				Inscription insc = new Inscription();
-				InsAdmEtpDTO2 insdto = insdtotab[i];
+			if(insdtotab!=null){
+				for (int i = 0; i < insdtotab.length; i++) {
+					Inscription insc = new Inscription();
+					InsAdmEtpDTO2 insdto = insdtotab[i];
 
-				//on test si l'inscription n'est pas annulée:
-				if (insdto.getEtatIae()!=null && insdto.getEtatIae().getCodeEtatIAE()!=null && insdto.getEtatIae().getCodeEtatIAE().equals("E")){
+					//on test si l'inscription n'est pas annulée:
+					if (insdto.getEtatIae()!=null && insdto.getEtatIae().getCodeEtatIAE()!=null && insdto.getEtatIae().getCodeEtatIAE().equals("E")){
 
-					//récupération de l'année
-					int annee = new Integer(insdto.getAnneeIAE());
-					int annee2 = annee + 1;
-					insc.setCod_anu(annee + "/" + annee2);
+						//récupération de l'année
+						int annee = new Integer(insdto.getAnneeIAE());
+						int annee2 = annee + 1;
+						insc.setCod_anu(annee + "/" + annee2);
 
-					//récupération des informations sur l'étape
-					insc.setCod_etp(insdto.getEtape().getCodeEtp());
-					insc.setCod_vrs_vet(insdto.getEtape().getVersionEtp());
-					insc.setLib_etp(insdto.getEtape().getLibWebVet());
+						//récupération des informations sur l'étape
+						insc.setCod_etp(insdto.getEtape().getCodeEtp());
+						insc.setCod_vrs_vet(insdto.getEtape().getVersionEtp());
+						insc.setLib_etp(insdto.getEtape().getLibWebVet());
 
-					//récupération des informations sur le diplôme
-					insc.setCod_dip(insdto.getDiplome().getCodeDiplome());
-					insc.setVers_dip(insdto.getDiplome().getVersionDiplome());
-					insc.setLib_dip(insdto.getDiplome().getLibWebVdi());
+						//récupération des informations sur le diplôme
+						insc.setCod_dip(insdto.getDiplome().getCodeDiplome());
+						insc.setVers_dip(insdto.getDiplome().getVersionDiplome());
+						insc.setLib_dip(insdto.getDiplome().getLibWebVdi());
 
-					//récupération des informations sur la composante
-					insc.setCod_comp(insdto.getComposante().getCodComposante());
-					//insc.setLib_comp(insdto.getComposante().getLibComposante());
-					insc.setLib_comp(composanteService.getLibelleComposante(insc.getCod_comp()));
+						//récupération des informations sur la composante
+						insc.setCod_comp(insdto.getComposante().getCodComposante());
+						//insc.setLib_comp(insdto.getComposante().getLibComposante());
+						insc.setLib_comp(composanteService.getLibelleComposante(insc.getCod_comp()));
 
-					//récupération de l'état en règle de l'inscription
-					if(insdto.getInscriptionPayee().equals(Utils.LIBELLE_WS_INSCRIPTION_PAYEE)){
-						insc.setEstEnRegle(true);
-					}else{
-						insc.setEstEnRegle(false);
+						//récupération de l'état en règle de l'inscription
+						if(insdto.getInscriptionPayee().equals(Utils.LIBELLE_WS_INSCRIPTION_PAYEE)){
+							insc.setEstEnRegle(true);
+						}else{
+							insc.setEstEnRegle(false);
+						}
+
+						//ajout de l'inscription à la liste
+						GenericUI.getCurrent().getEtudiant().getLinsciae().add(0, insc);
 					}
-
-					//ajout de l'inscription à la liste
-					GenericUI.getCurrent().getEtudiant().getLinsciae().add(0, insc);
 				}
 			}
-
 
 			//Autres cursus : 
 
@@ -827,7 +828,7 @@ public class EtudiantController {
 
 			//Si on a configure pour toujours afficher le rang, on affichera les rangs de l'étudiant.
 			e.setAfficherRang(configController.isAffRangEtudiant());
-			
+
 			if(resultatVdiVet!=null && resultatVdiVet.length>0){
 				for (int i = 0; i < resultatVdiVet.length; i++ ) {
 					//information sur le diplome:
