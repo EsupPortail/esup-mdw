@@ -104,9 +104,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 			if(MainUI.getCurrent().isRecuperationWsInscriptionsOk()){
 
 				//Tout c'est bien passé lors de la récupération des infos via le WS
-
 				Panel panelInscription= new Panel(MainUI.getCurrent().getEtudiant().getLibEtablissement());
-
 
 				Table inscriptionsTable = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinsciae()));
 				inscriptionsTable.setWidth("100%");
