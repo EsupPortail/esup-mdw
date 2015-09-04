@@ -937,18 +937,21 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
-			Inscrit i = (Inscrit) bins.getBean();
-			HorizontalLayout notelayout = new HorizontalLayout();
-			notelayout.setSpacing(true);
-			if(StringUtils.hasText(i.getNotej())){
-				Label note = new Label(i.getNotej());
-				notelayout.addComponent(note);
+			if(bins!=null){
+				Inscrit i = (Inscrit) bins.getBean();
+				HorizontalLayout notelayout = new HorizontalLayout();
+				notelayout.setSpacing(true);
+				if(StringUtils.hasText(i.getNotej())){
+					Label note = new Label(i.getNotej());
+					notelayout.addComponent(note);
+				}
+				if(StringUtils.hasText(i.getResj())){
+					Label res = new Label(i.getResj());
+					notelayout.addComponent(res);
+				}
+				return notelayout;
 			}
-			if(StringUtils.hasText(i.getResj())){
-				Label res = new Label(i.getResj());
-				notelayout.addComponent(res);
-			}
-			return notelayout;
+			return null;
 		}
 	}
 
@@ -966,19 +969,22 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
-			Inscrit i = (Inscrit) bins.getBean();
-			HorizontalLayout notelayout = new HorizontalLayout();
-			notelayout.setSpacing(true);
-			if(StringUtils.hasText(i.getNotes())){
-				Label note = new Label(i.getNotes());
-				notelayout.addComponent(note);
-			}
+			if(bins!=null){
+				Inscrit i = (Inscrit) bins.getBean();
+				HorizontalLayout notelayout = new HorizontalLayout();
+				notelayout.setSpacing(true);
+				if(StringUtils.hasText(i.getNotes())){
+					Label note = new Label(i.getNotes());
+					notelayout.addComponent(note);
+				}
 
-			if(StringUtils.hasText(i.getRess())){
-				Label res = new Label(i.getRess());
-				notelayout.addComponent(res);
+				if(StringUtils.hasText(i.getRess())){
+					Label res = new Label(i.getRess());
+					notelayout.addComponent(res);
+				}
+				return notelayout;
 			}
-			return notelayout;
+			return null;
 		}
 	}
 
@@ -996,21 +1002,23 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
-			Inscrit i = (Inscrit) bins.getBean();
-			HorizontalLayout maillayout = new HorizontalLayout();
-			if(StringUtils.hasText(i.getEmail())){
-				Label mailLabel = new Label();
+			if(bins!=null){
+				Inscrit i = (Inscrit) bins.getBean();
+				HorizontalLayout maillayout = new HorizontalLayout();
 				if(StringUtils.hasText(i.getEmail())){
-					String mail = "<a href=\"mailto:"+i.getEmail()+"\">"+i.getEmail()+"</a>";
-					mailLabel.setValue(mail);
-					mailLabel.setContentMode(ContentMode.HTML);
+					Label mailLabel = new Label();
+					if(StringUtils.hasText(i.getEmail())){
+						String mail = "<a href=\"mailto:"+i.getEmail()+"\">"+i.getEmail()+"</a>";
+						mailLabel.setValue(mail);
+						mailLabel.setContentMode(ContentMode.HTML);
+					}
+
+					maillayout.addComponent(mailLabel);
 				}
 
-				maillayout.addComponent(mailLabel);
+				return maillayout;
 			}
-
-
-			return maillayout;
+			return null;
 		}
 	}
 
@@ -1056,12 +1064,15 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
-			Inscrit i = (Inscrit) bins.getBean();
-			Label etapeLabel = new Label();
-			if(StringUtils.hasText(i.getLib_etp())){
-				etapeLabel.setValue(i.getLib_etp());
+			if(bins!=null){
+				Inscrit i = (Inscrit) bins.getBean();
+				Label etapeLabel = new Label();
+				if(StringUtils.hasText(i.getLib_etp())){
+					etapeLabel.setValue(i.getLib_etp());
+				}
+				return etapeLabel;
 			}
-			return etapeLabel;
+			return null;
 		}
 	}
 
