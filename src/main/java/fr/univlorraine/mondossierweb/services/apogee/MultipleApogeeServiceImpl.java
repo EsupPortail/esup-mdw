@@ -84,7 +84,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 		return lannee;
 	}
-	
+
 	@Override
 	public List<String> getDernieresAnneesUniversitaires() {
 		@SuppressWarnings("unchecked")
@@ -92,7 +92,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 		return lannee;
 	}
-	
+
 	@Override
 	public int getDerniereAnneeUniversitaire() {
 		@SuppressWarnings("unchecked")
@@ -178,21 +178,27 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 	@Override
 	public List<String> getAnneesFromVetDesc(Etape e, int anneeMaximum) {
-		@SuppressWarnings("unchecked")
-		int anneeMin = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MIN(DAA_DEB_RCT_VET) "+
-				" from vdi_fractionner_vet vfv "+
-				" where VFV.COD_ETP='"+e.getCode()+"' "+
-				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
-		int anneeMax = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MAX(DAA_FIN_RCT_VET) "+
-				" from vdi_fractionner_vet vfv "+
-				" where VFV.COD_ETP='"+e.getCode()+"' "+
-				" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
-
 		List<String> lannee = new LinkedList<String>();
-		for(int i=anneeMax; i>=anneeMin;i--){
-			if(i<=anneeMaximum){
-				lannee.add(""+i);
+		try{
+			@SuppressWarnings("unchecked")
+			int anneeMin = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MIN(DAA_DEB_RCT_VET) "+
+					" from vdi_fractionner_vet vfv "+
+					" where VFV.COD_ETP='"+e.getCode()+"' "+
+					" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
+			int anneeMax = Integer.parseInt((String)entityManagerApogee.createNativeQuery(" select MAX(DAA_FIN_RCT_VET) "+
+					" from vdi_fractionner_vet vfv "+
+					" where VFV.COD_ETP='"+e.getCode()+"' "+
+					" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
+
+			
+			for(int i=anneeMax; i>=anneeMin;i--){
+				if(i<=anneeMaximum){
+					lannee.add(""+i);
+				}
 			}
+			
+		}catch(NumberFormatException nfe){
+			Log.debug("Aucune année valide trouvée pour cette vet : "+e.getCode()+"/"+e.getVersion(), nfe);
 		}
 		return lannee;
 
@@ -227,8 +233,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}
 		return null;
 	}
-	
-	
+
+
 	@Override
 	public String getCategorieSocioProfessionnelle(String cod_ind, String cod_anu) {
 		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
