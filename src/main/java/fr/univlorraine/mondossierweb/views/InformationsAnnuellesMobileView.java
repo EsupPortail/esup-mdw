@@ -181,14 +181,14 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			nomCodeLayout.setSizeFull();
 			nomCodeLayout.setSpacing(false);
 
-			Label btnNomEtudiant = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
-			btnNomEtudiant.setSizeFull();
-			btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-			btnNomEtudiant.addStyleName("v-button-multiline");
-			btnNomEtudiant.addStyleName("label-centre");
-			nomCodeLayout.addComponent(btnNomEtudiant);
-			nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
-			nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
+			Label labelNomEtudiant = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
+			labelNomEtudiant.setSizeFull();
+			labelNomEtudiant.setStyleName(ValoTheme.LABEL_BOLD);
+			labelNomEtudiant.addStyleName("v-button-multiline");
+			labelNomEtudiant.addStyleName("label-centre");
+			nomCodeLayout.addComponent(labelNomEtudiant);
+			nomCodeLayout.setComponentAlignment(labelNomEtudiant, Alignment.MIDDLE_CENTER);
+			nomCodeLayout.setExpandRatio(labelNomEtudiant, 1);
 
 			Label codetuLabel = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu());
 			codetuLabel.setSizeFull();

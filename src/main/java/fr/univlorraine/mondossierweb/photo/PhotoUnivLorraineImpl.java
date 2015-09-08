@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.server.WebBrowser;
 
@@ -27,13 +28,14 @@ import fr.univnancy2.PhotoClient.exception.PhotoClientException;
  * classe pour la gestion des photos (notament la récupération du ticket).
  * @author Charlie Dubois
  */
-//@Component(value="photoProvider")
+
 //@Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
-public class PhotoNancy2ImplCodEtu implements IPhoto {
+@Component(value="photoUnivLorraineImpl")
+public class PhotoUnivLorraineImpl implements IPhoto {
 	/**
 	 * Un logger.
 	 */
-	private static final Logger LOG = LoggerFactory.getLogger(PhotoNancy2ImplCodEtu.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PhotoUnivLorraineImpl.class);
 
 
 	/*@Resource
@@ -79,7 +81,7 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 	/**
 	 * constructeur vide.
 	 */
-	public PhotoNancy2ImplCodEtu() {
+	public PhotoUnivLorraineImpl() {
 		super();
 		forserver = false;
 
@@ -350,6 +352,11 @@ public class PhotoNancy2ImplCodEtu implements IPhoto {
 
 	public void setCodeapp(String codeapp) {
 		this.codeapp = codeapp;
+	}
+
+	@Override
+	public boolean isOperationnel() {
+		return true;
 	}
 
 

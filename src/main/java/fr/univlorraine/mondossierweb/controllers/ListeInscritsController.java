@@ -132,8 +132,6 @@ public class ListeInscritsController {
 	 */
 	private OffreFormationMetierServiceInterface monProxyOffreDeFormation;
 
-	/*@Resource(name="photoProvider")
-	private IPhoto photo;*/
 
 
 
@@ -1134,5 +1132,14 @@ public class ListeInscritsController {
 
 
 
+	}
+
+
+	/**
+	 * 
+	 * @return true si on a un serveur de photo opérationnel
+	 */
+	public boolean isPhotoProviderOperationnel() {
+		return GenericUI.getCurrent().getPhotoProvider().isOperationnel();
 	}
 }

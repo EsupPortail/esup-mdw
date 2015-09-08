@@ -2,6 +2,7 @@ package fr.univlorraine.mondossierweb;
 
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
@@ -21,7 +22,7 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
-import fr.univlorraine.mondossierweb.photo.PhotoNancy2ImplCodEtu;
+import fr.univlorraine.mondossierweb.photo.PhotoUnivLorraineImpl;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
 
@@ -149,7 +150,8 @@ public class GenericUI  extends UI {
 	//Le photo provider
 	@Setter
 	@Getter
-	private IPhoto photoProvider= new PhotoNancy2ImplCodEtu();
+	@Resource(name="${serveurphoto.implementation}")
+	private IPhoto photoProvider;
 
 	@Override
 	protected void init(VaadinRequest request) {

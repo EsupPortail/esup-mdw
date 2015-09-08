@@ -671,37 +671,38 @@ public class MainUI extends GenericUI {
 			//On fixe la largeur du menu
 			mainMenu.setWidth("233px");
 
-			//Layout contenant la photo
-			HorizontalLayout photoLayout = new HorizontalLayout();
-
-			//Ajout du style au layout
-			photoLayout.addStyleName(ValoTheme.MENU_SUBTITLE);
-			//On fixe la largeur du layout
-			photoLayout.setWidth(213, Unit.PIXELS);
-			//La layout a des marges
-			photoLayout.setMargin(true);
-
-			//Bouton qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours. Par défaut, icone indiquant que l'étudiant est inscrit
-			Button etuInscritBtn = new Button("", FontAwesome.CHECK_CIRCLE);
-			//Ajout du style au bouton
-			etuInscritBtn.setPrimaryStyleName(ValoTheme.BUTTON_BORDERLESS);
-
-			//Si l'étudiant est inscrit pour l'année en cours
-			if(etudiant.isInscritPourAnneeEnCours()){
-				//On fixe la description du bouton
-				etuInscritBtn.setDescription("Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
-			}else{
-				//On change l'icone du bouton pour indiquer que l'étudiant n'est pas inscrit
-				etuInscritBtn.setIcon(FontAwesome.EXCLAMATION_CIRCLE);
-				//On fixe la description du bouton
-				etuInscritBtn.setDescription("Non Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
-			}
-
-			//Ajout d'un élément vide dans le layout
-			photoLayout.addComponent(new HorizontalLayout());
-
 			//Si on a une url pour la photo de l'étudiant
 			if(etudiant.getPhoto()!=null){
+				//Layout contenant la photo
+				HorizontalLayout photoLayout = new HorizontalLayout();
+
+				//Ajout du style au layout
+				photoLayout.addStyleName(ValoTheme.MENU_SUBTITLE);
+				//On fixe la largeur du layout
+				photoLayout.setWidth(213, Unit.PIXELS);
+				//La layout a des marges
+				photoLayout.setMargin(true);
+
+				//Bouton qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours. Par défaut, icone indiquant que l'étudiant est inscrit
+				Button etuInscritBtn = new Button("", FontAwesome.CHECK_CIRCLE);
+				//Ajout du style au bouton
+				etuInscritBtn.setPrimaryStyleName(ValoTheme.BUTTON_BORDERLESS);
+
+				//Si l'étudiant est inscrit pour l'année en cours
+				if(etudiant.isInscritPourAnneeEnCours()){
+					//On fixe la description du bouton
+					etuInscritBtn.setDescription("Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
+				}else{
+					//On change l'icone du bouton pour indiquer que l'étudiant n'est pas inscrit
+					etuInscritBtn.setIcon(FontAwesome.EXCLAMATION_CIRCLE);
+					//On fixe la description du bouton
+					etuInscritBtn.setDescription("Non Inscrit pour l'année universitaire "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(this)));
+				}
+
+				//Ajout d'un élément vide dans le layout
+				photoLayout.addComponent(new HorizontalLayout());
+
+
 				//Création de l'image contenant la photo
 				Image fotoEtudiant = new Image(null, new ExternalResource(etudiant.getPhoto()));
 				fotoEtudiant.setWidth("120px");
@@ -712,14 +713,14 @@ public class MainUI extends GenericUI {
 				photoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
 				//La photo prend toute la place disponible dans son layout
 				photoLayout.setExpandRatio(fotoEtudiant, 1);
+
+
+				//Ajout au layout du bouton, qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours
+				photoLayout.addComponent(etuInscritBtn);
+
+				//Ajout du layout de la photo au menu
+				mainMenu.addComponent(photoLayout);
 			}
-
-			//Ajout au layout du bouton, qui indique, en fonction de l'icone, si l'étudiant est inscrit pour l'année en cours
-			photoLayout.addComponent(etuInscritBtn);
-
-			//Ajout du layout de la photo au menu
-			mainMenu.addComponent(photoLayout);
-
 
 
 			//Ajout du Prénom/Nom et codetu de l'étudiant dans le menu

@@ -33,5 +33,6 @@ public interface IPhoto {
 	 */
 	String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu,boolean isUtilisateurEnseignant, String loginUser);
 
+	boolean isOperationnel();
 	
 }

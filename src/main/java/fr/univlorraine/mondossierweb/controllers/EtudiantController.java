@@ -109,9 +109,6 @@ public class EtudiantController {
 
 
 
-	/*@Resource(name="photoProvider")
-	private IPhoto photo;*/
-
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
 	 */

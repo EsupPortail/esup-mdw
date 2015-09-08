@@ -653,6 +653,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					//Bouton trombinoscope
 					btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
+					if(listeInscritsController.isPhotoProviderOperationnel()){
 					btnTrombi.setIcon(FontAwesome.GROUP);
 					buttonResumeLayout.addComponent(btnTrombi);
 
@@ -690,7 +691,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					});
 					buttonResumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
-
+					}
 
 
 					//Bouton de retour à l'affichage de la liste
