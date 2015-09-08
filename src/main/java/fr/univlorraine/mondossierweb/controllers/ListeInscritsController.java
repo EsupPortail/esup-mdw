@@ -173,6 +173,11 @@ public class ListeInscritsController {
 				//Récupération des années pour la vet
 				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e, anneeMax);
 
+				//Si on a récupéré aucune année, on ajoute l'année en cours par défaut.
+				if(annees.size()==0){
+					annees.add(etudiantController.getAnneeUnivEnCours(ui));
+				}
+				
 				//On stocke laliste des année dans l'ui
 				ui.setListeAnneeInscrits(annees);
 
