@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -61,6 +63,7 @@ import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBase;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.utils.miscellaneous.ReferencedButton;
 
@@ -108,7 +111,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
 
-
+	/** Thread pool  */
+	ExecutorService executorService = Executors.newSingleThreadExecutor();
+	
 	private HierarchicalContainer hc;
 
 	private TreeTable table;
@@ -593,9 +598,32 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnDeplier.setIcon(FontAwesome.SITEMAP);
 				btnDeplier.setDescription(applicationContext.getMessage(NAME+".deplierarbo", null, getLocale()));
 				btnDeplier.addClickListener(e->{
-					deplierNoeudComplet((String)itemId);
-					selectionnerLigne((String)itemId);
-					table.setCurrentPageFirstItemId((String)itemId);
+					
+					if(PropertyUtils.isShowLoadingIndicator()){
+						//affichage de la pop-up de loading
+						MainUI.getCurrent().startBusyIndicator();
+
+						//Execution de la méthode en parallèle dans un thread
+						executorService.execute(new Runnable() {
+							public void run() {
+								MainUI.getCurrent().access(new Runnable() {
+									@Override
+									public void run() {
+										deplierNoeudComplet((String)itemId);
+										selectionnerLigne((String)itemId);
+										table.setCurrentPageFirstItemId((String)itemId);
+										//close de la pop-up de loading
+										MainUI.getCurrent().stopBusyIndicator();
+									}
+								} );
+							}
+						});
+
+					}else{
+						deplierNoeudComplet((String)itemId);
+						selectionnerLigne((String)itemId);
+						table.setCurrentPageFirstItemId((String)itemId);
+					}
 				});
 				boutonActionLayout.addComponent(btnDeplier);
 			}
