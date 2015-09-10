@@ -51,7 +51,7 @@ import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
+import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;

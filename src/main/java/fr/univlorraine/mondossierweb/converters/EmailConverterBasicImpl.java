@@ -14,7 +14,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  * la classe qui permet d'obtenir l'e-mail d'un �tudiant connaissant son login.
  * @author Charlie Dubois
  */
-public class EmailConverter implements EmailConverterInterface{
+public class EmailConverterBasicImpl implements EmailConverterInterface{
 
 	@Resource
 	private transient ConfigController configController;
@@ -22,7 +22,7 @@ public class EmailConverter implements EmailConverterInterface{
 	/**
 	 * le constructeur.
 	 */
-	public EmailConverter() {
+	public EmailConverterBasicImpl() {
 		super();
 	}
 	
