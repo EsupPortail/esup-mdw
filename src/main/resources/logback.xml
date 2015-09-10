@@ -68,7 +68,8 @@
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
 	</logger>
-	<logger name="com.vaadin.server.communication.PushHandler" level="warn" additivity="false" >
+	<!-- Ne prend pas en compte les warn sur ServerRpcHandler(Resynchronizing client) -->
+	<logger name="com.vaadin.server.communication" level="error" additivity="false" >
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
 	</logger>
