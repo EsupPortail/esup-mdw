@@ -193,7 +193,7 @@ public class EtudiantController {
 				GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
-					// on passe par iBATIS pour récupérer l'e-mail.
+					// on passe par emailConverter pour récupérer l'e-mail.
 					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail("",GenericUI.getCurrent().getEtudiant().getCod_etu()));
 				} else {
 					//on récupérer l'e-mail grâce au WS.
