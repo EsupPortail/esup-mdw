@@ -97,8 +97,6 @@ public class MdwTouchkitUI extends GenericUI{
 	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient EtudiantController etudiantController;
-	@Resource(name="codetuFromLoginDao")
-	private transient IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
 	@Resource

@@ -19,6 +19,7 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.dao.IDaoCodeLoginEtudiant;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
@@ -152,6 +153,11 @@ public class GenericUI  extends UI {
 	@Getter
 	@Resource(name="${serveurphoto.implementation}")
 	private IPhoto photoProvider;
+	
+	@Setter
+	@Getter
+	@Resource(name="${codetuFromLogin.implementation}")
+	protected IDaoCodeLoginEtudiant daoCodeLoginEtudiant;
 
 	@Override
 	protected void init(VaadinRequest request) {

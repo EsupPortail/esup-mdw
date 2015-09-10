@@ -28,7 +28,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  * @author Charlie Dubois
  *
  */
-@Component(value="codetuFromLoginDao")
+@Component(value="codetuFromLoginLdapImpl")
 public class DaoCodeLoginEtudiantImplLdapBasic implements IDaoCodeLoginEtudiant {
 
 	private Logger LOG = LoggerFactory.getLogger(DaoCodeLoginEtudiantImplLdapBasic.class);
