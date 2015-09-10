@@ -316,29 +316,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 
 	private void accessToDetail(String id, String type) {
-		
-		//Si on doit afficher une fenêtre de loading pendant l'exécution
-		if(PropertyUtils.isShowLoadingIndicator()){
-			//affichage de la pop-up de loading
-			MdwTouchkitUI.getCurrent().startBusyIndicator();
-			
-			//Execution de la méthode en parallèle dans un thread
-			executorService.execute(new Runnable() {
-				public void run() {
-					MdwTouchkitUI.getCurrent().access(new Runnable() {
-						@Override
-						public void run() {
-							rechercheController.accessToMobileDetail(id,type,false);
-							//close de la pop-up de loading
-							MdwTouchkitUI.getCurrent().stopBusyIndicator();
-						}
-					} );
-				}
-			});
-		}else{
 			//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
 			rechercheController.accessToMobileDetail(id,type,false);
-		}
 	}
 	
 
