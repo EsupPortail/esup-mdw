@@ -18,18 +18,18 @@ import fr.univlorraine.mondossierweb.services.apogee.AnnuMelLoginApogeeService;
 @Component(value="emailConverterUnivLorraineImpl")
 public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 
-	
+
 	@Resource
 	private AnnuMelLoginApogeeService annuMelLoginApogeeService;
-	
-	
+
+
 	/**
 	 * le constructeur.
 	 */
 	public EmailConverterUnivLorraineImpl() {
 		super();
 	}
-	
+
 	/**
 	 * @param login
 	 * @return l'adresse mail.
@@ -40,10 +40,11 @@ public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 			String mail="";
 			//aller chercher le mail dans annu_mel_login
 			mail =  annuMelLoginApogeeService.findMailFromCodEtu(cod_etu);
-			if(mail == null)
-				mail = "";
-			return mail;
+			if(mail != null){
+				return mail;
+			}
 		}
+		//On n'a rien récupéré avec le codetu, on tente avec le login
 		if (login != null && !login.equals("") ) {
 			String mail="";
 			//aller chercher le mail dans annu_mel_login
@@ -54,7 +55,7 @@ public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 		}
 		return "";	
 	}
-	
-	
-	
+
+
+
 }
