@@ -5,6 +5,8 @@ package fr.univlorraine.mondossierweb.converters;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Component;
+
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
@@ -14,6 +16,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  * la classe qui permet d'obtenir l'e-mail d'un �tudiant connaissant son login.
  * @author Charlie Dubois
  */
+@Component(value="emailConverterBasicImpl")
 public class EmailConverterBasicImpl implements EmailConverterInterface{
 
 	@Resource

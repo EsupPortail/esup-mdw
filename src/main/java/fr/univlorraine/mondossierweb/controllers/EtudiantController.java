@@ -104,7 +104,7 @@ public class EtudiantController {
 	@Resource
 	private transient ConfigController configController;
 
-	@Resource(name="emailConverter")
+	@Resource(name="${emailConverter.implementation}")
 	private transient EmailConverterInterface emailConverter;
 
 

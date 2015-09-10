@@ -119,7 +119,7 @@ public class ListeInscritsController {
 	private MultipleApogeeService multipleApogeeService;
 	@Resource
 	private ElementPedagogiqueService elementPedagogiqueService;
-	@Resource(name="emailConverter")
+	@Resource(name="${emailConverter.implementation}")
 	private transient EmailConverterInterface emailConverter;
 	@Resource
 	private transient EtudiantController etudiantController;

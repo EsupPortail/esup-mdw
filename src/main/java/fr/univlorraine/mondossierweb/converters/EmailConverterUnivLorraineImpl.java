@@ -15,7 +15,7 @@ import fr.univlorraine.mondossierweb.services.apogee.AnnuMelLoginApogeeService;
  * la classe qui permet d'obtenir l'e-mail d'un étudiant connaissant son login.
  * @author Charlie Dubois
  */
-@Component(value="emailConverter")
+@Component(value="emailConverterUnivLorraineImpl")
 public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 
 	
