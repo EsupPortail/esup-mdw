@@ -33,7 +33,11 @@ public class EmailConverterBasicImpl implements EmailConverterInterface{
 	 * @param login
 	 * @return l'adresse mail.
 	 */
-	public String getMail( String login, String cod_etu) {
+	public String getMail( String cod_etu) {
+		String login ="";
+		/**
+		 * A FAIRE : RECUPERATION DU LOGIN
+		 */
 		// Gestion du cas ou le login est null ou vide
 		if (login != null && !login.equals("") && configController.getExtensionMailEtudiant() != null && !configController.getExtensionMailEtudiant().equals("")) {
 			return login + configController.getExtensionMailEtudiant();

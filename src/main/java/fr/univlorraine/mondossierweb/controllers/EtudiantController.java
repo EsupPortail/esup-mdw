@@ -194,7 +194,7 @@ public class EtudiantController {
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
 					// on passe par emailConverter pour récupérer l'e-mail.
-					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail("",GenericUI.getCurrent().getEtudiant().getCod_etu()));
+					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail(GenericUI.getCurrent().getEtudiant().getCod_etu()));
 				} else {
 					//on récupérer l'e-mail grâce au WS.
 					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());

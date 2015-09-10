@@ -477,7 +477,7 @@ public class ListeInscritsController {
 	private void setMailInscrits(List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
 			if(i.getCod_etu()!=null)
-				i.setEmail(emailConverter.getMail(null,i.getCod_etu()));
+				i.setEmail(emailConverter.getMail(i.getCod_etu()));
 		}
 	}
 
