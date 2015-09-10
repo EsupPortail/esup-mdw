@@ -13,7 +13,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 
 /**
- * la classe qui permet d'obtenir l'e-mail d'un �tudiant connaissant son login.
+ * la classe qui permet d'obtenir l'e-mail d'un etudiant connaissant son codetu.
  * @author Charlie Dubois
  */
 @Component(value="emailConverterBasicImpl")
@@ -30,7 +30,7 @@ public class EmailConverterBasicImpl implements EmailConverterInterface{
 	}
 	
 	/**
-	 * @param login
+	 * @param codetu
 	 * @return l'adresse mail.
 	 */
 	public String getMail( String cod_etu) {

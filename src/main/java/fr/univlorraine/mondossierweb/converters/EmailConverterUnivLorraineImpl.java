@@ -31,7 +31,7 @@ public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 	}
 
 	/**
-	 * @param login
+	 * @param codetu
 	 * @return l'adresse mail.
 	 */
 	public String getMail(String cod_etu) {
