@@ -13,7 +13,7 @@ public interface IDaoCodeLoginEtudiant {
 
 	/**
 	 * @param login
-	 * @return le codind d'un étudiant à partir de son login
+	 * @return le codetu d'un étudiant à partir de son login
 	 */
 	String getCodEtuFromLogin(String login);
 	
