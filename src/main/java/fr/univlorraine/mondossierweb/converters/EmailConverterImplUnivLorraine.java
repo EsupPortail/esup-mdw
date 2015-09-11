@@ -16,7 +16,7 @@ import fr.univlorraine.mondossierweb.services.apogee.AnnuMelLoginApogeeService;
  * @author Charlie Dubois
  */
 @Component(value="emailConverterUnivLorraineImpl")
-public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
+public class EmailConverterImplUnivLorraine implements EmailConverterInterface{
 
 
 	@Resource
@@ -26,7 +26,7 @@ public class EmailConverterUnivLorraineImpl implements EmailConverterInterface{
 	/**
 	 * le constructeur.
 	 */
-	public EmailConverterUnivLorraineImpl() {
+	public EmailConverterImplUnivLorraine() {
 		super();
 	}
 

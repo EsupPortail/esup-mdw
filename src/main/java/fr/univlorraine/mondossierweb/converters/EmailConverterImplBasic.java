@@ -17,7 +17,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  * @author Charlie Dubois
  */
 @Component(value="emailConverterBasicImpl")
-public class EmailConverterBasicImpl implements EmailConverterInterface{
+public class EmailConverterImplBasic implements EmailConverterInterface{
 
 	@Resource
 	private transient ConfigController configController;
@@ -25,7 +25,7 @@ public class EmailConverterBasicImpl implements EmailConverterInterface{
 	/**
 	 * le constructeur.
 	 */
-	public EmailConverterBasicImpl() {
+	public EmailConverterImplBasic() {
 		super();
 	}
 	
