@@ -1,91 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-<!-- Desactive la persistence des sessions apres un redemarrage -->
+	<!-- Desactive la persistence des sessions apres un redemarrage -->
 	<Manager pathname="" />
 
-<!-- Connexion a la base de donnees -->
-	<Resource name="jdbc/db"
+	<Resource name="jdbc/db" type="javax.sql.DataSource" username="root"
+		password="" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw"
+		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
+		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1'" />
+
+
+<!--  	  <Resource name="jdbc/dbApogee" type="javax.sql.DataSource"
+		username="Z0_MDW" password="lg3558" driverClassName="oracle.jdbc.driver.OracleDriver"
+		url="jdbc:oracle:thin:@apotest-db.univ-lorraine.fr:1521:APOUDLT"
+		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
+		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1' from dual" />-->
+		<Resource name="jdbc/dbApogee"
 		type="javax.sql.DataSource"
-		username="root"
-		password=""
-		driverClassName="org.hsqldb.jdbcDriver"
-		url="jdbc:hsqldb:mem:mondossierwebDb"
+		username="usermdw"
+		password="xxxxx"
+		driverClassName="oracle.jdbc.driver.OracleDriver"
+		url="jdbc:oracle:thin:@apogee.univ.fr:1521:APOGEE"
 		maxActive="20"
 		maxIdle="4"
 		maxWait="10000"
 		removeAbandoned="true"
 		removeAbandonedTimeout="600"
 		logAbandoned="true"
-		validationQuery="select 1 from INFORMATION_SCHEMA.SYSTEM_USERS"
-		testOnBorrow="true" />
+		validationQuery="select '1' from dual" />
+		
+		
+	<!-- 	<Resource name="jdbc/dbApogee" type="javax.sql.DataSource"
+		username="Z0_MDW" password="lg3558" driverClassName="oracle.jdbc.driver.OracleDriver"
+		url="jdbc:oracle:thin:@apogee-db.univ-lorraine.fr:1521:APOUDLP"
+		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
+		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1' from dual" /> -->
+		
 
-<!-- URL de l'application -->
-	<Parameter name="app.url" value="http://mondossierweb.univ-lorraine.fr:8080" />
-<!-- URL du CAS -->
-	<Parameter name="cas.url" value="https://auth.univ-lorraine.fr" />
+	<!-- URL de l'application -->
+	<Parameter name="app.url" value="http://mdw.univ.fr:8080" /> 
+	<!--  <Parameter name="app.url" value="http://dubois36.infra.univ-lorraine.fr" />  -->
+	<!-- URL du CAS -->
+	<Parameter name="cas.url" value="https://auth.univ.fr" />
 
-<!-- Configuration du LDAP -->
-	<Parameter name="ldap.url" value="ldap://ldaptest.univ-lorraine.fr:983/dc=univ-lorraine,dc=fr" />
-	<Parameter name="ldap.roleAttribute" value="udlGroup" />
-<!-- Identifiants (facultatif) -->
-<!--
-	<Parameter name="ldap.userDn" value="" />
-	<Parameter name="ldap.password" value="" />
--->
+	<!-- Configuration du LDAP -->
+	<!-- TEST -->
+	<!-- <Parameter name="ldap.url" value="ldap://ldaptest.univ-lorraine.fr:983/dc=univ-lorraine,dc=fr" 
+		/> -->
+	<!-- DEV -->
+	<Parameter name="ldap.url" value="ldap://ldap.univ.fr:389/dc=univ,dc=fr" />
+	<!-- Identifiants (facultatif) -->
+	<Parameter name="ldap.userDn" value="userDn" />
+	<Parameter name="ldap.password" value="xxxxx" />
 
-<!-- Administrateur -->
-	<!-- Activation des profils: decommenter cette ligne et commenter la suivante
-	<Parameter name="role.admin" value="admin" />
-	-->
-	<Parameter name="role.admin" value="100:G1N:G1N01" />
+	<!-- Administrateur -->
+	<!-- Activation des profils: decommenter cette ligne et commenter la suivante 
+		<Parameter name="role.admin" value="admin" /> <Parameter name="role.admin"  value="100:G1N:G1N01" /> -->
+	<Parameter name="role.admin" value="adminMdw" />
+	<Parameter name="role.etudiant" value="student" />
 
-<!-- Configuration de l'envoi de mails d'erreur -->
+	<!-- Ws uportal -->
+	<Parameter name="uportal.ws"
+		value="http://ent.univ.fr/services/UportalService" />
+	<Parameter name="uportal.groupes.autorises" value="Utilisateurs MDW" />
+
+	<!-- Utilisation de la table Utilisateur d'Apogee pour l'acces au canal. Mettre false pour ne pas utiliser cette fonctionnalite -->
+	<Parameter name="loginApogee" value="true" />
+	<!-- La propriete ldap du contact désignant son type (typeEtudiantLdap ou pas ) -->
+	<Parameter name="attributLdapEtudiant" value="edupersonprimaryaffiliation" />
+	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
+	<!-- Le type ldap designant un etudiant -->
+	 <Parameter name="typeEtudiantLdap" value="student" />  
+	
+	<Parameter name="sourceResultats" value="Apogee" />
+	
+	<!-- Configuration de l'envoi de mails d'erreur -->
 	<Parameter name="mail.smtpHost" value="smtp-sig.univ-lorraine.fr" />
-	<Parameter name="mail.from" value="mondossierweb@univ-lorraine.fr" />
-	<Parameter name="mail.to" value="dn-sig-dev@univ-lorraine.fr" />
+	<Parameter name="mail.from" value="mdw@univ.fr" />
+	<Parameter name="mail.to" value="error@univ.fr" />
 
-<!-- Mode production : Desactive le mode debug -->
+	<!-- Mode production : Desactive le mode debug -->
 	<Parameter name="productionMode" value="true" />
-<!-- Active/Desactive le push -->
+	
+	<!-- Active/Desactive le push -->
 	<Parameter name="enablePush" value="true" />
-		<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans -->
+
+	<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans -->
 	<Parameter name="showLoadingIndicator" value="true" />
 
 
-	
-	<Parameter name="param.elasticsearch.url" value="172.0.0.0" />
-	<Parameter name="param.elasticsearch.port" value="9300" />
+	<!-- ELASTICSEARCH -->
+	<!-- <Parameter name="param.elasticsearch.url" value="172.16.64.43" /> -->
+ 	<Parameter name="param.elasticsearch.url" value="localhost" /> 
+	<Parameter name="param.elasticsearch.port" value="9300" /> 
 	<Parameter name="param.elasticsearch.cluster" value="dev-1.3.4" />
-	<Parameter name="param.elasticsearch.index" value="apogeealias1" />
+	<Parameter name="param.elasticsearch.index" value="apogee" />
 	<Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
-	
-	
-	
-	
-	<!-- true pour que l'email de l'étudiant (état-civil) soit récupéré par le WS dans l'annuaire.
-		false pour que ce soir iBATIS qui s'en charge
-		Note : à true, pkb_annu et TEM_ACC_ANNUAIRE doivent être actifs dans APOGEE -->
+
+
+	<!-- true pour que l'email de l'étudiant (état-civil) soit récupéré par 
+		le WS dans l'annuaire. false pour que ce soir iBATIS qui s'en charge Note 
+		: à true, pkb_annu et TEM_ACC_ANNUAIRE doivent être actifs dans APOGEE -->
 	<Parameter name="param.apogee.mail.annuaire" value="false" />
-		<!-- l'extension au login pour l'e-mail des étudiants -->
-	<Parameter name="param.apogee.extesion.mail.etudiant" value="@etu.univ-ville.fr" />
+
+
+	<!--  Interface pour la récupération du mail -->
+	  <Parameter name="emailConverter.implementation" value="emailConverterUnivLorraineImpl" />  
+	<!--  <Parameter name="emailConverter.implementation" value="emailConverterLdapImpl" />   -->
+	<!-- <Parameter name="emailConverter.implementation" value="emailConverterBasicImpl" />  -->
 	
 	
-<!-- Décommenter l'analyser à utiliser -->
-<!-- Compte Google Analytics, facultatif -->
-<!-- 
-	<Parameter name="google.analytics.account" value="UA-XXXXXXXX-X" />
- -->
- 
-<!-- Compte Piwik Analytics, facultatif -->
-<!-- 
-<Parameter name="piwik.tracker.url" value="piwik.univ.fr" /> 
-<Parameter name="piwik.site.id" value="100" />
--->
+	<!--  Interface pour la récupération du cod_etu à partir du login -->
+	<Parameter name="codetuFromLogin.implementation" value="codetuFromLoginLdapImpl" />
+	
+	
+	<!--  Interface pour la récupération du login à partir du codetu -->
+	  <Parameter name="loginFromCodetu.implementation" value="loginFromCodetuUnivLorraineImpl" />
+	<!-- <Parameter name="loginFromCodetu.implementation" value="loginFromCodetuLdapImpl" />  -->
+
+	<!--  Interface pour la gestion des photos -->
+	<!-- <Parameter name="serveurphoto.implementation" value="photoEmptyImpl" />  -->
+	<Parameter name="serveurphoto.implementation" value="photoUnivLorraineImpl" />
+	
+	<!-- Config Photoserver UL -->
+	<Parameter name="param.photoserver.ressourceurl"
+		value="http://photoserver-test.univ-lorraine.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&amp;chksum=%chksum%" />
+	<Parameter name="param.photoserver.ticketurl"
+		value="http://photoserver-test.univ-lorraine.fr/PhotoServer/getTicket?ip=%ip%&amp;mode=%mode%&amp;typ_lim=%typLim%&amp;val_lim=%valLim%&amp;client=%client%" />
+	<Parameter name="param.photoserver.codeapp" value="0" />
 
 
-<Parameter name="param.photoserver.ressourceurl" value="http://photoserver-test.univ-lorraine.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&amp;chksum=%chksum%" />
-<Parameter name="param.photoserver.ticketurl" value="http://photoserver-test.univ-lorraine.fr/PhotoServer/getTicket?ip=%ip%&amp;mode=%mode%&amp;typ_lim=%typLim%&amp;val_lim=%valLim%&amp;client=%client%" />
-<Parameter name="param.photoserver.codeapp" value="31BD930BFA207BD07139928E4CC8CD76" />
 
+	<!-- Compte Google Analytics, facultatif -->
+	<!--  <Parameter name="google.analytics.account" value="UA-42034951-8" /> -->
+	
+	<!-- Compte Piwik Analytics, facultatif -->
+	<Parameter name="piwik.tracker.url" value="webstats.univ-lorraine.fr" /> 
+	<!-- <Parameter name="piwik.site.id" value="208" /> --> 
+	<!--  Blank --><Parameter name="piwik.site.id" value="226" />
+	
 
+	
+
+	
 </Context>
