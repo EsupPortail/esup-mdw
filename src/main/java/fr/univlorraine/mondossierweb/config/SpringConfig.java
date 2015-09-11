@@ -76,5 +76,10 @@ public class SpringConfig {
 	public LdapUserSearch ldapUserSearch() {
 		return new FilterBasedLdapUserSearch("ou=people", "uid={0}", ldapServer());
 	}
+	
+	@Bean
+	public LdapUserSearch ldapEtudiantSearch() {
+		return new FilterBasedLdapUserSearch("ou=people", environment.getProperty("attributLdapCodEtu")+"={0}", ldapServer());
+	}
 
 }

@@ -34,11 +34,11 @@ public class LoginCodeEtudiantConverterImplLdap implements LoginCodeEtudiantConv
 
 	private Logger LOG = LoggerFactory.getLogger(LoginCodeEtudiantConverterImplLdap.class);
 	
-	@Resource
-	private transient LdapUserSearch ldapUserSearch;
 	
 	@Resource
-	private transient FilterBasedLdapUserSearch filterBasedLdapUserSearch;
+	private transient LdapUserSearch ldapEtudiantSearch;
+	
+	
 
 
 	public LoginCodeEtudiantConverterImplLdap() {
@@ -50,8 +50,8 @@ public class LoginCodeEtudiantConverterImplLdap implements LoginCodeEtudiantConv
 		
 		
 		try {
-			if(ldapUserSearch.searchForUser(codetu)!=null){
-				String[] vals= ldapUserSearch.searchForUser(codetu).getStringAttributes(PropertyUtils.getAttributLdapCodEtu());
+			if(ldapEtudiantSearch.searchForUser(codetu)!=null){
+				String[] vals= ldapEtudiantSearch.searchForUser(codetu).getStringAttributes("uid");
 				if(vals!=null){
 					LOG.debug("login via codetu pour "+codetu+" => "+vals[0]);
 					return vals[0];
