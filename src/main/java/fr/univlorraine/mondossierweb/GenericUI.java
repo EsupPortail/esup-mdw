@@ -23,8 +23,6 @@ import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterf
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
-import fr.univlorraine.mondossierweb.photo.PhotoUnivLorraineImpl;
-import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
 
 /**

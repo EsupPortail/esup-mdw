@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
-import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApogeeRepository;
 
 @Component

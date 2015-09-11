@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
-
-import org.springframework.context.annotation.Scope;
-
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 

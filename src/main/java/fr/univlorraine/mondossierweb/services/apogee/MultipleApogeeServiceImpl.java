@@ -3,7 +3,6 @@ package fr.univlorraine.mondossierweb.services.apogee;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

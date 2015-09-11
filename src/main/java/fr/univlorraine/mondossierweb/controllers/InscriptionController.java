@@ -1,30 +1,5 @@
 package fr.univlorraine.mondossierweb.controllers;
 
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.Adresse;
-import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.beans.Inscription;
-import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
-import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.client.ws.geographiemetier.GeographieMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.servicesmetiers.EtudiantMetierServiceInterface;
-import gouv.education.apogee.commun.servicesmetiers.GeographieMetierServiceInterface;
-import gouv.education.apogee.commun.servicesmetiers.AdministratifMetierServiceInterface;
-import gouv.education.apogee.commun.transverse.dto.etudiant.AdresseMajDTO;
-import gouv.education.apogee.commun.transverse.dto.etudiant.CommuneMajDTO;
-import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesDTO2;
-import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesMajDTO;
-import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementDTO;
-import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO;
-import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
-import gouv.education.apogee.commun.transverse.exception.WebBaseException;
-
-import com.vaadin.server.ClassResource;
-import com.vaadin.server.StreamResource;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,10 +8,7 @@ import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -45,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
@@ -60,6 +31,13 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.vaadin.server.StreamResource;
+
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.Inscription;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 
 /**
  * Gestion des inscriptions et du certificat de scolarité

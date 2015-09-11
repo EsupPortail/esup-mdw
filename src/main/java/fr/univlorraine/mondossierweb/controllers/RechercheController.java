@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.bouncycastle.asn1.x509.NoticeReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
-import groovy.transform.Synchronized;
 
 /**
  * Gestion de la recherche

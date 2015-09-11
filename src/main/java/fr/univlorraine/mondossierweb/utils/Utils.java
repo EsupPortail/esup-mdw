@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
 
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;

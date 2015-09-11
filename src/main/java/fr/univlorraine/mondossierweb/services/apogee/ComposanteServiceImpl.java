@@ -6,14 +6,9 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import lombok.Data;
-
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-
-
 
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;

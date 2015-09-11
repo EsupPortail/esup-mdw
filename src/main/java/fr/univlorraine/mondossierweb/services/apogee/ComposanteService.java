@@ -2,8 +2,6 @@ package fr.univlorraine.mondossierweb.services.apogee;
 
 import java.util.List;
 
-
-
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionDiplome;

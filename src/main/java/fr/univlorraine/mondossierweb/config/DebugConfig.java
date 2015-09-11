@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import ru.xpoft.vaadin.VaadinView;
 import fr.univlorraine.mondossierweb.Initializer;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 

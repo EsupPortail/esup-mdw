@@ -3,8 +3,6 @@ package fr.univlorraine.mondossierweb.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Resource;
-
 import lombok.Getter;
 
 import org.springframework.beans.factory.annotation.Configurable;

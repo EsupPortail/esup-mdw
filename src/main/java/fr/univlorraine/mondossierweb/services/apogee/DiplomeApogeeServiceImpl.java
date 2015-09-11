@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
-import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.repositories.apogee.DiplomeApogeeRepository;
-import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApogeeRepository;
 
 @Component
 @Transactional("transactionManagerApogee")

@@ -24,7 +24,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -57,19 +56,14 @@ import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
-import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterfaceProxy;
 import gouv.education.apogee.commun.servicesmetiers.OffreFormationMetierServiceInterface;
-import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO3;
 import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO4;
-import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO2;
 import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO3;
-import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO2;
 import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO3;
-import gouv.education.apogee.commun.transverse.dto.scolarite.RecupererGroupeDTO2;
 import gouv.education.apogee.commun.transverse.dto.scolarite.RecupererGroupeDTO3;
 
 /**

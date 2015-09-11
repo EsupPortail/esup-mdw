@@ -39,6 +39,18 @@ public class AnnuMelLoginApogeeServiceImpl implements AnnuMelLoginApogeeService 
 
 	}
 
+	@Override
+	public String findLoginFromCodEtu(String cod_etu) {
+		try{
+			String login=(String) entityManagerApogee.createNativeQuery("select LOGIN FROM ANNU_MEL_LOGIN WHERE COD_ETU="+cod_etu).getSingleResult();
+			return login;
+		}catch(NoResultException e){
+			return null;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
 
 
 
