@@ -22,7 +22,7 @@ import fr.univlorraine.mondossierweb.services.apogee.AnnuMelLoginApogeeService;
  * @author Charlie Dubois
  *
  */
-@Component(value="loginFromCodetuUlImpl")
+@Component(value="loginFromCodetuUnivLorraineImpl")
 public class LoginCodeEtudiantConverterImplUnivLorraine implements LoginCodeEtudiantConverterInterface {
 
 	private Logger LOG = LoggerFactory.getLogger(LoginCodeEtudiantConverterImplUnivLorraine.class);
