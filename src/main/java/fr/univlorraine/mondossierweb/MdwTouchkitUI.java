@@ -204,11 +204,11 @@ public class MdwTouchkitUI extends GenericUI{
 			public void uriFragmentChanged(UriFragmentChangedEvent source) {
 
 				//On bloque l'accès aux vues desktop
-			/*	if(!Utils.isViewMobile(source.getUriFragment())){
+				/*	if(!Utils.isViewMobile(source.getUriFragment())){
 					afficherMessageAccesRefuse();
 				}*/
-				
-				
+
+
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
 					afficherMessageMaintenance();
@@ -227,7 +227,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 		/* Construit le gestionnaire de vues */
 		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
-		
+
 		navigator.addViewChangeListener(new ViewChangeListener() {
 
 			private static final long serialVersionUID = 9183991275107545154L;
@@ -235,27 +235,27 @@ public class MdwTouchkitUI extends GenericUI{
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 
-				
+
 				//On bloque l'accès aux vues desktop
 				if(!Utils.isViewMobile(event.getViewName())){
 					return false;
 				}
-				
+
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() && !event.getViewName().equals(AccesBloqueView.NAME)){
 					afficherMessageMaintenance();
 					return false;
 				}
-			
+
 				return true;
 			}
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
 
 		//init du tracker
@@ -290,21 +290,27 @@ public class MdwTouchkitUI extends GenericUI{
 					//On consultera les notes en vue etudiant
 					vueEnseignantNotesEtResultats=false;
 					//On récupère le codetu de l'étudiant
-					etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
+					String codetu=daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName());
+					etudiant = new Etudiant(codetu);
 					try{
 						//On récupère l'état-civil et les adresses de l'étudiant
 						etudiantController.recupererEtatCivil();
-						//On récupère le calendrier de l'étudiant
-						etudiantController.recupererCalendrierExamens();
-						//On récupère les notes de l'étudiant
-						etudiantController.recupererNotesEtResultats(etudiant);
-						//On affiche le dossier
-						navigateToDossierEtudiant();
+						//Si on a eu une erreur à la récupération de l'état-civil
+						if(GenericUI.getCurrent().getEtudiant()==null){
+							navigator.navigateTo(ErreurView.NAME);
+						}else{
+							//On récupère le calendrier de l'étudiant
+							etudiantController.recupererCalendrierExamens();
+							//On récupère les notes de l'étudiant
+							etudiantController.recupererNotesEtResultats(etudiant);
+							//On affiche le dossier
+							navigateToDossierEtudiant();
+						}
 					} catch (WebBaseException ex) {
-						LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+						LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);
 						navigator.navigateTo(ErreurView.NAME);
 					} catch (Exception ex) {
-						LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+						LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
 						navigator.navigateTo(ErreurView.NAME);
 					}
 
@@ -320,12 +326,12 @@ public class MdwTouchkitUI extends GenericUI{
 
 	}
 
-	
+
 	private void afficherMessageMaintenance(){
 		setContent(contentLayout);
 		navigator.navigateTo(AccesBloqueView.NAME);
 	}
-	
+
 	private void afficherMessageAccesRefuse(){
 		setContent(contentLayout);
 		navigator.navigateTo(AccesRefuseView.NAME);
@@ -350,8 +356,8 @@ public class MdwTouchkitUI extends GenericUI{
 		note.setPosition(Position.MIDDLE_CENTER);
 		note.setDelayMsec(6000);
 		note.show(this.getPage());
-		
-		
+
+
 		/**
 		 * ANCIENNE VERSION AVEC POPUP WINDOW
 		 */
@@ -387,9 +393,9 @@ public class MdwTouchkitUI extends GenericUI{
 
 			//Affichage de la pop_up
 			UI.getCurrent().addWindow(hbw);
-			
+
 		}
-		*/
+		 */
 	}
 
 	/**
@@ -584,7 +590,7 @@ public class MdwTouchkitUI extends GenericUI{
 		return configController.isApplicationMobileActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
 				|| (userController.isEnseignant() && configController.isPartieEnseignantActive()));
 	}
-	
+
 	public void startBusyIndicator() {
 		addWindow(loadingIndicatorWindow);
 	}
