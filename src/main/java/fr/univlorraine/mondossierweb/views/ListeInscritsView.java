@@ -631,6 +631,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 
 					resumeLayout.addComponent(middleResumeLayout);
+					//Si on affiche le trombinoscope, on masque le middleResumeLayout
+					if(afficherTrombinoscope){
+						middleResumeLayout.setVisible(false);
+					}
 
 					HorizontalLayout buttonResumeLayout = new HorizontalLayout();
 					buttonResumeLayout.setSizeFull();
@@ -805,6 +809,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
 					setExpandRatio(infoLayout, 1);
+					
+					//Si on a demandé à afficher le trombinoscope
+					if(afficherTrombinoscope){
+						//On execute la procédure d'affichage du trombinoscope
+						executeDisplayTrombinoscope();
+					}
 				}else{
 					Label infoAucuninscrit = new Label(applicationContext.getMessage(NAME+".message.aucuninscrit", null, getLocale()));
 					addComponent(infoAucuninscrit);
