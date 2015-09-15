@@ -549,11 +549,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					leftResumeLayout.addComponent(btnExportTrombi);
 					leftResumeLayout.setComponentAlignment(btnExportTrombi, Alignment.MIDDLE_LEFT);
-					if(!afficherTrombinoscope){
+					//if(!afficherTrombinoscope){
 
 						//On cache le bouton d'export pdf
 						btnExportTrombi.setVisible(false);
-					}
+					//}
 
 
 					//Bouton export liste excel
@@ -588,10 +588,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						new FileDownloader(resourceXls).extend(btnExportExcel);
 					}
 
-					if(!afficherTrombinoscope){
+					//if(!afficherTrombinoscope){
 						//On échange le bouton d'export pdf par le bouton export excel
 						leftResumeLayout.replaceComponent(btnExportTrombi, btnExportExcel);
-					}
+					//}
 
 					resumeLayout.addComponent(leftResumeLayout);
 
@@ -631,10 +631,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 
 					resumeLayout.addComponent(middleResumeLayout);
-					//Si on affiche le trombinoscope, on masque le middleResumeLayout
-					if(afficherTrombinoscope){
-						middleResumeLayout.setVisible(false);
-					}
+
 
 					HorizontalLayout buttonResumeLayout = new HorizontalLayout();
 					buttonResumeLayout.setSizeFull();
@@ -661,11 +658,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnTrombi.setIcon(FontAwesome.GROUP);
 					buttonResumeLayout.addComponent(btnTrombi);
 
-					//Test si trombinoscope est affiché
-					if(afficherTrombinoscope){
-						//On masque le bouton trombinoscope
-						btnTrombi.setVisible(false);
-					}
+
 					//Gestion du clic sur le bouton trombinoscope
 					btnTrombi.addClickListener(e->{
 
@@ -702,9 +695,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnRetourListe= new Button(applicationContext.getMessage(NAME+".message.retourliste", null, getLocale()));
 					btnRetourListe.setIcon(FontAwesome.BARS);
 					buttonResumeLayout.addComponent(btnRetourListe);
-					if(!afficherTrombinoscope){
+					//if(!afficherTrombinoscope){
 						btnRetourListe.setVisible(false);
-					}
+					//}
 
 					//Gestion du clic sur le bouton de  retour à l'affichage de la liste
 					btnRetourListe.addClickListener(e->{
@@ -782,11 +775,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setImmediate(true);
 					inscritstable.addStyleName("scrollabletable");
 					//Si on n'a pas déjà demandé à afficher le trombinoscope
-					if(!afficherTrombinoscope){
-
+					//if(!afficherTrombinoscope){
 						//la layout contient la table
 						dataLayout.addComponent(inscritstable);
-					}
+					//}
 
 					//Layout contenant le gridLayout correspondant au trombinoscope
 					verticalLayoutForTrombi = new VerticalLayout();
@@ -801,10 +793,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					verticalLayoutForTrombi.setHeight(null);
 
 					//Si on a demandé à afficher le trombinoscope
-					if(afficherTrombinoscope){
+					/*if(afficherTrombinoscope){
 						//Le layout contient le trombi à afficher
 						dataLayout.addComponent(verticalLayoutForTrombi);
-					}
+					}*/
 					infoLayout.addComponent(dataLayout);
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
