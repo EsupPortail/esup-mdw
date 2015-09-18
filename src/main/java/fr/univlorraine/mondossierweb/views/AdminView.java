@@ -28,7 +28,9 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
 import fr.univlorraine.mondossierweb.views.windows.PreferencesApplicationWindow;
+import fr.univlorraine.mondossierweb.views.windows.SwapUtilisateurWindow;
 
 /**
  * Page admin
@@ -40,6 +42,8 @@ public class AdminView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2605429366219007314L;
 
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
+	
+	public static final String[] SWAP_FIELDS_ORDER = {"loginSource", "loginCible", "datCre"};
 
 
 	public static final String NAME = "adminView";
@@ -60,10 +64,15 @@ public class AdminView extends VerticalLayout implements View {
 	//le tabSheet global affiché
 	private TabSheet tabSheetGlobal;
 	private Button btnEdit;
+	private Button btnEditSwap;
+	private Button btnAddSwap;
 	private Table confAppTable;
+	private Table confSwapTable;
+	private int tabSelectedPosition;
 	
 	private VerticalLayout layoutConfigApplication;
-	private HorizontalLayout topLayout = new HorizontalLayout();
+	private VerticalLayout layoutSwapUser;
+	private HorizontalLayout topLayout;
 	
 	/**
 	 * Initialise la vue
@@ -78,6 +87,7 @@ public class AdminView extends VerticalLayout implements View {
 			setSpacing(true);
 			
 			/* En-tete menu large */
+			topLayout = new HorizontalLayout();
 			topLayout.addStyleName(ValoTheme.MENU_TITLE);
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 			topLayout.setSpacing(true);
@@ -108,13 +118,21 @@ public class AdminView extends VerticalLayout implements View {
 			tabSheetGlobal.setSizeFull();
 			tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 			
-			//ajout de l'onglet principal 'recherche'
+			//ajout de l'onglet principal 'parametres'
 			layoutConfigApplication = new VerticalLayout();
 			layoutConfigApplication.setSizeFull();
 			ajoutGestionParametresApplicatifs();
 			tabSheetGlobal.addTab(layoutConfigApplication, "Paramètres de l'application", FontAwesome.COGS);
 			
+
+			//ajout de l'onglet 'swap'
+			layoutSwapUser = new VerticalLayout();
+			layoutSwapUser.setSizeFull();
+			ajoutGestionSwap();
+			tabSheetGlobal.addTab(layoutSwapUser, "Swap utilisateur", FontAwesome.GROUP);
 			
+			
+			tabSheetGlobal.setSelectedTab(tabSelectedPosition);
 			//Ce tabSheet sera aligné à droite
 			//tabSheetGlobal.addStyleName("right-aligned-tabs");
 
@@ -147,6 +165,7 @@ public class AdminView extends VerticalLayout implements View {
 				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
 				PreferencesApplicationWindow paw = new PreferencesApplicationWindow((PreferencesApplication) confAppTable.getValue());
 				paw.addCloseListener(f->init());
+				tabSelectedPosition=0;
 				MainUI.getCurrent().addWindow(paw);
 			}
 		});
@@ -181,6 +200,81 @@ public class AdminView extends VerticalLayout implements View {
 		});
 		layoutConfigApplication.addComponent(confAppTable);
 		layoutConfigApplication.setExpandRatio(confAppTable, 1);
+	}
+
+	
+	
+	private void ajoutGestionSwap() {
+		
+
+		layoutSwapUser.setMargin(true);
+		layoutSwapUser.setSpacing(true);
+		/* Boutons */
+		HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
+		buttonsLayout.setSpacing(true);
+		layoutSwapUser.addComponent(buttonsLayout);
+
+		HorizontalLayout leftButtonsLayout = new HorizontalLayout();
+		leftButtonsLayout.setSpacing(true);
+		buttonsLayout.addComponent(leftButtonsLayout);
+		buttonsLayout.setComponentAlignment(leftButtonsLayout, Alignment.MIDDLE_LEFT);
+
+		btnEditSwap = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
+		btnEditSwap.setEnabled(false);
+		btnEditSwap.addClickListener(e -> {
+			if (confSwapTable.getValue() instanceof UtilisateurSwap) {
+				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
+				SwapUtilisateurWindow suw = new SwapUtilisateurWindow((UtilisateurSwap) confSwapTable.getValue(), false);
+				suw.addCloseListener(f->init());
+				tabSelectedPosition=1;
+				MainUI.getCurrent().addWindow(suw);
+			}
+		});
+		buttonsLayout.addComponent(btnEditSwap);
+		buttonsLayout.setComponentAlignment(btnEditSwap, Alignment.MIDDLE_CENTER);
+		
+		btnAddSwap = new Button(applicationContext.getMessage(NAME+".btnAdd", null, getLocale()), FontAwesome.PLUS);
+		btnAddSwap.setEnabled(true);
+		btnAddSwap.addClickListener(e -> {
+			
+				SwapUtilisateurWindow suw = new SwapUtilisateurWindow(new UtilisateurSwap(), true);
+				suw.addCloseListener(f->init());
+				tabSelectedPosition=1;
+				MainUI.getCurrent().addWindow(suw);
+			
+		});
+		buttonsLayout.addComponent(btnAddSwap);
+		buttonsLayout.setComponentAlignment(btnAddSwap, Alignment.MIDDLE_CENTER);
+		
+		
+		/* Table des conf */
+		confSwapTable = new Table(null, new BeanItemContainer<>(UtilisateurSwap.class, configController.getSwapUtilisateurs()));
+		confSwapTable.setSizeFull();
+		confSwapTable.setVisibleColumns((Object[]) SWAP_FIELDS_ORDER);
+		for (String fieldName : SWAP_FIELDS_ORDER) {
+			confSwapTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".confSwapTable." + fieldName, null, getLocale()));
+		}
+		confSwapTable.setSortContainerPropertyId("loginSource");
+		confSwapTable.setColumnCollapsingAllowed(true);
+		confSwapTable.setColumnReorderingAllowed(true);
+		confSwapTable.setSelectable(true);
+		confSwapTable.setImmediate(true);
+		confSwapTable.addItemSetChangeListener(e -> confSwapTable.sanitizeSelection());
+		confSwapTable.addValueChangeListener(e -> {
+			// Le bouton d'édition est actif seulement si un parametre est sélectionné. 
+			boolean structureIsSelected = confSwapTable.getValue() instanceof UtilisateurSwap;
+			btnEditSwap.setEnabled(structureIsSelected);
+			
+		});
+		confSwapTable.addItemClickListener(e -> {
+			if (e.isDoubleClick()) {
+				confSwapTable.select(e.getItemId());
+				btnEditSwap.click();
+			}
+		});
+		layoutSwapUser.addComponent(confSwapTable);
+		layoutSwapUser.setExpandRatio(confSwapTable, 1);
 	}
 
 	/**

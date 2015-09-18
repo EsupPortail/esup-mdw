@@ -12,7 +12,9 @@ import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepository;
+import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
 
 /**
  * Gestion de la config en base de données
@@ -26,6 +28,8 @@ public class ConfigController {
 	@Resource
 	private PreferencesApplicationRepository preferencesApplicationRepository;
 
+	@Resource
+	private UtilisateurSwapRepository utilisateurSwapRepository;
 
 	/**
 	 * Edition pdf des certificats de scolarité : true pour l'activer, false sinon
@@ -236,6 +240,22 @@ public class ConfigController {
 	
 	/**
 	 * 
+	 * @return les parametres applicatifs en base
+	 */
+	public List<UtilisateurSwap> getSwapUtilisateurs(){
+		return utilisateurSwapRepository.findAll();
+	}
+	
+	/**
+	 * 
+	 * @return les parametres applicatifs en base
+	 */
+	public UtilisateurSwap getSwapUtilisateur(String login){
+		return utilisateurSwapRepository.findOne(login);
+	}
+	
+	/**
+	 * 
 	 * @param parameter
 	 * @return la valeur d'un parametre de type booleen
 	 */
@@ -250,6 +270,11 @@ public class ConfigController {
 
 	public void saveAppParameter(PreferencesApplication prefApp) {
 		preferencesApplicationRepository.saveAndFlush(prefApp);
+		
+	}
+	
+	public void saveSwap(UtilisateurSwap swap) {
+		utilisateurSwapRepository.saveAndFlush(swap);
 		
 	}
 
