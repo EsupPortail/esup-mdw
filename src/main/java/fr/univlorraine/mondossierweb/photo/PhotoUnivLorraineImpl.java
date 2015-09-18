@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.server.WebBrowser;
@@ -29,7 +31,7 @@ import fr.univnancy2.PhotoClient.exception.PhotoClientException;
  * @author Charlie Dubois
  */
 
-//@Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
+@Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)
 @Component(value="photoUnivLorraineImpl")
 public class PhotoUnivLorraineImpl implements IPhoto {
 	/**
