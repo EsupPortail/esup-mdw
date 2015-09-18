@@ -43,6 +43,7 @@ import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
 import fr.univlorraine.mondossierweb.repositories.mdw.AdministrateursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesUtilisateurRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -181,14 +182,16 @@ public class UserController {
 	/**
 	 * @return true si l'utilisateur a pris le rôle d'un autre utilisateur
 	 */
-	public boolean isUserSwitched() {
+	/*public boolean isUserSwitched() {
 		for (GrantedAuthority ga : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
 			if (SwitchUserFilter.ROLE_PREVIOUS_ADMINISTRATOR.equals(ga.getAuthority())) {
 				return true;
 			}
 		}
 		return false;
-	}
+	}*/
+	
+
 
 	/**
 	 * Change le rôle de l'utilisateur courant
@@ -513,6 +516,17 @@ public class UserController {
 
 	public boolean isAdmin() {
 		return isAdmin(getCurrentUserName());
+	}
+	
+	public boolean userCanAccessAdminView() {
+		//On parcourt les droits
+		for (GrantedAuthority ga : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+			//Si a l'autorisation de consulter la vue adminView
+			if (MdwUserDetailsService.CONSULT_ADMINVIEW_AUTORISE.equals(ga.getAuthority())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

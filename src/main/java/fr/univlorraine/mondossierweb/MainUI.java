@@ -271,7 +271,7 @@ public class MainUI extends GenericUI {
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
 
 				//Si on tente d'accéder à la vue admin et que l'utilisateur est admin
-				if(event.getViewName().equals(AdminView.NAME) && userController.isAdmin()){
+				if(event.getViewName().equals(AdminView.NAME) && userController.userCanAccessAdminView()){
 					//Afficher la vue admin
 					setContent(adminView);
 					return true;
@@ -424,7 +424,7 @@ public class MainUI extends GenericUI {
 				String fragment = Page.getCurrent().getUriFragment();
 				if (fragment != null && !fragment.isEmpty()) {
 					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est gérer dans le listener du navigator
-					if(fragment.contains("adminView") && userController.isAdmin()){
+					if(fragment.contains("adminView") && userController.userCanAccessAdminView()){
 						//Afficher la vue admin
 						navigator.navigateTo(AdminView.NAME);
 						navigationComplete=true;

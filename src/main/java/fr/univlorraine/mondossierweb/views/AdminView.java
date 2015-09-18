@@ -80,7 +80,7 @@ public class AdminView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isAdmin()){
+		if(userController.userCanAccessAdminView()){
 			removeAllComponents();
 			/* Style */
 			setMargin(true);

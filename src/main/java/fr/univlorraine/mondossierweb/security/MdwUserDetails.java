@@ -25,17 +25,24 @@ public class MdwUserDetails implements UserDetails {
 
 	
 	@SuppressWarnings("unchecked")
-	public MdwUserDetails(String username, String droits) {
+	public MdwUserDetails(String username, String droits, boolean canAccessToAdminView) {
 	
 		this.username = username;
 		
 		/* load Authorities */
 		authorities.add(new SimpleGrantedAuthority(droits));
 		
+		//Si le user a le droit d'accéder à la vue admin
+		if(canAccessToAdminView){
+			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_ADMINVIEW_AUTORISE));
+		}
+		
+		//Si admin ou teacher ou student , le user est autorisé a consulter un dossier étudiant
 		if(droits.equals(MdwUserDetailsService.ADMIN_USER) || droits.equals(UserController.TEACHER_USER) || droits.equals(UserController.STUDENT_USER)){
 			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE));
 		}
 		
+		//Si admin, on rajoute le droit teacher_user
 		if(droits.equals(MdwUserDetailsService.ADMIN_USER)){
 			authorities.add(new SimpleGrantedAuthority(UserController.TEACHER_USER));
 		}
