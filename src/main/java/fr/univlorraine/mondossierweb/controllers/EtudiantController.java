@@ -39,12 +39,10 @@ import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.client.ws.pedagogiquemetier.PedagogiqueMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.servicesmetiers.AdministratifMetierServiceInterface;
-import gouv.education.apogee.commun.servicesmetiers.EtudiantMetierServiceInterface;
-import gouv.education.apogee.commun.servicesmetiers.PedagogiqueMetierServiceInterface;
+import gouv.education.apogee.commun.client.utils.WSUtils;
+import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.pedagogiquemetier.PedagogiqueMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExterneDTO;
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExternesEtTransfertsDTO;
 import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmAnuDTO2;
@@ -134,7 +132,7 @@ public class EtudiantController {
 	public boolean isEtudiantExiste(String codetu){
 
 		if(monProxyEtu==null)
-			monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
+			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
 		try {
 			//informations générales :
 			IdentifiantsEtudiantDTO idetu;
@@ -165,10 +163,12 @@ public class EtudiantController {
 	public void recupererEtatCivil() {
 
 		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
-			if(monProxyEtu==null)
-				monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
-			if(monProxyAdministratif==null)
-				monProxyAdministratif = new AdministratifMetierServiceInterfaceProxy();
+			if(monProxyEtu==null){
+				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+			}
+			if(monProxyAdministratif==null){
+				monProxyAdministratif = (AdministratifMetierServiceInterface)  WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+			}
 			try {
 				//informations générales :
 				IdentifiantsEtudiantDTO idetu;
@@ -366,8 +366,9 @@ public class EtudiantController {
 	public void recupererAdresses() {
 
 		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
-			if(monProxyAdministratif==null)
-				monProxyAdministratif = new AdministratifMetierServiceInterfaceProxy();
+			if(monProxyAdministratif==null){
+				monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+			}
 			try{
 				String[] annees =  monProxyAdministratif.recupererAnneesIa(GenericUI.getCurrent().getEtudiant().getCod_etu(), null);
 
@@ -652,9 +653,9 @@ public class EtudiantController {
 	 * l'étudiant via le WS de l'Amue.
 	 */
 	public void recupererNotesEtResultats(Etudiant e) {
-		if(monProxyPedagogique==null)
-			monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
-
+		if(monProxyPedagogique==null){
+			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+		}
 
 		try {
 			e.getDiplomes().clear();
@@ -731,9 +732,9 @@ public class EtudiantController {
 	 */
 	public void recupererNotesEtResultatsEnseignant(Etudiant e) {
 
-		if(monProxyPedagogique==null)
-			monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
-
+		if(monProxyPedagogique==null){
+			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+		}
 		try {
 			e.getDiplomes().clear();
 			e.getEtapes().clear();
@@ -1567,7 +1568,7 @@ public class EtudiantController {
 		try {
 
 			if(monProxyPedagogique==null)
-				monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
+				monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
 
 			e.getElementsPedagogiques().clear();
 
@@ -1627,9 +1628,9 @@ public class EtudiantController {
 	public void recupererDetailNotesEtResultatsEnseignant(Etudiant e,Etape et){
 		try {
 
-			if(monProxyPedagogique==null)
-				monProxyPedagogique = new PedagogiqueMetierServiceInterfaceProxy();
-
+			if(monProxyPedagogique==null){
+				monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+			}
 			e.getElementsPedagogiques().clear();
 
 			String temoin = configController.getTemoinNotesEnseignant();
@@ -1985,11 +1986,12 @@ public class EtudiantController {
 		if(!erreur){
 			boolean succes = false;
 			//On insere dans Apogée
-			if(monProxyEtu==null)
-				monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
-			if(monProxyAdministratif==null)
-				monProxyAdministratif = new AdministratifMetierServiceInterfaceProxy();
-
+			if(monProxyEtu==null){
+				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+			}
+			if(monProxyAdministratif==null){
+				monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+			}
 			try {
 				//recup de l'ancienne et modif dessus:
 				String[] annees =  monProxyAdministratif.recupererAnneesIa(codetu, null);

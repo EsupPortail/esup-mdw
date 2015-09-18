@@ -59,8 +59,8 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.servicesmetiers.OffreFormationMetierServiceInterface;
+import gouv.education.apogee.commun.client.utils.WSUtils;
+import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO4;
 import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO3;
 import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO3;
@@ -496,7 +496,7 @@ public class ListeInscritsController {
 		List<ElpDeCollection> listeElp = new LinkedList<ElpDeCollection>();
 
 		if(monProxyOffreDeFormation==null){
-			monProxyOffreDeFormation = new OffreFormationMetierServiceInterfaceProxy();
+			monProxyOffreDeFormation = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME);
 		}
 
 		try{

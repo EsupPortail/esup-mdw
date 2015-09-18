@@ -2,12 +2,10 @@ package fr.univlorraine.mondossierweb.controllers;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
-import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.client.ws.geographiemetier.GeographieMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterfaceProxy;
-import gouv.education.apogee.commun.servicesmetiers.EtudiantMetierServiceInterface;
-import gouv.education.apogee.commun.servicesmetiers.GeographieMetierServiceInterface;
-import gouv.education.apogee.commun.servicesmetiers.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.utils.WSUtils;
+import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.geographiemetier.GeographieMetierServiceInterface;
 import gouv.education.apogee.commun.transverse.dto.etudiant.AdresseMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CommuneMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesDTO2;
@@ -17,6 +15,7 @@ import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO;
 import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
+import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -60,7 +59,7 @@ public class AdresseController {
 	 * proxy pour faire appel aux infos sur les résultats du WS .
 	 */
 	private GeographieMetierServiceInterface monProxyGeo;
-	
+
 	/**
 	 * proxy pour faire appel aux infos administratives du WS .
 	 */
@@ -78,8 +77,12 @@ public class AdresseController {
 
 		if(listeTypeHebergement==null || listeTypeHebergement.length==0){
 			if(monProxyEtu==null)
-				monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
-			listeTypeHebergement=monProxyEtu.recupererTypeHebergement(null, null, null);
+				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+			try {
+				listeTypeHebergement=monProxyEtu.recupererTypeHebergement(null, null, null);
+			} catch (RemoteException | WebBaseException e) {
+				LOG.error("Problème lors de getTypesHebergement", e);
+			}
 		}
 
 		return listeTypeHebergement;
@@ -89,8 +92,12 @@ public class AdresseController {
 	public PaysDTO[] getPays(){
 		if(listePays == null || listePays.length == 0){
 			if(monProxyGeo==null)
-				monProxyGeo = new GeographieMetierServiceInterfaceProxy();
-			listePays = monProxyGeo.recupererPays(null, "O");
+				monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME);
+			try {
+				listePays = monProxyGeo.recupererPays(null, "O");
+			} catch (RemoteException | WebBaseException e) {
+				LOG.error("Problème lors de getTypesHebergement", e);
+			}
 		}
 		return listePays;
 	}
@@ -124,7 +131,7 @@ public class AdresseController {
 					}
 				}
 			} 
-		}catch(WebBaseException e ){
+		}catch(WebBaseException | RemoteException e ){
 			LOG.error("Problème à la récupération de communes pour le code postal : "+codePostal,e);
 		}
 		return lvilles;
@@ -218,7 +225,7 @@ public class AdresseController {
 
 		//2-maj les attribut utiles au changement d'adresse du bean etudiant
 		if (!erreur) {
-			
+
 			//Si les deux adresses sont identiques
 			if (adresseIdentique) {
 				//on rapatrie le type d'hebergement dans adresse fixe
@@ -230,7 +237,7 @@ public class AdresseController {
 				succes = majAdressesApogee(adresseAnnuelle,adresseFixe, MainUI.getCurrent().getEtudiant().getCod_etu());
 			}
 
-			
+
 			if (!succes) {
 				message = applicationContext.getMessage("modificationAdressesWindow.erreur.ws", null, Locale.getDefault());
 				retour.add(message);
@@ -249,9 +256,9 @@ public class AdresseController {
 	private boolean majAdressesApogee(Adresse adresseAnnuelle,Adresse adresseFixe, String cod_etu) {
 		boolean ok = false;
 		if(monProxyEtu==null)
-			monProxyEtu = new EtudiantMetierServiceInterfaceProxy();
+			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
 		if(monProxyAdministratif==null)
-			monProxyAdministratif = new AdministratifMetierServiceInterfaceProxy();
+			monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
 
 		try {
 			//recup de l'ancienne et modif dessus:
@@ -331,22 +338,27 @@ public class AdresseController {
 	 * @return l'identifiant de la ville dont code et nom sont en parametres
 	 */
 	private String getCodeInseeVille(final String codepostal, final String nom) {
-		
+
 		if(monProxyGeo==null)
-			monProxyGeo = new GeographieMetierServiceInterfaceProxy();
+			monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME);
 
-		CommuneDTO[]cdto = monProxyGeo.recupererCommune(codepostal, "O", "T");
-		for (int i = 0; i < cdto.length; i++) {
-			CommuneDTO c = cdto[i];
-			if (c.getLibCommune().equals(nom)){
-				return c.getCodeCommune();
+	
+		try {
+			CommuneDTO[] cdto = monProxyGeo.recupererCommune(codepostal, "O", "T");
+
+			for (int i = 0; i < cdto.length; i++) {
+				CommuneDTO c = cdto[i];
+				if (c.getLibCommune().equals(nom)){
+					return c.getCodeCommune();
+				}
 			}
+		} catch (RemoteException | WebBaseException e) {
+			LOG.error("Probleme avec le WS lors de la getCodeInseeVille : "+codepostal ,e);
 		}
-
 		return null;
 
 	}
-	
+
 
 
 
