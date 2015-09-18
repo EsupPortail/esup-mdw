@@ -4,9 +4,15 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.fieldgroup.FieldGroupFieldFactory;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
@@ -14,6 +20,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -32,7 +40,7 @@ public class PreferencesApplicationWindow extends Window {
 	private static final long serialVersionUID = 6446084804910076622L;
 
 	public static final String NAME = "preferencesApplicationWindow";
-	
+
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
 
 	@Resource
@@ -55,7 +63,7 @@ public class PreferencesApplicationWindow extends Window {
 		setResizable(false);
 		setClosable(false);
 		setWidth("50%");
-	
+
 
 		/* Layout */
 		VerticalLayout layout = new VerticalLayout();
@@ -70,18 +78,69 @@ public class PreferencesApplicationWindow extends Window {
 		/* Formulaire */
 		fieldGroup = new BeanFieldGroup<>(PreferencesApplication.class);
 		fieldGroup.setItemDataSource(prefApp);
+
+
+
+		fieldGroup.setFieldFactory(new FieldGroupFieldFactory() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			@SuppressWarnings("rawtypes")
+			public <T extends Field> T createField(Class<?> dataType, Class<T> fieldType) {
+				if (fieldType==NativeSelect.class){
+					final NativeSelect field = new NativeSelect();
+					field.addItem("true");
+					field.addItem("false");
+					field.setNullSelectionAllowed(false);
+					field.setImmediate(true);
+					//field.setValue(centre.getTemSrv());
+					field.addValueChangeListener(new ValueChangeListener() {						
+						@Override
+						public void valueChange(ValueChangeEvent event) {
+							field.setValue(event.getProperty().getValue());
+						}
+					});
+					return fieldType.cast(field);
+				}else{
+					final TextField field = new TextField();
+					field.setImmediate(true);
+					field.addTextChangeListener(new FieldEvents.TextChangeListener() {
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void textChange(TextChangeEvent event) {
+							field.setValue(event.getText());
+						}
+					});
+					return fieldType.cast(field);
+				}
+
+
+			}
+		});
+
+
+
+
 		FormLayout formLayout = new FormLayout();
 		formLayout.setSpacing(true);
 		formLayout.setSizeUndefined();
 		formLayout.setWidth("100%");
 		for (String fieldName : CONF_APP_FIELDS_ORDER) {
 			String caption = applicationContext.getMessage(NAME+".confAppTable." + fieldName, null, getLocale());
-			Field<?> field = fieldGroup.buildAndBind(caption, fieldName);
-			if (field instanceof AbstractTextField) {
-				((AbstractTextField) field).setNullRepresentation("");
-				field.setWidth("100%");
+			//Si on est sur un parametre booleen
+			if(fieldName.equals("valeur") && estUneValeurBooleenne(prefApp.getValeur())){
+				//On forme le nativeSelect
+				Field<?> field = fieldGroup.buildAndBind(caption, fieldName, NativeSelect.class);
+				formLayout.addComponent(field);
+			}else{
+				Field<?> field = fieldGroup.buildAndBind(caption, fieldName);
+				if (field instanceof AbstractTextField) {
+					((AbstractTextField) field).setNullRepresentation("");
+					field.setWidth("100%");
+				}
+				formLayout.addComponent(field);
 			}
-			formLayout.addComponent(field);
 		}
 
 		fieldGroup.getField("prefId").setReadOnly(prefApp.getPrefId() != null);
@@ -121,4 +180,12 @@ public class PreferencesApplicationWindow extends Window {
 		center();
 	}
 
+	/**
+	 * 
+	 * @param val
+	 * @return vrai si la valeur est booleenne
+	 */
+	boolean estUneValeurBooleenne(String val){
+		return (StringUtils.hasText(val)&& (val.equals("true") || val.equals("false")));
+	}
 }
