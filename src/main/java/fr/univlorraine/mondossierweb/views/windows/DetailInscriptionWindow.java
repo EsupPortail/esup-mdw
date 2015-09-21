@@ -1,3 +1,6 @@
+/**
+ * ESUP-Portail MONDOSSIERWEB - Copyright (c) 2015 ESUP-Portail consortium
+ */
 package fr.univlorraine.mondossierweb.views.windows;
 
 import java.util.List;
