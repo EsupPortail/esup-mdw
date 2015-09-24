@@ -672,11 +672,11 @@
 		-->
 
 		<!-- Tools -->
-		<dependency>
+	  	<dependency>
 			<groupId>fr.univlorraine</groupId>
 			<artifactId>tools</artifactId>
-			<!-- <version>1.4.4</version> -->
-			<version>1.5.4</version>
+			<!-- <version>1.5.4</version>-->
+			<version>1.5.6</version>
 		</dependency> 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
