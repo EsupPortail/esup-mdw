@@ -87,9 +87,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	public static final String[] INS_FIELDS_VET = {"nom","prenom","date_nai_ind","iae"};
 
-	public static final String[] INS_FIELDS_TO_DISPLAY_ELP = {"cod_etu","prenom","nom","date_nai_ind","email","etape","notes1","notes2"};
+	public static final String[] INS_FIELDS_TO_DISPLAY_ELP = {"cod_etu","nom","prenom","date_nai_ind","email","etape","notes1","notes2"};
 
-	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","prenom","nom","date_nai_ind","email","iae","notes1","notes2"};
+	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","nom","prenom","date_nai_ind","email","iae","notes1","notes2"};
 
 	public static final String TOUTES_LES_ETAPES_LABEL = "toutes";
 
