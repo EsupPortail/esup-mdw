@@ -676,7 +676,7 @@
 			<groupId>fr.univlorraine</groupId>
 			<artifactId>tools</artifactId>
 			<!-- <version>1.5.4</version>-->
-			<version>1.5.6</version>
+			<version>1.5.8</version>
 		</dependency> 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

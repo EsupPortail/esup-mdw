@@ -34,7 +34,7 @@
 	</appender>
 
 	<!-- Regroupe les mails d'erreur pour éviter le spam -->
-	<appender name="mailAppender" class="fr.univlorraine.tools.logback.GroupEventsTimedSMTPAppender">
+	<appender name="mailAppender" class="fr.univlorraine.tools.logback.GroupEventsSMTPAppender">
 		<!-- Délai des mails en secondes (1 par défaut) -->
 		<mailDelaySeconds>10</mailDelaySeconds>
 
@@ -43,8 +43,10 @@
 		<to>${context.mail.to}</to>
 		<subject>[mondossierweb] Logback Message from ${context.app.url}</subject>
 		<asynchronousSending>false</asynchronousSending>
-		<startDisabling>${context.mail.startDisabling}</startDisabling>
-		<stopDisabling>${context.mail.stopDisabling}</stopDisabling>
+		<filter class="fr.univlorraine.tools.logback.TimeFilter">
+			<startDisabling>${context.mail.startDisabling}</startDisabling>
+			<stopDisabling>${context.mail.stopDisabling}</stopDisabling>
+		</filter>
 
 		<layout class="ch.qos.logback.classic.html.HTMLLayout" />
 	</appender>
