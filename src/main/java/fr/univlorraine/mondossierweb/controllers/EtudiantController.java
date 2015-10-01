@@ -267,14 +267,24 @@ public class EtudiantController {
 				try{
 					InsAdmAnuDTO2[] iaad2 = monProxyAdministratif.recupererIAAnnuelles_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), GenericUI.getCurrent().getAnneeUnivEnCours(), "ARE");
 					if(iaad2!=null){
-						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 						LOG.debug("nb ia pour annee en cours : "+iaad2.length);
-						InsAdmAnuDTO2 iaad = iaad2[0];
-						//Si témoin aménagement d'étude valué à O
-						if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
-							GenericUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
+						boolean insOkTrouvee=false;
+						for(int i=0; i<iaad2.length;i++){
+							InsAdmAnuDTO2 iaad = iaad2[i];
+							//Si IA non annulée
+							if(!insOkTrouvee && iaad!=null && iaad.getEtatIaa()!=null && iaad.getEtatIaa().getCodeEtatIAA()!=null && !iaad.getEtatIaa().getCodeEtatIAA().equals("A") ){
+								insOkTrouvee=true;
+								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
+								//Si témoin aménagement d'étude valué à O
+								if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
+									GenericUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
+								}
+							}
 						}
-
+						if(!insOkTrouvee){
+							GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
+						}
+						
 						String codeCatSocPro = multipleApogeeService.getCategorieSocioProfessionnelle(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours());
 						if(StringUtils.hasText(codeCatSocPro) && !codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
 								!codeCatSocPro.equals("99") &&
