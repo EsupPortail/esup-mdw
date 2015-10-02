@@ -4,8 +4,11 @@
 package fr.univlorraine.mondossierweb;
 
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,19 +29,16 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 public class MdwFallbackTouchkitUI extends UI {
 	
 	private static final long serialVersionUID = 1L;
-
-
-	private Logger LOG = LoggerFactory.getLogger(MdwFallbackTouchkitUI.class);
 	
-	// FIXME review message
-    private static final String MSG = "<p>Vous tentez d'accéder à MonDossierWeb depuis un appareil mobile et avec un navigateur compatible avec la version mobile de l'application</p>"+
-    		"<p> Pour utiliser la <a href=\""+PropertyUtils.getAppUrl()+"/m\">version mobile</a> </p>";
 
 
+	@Resource
+	private transient ApplicationContext applicationContext;
+	
     @Override
     protected void init(VaadinRequest request) {
 
-        Label label = new Label(MSG, ContentMode.HTML);
+    	Label label = new Label(applicationContext.getMessage("fallbackToMobile.message", new Object[] {PropertyUtils.getAppUrl()}, getLocale()), ContentMode.HTML);
         label.setStyleName(ValoTheme.LABEL_HUGE);
         VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
