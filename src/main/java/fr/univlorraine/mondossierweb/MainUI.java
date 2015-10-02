@@ -55,6 +55,7 @@ import com.vaadin.shared.ui.ui.Transport;
 
 
 
+
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -65,6 +66,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
@@ -214,7 +216,12 @@ public class MainUI extends GenericUI {
 	protected void init(VaadinRequest request) {
 
 		LOG.debug("init(); mainUI");
-
+		
+		if(PropertyUtils.isPushEnabled() && !PropertyUtils.isWebSocketPushEnabled()){
+			getPushConfiguration().setTransport(Transport.LONG_POLLING);
+		}
+		
+		
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();

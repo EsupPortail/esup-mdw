@@ -601,7 +601,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnDeplier.setDescription(applicationContext.getMessage(NAME+".deplierarbo", null, getLocale()));
 				btnDeplier.addClickListener(e->{
 					
-					if(PropertyUtils.isShowLoadingIndicator()){
+					if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
 						//affichage de la pop-up de loading
 						MainUI.getCurrent().startBusyIndicator();
 

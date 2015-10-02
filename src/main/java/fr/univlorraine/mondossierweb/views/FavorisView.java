@@ -265,7 +265,7 @@ public class FavorisView extends VerticalLayout implements View {
 				btnListeInscrits.addClickListener(e->{
 
 					//Si on doit afficher une fenêtre de loading pendant l'exécution
-					if(PropertyUtils.isShowLoadingIndicator()){
+					if(PropertyUtils.isPushEnabled() && PropertyUtils.isShowLoadingIndicator()){
 						//affichage de la pop-up de loading
 						MainUI.getCurrent().startBusyIndicator();
 

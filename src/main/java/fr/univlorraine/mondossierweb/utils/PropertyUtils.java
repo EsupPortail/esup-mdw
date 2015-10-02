@@ -91,6 +91,15 @@ public class PropertyUtils {
 	}
 
 	
+	/** Retourne vrai on doit utiliser les webSockets pour le push */
+	public static boolean isWebSocketPushEnabled(){
+		if(StringUtils.hasText(System.getProperty("context.webSocketPush"))
+				&& System.getProperty("context.webSocketPush").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
 
 	/** Retourne le type Etudiant dans Ldap */
 	public static String getTypeEtudiantLdap(){
