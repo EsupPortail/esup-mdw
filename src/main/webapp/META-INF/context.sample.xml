@@ -67,6 +67,7 @@
 	<Parameter name="loginApogee" value="true" />
 	<!-- La propriete ldap du contact désignant son type (typeEtudiantLdap ou pas ) -->
 	<Parameter name="attributLdapEtudiant" value="edupersonprimaryaffiliation" />
+	<!-- La propriete ldap du contact désignant son codetu -->
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
 	<!-- Le type ldap designant un etudiant -->
 	 <Parameter name="typeEtudiantLdap" value="student" />  
