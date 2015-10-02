@@ -70,6 +70,10 @@
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
 	<!-- Le type ldap designant un etudiant -->
 	 <Parameter name="typeEtudiantLdap" value="student" />  
+	  <!-- le nom de l'attribut contenant les groupes ldap pour une authentification via les groupes ldap. Laisser vide pour ne pas utiliser -->
+	 <Parameter name="attributGroupeLdap" value=""/>
+	 <!-- La liste des groupes ldap autorisant l'acces à mondossierWeb en tant qu'enseignant séparés par un point virgule. Laisser vide pour ne pas utiliser -->
+	  <Parameter name="listeGroupesLdap" value=""/>
 	
 	<Parameter name="sourceResultats" value="Apogee" />
 	

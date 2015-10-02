@@ -347,8 +347,6 @@ public class UserController {
 					//on cherche si il appartient a un groupe
 					useruportal = false;
 
-
-
 					//on regarde si il appartient a un des groupes
 					for (String nomgroupe : listegroupes) {
 						//si on est pas déjà sur qu'il appartient a un groupe:
@@ -369,15 +367,51 @@ public class UserController {
 				//Test présence dans la table utilisateur de Apogee
 				LOG.info("PROBLEME DE CONNEXION AUX GROUPES UPORTAL");
 			}
+			
+			boolean userldap = false;
+			//Si pas user uportal on va chercher dans le ldap si mdw est configuré pour cela
+			if(!useruportal){
 
-			if (useruportal) {
+				//on recupère la liste de groupes ldap mis dans le bean security
+				List<String> listegroupes = PropertyUtils.getListeGroupesLdapAutorises();
+
+				//test si on a des groupes renseignes
+				if (StringUtils.hasText(PropertyUtils.getAttributGroupeLdap()) && listegroupes != null && listegroupes.size()>0) {
+					//on recupère l'utilisateur ldap
+					DirContextOperations dco = ldapUserSearch.searchForUser(username);
+					if(dco!=null){
+						String[] vals= dco.getStringAttributes(PropertyUtils.getAttributGroupeLdap());
+						if(vals!=null){
+							List<String> lmemberof = Arrays.asList(vals);
+							//Si le compte LDAP possede des groupes
+							if (lmemberof != null && lmemberof.size()>0) {
+								//on regarde si il appartient a un des groupes
+								for (String groupe : listegroupes) {
+									// on cherche le groupe si il n'est pas déjà trouvé
+									if (!userldap) {
+										//on cherche le groupe	
+										if (lmemberof.contains(groupe)) {
+											userldap = true;
+										} 
+									}
+								}
+							}
+						}
+					}
+					if(!userldap){
+						LOG.debug("utilisateur "+username+" n'appartient à aucun groupe ldap autorises");
+					}					
+				}
+			}
+
+			if (useruportal || userldap) {
 				//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
 				LOG.debug("USER "+username+" ENSEIGNANT VIA UPORTAL");
 				return TEACHER_USER;
 
 			} else {
 				//va voir dans apogée
-				LOG.debug("USER "+username+" NON ENSEIGNANT VIA UPORTAL -> Recherche Apogée");
+				LOG.debug("USER "+username+" NON ENSEIGNANT VIA UPORTAL OU GROUPES LDAP -> Recherche Apogée");
 
 
 				//On test si on doit chercher l'utilisateur dans Apogee
