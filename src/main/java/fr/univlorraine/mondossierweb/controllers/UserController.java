@@ -82,6 +82,8 @@ public class UserController {
 	private AdministrateursRepository administrateursRepository;
 	@Resource
 	private UtilisateurSwapRepository utilisateurSwapRepository;
+	@Resource
+	private transient ConfigController configController;
 
 
 
@@ -193,7 +195,7 @@ public class UserController {
 		}
 		return false;
 	}*/
-	
+
 
 
 	/**
@@ -367,7 +369,7 @@ public class UserController {
 				//Test présence dans la table utilisateur de Apogee
 				LOG.info("PROBLEME DE CONNEXION AUX GROUPES UPORTAL");
 			}
-			
+
 			boolean userldap = false;
 			//Si pas user uportal on va chercher dans le ldap si mdw est configuré pour cela
 			if(!useruportal){
@@ -449,19 +451,26 @@ public class UserController {
 
 		GenericUI.getCurrent().setTypeUser(null);
 
-		String type = determineTypeUser(getCurrentUserName());
-
-		if(type!=null && type.equals(STUDENT_USER)){
-			GenericUI.getCurrent().setTypeUser(STUDENT_USER);
-			GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant");
-		}
-		if(type!=null && type.equals(TEACHER_USER)){
-			GenericUI.getCurrent().setTypeUser(TEACHER_USER);
-			GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant");
-		}
-		if(type!=null && type.equals(UNAUTHORIZED_USER)){
+		List<String> llogins=configController.getListeLoginsBloques();
+		if(llogins!=null && llogins.contains(getCurrentUserName())){
 			GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
-			LOG.debug("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+			LOG.debug("utilisateur "+getCurrentUserName()+" bloqué car il a été exclu de l'application");
+		}else{
+
+			String type = determineTypeUser(getCurrentUserName());
+
+			if(type!=null && type.equals(STUDENT_USER)){
+				GenericUI.getCurrent().setTypeUser(STUDENT_USER);
+				GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant");
+			}
+			if(type!=null && type.equals(TEACHER_USER)){
+				GenericUI.getCurrent().setTypeUser(TEACHER_USER);
+				GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_enseignant");
+			}
+			if(type!=null && type.equals(UNAUTHORIZED_USER)){
+				GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
+				LOG.debug("utilisateur "+getCurrentUserName()+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+			}
 		}
 	}
 
@@ -554,7 +563,7 @@ public class UserController {
 	public boolean isAdmin() {
 		return isAdmin(getCurrentUserName());
 	}
-	
+
 	public boolean userCanAccessAdminView() {
 		//On parcourt les droits
 		for (GrantedAuthority ga : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {

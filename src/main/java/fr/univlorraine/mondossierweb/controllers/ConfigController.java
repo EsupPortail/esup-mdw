@@ -70,6 +70,11 @@ public class ConfigController {
 		return getBooleanValueForParameter("partieEtudiantActive");
 	}
 	
+	public List<String> getListeLoginsBloques() {
+		return getListValeurForParameter("listeLoginsBloques");
+		
+	}
+	
 	public List<String> getListeCertScolTypDiplomeDesactive() {
 		return getListValeurForParameter("certScolTypDiplomeDesactive");
 		
