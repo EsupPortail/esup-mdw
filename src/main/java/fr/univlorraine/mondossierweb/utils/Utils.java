@@ -6,6 +6,8 @@ package fr.univlorraine.mondossierweb.utils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,6 +216,17 @@ public class Utils {
 	}
 	
 
+	//Découpe des string séparés par des points virgules pour retourner une liste de string
+	public static List<String> splitStringFromSemiColon(String groupes){
+		List<String> lgroupes = new LinkedList<String>();
+		if(StringUtils.hasText(groupes)){
+			String[] tgroupes = groupes.split(";");
+			for(int i=0; i<tgroupes.length;i++){
+				lgroupes.add(tgroupes[i]);
+			}
+		}
+		return lgroupes;
+	}
 
 }
 

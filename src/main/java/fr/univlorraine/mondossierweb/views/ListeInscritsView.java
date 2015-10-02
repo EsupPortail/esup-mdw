@@ -578,7 +578,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							String libObj=panelFormInscrits.getCaption();
 
 							//création du trombi en pdf
-							return listeInscritsController.getXlsStream(linscrits, listecodind,libObj,  annee, typeFavori);
+							return listeInscritsController.getXlsStream(linscrits, listecodind,listeGroupes,libObj,  annee, typeFavori);
 						}
 					}, nomFichierXls);
 					resourceXls.setMIMEType("application/xls");
