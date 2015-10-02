@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import ru.xpoft.vaadin.DiscoveryNavigator;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
@@ -34,6 +35,7 @@ import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -49,6 +51,9 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.shared.ui.ui.Transport;
+
+
 
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
@@ -84,6 +89,7 @@ import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 
+
 /**
  * Application Vaadin
  * 
@@ -92,9 +98,11 @@ import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 @Component @Scope("prototype")
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
+//@Push(value=PushMode.AUTOMATIC,transport = Transport.LONG_POLLING)
 public class MainUI extends GenericUI {
 	private static final long serialVersionUID = -4633936971448921781L;
 
+	
 	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	/* Redirige java.util.logging vers SLF4j */

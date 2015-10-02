@@ -120,10 +120,11 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
-
+		
 		
 		/* Configure le Push */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
+
 		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 		springVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
 		/* Active le support des requêtes asynchrones */
