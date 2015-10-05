@@ -122,7 +122,7 @@ public class InscriptionController {
 
 		// Création de la ressource 
 		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/pdf");
+		resource.setMIMEType("application/force-download;charset=UTF-8");
 		resource.setCacheTime(0);
 		return resource;
 	}

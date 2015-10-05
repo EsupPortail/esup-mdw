@@ -130,7 +130,7 @@ public class NoteController {
 
 		// Création de la ressource 
 		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/pdf");
+		resource.setMIMEType("application/force-download;charset=UTF-8");
 		resource.setCacheTime(0);
 		return resource;
 	}
@@ -180,10 +180,9 @@ public class NoteController {
 
 		// Création de la ressource 
 		StreamResource resource = new StreamResource(source, nomFichier);
-		//resource.getStream().setContentType("application/force-download");
 		resource.getStream().setParameter("Content-Disposition", "attachment; filename="+nomFichier);
-		resource.setMIMEType("application/unknow");
-		//resource.setMIMEType("application/pdf");
+		//resource.setMIMEType("application/unknow");
+		resource.setMIMEType("application/force-download;charset=UTF-8");
 		resource.setCacheTime(0);
 		return resource;
 	}

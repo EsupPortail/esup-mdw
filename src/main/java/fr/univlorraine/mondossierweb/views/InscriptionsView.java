@@ -266,6 +266,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 					fd.extend(bCertificatInscription);
 				}else{
 					FileDownloader fd = new FileDownloader(inscriptionController.exportPdf(inscription));
+					fd.setOverrideContentType(false);
 					fd.extend(bCertificatInscription);
 				}
 				libelleLayout.addComponent(bCertificatInscription);

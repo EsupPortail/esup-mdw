@@ -111,6 +111,7 @@ public class CalendrierView extends VerticalLayout implements View {
 				fd.extend(pdfButton);
 				}else{
 					FileDownloader fd = new FileDownloader(calendrierController.exportPdf());
+					fd.setOverrideContentType(false);
 					fd.extend(pdfButton);
 				}
 				titleLayout.addComponent(pdfButton);

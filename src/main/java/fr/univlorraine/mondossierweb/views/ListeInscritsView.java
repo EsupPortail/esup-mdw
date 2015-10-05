@@ -540,14 +540,16 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							return listeInscritsController.getPdfStream(linscrits, listecodind,libObj,  annee);
 						}
 					}, nomFichier);
-					resource.setMIMEType("application/pdf");
+					resource.setMIMEType("application/force-download;charset=UTF-8");
 					resource.setCacheTime(0);
 
 					//On ajoute le FD sur le bouton d'export
 					if(PropertyUtils.isPushEnabled()){
 						new MyFileDownloader(resource).extend(btnExportTrombi);
 					}else{
-						new FileDownloader(resource).extend(btnExportTrombi);
+						FileDownloader fdpdf = new FileDownloader(resource);
+						fdpdf.setOverrideContentType(false);
+						fdpdf.extend(btnExportTrombi);
 					}
 
 					leftResumeLayout.addComponent(btnExportTrombi);
@@ -576,19 +578,20 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							//recuperation de l'année sélectionnée et du libellé de l'ELP
 							String annee=(String)listeAnnees.getValue();
 							String libObj=panelFormInscrits.getCaption();
-
+							
 							//création du trombi en pdf
 							return listeInscritsController.getXlsStream(linscrits, listecodind,listeGroupes,libObj,  annee, typeFavori);
 						}
 					}, nomFichierXls);
-					resourceXls.setMIMEType("application/xls");
-
+					resourceXls.setMIMEType("application/force-download;charset=UTF-8");
 					resourceXls.setCacheTime(0);
 					//On ajoute le FD sur le bouton d'export
 					if(PropertyUtils.isPushEnabled()){
 						new MyFileDownloader(resourceXls).extend(btnExportExcel);
 					}else{
-						new FileDownloader(resourceXls).extend(btnExportExcel);
+						FileDownloader fd = new FileDownloader(resourceXls);
+						fd.setOverrideContentType(false);
+						fd.extend(btnExportExcel);
 					}
 
 					//if(!afficherTrombinoscope){

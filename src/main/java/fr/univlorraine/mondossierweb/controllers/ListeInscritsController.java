@@ -858,58 +858,6 @@ public class ListeInscritsController {
 	}
 
 
-	/**
-	 * Retourne le trombinoscope en pdf
-	 * @param linscrits
-	 * @param listecodind
-	 * @return
-	 */
-	/*public com.vaadin.server.Resource exportPdf(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee) {
-
-		// verifie les autorisations
-		if(!userController.isEnseignant()){
-			return null;
-		}
-
-
-		String nomFichier = applicationContext.getMessage("pdf.trombinoscope.title", null, Locale.getDefault())+"_" + libObj + "_" + annee.replace('/', '-') + ".pdf";
-
-
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-					PdfWriter docWriter = null;
-					Document document = configureDocument(MARGE_PDF);
-					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
-					docWriter.setStrictImageSequence(true);
-					creerPdfTrombinoscope(document, linscrits, listecodind, libObj, annee);
-					docWriter.close();
-					baosPDF.close();
-					//Creation de l'export
-					byte[] bytes = baosPDF.toByteArray();
-					return new ByteArrayInputStream(bytes);
-				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du trombinoscope : DocumentException ",e);
-					return null;
-				} catch (IOException e) {
-					LOG.error("Erreur à la génération du trombinoscope : IOException ",e);
-					return null;
-				}
-
-			}
-		};
-
-		// Création de la ressource 
-		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/pdf");
-		resource.setCacheTime(0);
-		return resource;
-	}*/
 
 
 	/**

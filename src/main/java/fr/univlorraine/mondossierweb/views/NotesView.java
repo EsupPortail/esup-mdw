@@ -131,6 +131,7 @@ public class NotesView extends VerticalLayout implements View {
 					fd.extend(pdfButton);
 				}else{
 					FileDownloader fd = new FileDownloader(noteController.exportPdfResume());
+					fd.setOverrideContentType(false);
 					fd.extend(pdfButton);
 				}
 				titleLayout.addComponent(pdfButton);
