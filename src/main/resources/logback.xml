@@ -73,7 +73,7 @@
 		<appender-ref ref="fileAppender" />
 	</logger>
 	<!-- Ne mail pas les erreurs Socket closed -->
-	<logger name="org.apache.catalina.connector" level="error" additivity="false" >
+	<logger name="org.apache.catalina.connector.ClientAbortException" level="warn" additivity="false" >
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
 	</logger>
