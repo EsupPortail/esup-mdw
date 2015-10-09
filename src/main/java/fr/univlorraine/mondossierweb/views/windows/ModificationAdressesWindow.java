@@ -451,7 +451,7 @@ public class ModificationAdressesWindow extends Window {
 			adresseAnnuelle.setAdresse3(fieldAnnu3.getValue());
 			adresseAnnuelle.setCodPays(lpays1.getValue().toString());
 			adresseAnnuelle.setCodePostal(fieldCodePostal1.getValue());
-			adresseAnnuelle.setVille(lville1.getValue().toString());
+			adresseAnnuelle.setVille((lville1.getValue()==null)? null : lville1.getValue().toString());
 			adresseAnnuelle.setAdresseetranger(fieldVilleEtranger1.getValue());
 			adresseAnnuelle.setNumerotel(fieldTelephone1.getValue());
 
@@ -462,7 +462,7 @@ public class ModificationAdressesWindow extends Window {
 			adresseFixe.setAdresse3(fieldFixe3.getValue());
 			adresseFixe.setCodPays(lpays2.getValue().toString());
 			adresseFixe.setCodePostal(fieldCodePostal2.getValue());
-			adresseFixe.setVille(lville2.getValue().toString());
+			adresseFixe.setVille((lville2.getValue()==null)? null : lville2.getValue().toString());
 			adresseFixe.setAdresseetranger(fieldVilleEtranger2.getValue());
 			adresseFixe.setNumerotel(fieldTelephone2.getValue());
 

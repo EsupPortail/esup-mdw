@@ -182,7 +182,7 @@ public class AdresseController {
 				retour.add(message);
 				erreur = true;
 			}
-			if (adresseAnnuelle.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseAnnuelle.getNumerotel()))){
+			if (adresseAnnuelle.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseAnnuelle.getNumerotel().replaceAll(" ", "")))){
 				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.telephone", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
@@ -215,7 +215,7 @@ public class AdresseController {
 			retour.add(message);
 			erreur = true;
 		}
-		if (adresseFixe.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseFixe.getNumerotel()))){
+		if (adresseFixe.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseFixe.getNumerotel().replaceAll(" ", "")))){
 			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.telephone", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;
