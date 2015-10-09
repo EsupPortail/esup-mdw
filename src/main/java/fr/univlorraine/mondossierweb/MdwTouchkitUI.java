@@ -439,6 +439,8 @@ public class MdwTouchkitUI extends GenericUI{
 	 * Affichage du dossier d'un étudiant
 	 */
 	public void navigateToDossierEtudiant() {
+		//On indique au navigator qu'on va aller sur la vue InformationsAnnuellesMobileView pour informer Piwik
+		navigator.navigateTo(InformationsAnnuellesMobileView.NAME);
 		//Refresh des vues du dossier étudiant avec les données de l'étudiant
 		informationsAnnuellesMobileView.refresh();
 		calendrierMobileView.refresh();
