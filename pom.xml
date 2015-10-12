@@ -22,7 +22,7 @@
 		<slf4j.version>1.7.7</slf4j.version>
 		<jasperreports.version>5.6.1</jasperreports.version>
 		<groovy.version>2.3.6</groovy.version>
-		<mysql.connector.version>5.1.24</mysql.connector.version>
+		<mysql.connector.version>5.1.34</mysql.connector.version>
 		<!-- <ojdbc14.version>10.2.0.4.0</ojdbc14.version>    -->
 		   <ojdbc7.version>12.1.3-0-0</ojdbc7.version>  
 	</properties>
@@ -489,6 +489,33 @@
 					</systemProperties> -->
 				</configuration>
 			</plugin>
+			
+			 <!-- FlyWay Plugin -->
+    <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+            <url>jdbc:mysql://localhost:3306/ecandidat</url>
+            <user>root</user>
+            <baselineOnMigrate>true</baselineOnMigrate>
+            <!-- <locations>
+            <location>classpath:db-migration</location>
+            </locations> -->
+            <!-- <sqlMigrationPrefix>Migration-</sqlMigrationPrefix>
+            <sqlMigrationSeparator>_</sqlMigrationSeparator>
+            <sqlMigrationSuffix>.sql</sqlMigrationSuffix> -->
+        </configuration>
+        <dependencies>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.connector.version}</version>
+            </dependency>
+        </dependencies>
+    </plugin>
+    
+    
 		</plugins>
 	</build>
 
@@ -828,6 +855,14 @@
 			<artifactId>groovy-all</artifactId>
 			<version>${groovy.version}</version>
 		</dependency>
+		
+		 <!-- Flyway -->
+    	<dependency>
+        	<groupId>org.flywaydb</groupId>
+        	<artifactId>flyway-core</artifactId>
+        	<version>3.2.1</version>
+    	</dependency>   
+    
 	</dependencies>
 
 </project>
