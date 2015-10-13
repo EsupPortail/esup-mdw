@@ -91,7 +91,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	}
 
 	public String toString(){
-		return "Bean PhotoULCodEtu : tc="+tc.getCode();
+		return "Bean PhotoUnivLorraineImpl : tc="+tc.getCode();
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 				url = photoClient.computeURLforCode(Category.ETUDIANT, cod_etu, tc);
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoULImplCodEtu-Erreur getUrlPhoto cod_ind:"+cod_ind+" , cod_etu:"+cod_etu,e);
+				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur getUrlPhoto cod_ind:"+cod_ind+" , cod_etu:"+cod_etu,e);
 			}
 		}
 
@@ -136,7 +136,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 				url = photoClient.computeURLforCode(Category.ETUDIANT, cod_etu, tc);
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoULImplCodEtu-Erreur getUrlPhotoTrombinoscopePdf cod_ind : "+cod_ind+", cod_etu:"+cod_etu,e);
+				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur getUrlPhotoTrombinoscopePdf cod_ind : "+cod_ind+", cod_etu:"+cod_etu,e);
 			}
 		}
 
@@ -177,9 +177,9 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 		} catch (UnknownHostException e1) {
-			LOG.error("PhotoULImplCodEtu-Erreur initForServer loginUser:"+loginUser,e1);
+			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer loginUser:"+loginUser,e1);
 		} catch (PhotoClientException e) {
-			LOG.error("PhotoULImplCodEtu-Erreur initForServer loginUser:"+loginUser,e);
+			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer loginUser:"+loginUser,e);
 			tc = null;
 
 		}
@@ -211,7 +211,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoULImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser,e);
+				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser,e);
 				tc = null;
 
 			}
@@ -244,7 +244,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoULImplCodEtu-Erreur init loginUser:"+loginUser,e);
+				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser,e);
 				tc = null;
 
 			}
