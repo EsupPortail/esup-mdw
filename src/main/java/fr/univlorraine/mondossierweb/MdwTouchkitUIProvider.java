@@ -19,27 +19,32 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 
 	private static final long serialVersionUID = -1535055076149004931L;
-	
+
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUIProvider.class);
 
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
 		//Récupération du userAgent
-		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-		LOG.debug("UA : "+userAgent);
+		if(event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
+			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
+			LOG.debug("UA : "+userAgent);
 
-		// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
-		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
-	            || userAgent.contains("windows phone 9")) {
-			//On va vers la version mobile
-			LOG.debug("Touckit UI provided ("+userAgent+")");
-			return MdwTouchkitUI.class;
-		} else {
-			//On affiche la page proposant une redirection vers la version Desktop
-			LOG.debug("Fallback UI provided ("+userAgent+")");
-			return MdwFallbackUI.class;
+			// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
+			if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
+					|| userAgent.contains("windows phone 9")) {
+				//On va vers la version mobile
+				LOG.debug("Touckit UI provided ("+userAgent+")");
+				return MdwTouchkitUI.class;
+			} else{
+				LOG.debug("Fallback UI provided ("+userAgent+")");
+				//On affiche la page proposant une redirection vers la version Desktop
+				return MdwFallbackUI.class;
+			}
 		}
+		//On va vers la version mobile
+		return MdwTouchkitUI.class;
+
 	}
 
 	@Override
@@ -59,7 +64,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 		// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
 		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
-	            || userAgent.contains("windows phone 9")) {
+				|| userAgent.contains("windows phone 9")) {
 			//On va vers la version mobile
 			LOG.debug("-uiBeanNameObj = mdwTouchkitUI");
 			uiBeanNameObj = "mdwTouchkitUI";

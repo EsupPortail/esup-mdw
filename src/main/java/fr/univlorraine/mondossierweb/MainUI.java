@@ -18,6 +18,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -52,6 +54,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.shared.ui.ui.Transport;
+
+
 
 
 
@@ -104,7 +108,7 @@ import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 public class MainUI extends GenericUI {
 	private static final long serialVersionUID = -4633936971448921781L;
 
-	
+
 	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	/* Redirige java.util.logging vers SLF4j */
@@ -216,12 +220,12 @@ public class MainUI extends GenericUI {
 	protected void init(VaadinRequest request) {
 
 		LOG.debug("init(); mainUI");
-		
+
 		if(PropertyUtils.isPushEnabled() && !PropertyUtils.isWebSocketPushEnabled()){
 			getPushConfiguration().setTransport(Transport.LONG_POLLING);
 		}
-		
-		
+
+
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();
@@ -780,11 +784,26 @@ public class MainUI extends GenericUI {
 
 			/* Deconnexion */
 			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
-			/*	Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
-			decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-			decoBtn.addClickListener(e -> getUI().getPage().setLocation("j_spring_security_logout"));
-			mainMenu.addComponent(decoBtn);*/
+			if(StringUtils.hasText(PropertyUtils.getCasLogout())){
+				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
+				decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+				decoBtn.addClickListener(e -> {
+					//getUI().getPage().setLocation("j_spring_security_logout");
+					/*Deconnexion appli*/
+					/*SecurityContextHolder.clearContext();
+					SecurityContextHolder.getContext().setAuthentication(null);
+					SecurityContextHolder.createEmptyContext();
+					MainUI.getCurrent().getSession().getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+					MainUI.getCurrent().getSession().close();*/
 
+
+					/*Deconnexion cas*/
+					//MainUI.getCurrent().getPage().setLocation("pathlogout");
+					
+					getUI().getPage().setLocation("j_spring_security_logout");
+				});
+				mainMenu.addComponent(decoBtn);
+			}
 			/* Séparation */
 			CssLayout bottomMainMenu = new CssLayout();
 			bottomMainMenu.setStyleName(ValoTheme.MENU_SUBTITLE);

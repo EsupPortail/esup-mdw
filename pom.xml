@@ -9,7 +9,7 @@
 	<name>mondossierweb</name>
 
 	<prerequisites>
-		<maven>3.0.4</maven>
+		<maven>3.2.3</maven>
 	</prerequisites>
 
 	<properties>
@@ -57,6 +57,13 @@
 			<url>http://maven.univ-lorraine.fr/content/repositories/public-releases</url>
 		</repository>
 		
+		<repository>
+			<id>local_repository</id>
+			<name>Repository local</name>
+			<layout>default</layout>
+			<url>file://${basedir}/src/main/resources/repository</url>
+		</repository>
+		
 		<!-- esup portail repo -->
 		<repository>
 			<id>esup</id>
@@ -67,9 +74,28 @@
 			<releases>
 			</releases>
 		</repository>
+		
+		<!-- Oracle -->
+		 <repository>
+            <id>maven.oracle.com</id>
+            <releases>
+                  <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                  <enabled>false</enabled>
+            </snapshots>
+            <url>https://maven.oracle.com</url>
+            <layout>default</layout>
+          </repository>
 			
 	</repositories>
 	
+	<pluginRepositories>
+  <pluginRepository>
+    <id>maven.oracle.com</id>
+    <url>https://maven.oracle.com</url>
+  </pluginRepository>
+</pluginRepositories>
 	
 	<profiles>
 	
@@ -98,20 +124,23 @@
 
 	<build>
 		<resources>
+		<resource>
+<!-- Filtre le fichier app.properties -->
+<directory>src/main/resources</directory>
+<filtering>true</filtering>
+<includes>
+<include>app.properties</include>
+</includes>
+</resource>
 			<resource>
-				<!-- Filtre le fichier app.properties -->
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>app.properties</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>**/*.scss</exclude>
-				</excludes>
-			</resource>
+<directory>src/main/resources</directory>
+<excludes>
+<exclude>assembly/</exclude>
+<exclude>repository/</exclude>
+<exclude>**/*.scss</exclude>
+<exclude>**/*sample.*</exclude>
+</excludes>
+</resource>
 		</resources>
 
 		<plugins>
@@ -493,6 +522,153 @@
     
     
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											aspectj-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.6,)
+										</versionRange>
+										<goals>
+											<goal>compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.gmaven
+										</groupId>
+										<artifactId>
+											groovy-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.0,)
+										</versionRange>
+										<goals>
+											<goal>execute</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.reflections
+										</groupId>
+										<artifactId>
+											reflections-maven
+										</artifactId>
+										<versionRange>
+											[0.9.9-RC2,)
+										</versionRange>
+										<goals>
+											<goal>reflections</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											au.com.alderaan
+										</groupId>
+										<artifactId>
+											eclipselink-staticweave-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.0.4,)
+										</versionRange>
+										<goals>
+											<goal>weave</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.bsc.maven</groupId>
+										<artifactId>
+											maven-processor-plugin
+										</artifactId>
+										<versionRange>
+											[2.2.4,)
+										</versionRange>
+										<goals>
+											<goal>process</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.9,)
+										</versionRange>
+										<goals>
+											<goal>add-source</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											jasperreports-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.0-beta-2,)
+										</versionRange>
+										<goals>
+											<goal>compile-reports</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -599,10 +775,8 @@
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservicesclient</artifactId>
 			<version>4.60.laa</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/apo-webservicesclient460laa.jar</systemPath>
 		</dependency>
-		 <dependency>
+		<!-- <dependency>
       		<groupId>org.apache.axis</groupId>
       		<artifactId>axis</artifactId>
       		<version>1.4</version>
@@ -621,7 +795,7 @@
       		<groupId>wsdl4j</groupId>
       		<artifactId>wsdl4j</artifactId>
       		<version>1.6.3</version>
-    	</dependency>
+    	</dependency> -->
 		
 		<!-- PhotoServer UL -->
 		<dependency>
@@ -775,11 +949,9 @@
 		
 		<!-- ORACLE -->
 		 <dependency>
-			<groupId>com.oracle</groupId>
+			<groupId>com.oracle.weblogic</groupId>
 			<artifactId>ojdbc7</artifactId>
 			<version>${ojdbc7.version}</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/ojdbc7-${ojdbc7.version}.jar</systemPath>
 		</dependency>  
 		
 		<!-- MYSQL -->

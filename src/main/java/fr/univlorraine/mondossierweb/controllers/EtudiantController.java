@@ -634,8 +634,10 @@ public class EtudiantController {
 	 * va chercher et renseigne les informations concernant le calendrier des examens
 	 */
 	public void recupererCalendrierExamens() {
-		GenericUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(GenericUI.getCurrent().getEtudiant().getCod_ind()));
-		GenericUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
+		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_ind())){
+			GenericUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(GenericUI.getCurrent().getEtudiant().getCod_ind()));
+			GenericUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
+		}
 	}
 
 
@@ -748,10 +750,12 @@ public class EtudiantController {
 		if(monProxyPedagogique==null){
 			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
 		}
+		
+		if(e!=null && StringUtils.hasText(e.getCod_etu())){
 		try {
 			e.getDiplomes().clear();
 			e.getEtapes().clear();
-
+			
 			String temoin = configController.getTemoinNotesEnseignant();
 			if(temoin == null || temoin.equals("")){
 				temoin="AET";
@@ -812,7 +816,7 @@ public class EtudiantController {
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
-
+		}
 	}
 
 
