@@ -784,7 +784,7 @@ public class MainUI extends GenericUI {
 
 			/* Deconnexion */
 			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
-			if(StringUtils.hasText(PropertyUtils.getCasLogout())){
+			if(configController.isLogoutCasPropose()){
 				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 				decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 				decoBtn.addClickListener(e -> {

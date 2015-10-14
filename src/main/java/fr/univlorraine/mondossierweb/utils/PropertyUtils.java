@@ -164,9 +164,7 @@ public class PropertyUtils {
 		return value;
 	}
 	
-	public static String getCasLogout() {
-		return System.getProperty("context.cas.logout");
-	}
+
 	
 	
 }

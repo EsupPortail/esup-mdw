@@ -84,6 +84,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("afficherRangEtudiant");
 	}
 	
+	public boolean isLogoutCasPropose() {
+		return getBooleanValueForParameter("logoutCasPropose");
+	}
+	
 	public boolean isAffECTSEtudiant() {
 		return getBooleanValueForParameter("affECTSEtudiant");
 	}

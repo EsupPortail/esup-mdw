@@ -41,8 +41,6 @@
 	<!--  <Parameter name="app.url" value="http://dubois36.infra.univ-lorraine.fr" />  -->
 	<!-- URL du CAS -->
 	<Parameter name="cas.url" value="https://auth.univ.fr" />
-	<!-- proposer de logout cas -->
-	<Parameter name="cas.logout" value="true" />
 
 	<!-- Configuration du LDAP -->
 	<!-- TEST -->

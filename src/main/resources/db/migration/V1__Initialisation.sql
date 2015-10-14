@@ -91,6 +91,7 @@ INSERT INTO `preferences_application` (`PREF_ID`, `PREF_DESC`, `VALEUR`) VALUES
 ('temoinNotesEnseignant', 'Etat de validation des notes affichees aux enseignants', 'AET'),
 ('temoinNotesEtudiant', 'Etat de validation des notes affichees aux etudiants', 'T'),
 ('trombiMobileNbEtuParPage', 'Nb d''etudiant par page dans l''affichage du trombinoscope mobile. Mettre 0 pour afficher tous les etudiant sur une seule page.', '20'),
+('logoutCasPropose', 'true si on affiche le bouton de déconnexion, false sinon', 'false'),
 ('typesEpreuveAffichageNote', 'La liste des code type Epreuve (COD_TEP) dont on affiche toujours la note', '');
 
 -- --------------------------------------------------------
