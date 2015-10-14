@@ -788,18 +788,6 @@ public class MainUI extends GenericUI {
 				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 				decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 				decoBtn.addClickListener(e -> {
-					//getUI().getPage().setLocation("j_spring_security_logout");
-					/*Deconnexion appli*/
-					/*SecurityContextHolder.clearContext();
-					SecurityContextHolder.getContext().setAuthentication(null);
-					SecurityContextHolder.createEmptyContext();
-					MainUI.getCurrent().getSession().getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-					MainUI.getCurrent().getSession().close();*/
-
-
-					/*Deconnexion cas*/
-					//MainUI.getCurrent().getPage().setLocation("pathlogout");
-					
 					getUI().getPage().setLocation("j_spring_security_logout");
 				});
 				mainMenu.addComponent(decoBtn);
