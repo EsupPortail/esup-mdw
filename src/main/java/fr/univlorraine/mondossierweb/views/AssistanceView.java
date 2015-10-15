@@ -111,6 +111,17 @@ public class AssistanceView extends VerticalLayout implements View {
 				contactBwo.extend(contactBtn);
 				addComponent(contactBtn);
 			}
+			
+			/* Deconnexion */
+			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
+			if(configController.isLogoutCasPropose()){
+				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
+				decoBtn.addStyleName(ValoTheme.BUTTON_LINK);
+				decoBtn.addClickListener(e -> {
+					getUI().getPage().setLocation("j_spring_security_logout");
+				});
+				addComponent(decoBtn);
+			}
 		}
 	}
 
