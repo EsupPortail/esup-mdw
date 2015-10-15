@@ -377,15 +377,6 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
 					<packagingExcludes>**/configUrlServices.properties</packagingExcludes>
-					<webResources>
-					 	<resource>
-                               <directory>lib</directory>
-                               <targetPath>WEB-INF/lib</targetPath>
-                               <includes>
-                                    <include>**/*.jar</include>
-                               </includes>
-                            </resource>
-					</webResources>
 				</configuration>
 			</plugin>
 
