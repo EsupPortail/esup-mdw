@@ -191,8 +191,8 @@ public class AdminView extends VerticalLayout implements View {
 		confAppTable.addItemSetChangeListener(e -> confAppTable.sanitizeSelection());
 		confAppTable.addValueChangeListener(e -> {
 			// Le bouton d'édition est actif seulement si un parametre est sélectionné. 
-			boolean structureIsSelected = confAppTable.getValue() instanceof PreferencesApplication;
-			btnEdit.setEnabled(structureIsSelected);
+			boolean confIsSelected = confAppTable.getValue() instanceof PreferencesApplication;
+			btnEdit.setEnabled(confIsSelected);
 			
 		});
 		confAppTable.addItemClickListener(e -> {
@@ -266,8 +266,8 @@ public class AdminView extends VerticalLayout implements View {
 		confSwapTable.addItemSetChangeListener(e -> confSwapTable.sanitizeSelection());
 		confSwapTable.addValueChangeListener(e -> {
 			// Le bouton d'édition est actif seulement si un parametre est sélectionné. 
-			boolean structureIsSelected = confSwapTable.getValue() instanceof UtilisateurSwap;
-			btnEditSwap.setEnabled(structureIsSelected);
+			boolean confIsSelected = confSwapTable.getValue() instanceof UtilisateurSwap;
+			btnEditSwap.setEnabled(confIsSelected);
 			
 		});
 		confSwapTable.addItemClickListener(e -> {

@@ -54,8 +54,8 @@ public class SwapUtilisateurWindow extends Window {
 	private Button btnAnnuler;
 
 	/**
-	 * Crée une fenêtre d'édition de structure
-	 * @param structure la structure à éditer
+	 * Crée une fenêtre d'édition du swap utilisateur
+	 * @param swap utilisateur à éditer
 	 */
 	public SwapUtilisateurWindow(UtilisateurSwap swap, boolean ajout) {
 		/* Style */
@@ -134,7 +134,7 @@ public class SwapUtilisateurWindow extends Window {
 					}
 				}
 				if(commitok){
-					/* Enregistre la structure saisie */
+					/* Enregistre le swap saisie */
 					configController.saveSwap(swap);
 
 					/* Ferme la fenêtre */
