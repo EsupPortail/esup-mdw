@@ -512,42 +512,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Compilation des JasperReports -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jasperreports-maven-plugin</artifactId>
-				<version>1.0-beta-2</version>
-				<executions>
-					<execution>
-						<id>compile-jasperreports</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile-reports</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<compiler>net.sf.jasperreports.compilers.JRGroovyCompiler</compiler>
-					<outputDirectory>${project.build.outputDirectory}/jasper</outputDirectory>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>javax.servlet</groupId>
-						<artifactId>javax.servlet-api</artifactId>
-						<version>3.1.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports</artifactId>
-						<version>${jasperreports.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-all</artifactId>
-						<version>${groovy.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+			
 
 			<!-- Embedded Tomcat -->
 			<plugin>
@@ -724,25 +689,7 @@
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											jasperreports-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.0-beta-2,)
-										</versionRange>
-										<goals>
-											<goal>compile-reports</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
+							
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>

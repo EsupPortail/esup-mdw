@@ -64,7 +64,6 @@
 
 	<logger name="org.springframework" level="warn" />
 
-	<logger name="net.sf.jasperreports" level="warn" />
 
 	<logger name="com.vaadin" level="warn" />
 	<!-- Ne mail pas les erreurs push -->
