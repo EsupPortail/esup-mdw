@@ -52,7 +52,7 @@ import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 
 /**
- * Page de gestion des structures
+ * Page des notes
  */
 @Component @Scope("prototype")
 @VaadinView(NotesView.NAME)
