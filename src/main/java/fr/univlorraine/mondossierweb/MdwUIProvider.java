@@ -5,7 +5,7 @@ package fr.univlorraine.mondossierweb;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jfree.util.Log;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.Device;

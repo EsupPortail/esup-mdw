@@ -3,7 +3,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import org.jfree.util.Log;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
