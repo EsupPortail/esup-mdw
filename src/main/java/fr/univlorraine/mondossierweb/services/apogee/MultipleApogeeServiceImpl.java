@@ -12,7 +12,11 @@ import javax.persistence.PersistenceContext;
 
 import lombok.Data;
 
-import org.jfree.util.Log;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -31,6 +35,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 @Data
 public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
+	private Logger LOG = LoggerFactory.getLogger(MultipleApogeeServiceImpl.class);
 
 	@PersistenceContext (unitName="entityManagerFactoryApogee")
 	private transient EntityManager entityManagerApogee;
@@ -200,7 +205,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			}
 			
 		}catch(NumberFormatException nfe){
-			Log.debug("Aucune année valide trouvée pour cette vet : "+e.getCode()+"/"+e.getVersion(), nfe);
+			LOG.debug("Aucune année valide trouvée pour cette vet : "+e.getCode()+"/"+e.getVersion(), nfe);
 		}
 		return lannee;
 
