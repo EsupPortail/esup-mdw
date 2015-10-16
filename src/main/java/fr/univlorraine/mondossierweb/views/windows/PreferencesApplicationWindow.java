@@ -57,8 +57,8 @@ public class PreferencesApplicationWindow extends Window {
 	private Button btnAnnuler;
 
 	/**
-	 * Crée une fenêtre d'édition de structure
-	 * @param structure la structure à éditer
+	 * Crée une fenêtre d'édition des preferences applicative
+	 * @param préférence à éditer
 	 */
 	public PreferencesApplicationWindow(PreferencesApplication prefApp) {
 		/* Style */
@@ -169,7 +169,7 @@ public class PreferencesApplicationWindow extends Window {
 			try {
 				/* Valide la saisie */
 				fieldGroup.commit();
-				/* Enregistre la structure saisie */
+				/* Enregistre la conf saisie */
 				configController.saveAppParameter(prefApp);
 				/* Ferme la fenêtre */
 				close();
