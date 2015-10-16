@@ -211,7 +211,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser+ " remoteadress : "+remoteadress+".",e);
+				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
 				tc = null;
 
 			}
@@ -244,7 +244,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser+ " remoteadress : "+remoteadress,e);
+				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
 				tc = null;
 
 			}
@@ -277,6 +277,9 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 		}
 
+		if(ip!=null){
+			ip = ip.trim();
+		}
 		return ip;
 	}
 
