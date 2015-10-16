@@ -104,10 +104,7 @@ public class Initializer implements WebApplicationInitializer {
 		FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
 		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");
 
-		/* Servlet REST */
-	/*	ServletRegistration.Dynamic restServlet = servletContext.addServlet("rest", new DispatcherServlet(springContext));
-		restServlet.setLoadOnStartup(1);
-		restServlet.addMapping("/rest", "/rest/*");*/
+
 
 		/* Servlet Spring-Vaadin */
 		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);
