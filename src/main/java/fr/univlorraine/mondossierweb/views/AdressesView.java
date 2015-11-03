@@ -185,7 +185,8 @@ public class AdressesView extends VerticalLayout implements View {
 
 			addComponent(globalLayout);
 
-			if(userController.isEtudiant() && configController.isModificationAdressesAutorisee()){
+			if(userController.isEtudiant() && configController.isModificationAdressesAutorisee()
+					&& MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
 				HorizontalLayout btnLayout = new HorizontalLayout();
 				btnLayout.setSizeFull();
 				btnLayout.setSpacing(true);
