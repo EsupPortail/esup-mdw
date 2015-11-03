@@ -797,11 +797,19 @@
 			<version>4.60.laa</version>
 		</dependency> -->
 		
-		<dependency>
+		<!-- <dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservicesclient</artifactId>
 			<version>4.60.laa</version>
+		</dependency> -->
+
+		<dependency>
+			<groupId>gouv.education.apogee</groupId>
+			<artifactId>apo-webservicesclient</artifactId>
+			<version>4.60.lbe</version>
 		</dependency>
+	
+	
 		<!-- <dependency>
       		<groupId>org.apache.axis</groupId>
       		<artifactId>axis</artifactId>
