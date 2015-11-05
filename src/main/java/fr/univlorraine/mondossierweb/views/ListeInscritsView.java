@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -79,7 +81,10 @@ import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 @Component @Scope("prototype")
 @VaadinView(ListeInscritsView.NAME)
 public class ListeInscritsView extends VerticalLayout implements View {
+	
 	private static final long serialVersionUID = -2056224835347802529L;
+	
+	private Logger LOG = LoggerFactory.getLogger(ListeInscritsView.class);
 
 	public static final String NAME = "listeInscritsView";
 
@@ -556,8 +561,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					leftResumeLayout.setComponentAlignment(btnExportTrombi, Alignment.MIDDLE_LEFT);
 					//if(!afficherTrombinoscope){
 
-						//On cache le bouton d'export pdf
-						btnExportTrombi.setVisible(false);
+					//On cache le bouton d'export pdf
+					btnExportTrombi.setVisible(false);
 					//}
 
 
@@ -578,7 +583,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							//recuperation de l'année sélectionnée et du libellé de l'ELP
 							String annee=(String)listeAnnees.getValue();
 							String libObj=panelFormInscrits.getCaption();
-							
+
 							//création du trombi en pdf
 							return listeInscritsController.getXlsStream(linscrits, listecodind,listeGroupes,libObj,  annee, typeFavori);
 						}
@@ -595,8 +600,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 
 					//if(!afficherTrombinoscope){
-						//On échange le bouton d'export pdf par le bouton export excel
-						leftResumeLayout.replaceComponent(btnExportTrombi, btnExportExcel);
+					//On échange le bouton d'export pdf par le bouton export excel
+					leftResumeLayout.replaceComponent(btnExportTrombi, btnExportExcel);
 					//}
 
 					resumeLayout.addComponent(leftResumeLayout);
@@ -661,39 +666,39 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					//Bouton trombinoscope
 					btnTrombi = new Button(applicationContext.getMessage(NAME+".message.trombinoscope", null, getLocale()));
 					if(listeInscritsController.isPhotoProviderOperationnel()){
-					btnTrombi.setIcon(FontAwesome.GROUP);
-					buttonResumeLayout.addComponent(btnTrombi);
+						btnTrombi.setIcon(FontAwesome.GROUP);
+						buttonResumeLayout.addComponent(btnTrombi);
 
 
-					//Gestion du clic sur le bouton trombinoscope
-					btnTrombi.addClickListener(e->{
+						//Gestion du clic sur le bouton trombinoscope
+						btnTrombi.addClickListener(e->{
 
-						//Si on doit afficher une fenêtre de loading pendant l'exécution
-						if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
-							//affichage de la pop-up de loading
-							MainUI.getCurrent().startBusyIndicator();
+							//Si on doit afficher une fenêtre de loading pendant l'exécution
+							if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
+								//affichage de la pop-up de loading
+								MainUI.getCurrent().startBusyIndicator();
 
-							//Execution de la méthode en parallèle dans un thread
-							executorService.execute(new Runnable() {
-								public void run() {
-									MainUI.getCurrent().access(new Runnable() {
-										@Override
-										public void run() {
-											executeDisplayTrombinoscope();
-											//close de la pop-up de loading
-											MainUI.getCurrent().stopBusyIndicator();
-										}
-									} );
-								}
-							});
+								//Execution de la méthode en parallèle dans un thread
+								executorService.execute(new Runnable() {
+									public void run() {
+										MainUI.getCurrent().access(new Runnable() {
+											@Override
+											public void run() {
+												executeDisplayTrombinoscope();
+												//close de la pop-up de loading
+												MainUI.getCurrent().stopBusyIndicator();
+											}
+										} );
+									}
+								});
 
-						}else{
-							//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
-							executeDisplayTrombinoscope();
-						}
+							}else{
+								//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
+								executeDisplayTrombinoscope();
+							}
 
-					});
-					buttonResumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
+						});
+						buttonResumeLayout.setComponentAlignment(btnTrombi, Alignment.MIDDLE_RIGHT);
 					}
 
 
@@ -702,7 +707,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnRetourListe.setIcon(FontAwesome.BARS);
 					buttonResumeLayout.addComponent(btnRetourListe);
 					//if(!afficherTrombinoscope){
-						btnRetourListe.setVisible(false);
+					btnRetourListe.setVisible(false);
 					//}
 
 					//Gestion du clic sur le bouton de  retour à l'affichage de la liste
@@ -782,8 +787,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.addStyleName("scrollabletable");
 					//Si on n'a pas déjà demandé à afficher le trombinoscope
 					//if(!afficherTrombinoscope){
-						//la layout contient la table
-						dataLayout.addComponent(inscritstable);
+					//la layout contient la table
+					dataLayout.addComponent(inscritstable);
 					//}
 
 					//Layout contenant le gridLayout correspondant au trombinoscope
@@ -807,7 +812,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
 					setExpandRatio(infoLayout, 1);
-					
+
 					//Si on a demandé à afficher le trombinoscope
 					if(afficherTrombinoscope){
 						//On execute la procédure d'affichage du trombinoscope
@@ -1092,19 +1097,20 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
 			if(ic!=null){
 				ic.removeAllContainerFilters();
+				try{
+					if(StringUtils.hasText(idEtape)){
+						Filter filterStringToSearch =  new SimpleStringFilter("id_etp",idEtape, true, false);
+						ic.addContainerFilter(filterStringToSearch);
+					}
 
-				if(StringUtils.hasText(idEtape)){
-					Filter filterStringToSearch =  new SimpleStringFilter("id_etp",idEtape, true, false);
-					//Test du filtre : 
-					//Filter filterStringToSearch =  new SimpleStringFilter("nom","AN", true, false);
-					ic.addContainerFilter(filterStringToSearch);
+					if(StringUtils.hasText(idgroupe)){
+						Filter filterStringToSearch =  new SimpleStringFilter("codes_groupes",idgroupe, true, false);
+						ic.addContainerFilter(filterStringToSearch);
+					}
+
+				}catch(NullPointerException npe){
+					LOG.info("NullPointerException lors du addContainerFilter sur ListeInscritView pour code : "+code+" type : "+typeFavori+ "et idEtape : "+idEtape + " et idgroupe : "+idgroupe);
 				}
-
-				if(StringUtils.hasText(idgroupe)){
-					Filter filterStringToSearch =  new SimpleStringFilter("codes_groupes",idgroupe, true, false);
-					ic.addContainerFilter(filterStringToSearch);
-				}
-
 			}
 
 			//Maj de la liste contenant tous les codind à afficher apres application du filtre
