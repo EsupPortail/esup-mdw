@@ -3,17 +3,13 @@
 	<!-- Desactive la persistence des sessions apres un redemarrage -->
 	<Manager pathname="" />
 
-	<Resource name="jdbc/db" type="javax.sql.DataSource" username="root"
+	<Resource name="jdbc/dbMdw" type="javax.sql.DataSource" username="root"
 		password="" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw"
 		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
 		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1'" />
 
 
-<!--  	  <Resource name="jdbc/dbApogee" type="javax.sql.DataSource"
-		username="Z0_MDW" password="lg3558" driverClassName="oracle.jdbc.driver.OracleDriver"
-		url="jdbc:oracle:thin:@apotest-db.univ-lorraine.fr:1521:APOUDLT"
-		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
-		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1' from dual" />-->
+
 		<Resource name="jdbc/dbApogee"
 		type="javax.sql.DataSource"
 		username="usermdw"

@@ -48,7 +48,7 @@ public class JpaConfig {
 	@Bean
 	public DataSource dataSource() {
 		JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
-		return dsLookup.getDataSource("java:/comp/env/jdbc/db");
+		return dsLookup.getDataSource("java:/comp/env/jdbc/dbMdw");
 	}
 
 
