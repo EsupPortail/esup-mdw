@@ -68,6 +68,13 @@ public class PropertyUtils {
 		return value;
 	}
 	
+	/** Retourne le champ de l'index elasticSearch correspondant au libellé de l'objet */
+	public static String getElasticSearchChampLibelleObjet(){
+		String value = System.getProperty("context.param.elasticsearch.index.champlibelleobjet");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("param.elasticsearch.index.champlibelleobjet cannot be null !");
+		return value;
+	}
+	
 
 	/** Retourne le port ElasticSearch */
 	public static int getElasticSearchPort(){

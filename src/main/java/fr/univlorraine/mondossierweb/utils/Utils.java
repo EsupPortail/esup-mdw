@@ -78,6 +78,8 @@ public class Utils {
 	public static final String TYPE_VDI = "Diplôme";
 
 	public static final String VDI = "VDI";
+	
+	public static final String ES_TYPE ="TYP_OBJ";
 
 	public static final String LIBELLE_WS_INSCRIPTION_PAYEE ="Paiement effectué";
 

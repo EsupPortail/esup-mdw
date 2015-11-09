@@ -87,6 +87,7 @@
 	<Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
 	<Parameter name="param.elasticsearch.index.champcodeobjet" value="COD_OBJ" />
 	<Parameter name="param.elasticsearch.index.champversionobjet" value="COD_VRS_OBJ" />
+	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="LIB_OBJ" />
 	
 	
 

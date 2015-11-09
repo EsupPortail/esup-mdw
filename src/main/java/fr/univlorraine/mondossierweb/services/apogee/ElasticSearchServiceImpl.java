@@ -179,7 +179,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 					Map<String,Object> result = hit.getSource();  
 					
 					//On rajoute le type de l'objet dans la hashMap retournée
-					result.put("TYP_OBJ", hit.getType());
+					result.put(Utils.ES_TYPE, hit.getType());
 
 					//Si recherche par code uniquement on ne garde que les éléments qui matchent vraiment avec la valeur saisie
 					if(!rechercherParCode){

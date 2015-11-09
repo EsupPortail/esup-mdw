@@ -364,7 +364,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				for(Map<String,Object> obj : lobjresult){
 					if(listeReponses.size()<Utils.NB_MAX_RESULT_QUICK_SEARCH){
 						if(obj != null){
-							if(listeTypeAutorise.contains((String)obj.get("TYP_OBJ"))){
+							if(listeTypeAutorise.contains((String)obj.get(Utils.ES_TYPE))){
 								if(listeReponses.size()>0){
 									boolean triOk=true;
 									int rang = 0;
@@ -372,7 +372,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 									while(triOk && rang<listeReponses.size()){
 										//En quickSearch on prend la description et non pas le libelle
 										ResultatDeRecherche r = (ResultatDeRecherche) listeReponses.get(rang);
-										//if((r.lib.toUpperCase()).equals(((String)obj.get("LIB_DESC_OBJ")).toUpperCase())){
+										
 										if((r.lib.toUpperCase()).equals((new ResultatDeRecherche(obj)).lib.toUpperCase())){
 											triOk=false;
 										}
@@ -380,13 +380,11 @@ public class RechercheRapideView extends VerticalLayout implements View {
 									}
 									if(triOk){
 										//En quickSearch on prend la description et non pas le libelle
-										//listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
 										listeReponses.add(new ResultatDeRecherche(obj));
 										items.add(new ResultatDeRecherche(obj));
 									}
 								}else{
 									//En quickSearch on prend la description et non pas le libelle
-									//listeReponses.add((String)obj.get("LIB_DESC_OBJ"));
 									listeReponses.add(new ResultatDeRecherche(obj));
 									items.add(new ResultatDeRecherche(obj));
 								}

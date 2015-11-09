@@ -9,6 +9,8 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.entities.apogee.VObjSeApogee;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import lombok.Data;
 
 @Data
@@ -33,17 +35,11 @@ public class ResultatDeRecherche implements Serializable {
 	
 	
 	public ResultatDeRecherche(Map<String,Object> o){
-		type=(String)o.get("TYP_OBJ");
-		code=(String)o.get("COD_OBJ");
-		if(((Integer)o.get("COD_VRS_OBJ"))!=0)
-			code = o.get("COD_OBJ")+"/"+o.get("COD_VRS_OBJ");
-		/*if(StringUtils.hasText((String)o.get("LIB_DESC_OBJ"))){
-			lib=(String)o.get("LIB_DESC_OBJ"); //On prend  la description
-		}else{
-			//C'est un elp
-			lib="["+code+"] "+(String)o.get("LIB_OBJ"); //On prend le libelle
-		}*/
-		lib="["+code+"] "+(String)o.get("LIB_OBJ"); //On prend le libelle
+		type=(String)o.get(Utils.ES_TYPE);
+		code=(String)o.get(PropertyUtils.getElasticSearchChampCodeObjet());
+		if(((Integer)o.get(PropertyUtils.getElasticSearchChampVersionObjet()))!=0)
+			code = o.get(PropertyUtils.getElasticSearchChampCodeObjet())+"/"+o.get(PropertyUtils.getElasticSearchChampVersionObjet());
+		lib="["+code+"] "+(String)o.get(PropertyUtils.getElasticSearchChampLibelleObjet()); //On prend le libelle
 	}
 	
 
