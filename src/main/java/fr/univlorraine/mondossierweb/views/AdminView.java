@@ -45,7 +45,7 @@ public class AdminView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2605429366219007314L;
 
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
-	
+
 	public static final String[] SWAP_FIELDS_ORDER = {"loginSource", "loginCible", "datCre"};
 
 
@@ -62,7 +62,7 @@ public class AdminView extends VerticalLayout implements View {
 	@Resource
 	private transient ConfigController configController;
 
-	
+
 
 	//le tabSheet global affiché
 	private TabSheet tabSheetGlobal;
@@ -72,11 +72,11 @@ public class AdminView extends VerticalLayout implements View {
 	private Table confAppTable;
 	private Table confSwapTable;
 	private int tabSelectedPosition;
-	
+
 	private VerticalLayout layoutConfigApplication;
 	private VerticalLayout layoutSwapUser;
 	private HorizontalLayout topLayout;
-	
+
 	/**
 	 * Initialise la vue
 	 */
@@ -88,7 +88,7 @@ public class AdminView extends VerticalLayout implements View {
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
-			
+
 			/* En-tete menu large */
 			topLayout = new HorizontalLayout();
 			topLayout.addStyleName(ValoTheme.MENU_TITLE);
@@ -106,7 +106,7 @@ public class AdminView extends VerticalLayout implements View {
 			topLayout.addComponent(appTitleLayout);
 			topLayout.setComponentAlignment(appTitleLayout, Alignment.MIDDLE_LEFT);
 			topLayout.setExpandRatio(appTitleLayout, 1);
-			
+
 			addComponent(topLayout);
 
 			// Titre 
@@ -116,25 +116,25 @@ public class AdminView extends VerticalLayout implements View {
 
 			// Texte 
 			//addComponent(new Label(applicationContext.getMessage(NAME + ".message", null, getLocale()), ContentMode.HTML));
-			
+
 			tabSheetGlobal = new TabSheet();
 			tabSheetGlobal.setSizeFull();
 			tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
-			
+
 			//ajout de l'onglet principal 'parametres'
 			layoutConfigApplication = new VerticalLayout();
 			layoutConfigApplication.setSizeFull();
 			ajoutGestionParametresApplicatifs();
 			tabSheetGlobal.addTab(layoutConfigApplication, "Paramètres de l'application", FontAwesome.COGS);
-			
+
 
 			//ajout de l'onglet 'swap'
 			layoutSwapUser = new VerticalLayout();
 			layoutSwapUser.setSizeFull();
 			ajoutGestionSwap();
 			tabSheetGlobal.addTab(layoutSwapUser, "Swap utilisateur", FontAwesome.GROUP);
-			
-			
+
+
 			tabSheetGlobal.setSelectedTab(tabSelectedPosition);
 			//Ce tabSheet sera aligné à droite
 			//tabSheetGlobal.addStyleName("right-aligned-tabs");
@@ -146,7 +146,7 @@ public class AdminView extends VerticalLayout implements View {
 	}
 
 	private void ajoutGestionParametresApplicatifs() {
-		
+
 
 		layoutConfigApplication.setMargin(true);
 		layoutConfigApplication.setSpacing(true);
@@ -156,10 +156,6 @@ public class AdminView extends VerticalLayout implements View {
 		buttonsLayout.setSpacing(true);
 		layoutConfigApplication.addComponent(buttonsLayout);
 
-		HorizontalLayout leftButtonsLayout = new HorizontalLayout();
-		leftButtonsLayout.setSpacing(true);
-		buttonsLayout.addComponent(leftButtonsLayout);
-		buttonsLayout.setComponentAlignment(leftButtonsLayout, Alignment.MIDDLE_LEFT);
 
 		btnEdit = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
 		btnEdit.setEnabled(false);
@@ -174,8 +170,8 @@ public class AdminView extends VerticalLayout implements View {
 		});
 		buttonsLayout.addComponent(btnEdit);
 		buttonsLayout.setComponentAlignment(btnEdit, Alignment.MIDDLE_CENTER);
-		
-		
+
+
 		/* Table des conf */
 		confAppTable = new Table(null, new BeanItemContainer<>(PreferencesApplication.class, configController.getAppParameters()));
 		confAppTable.setSizeFull();
@@ -193,7 +189,7 @@ public class AdminView extends VerticalLayout implements View {
 			// Le bouton d'édition est actif seulement si un parametre est sélectionné. 
 			boolean confIsSelected = confAppTable.getValue() instanceof PreferencesApplication;
 			btnEdit.setEnabled(confIsSelected);
-			
+
 		});
 		confAppTable.addItemClickListener(e -> {
 			if (e.isDoubleClick()) {
@@ -205,10 +201,10 @@ public class AdminView extends VerticalLayout implements View {
 		layoutConfigApplication.setExpandRatio(confAppTable, 1);
 	}
 
-	
-	
+
+
 	private void ajoutGestionSwap() {
-		
+
 
 		layoutSwapUser.setMargin(true);
 		layoutSwapUser.setSpacing(true);
@@ -218,10 +214,6 @@ public class AdminView extends VerticalLayout implements View {
 		buttonsLayout.setSpacing(true);
 		layoutSwapUser.addComponent(buttonsLayout);
 
-		HorizontalLayout leftButtonsLayout = new HorizontalLayout();
-		leftButtonsLayout.setSpacing(true);
-		buttonsLayout.addComponent(leftButtonsLayout);
-		buttonsLayout.setComponentAlignment(leftButtonsLayout, Alignment.MIDDLE_LEFT);
 
 		btnEditSwap = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
 		btnEditSwap.setEnabled(false);
@@ -235,22 +227,31 @@ public class AdminView extends VerticalLayout implements View {
 			}
 		});
 		buttonsLayout.addComponent(btnEditSwap);
-		buttonsLayout.setComponentAlignment(btnEditSwap, Alignment.MIDDLE_CENTER);
-		
+		buttonsLayout.setComponentAlignment(btnEditSwap, Alignment.MIDDLE_LEFT);
+
 		btnAddSwap = new Button(applicationContext.getMessage(NAME+".btnAdd", null, getLocale()), FontAwesome.PLUS);
 		btnAddSwap.setEnabled(true);
 		btnAddSwap.addClickListener(e -> {
-			
-				SwapUtilisateurWindow suw = new SwapUtilisateurWindow(new UtilisateurSwap(), true);
-				suw.addCloseListener(f->init());
-				tabSelectedPosition=1;
-				MainUI.getCurrent().addWindow(suw);
-			
+
+			SwapUtilisateurWindow suw = new SwapUtilisateurWindow(new UtilisateurSwap(), true);
+			suw.addCloseListener(f->init());
+			tabSelectedPosition=1;
+			MainUI.getCurrent().addWindow(suw);
+
 		});
 		buttonsLayout.addComponent(btnAddSwap);
 		buttonsLayout.setComponentAlignment(btnAddSwap, Alignment.MIDDLE_CENTER);
 		
-		
+		// Deconnexion 
+		Button decoBtn = new Button("Se Déconnecter", FontAwesome.SIGN_OUT);
+		decoBtn.setEnabled(true);
+		decoBtn.addClickListener(e -> {
+			getUI().getPage().setLocation("j_spring_security_logout");
+		});
+		buttonsLayout.addComponent(decoBtn);
+		buttonsLayout.setComponentAlignment(decoBtn, Alignment.MIDDLE_RIGHT);
+
+
 		/* Table des conf */
 		confSwapTable = new Table(null, new BeanItemContainer<>(UtilisateurSwap.class, configController.getSwapUtilisateurs()));
 		confSwapTable.setSizeFull();
@@ -268,7 +269,7 @@ public class AdminView extends VerticalLayout implements View {
 			// Le bouton d'édition est actif seulement si un parametre est sélectionné. 
 			boolean confIsSelected = confSwapTable.getValue() instanceof UtilisateurSwap;
 			btnEditSwap.setEnabled(confIsSelected);
-			
+
 		});
 		confSwapTable.addItemClickListener(e -> {
 			if (e.isDoubleClick()) {
