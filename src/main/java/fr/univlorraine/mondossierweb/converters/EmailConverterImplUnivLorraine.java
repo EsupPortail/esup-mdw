@@ -43,7 +43,7 @@ public class EmailConverterImplUnivLorraine implements EmailConverterInterface{
 				return mail;
 			}
 		}
-	/*	//On n'a rien récupéré avec le codetu, on tente avec le login
+		/*	//On n'a rien récupéré avec le codetu, on tente avec le login
 		if (login != null && !login.equals("") ) {
 			String mail="";
 			//aller chercher le mail dans annu_mel_login

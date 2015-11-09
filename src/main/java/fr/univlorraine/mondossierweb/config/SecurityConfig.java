@@ -30,7 +30,6 @@ import org.springframework.security.core.userdetails.UserDetailsByNameServiceWra
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 
@@ -64,18 +63,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 				.headers().frameOptions().disable()
 			.authorizeRequests()
-				.antMatchers(environment.getRequiredProperty("switchUser.switchUrl")).hasRole(environment.getRequiredProperty("role.admin"))
-				.antMatchers(environment.getRequiredProperty("switchUser.exitUrl")).hasAuthority(SwitchUserFilter.ROLE_PREVIOUS_ADMINISTRATOR)
 				.anyRequest().authenticated()
 				.and()
 			.addFilterBefore(singleSignOutFilter(), LogoutFilter.class)
 			.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()))
 			.addFilter(casAuthenticationFilter())
-			//.addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class)
 			// La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection
 			.csrf().disable();
 	}
-
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -84,7 +79,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
-
 	/* Uportal service */
 	@Bean
 	public CachingUportalServiceImpl cachingUportalServiceImpl(){
@@ -94,12 +88,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return cachingUportalService;
 		
 	}
-	
-	
-	
-	
-	/* Configuration CAS */
 
+	/* Configuration CAS */
 	@Bean
 	public SingleSignOutFilter singleSignOutFilter() {
 		SingleSignOutFilter filter = new SingleSignOutFilter();
@@ -142,52 +132,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	
 
-	/*@Bean
-	public LdapContextSource ldapServer() {
-		LdapContextSource ldapContextSource = new LdapContextSource();
-		ldapContextSource.setUrl(environment.getRequiredProperty("ldap.url"));
 
-		String userDn = environment.getProperty("ldap.userDn");
-		if (userDn instanceof String && !userDn.isEmpty()) {
-			ldapContextSource.setUserDn(userDn);
-		}
-
-		String password = environment.getProperty("ldap.password");
-		if (password instanceof String && !password.isEmpty()) {
-			ldapContextSource.setPassword(password);
-		}
-
-		return ldapContextSource;
-	}*/
-
-	/*@Bean
-	public LdapUserSearch ldapUserSearch() {
-		return new FilterBasedLdapUserSearch("ou=people", "uid={0}", ldapServer());
-	}*/
-
-	/* Filtre permettant de prendre le rôle d'un autre utilisateur => NON UTILISE */
-	/*@Bean
-	public SwitchUserFilter switchUserFilter() throws Exception {
-		SwitchUserFilter switchUserFilter = new SwitchUserFilter();
-		switchUserFilter.setUserDetailsService(userDetailsServiceBean());
-		switchUserFilter.setSwitchUserUrl(environment.getRequiredProperty("switchUser.switchUrl"));
-		switchUserFilter.setExitUserUrl(environment.getRequiredProperty("switchUser.exitUrl"));
-		switchUserFilter.setTargetUrl("/");
-		return switchUserFilter;
-	}*/
 	
 	@Bean(name="userDetailsService")
 	@Override
 	public UserDetailsService userDetailsServiceBean() throws Exception {
-		//return new MdwUserDetailsService();
 		return mdwUserDetailsService;
-		/*LdapUserDetailsService ldapUserDetailsService = new LdapUserDetailsService(ldapUserSearch());
-		LdapUserDetailsMapper userDetailsMapper = new LdapUserDetailsMapper();
-		userDetailsMapper.setRoleAttributes(new String[] {environment.getRequiredProperty("ldap.roleAttribute")});
-		userDetailsMapper.setConvertToUpperCase(false);
-		ldapUserDetailsService.setUserDetailsMapper(userDetailsMapper);
-
-		return ldapUserDetailsService;*/
 	}
 	
 

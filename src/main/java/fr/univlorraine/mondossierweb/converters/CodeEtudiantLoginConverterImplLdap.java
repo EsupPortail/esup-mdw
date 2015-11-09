@@ -6,16 +6,11 @@ package fr.univlorraine.mondossierweb.converters;
 
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.ldap.search.LdapUserSearch;
-
-
 import org.springframework.stereotype.Component;
 
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
