@@ -53,6 +53,21 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value)) throw new NullPointerException("param.elasticsearch.index.champrecherche cannot be null !");
 		return value;
 	}
+	
+	/** Retourne le champ de l'index elasticSearch correspondant au code de l'objet */
+	public static String getElasticSearchChampCodeObjet(){
+		String value = System.getProperty("context.param.elasticsearch.index.champcodeobjet");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("param.elasticsearch.index.champcodeobjet cannot be null !");
+		return value;
+	}
+	
+	/** Retourne le champ de l'index elasticSearch correspondant à la version de l'objet */
+	public static String getElasticSearchChampVersionObjet(){
+		String value = System.getProperty("context.param.elasticsearch.index.champversionobjet");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("param.elasticsearch.index.champversionobjet cannot be null !");
+		return value;
+	}
+	
 
 	/** Retourne le port ElasticSearch */
 	public static int getElasticSearchPort(){

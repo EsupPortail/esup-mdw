@@ -85,6 +85,10 @@
 	<Parameter name="param.elasticsearch.cluster" value="dev-1.3.4" />
 	<Parameter name="param.elasticsearch.index" value="apogee" />
 	<Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
+	<Parameter name="param.elasticsearch.index.champcodeobjet" value="COD_OBJ" />
+	<Parameter name="param.elasticsearch.index.champversionobjet" value="COD_VRS_OBJ" />
+	
+	
 
 
 	<!-- true pour que l'email de l'étudiant (état-civil) soit récupéré par 
