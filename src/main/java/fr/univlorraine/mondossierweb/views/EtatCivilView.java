@@ -16,13 +16,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -47,7 +46,7 @@ import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
  * Page d'accueil
  */
 @Component @Scope("prototype")
-@VaadinView(EtatCivilView.NAME)
+@SpringView(name = EtatCivilView.NAME)
 @PreAuthorize("hasRole('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
 

@@ -21,9 +21,6 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import ru.xpoft.vaadin.DiscoveryNavigator;
 
 import com.vaadin.addon.touchkit.ui.NavigationManager;
 import com.vaadin.addon.touchkit.ui.TabBarView;
@@ -31,14 +28,18 @@ import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeEvent;
 import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeListener;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
-import com.vaadin.shared.ui.ui.NotificationRole;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -54,7 +55,6 @@ import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
@@ -66,22 +66,26 @@ import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
 import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
-import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
-import fr.univlorraine.tools.vaadin.SpringErrorViewProvider;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
-@Component @Scope("prototype")
+
+@Scope("prototype")
+@Component
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
+@SuppressWarnings("serial")
 public class MdwTouchkitUI extends GenericUI{
 
-	private static final long serialVersionUID = 1440138826041756551L;
-
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
+	
+	/**
+	* Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
+	*/
+	private static final int TENTATIVES_RECO = 3;
 
 	/* Redirige java.util.logging vers SLF4j */
 	static {
@@ -160,9 +164,13 @@ public class MdwTouchkitUI extends GenericUI{
 	//Le contenu principal de la page
 	private CssLayout contentLayout = new CssLayout();
 
+	/** The view provider. */
+	@Resource
+	private SpringViewProvider viewProvider;
+
 	/** Gestionnaire de vues étudiant*/
 	@Getter
-	private DiscoveryNavigator navigator = new DiscoveryNavigator(this, contentLayout);
+	private final Navigator navigator = new Navigator(this, contentLayout);
 
 	/**
 	 * @see com.vaadin.ui.UI#getCurrent()
@@ -228,8 +236,22 @@ public class MdwTouchkitUI extends GenericUI{
 		if(currentDevice.isNormal())
 			LOG.debug("device : normal");
 
+		//Paramétrage du comportement en cas de perte de connexion
+		configReconnectDialog();
+				
 		/* Construit le gestionnaire de vues */
-		navigator.setErrorProvider(new SpringErrorViewProvider(ErreurView.class, navigator));
+		navigator.addProvider(viewProvider);
+		navigator.setErrorProvider(new ViewProvider() {
+			@Override
+			public String getViewName(final String viewAndParameters) {
+				return ErreurView.NAME;
+			}
+
+			@Override
+			public View getView(final String viewName) {
+				return viewProvider.getView(ErreurView.NAME);
+			}
+		});
 
 		navigator.addViewChangeListener(new ViewChangeListener() {
 
@@ -616,6 +638,16 @@ public class MdwTouchkitUI extends GenericUI{
 			analyticsTracker = new LogAnalyticsTracker();
 		}
 		analyticsTracker.trackNavigator(navigator);
+	}
+	
+	/**
+	* Configure la reconnexion en cas de déconnexion.
+	*/
+	private void configReconnectDialog() {
+	getReconnectDialogConfiguration().setDialogModal(true);
+	getReconnectDialogConfiguration().setReconnectAttempts(TENTATIVES_RECO);
+	getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
+	getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
 	}
 
 }

@@ -19,13 +19,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -47,7 +46,7 @@ import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
  * Page du détail des notes sur mobile
  */
 @Component @Scope("prototype")
-@VaadinView(NotesDetailMobileView.NAME)
+@SpringView(name = NotesDetailMobileView.NAME)
 @JavaScript("notesDetailMobileView.js")
 public class NotesDetailMobileView extends VerticalLayout implements View {
 

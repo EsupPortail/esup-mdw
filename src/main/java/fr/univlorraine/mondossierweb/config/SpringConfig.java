@@ -17,7 +17,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import com.vaadin.spring.annotation.EnableVaadin;
 
 import fr.univlorraine.mondossierweb.Initializer;
 
@@ -30,7 +31,7 @@ import fr.univlorraine.mondossierweb.Initializer;
 @EnableSpringConfigured
 @ComponentScan(basePackageClasses=Initializer.class)
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@EnableWebMvc
+@EnableVaadin
 @PropertySource("classpath:/app.properties")
 public class SpringConfig {
 	

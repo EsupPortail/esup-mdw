@@ -6,17 +6,22 @@ package fr.univlorraine.mondossierweb;
 import javax.servlet.http.HttpServletRequest;
 
 
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
+import org.springframework.web.context.WebApplicationContext;
 
-import ru.xpoft.vaadin.SpringApplicationContext;
-import ru.xpoft.vaadin.SpringUIProvider;
+
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
 public class MdwUIProvider extends SpringUIProvider  {
@@ -26,6 +31,13 @@ public class MdwUIProvider extends SpringUIProvider  {
 
 	private Logger LOG = LoggerFactory.getLogger(MdwUIProvider.class);
 
+
+	
+	public MdwUIProvider(WebApplicationContext webApplicationContext) {
+		super(webApplicationContext);
+		// TODO Auto-generated constructor stub
+	}
+	
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
@@ -89,7 +101,7 @@ public class MdwUIProvider extends SpringUIProvider  {
 		//On retourne l'UI décidée plus haut (desktop ou mobile)
 		if (uiBeanNameObj instanceof String) {
 			String uiBeanName = uiBeanNameObj.toString();
-			return (UI) SpringApplicationContext.getApplicationContext().getBean(uiBeanName);
+			return (UI) this.getWebApplicationContext().getBean(uiBeanName);
 		}
 		return super.createInstance(event);
 	}

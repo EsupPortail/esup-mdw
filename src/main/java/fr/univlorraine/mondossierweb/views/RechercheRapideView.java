@@ -17,8 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -33,6 +31,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -59,7 +58,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  * Page d'accueil
  */
 @Component @Scope("prototype")
-@VaadinView(RechercheRapideView.NAME)
+@SpringView(name = RechercheRapideView.NAME)
 public class RechercheRapideView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = 7147611659177952737L;

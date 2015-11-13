@@ -17,8 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -27,6 +25,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -55,7 +54,7 @@ import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
  * Page des notes
  */
 @Component @Scope("prototype")
-@VaadinView(NotesView.NAME)
+@SpringView(name = NotesView.NAME)
 @PreAuthorize("hasRole('consultation_dossier')")
 public class NotesView extends VerticalLayout implements View {
 

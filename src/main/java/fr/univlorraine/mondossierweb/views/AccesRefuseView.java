@@ -10,11 +10,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -23,7 +22,7 @@ import com.vaadin.ui.themes.ValoTheme;
  * Page access refuse
  */
 @Component @Scope("prototype")
-@VaadinView(AccesRefuseView.NAME)
+@SpringView(name = AccesRefuseView.NAME)
 public class AccesRefuseView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 8866536535186807851L;
 

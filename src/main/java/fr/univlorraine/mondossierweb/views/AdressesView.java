@@ -12,13 +12,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -40,7 +39,7 @@ import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
  * Page d'accueil
  */
 @Component @Scope("prototype")
-@VaadinView(AdressesView.NAME)
+@SpringView(name = AdressesView.NAME)
 @PreAuthorize("hasRole('consultation_dossier')")
 public class AdressesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;

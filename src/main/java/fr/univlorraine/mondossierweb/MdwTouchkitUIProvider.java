@@ -7,21 +7,28 @@ package fr.univlorraine.mondossierweb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.xpoft.vaadin.SpringApplicationContext;
-import ru.xpoft.vaadin.SpringUIProvider;
+
+
+import org.springframework.web.context.WebApplicationContext;
 
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
 public class MdwTouchkitUIProvider extends SpringUIProvider {
-
 
 	private static final long serialVersionUID = -1535055076149004931L;
 
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUIProvider.class);
 
+
+	
+	public MdwTouchkitUIProvider(WebApplicationContext webApplicationContext) {
+		super(webApplicationContext);
+	}
+	
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
@@ -82,7 +89,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		//On retourne l'UI décidée plus haut (desktop ou mobile)
 		if (uiBeanNameObj instanceof String) {
 			String uiBeanName = uiBeanNameObj.toString();
-			return (UI) SpringApplicationContext.getApplicationContext().getBean(uiBeanName);
+			return (UI) this.getWebApplicationContext().getBean(uiBeanName);
 		}
 		return super.createInstance(event);
 	}

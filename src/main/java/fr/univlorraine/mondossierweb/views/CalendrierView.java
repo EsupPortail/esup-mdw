@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -22,6 +20,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -45,7 +44,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  * Page d'accueil
  */
 @Component @Scope("prototype")
-@VaadinView(CalendrierView.NAME)
+@SpringView(name = CalendrierView.NAME)
 @PreAuthorize("hasRole('consultation_dossier')")
 public class CalendrierView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;

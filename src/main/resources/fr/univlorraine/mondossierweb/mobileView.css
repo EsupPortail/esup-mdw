@@ -73,10 +73,24 @@ border-bottom: 1px solid #c5c5c5 !important;
 
 .valo-ul .v-horizontallayout-v-layout-multiline {
 height: 100% !important;
+width: 100% !important;
 }
 
-.valo-ul .v-button-multiline {
+.valo-ul .v-slot-v-layout-multiline {
 height: 100% !important;
+width: 100% !important;
+}
+
+
+.valo-ul .v-layout-center {
+width: 100% !important;
+}
+
+.valo-ul .v-slot-v-button-center {
+width: 100% !important;
+}
+
+.valo-ul .v-slot-v-button-multiline {
 text-align: center !important;
 }
 
@@ -133,7 +147,7 @@ border-top: 1px solid #d5d5d5 !important;
 background-color: rgb(85,96,164) !important;
 }
 
-.valo-ul .v-button-multiline .v-button-wrap .v-button-caption {
+.valo-ul .v-slot-v-button-multiline .v-button-wrap .v-button-caption {
 line-height: normal !important;
 white-space: normal !important;
 height: 100% !important;
@@ -147,6 +161,9 @@ opacity: 1.0 !important;
 .valo-ul .v-panel-caption-v-colored-panel-caption {
 	background: rgb(85,96,164) !important;
 	color: #FFFFFF !important;
+}
+.valo-ul .v-panel-centertitle-panel {
+	width: 100% !important;
 }
 
 .valo-ul .v-panel-caption-centertitle-panel {
@@ -316,12 +333,12 @@ text-shadow: none !important;
 
 .valo-ul .v-Notification {
 	background: rgb(32, 32, 35) !important;
-	    border-radius: 8px;
-	    width: 98%;
+	    border-radius: 8px !important;
+	    width: 98% !important;
 }
 
 .valo-ul .v-Notification h1 {
-    color: white;
+    color: white !important;
 }
 /*
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar {

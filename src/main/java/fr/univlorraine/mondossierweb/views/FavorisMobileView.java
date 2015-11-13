@@ -16,13 +16,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.Position;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -35,21 +34,18 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 
 /**
  * Favoris sur mobile
  */
 @Component @Scope("prototype")
-@VaadinView(FavorisMobileView.NAME)
+@SpringView(name = FavorisMobileView.NAME)
 @PreAuthorize("hasRole('teacher')")
 public class FavorisMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
@@ -190,6 +186,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 					vetPanel.setSizeFull();
 
 					VerticalLayout vetLayout = new VerticalLayout();
+					vetLayout.addStyleName("v-layout-center");
 					vetLayout.setSizeFull();
 					int i=0;
 					for(Favoris fav :  lfav){
@@ -213,8 +210,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 
 							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							Utils.setButtonStyle(libButton);
-							libButton.setHeight("100%");
+							Utils.setButtonStyleCentered(libButton);
+							//libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{
 								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
@@ -243,6 +240,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 					elpPanel.setSizeFull();
 
 					VerticalLayout elpLayout = new VerticalLayout();
+					elpLayout.addStyleName("v-layout-center");
 					elpLayout.setSizeFull();
 					int i=0;
 					for(Favoris fav :  lfav){
@@ -264,7 +262,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							});
 
 							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							Utils.setButtonStyle(libButton);
+							Utils.setButtonStyleCentered(libButton);
 							libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{

@@ -16,13 +16,15 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
-@Component @Scope("prototype")
+@Scope("prototype")
+@Component
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
 public class MdwFallbackUI extends UI {

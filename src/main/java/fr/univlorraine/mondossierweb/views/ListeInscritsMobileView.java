@@ -10,26 +10,24 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
@@ -48,7 +46,7 @@ import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
  * ListeInscrits sur mobile
  */
 @Component @Scope("prototype")
-@VaadinView(ListeInscritsMobileView.NAME)
+@SpringView(name = ListeInscritsMobileView.NAME)
 //@PreAuthorize("hasRole('teacher')")
 public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;

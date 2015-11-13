@@ -14,11 +14,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -39,7 +38,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.Examen;
  * Page de calendrier sur mobile
  */
 @Component @Scope("prototype")
-@VaadinView(CalendrierMobileView.NAME)
+@SpringView(name = CalendrierMobileView.NAME)
 public class CalendrierMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

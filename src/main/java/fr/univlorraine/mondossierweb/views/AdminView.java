@@ -11,19 +11,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -39,7 +37,7 @@ import fr.univlorraine.mondossierweb.views.windows.SwapUtilisateurWindow;
  * Page admin
  */
 @Component @Scope("prototype")
-@VaadinView(AdminView.NAME)
+@SpringView(name = AdminView.NAME)
 public class AdminView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -2605429366219007314L;

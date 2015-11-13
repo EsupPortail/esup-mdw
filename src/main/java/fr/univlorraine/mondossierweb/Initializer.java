@@ -27,9 +27,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;
+import com.vaadin.spring.server.SpringVaadinServlet;
 
 import fr.univlorraine.mondossierweb.config.SpringConfig;
 import fr.univlorraine.mondossierweb.utils.JMeterServlet;
+import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
 import fr.univlorraine.tools.atmosphere.RecoverSecurityContextAtmosphereInterceptor;
 import fr.univlorraine.tools.logback.UserMdcServletFilter;
 import fr.univlorraine.tools.vaadin.FrenchUnsupportedBrowserHandlerSpringVaadinServlet;
@@ -108,11 +110,12 @@ public class Initializer implements WebApplicationInitializer {
 
 		/* Servlet Spring-Vaadin */
 		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);
-		ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", FrenchUnsupportedBrowserHandlerSpringVaadinServlet.class);
+		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", SpringVaadinServlet.class);
+		ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", fr.univlorraine.mondossierweb.utils.MdwSpringVaadinServlet.class);
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");
 		/* Défini le bean UI */
-		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
+		//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
@@ -135,7 +138,7 @@ public class Initializer implements WebApplicationInitializer {
 		//springTouchkitVaadinServlet.setLoadOnStartup(1);
 		springTouchkitVaadinServlet.addMapping("/m/*");
 		/* Défini le bean UI */
-		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
+		//springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");

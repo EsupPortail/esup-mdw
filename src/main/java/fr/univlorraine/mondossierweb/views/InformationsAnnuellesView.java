@@ -13,11 +13,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import ru.xpoft.vaadin.VaadinView;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -37,7 +36,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  * Page d'accueil
  */
 @Component @Scope("prototype")
-@VaadinView(InformationsAnnuellesView.NAME)
+@SpringView(name = InformationsAnnuellesView.NAME)
 @PreAuthorize("hasRole('consultation_dossier')")
 public class InformationsAnnuellesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;

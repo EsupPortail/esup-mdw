@@ -12,16 +12,16 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.Component;
 
-import fr.univlorraine.tools.vaadin.FrenchUnsupportedBrowserHandlerSpringVaadinServlet;
 
 /**
  * @author Marcus Hellberg (marcus@vaadin.com) 
  *  Further modified by Johannes Tuikkala (johannes@vaadin.com)
  *  modified by Charlie Dubois
  */
-public class JMeterServlet extends FrenchUnsupportedBrowserHandlerSpringVaadinServlet {
+public class JMeterServlet extends SpringVaadinServlet {
     private static final long serialVersionUID = 898354532369443197L;
 
     public JMeterServlet() {

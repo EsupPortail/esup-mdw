@@ -216,6 +216,11 @@ public class Utils {
 		b.addStyleName("link"); 
 		b.addStyleName("v-link");
 	}
+	//Formate bouton/lien pour appli mobile
+		public static void setButtonStyleCentered(Button b){
+			setButtonStyle(b);
+			//b.addStyleName("v-button-center");
+		}
 	
 
 	//Découpe des string séparés par des points virgules pour retourner une liste de string

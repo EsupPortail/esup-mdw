@@ -8,21 +8,17 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.Environment;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import ru.xpoft.vaadin.VaadinView;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -34,7 +30,7 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
  * Page d'accueil
  */
 @Component @Scope("prototype")
-@VaadinView(AssistanceView.NAME)
+@SpringView(name = AssistanceView.NAME)
 public class AssistanceView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 7356887304797399383L;
 
