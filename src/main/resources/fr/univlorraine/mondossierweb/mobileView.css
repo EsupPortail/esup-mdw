@@ -86,13 +86,8 @@ width: 100% !important;
 width: 100% !important;
 }
 
-.valo-ul .v-slot-v-button-center {
-width: 100% !important;
-}
 
-.valo-ul .v-slot-v-button-multiline {
-text-align: center !important;
-}
+
 
 
 .valo-ul .v-image-link {
@@ -102,6 +97,7 @@ text-align: center !important;
 .valo-ul .layout-bottom-line-separator{
 	border-bottom: 1px solid #d1d1ce !important;
 	background-color: white !important;
+	height: 100% !important;
 }
 
 .valo-ul .bold-label{
@@ -116,6 +112,7 @@ text-align: center !important;
 .valo-ul .main-layout-bottom-line-separator{
 	border-bottom: 1px solid #d1d1ce !important;
 	background-color: rgb(194, 197, 199) !important;
+	height: 100% !important;
 }
 
 .valo-ul .root-layout-bottom-line-separator{
@@ -123,6 +120,7 @@ text-align: center !important;
 	background-color: rgb(85,96,164) !important;
 	/* background-color: rgb(67, 69, 69); */
 	color: white !important;
+	height: 100% !important;
 }
 
 .valo-ul .level-indicator-layout .v-spacing {
@@ -147,7 +145,22 @@ border-top: 1px solid #d5d5d5 !important;
 background-color: rgb(85,96,164) !important;
 }
 
-.valo-ul .v-slot-v-button-multiline .v-button-wrap .v-button-caption {
+
+
+
+.valo-ul .v-slot-v-button-multiline{
+	width: 100% !important;
+}
+
+.valo-ul .v-button-multiline {
+height: 100% !important;
+width: 100% !important;
+    text-align: center !important;
+}
+
+
+
+.valo-ul .v-button .v-button-wrap .v-button-caption {
 line-height: normal !important;
 white-space: normal !important;
 height: 100% !important;
@@ -157,6 +170,9 @@ font-size: 15px !important;
 .valo-ul .v-disabled {
 opacity: 1.0 !important;
 }
+
+
+
 
 .valo-ul .v-panel-caption-v-colored-panel-caption {
 	background: rgb(85,96,164) !important;
@@ -178,6 +194,8 @@ text-align: center !important;
 font-size: 14px !important;
 font-weight: bold !important;
 }
+
+
 
 .valo-ul .label-centre {
 	text-align: center !important;
@@ -206,11 +224,7 @@ vertical-align: middle !important;
 	overflow-y: auto !important;
 }
 
-/*
-.valo-ul .v-treetable [class*="cell-wrapper"] {
-height: 100% !important;
-}
-*/
+
 .valo-ul .v-table-cell-wrapper > .v-widget {
 margin: 0px -15px 2px -10px !important;
 }
@@ -245,6 +259,7 @@ overflow-x: hidden !important;
 	background-image: none !important;
 	background-color : transparent !important;
 	border-radius: 0 !important;
+	height: 100% !important;
 	text-decoration: none !important;
 }
 
@@ -254,6 +269,10 @@ overflow-x: hidden !important;
 	text-decoration: none !important;
 }
 
+.valo-ul .v-label-width{
+	white-space: normal !important;
+	width: 100%;
+}
 
 .valo-ul .v-button-without-padding{
 	padding: 0 5px !important;
@@ -313,18 +332,27 @@ text-shadow: none !important;
 
 .valo-ul .v-touchkit-toolbar .v-button {
 	height: 100% !important;
-	font-weight: bold !important;
 }	
 
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar .v-button-selected {
 	color: white !important;
   background: rgba(85, 96, 164, 1.0) !important;
-	font-weight: bold !important;
+	font-weight: lighter !important;
 }
+
 .valo-ul .v-touchkit-toolbar .v-button-wrap {
-	display: inline-block !important;
+	display: inline-flex !important;
 	line-height: 0.7 !important;
 }
+.valo-ul .v-touchkit-toolbar .v-button-wrap .v-button-caption {
+	font-size: 12px !important;
+	height: 12px !important;
+}
+.valo-ul .v-touchkit-toolbar .v-button-wrap .v-icon {
+	    margin-top: -2px !important;
+}
+
+
 .valo-ul .v-icon + .v-captiontext, .valo-ul .v-icon + span {
   margin-left: -5px !important;
 }

@@ -179,7 +179,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 			}
 			VerticalLayout nomCodeLayout = new VerticalLayout();
-			nomCodeLayout.setSizeFull();
+			//nomCodeLayout.setSizeFull();
 			nomCodeLayout.setSpacing(false);
 
 			Label labelNomEtudiant = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
@@ -189,7 +189,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			labelNomEtudiant.addStyleName("label-centre");
 			nomCodeLayout.addComponent(labelNomEtudiant);
 			nomCodeLayout.setComponentAlignment(labelNomEtudiant, Alignment.MIDDLE_CENTER);
-			nomCodeLayout.setExpandRatio(labelNomEtudiant, 1);
+			//nomCodeLayout.setExpandRatio(labelNomEtudiant, 1);
 
 			Label codetuLabel = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu());
 			codetuLabel.setSizeFull();

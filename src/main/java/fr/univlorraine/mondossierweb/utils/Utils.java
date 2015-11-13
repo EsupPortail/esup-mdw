@@ -212,14 +212,14 @@ public class Utils {
 	//Formate bouton/lien pour appli mobile
 	public static void setButtonStyle(Button b){
 		b.setStyleName("v-nav-button");
-		b.addStyleName("v-button-multiline");
 		b.addStyleName("link"); 
 		b.addStyleName("v-link");
 	}
 	//Formate bouton/lien pour appli mobile
 		public static void setButtonStyleCentered(Button b){
 			setButtonStyle(b);
-			//b.addStyleName("v-button-center");
+			b.addStyleName("v-button-multiline");
+			//b.addStyleName("v-button-w-multiline");
 		}
 	
 

@@ -300,34 +300,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					}
 					verticalLayoutForTrombi.addComponent(layoutPagination);
 
-					/*HorizontalLayout layoutPagination = new HorizontalLayout();
-					Label labelInfoPage= new Label("Page "+pageEnCours+"/"+pageMax);
-					layoutPagination.addComponent(labelInfoPage);
-
-					HorizontalLayout layoutBtnPagination = new HorizontalLayout();
-
-					if(pageEnCours>1){
-						Button btnPrec= new Button("Prec");
-						btnPrec.addClickListener(e->{
-							pageEnCours--;
-							displayTrombinoscope();
-							labelInfoPage.setCaption("Page "+pageEnCours+"/"+pageMax);
-						});
-						layoutBtnPagination.addComponent(btnPrec);
-
-					}
-					if(pageEnCours<pageMax){
-						Button btnNext= new Button("Next");
-						btnNext.addClickListener(e->{
-							pageEnCours++;
-							displayTrombinoscope();
-							labelInfoPage.setCaption("Page "+pageEnCours+"/"+pageMax);
-						});
-						layoutBtnPagination.addComponent(btnNext);
-					}
-					layoutPagination.addComponent(layoutBtnPagination);
-
-					verticalLayoutForTrombi.addComponent(layoutPagination);*/
 
 
 				}
@@ -437,17 +409,13 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 					// Layout contenant le nom, prénom et le codetu
 					VerticalLayout nomCodeLayout = new VerticalLayout();
-					nomCodeLayout.setSizeFull();
+					//nomCodeLayout.setSizeFull();
 					nomCodeLayout.setSpacing(false);
 
 					// Bouton contenant le nom/prénom
 					Button btnNomEtudiant = new Button(inscrit.getPrenom()+" "+inscrit.getNom());
-					btnNomEtudiant.setSizeFull();
 					Utils.setButtonStyle(btnNomEtudiant);
-					/*btnNomEtudiant.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-					btnNomEtudiant.addStyleName("link"); 
-					btnNomEtudiant.addStyleName("v-link");
-					btnNomEtudiant.addStyleName("v-button-multiline");*/
+
 					// Ajout du bouton au layout
 					nomCodeLayout.addComponent(btnNomEtudiant);
 					//Gestion du clic sur le bouton
@@ -456,13 +424,14 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 						rechercheController.accessToMobileDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,false);
 					});
 					nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
-					nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
+					//nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
 
 					// Label contenant le codetu
 					Label codetuLabel = new Label(inscrit.getCod_etu());
 					codetuLabel.setSizeFull();
 					codetuLabel.setStyleName(ValoTheme.LABEL_TINY);
 					codetuLabel.addStyleName("label-centre");
+					
 					// Ajout du label au layout
 					nomCodeLayout.addComponent(codetuLabel);	
 					nomCodeLayout.setComponentAlignment(codetuLabel, Alignment.MIDDLE_CENTER);

@@ -266,6 +266,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							libElpLayout.addStyleName("root-layout-bottom-line-separator");
 						}
 						libElpLayout.setSizeFull();
+						libElpLayout.setHeight("100%");
 
 						VerticalLayout libVerticalLayout=new VerticalLayout();
 						

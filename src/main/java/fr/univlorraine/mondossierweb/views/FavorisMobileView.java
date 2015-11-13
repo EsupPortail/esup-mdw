@@ -172,7 +172,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 			Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
 			infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			infoLabel.addStyleName("v-label-width");
 			infoLabel.setIcon(FontAwesome.INFO_CIRCLE);
+			infoLabel.setWidth("100%");
 
 			labelLayout.addComponent(infoLabel);
 			globalLayout.addComponent(labelLayout);
@@ -197,8 +199,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							favVetLayout.setMargin(true);
 							favVetLayout.setSpacing(true);
 							favVetLayout.setStyleName("v-layout-multiline");
-							favVetLayout.setWidth("100%");
-							favVetLayout.setHeight("100%");
+							/*favVetLayout.setWidth("100%");
+							favVetLayout.setHeight("100%");*/
 
 							Button codeButton = new Button(fav.getId().getIdfav());
 							codeButton.setCaption(fav.getId().getIdfav());
@@ -211,14 +213,13 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
 							Utils.setButtonStyleCentered(libButton);
-							//libButton.setHeight("100%");
 							libButton.setWidth("100%");
 							libButton.addClickListener(e->{
 								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
 							});
 
 							favVetLayout.addComponent(codeButton);
-							favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
+							//favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
 							favVetLayout.addComponent(libButton);
 							favVetLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
 							favVetLayout.setExpandRatio(libButton, 1);
@@ -250,8 +251,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 							favElpLayout.setMargin(true);
 							favElpLayout.setSpacing(true);
 							favElpLayout.setStyleName("v-layout-multiline");
-							favElpLayout.setWidth("100%");
-							favElpLayout.setHeight("100%");
+							/*favElpLayout.setWidth("100%");
+							favElpLayout.setHeight("100%");*/
 
 
 							Button codeButton = new Button(fav.getId().getIdfav());

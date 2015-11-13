@@ -254,7 +254,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 					libelleLayout.setSizeFull();
 
 					Button libelleButton = new Button(etape.getLibelle());
-					Utils.setButtonStyle(libelleButton);
+					Utils.setButtonStyleCentered(libelleButton);
 					libelleButton.setHeight("100%");
 					libelleButton.setWidth("100%");
 
