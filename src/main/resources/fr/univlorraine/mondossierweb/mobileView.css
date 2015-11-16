@@ -437,3 +437,60 @@ text-align:right !important;
 .valo-ul .v-window-loadingIndicatorWindow .v-window-contents {
 	  padding-top: 0 !important;
 }
+
+
+.valo-ul .v-reconnect-dialog {
+color: white;
+top: 12px;
+right: 12px;
+max-width: 100%;
+border-radius: 0;
+-webkit-box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.25);
+box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.25);
+padding: 12px 15px;
+background-color: #444;
+background-color: rgba(68, 68, 68, 0.9);
+line-height: 22px;
+text-align: center;
+}
+
+.valo-ul .v-reconnect-dialog .text {
+display: inline-block;
+padding-left: 10px;
+}
+
+.valo-ul .v-reconnect-dialog .spinner {
+height: 24px !important;
+width: 24px !important;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+border: 2px solid rgba(79, 175, 108, 0.2);
+border-top-color: #4faf6c;
+border-right-color: #4faf6c;
+border-radius: 100%;
+-webkit-animation: v-rotate-360 500ms infinite linear;
+-moz-animation: v-rotate-360 500ms infinite linear;
+animation: v-rotate-360 500ms infinite linear;
+pointer-events: none;
+display: none;
+vertical-align: middle;
+}
+
+.v-ie8 .valo-ul .v-reconnect-dialog .spinner, .v-ie9 .valo-ul .v-reconnect-dialog .spinner {
+border: none;
+border-radius: 2px;
+background: #fff url(../valo/shared/img/spinner.gif) no-repeat 50% 50%;
+background-size: 80%;
+}
+
+.v-ie8 .valo-ul .v-reconnect-dialog .spinner {
+min-width: 30px;
+min-height: 30px;
+}
+
+.valo-ul .v-reconnect-dialog.active .spinner {
+display: inline-block;
+}
+
+
