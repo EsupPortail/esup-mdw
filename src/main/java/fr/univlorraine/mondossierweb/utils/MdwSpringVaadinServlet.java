@@ -19,6 +19,7 @@ import com.vaadin.spring.server.SpringVaadinServlet;
 
 import fr.univlorraine.mondossierweb.MdwUIProvider;
 
+@SuppressWarnings("serial")
 public class MdwSpringVaadinServlet extends SpringVaadinServlet {
 
 	@Override
