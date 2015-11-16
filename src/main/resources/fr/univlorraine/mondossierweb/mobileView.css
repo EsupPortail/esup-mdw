@@ -82,14 +82,6 @@ width: 100% !important;
 }
 
 
-.valo-ul .v-layout-center {
-width: 100% !important;
-}
-
-
-
-
-
 .valo-ul .v-image-link {
 	cursor: pointer !important;
 }
@@ -147,7 +139,7 @@ background-color: rgb(85,96,164) !important;
 
 
 
-
+/*
 .valo-ul .v-slot-v-button-multiline{
 	width: 100% !important;
 }
@@ -157,7 +149,7 @@ height: 100% !important;
 width: 100% !important;
     text-align: center !important;
 }
-
+*/
 
 
 .valo-ul .v-button .v-button-wrap .v-button-caption {

@@ -59,7 +59,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 /**
  * Recherche sur mobile
  */ 
-@Component @Scope("prototype")
+@Component @Scope("session")
 @SpringView(name = RechercheMobileView.NAME)
 @PreAuthorize("hasRole('teacher')")
 public class RechercheMobileView extends VerticalLayout implements View {

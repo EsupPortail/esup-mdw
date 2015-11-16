@@ -173,7 +173,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 					libelleLayout.setSizeFull();
 
 					Label libelleButton = new Label(diplome.getLib_web_vdi());
-					libelleButton.setStyleName("v-button-multiline");
 					libelleButton.setHeight("100%");
 					libelleButton.setWidth("100%");
 
@@ -254,7 +253,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 					libelleLayout.setSizeFull();
 
 					Button libelleButton = new Button(etape.getLibelle());
-					Utils.setButtonStyleCentered(libelleButton);
+					Utils.setButtonStyle(libelleButton);
 					libelleButton.setHeight("100%");
 					libelleButton.setWidth("100%");
 

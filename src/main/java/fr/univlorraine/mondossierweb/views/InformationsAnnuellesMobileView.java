@@ -185,7 +185,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			Label labelNomEtudiant = new Label(MdwTouchkitUI.getCurrent().getEtudiant().getNom());
 			labelNomEtudiant.setSizeFull();
 			labelNomEtudiant.setStyleName(ValoTheme.LABEL_BOLD);
-			labelNomEtudiant.addStyleName("v-button-multiline");
 			labelNomEtudiant.addStyleName("label-centre");
 			nomCodeLayout.addComponent(labelNomEtudiant);
 			nomCodeLayout.setComponentAlignment(labelNomEtudiant, Alignment.MIDDLE_CENTER);
