@@ -272,8 +272,10 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 		contactLayout.addComponent(formContactLayout);
 
-		/* Si user étudiant et modifi autorisée des coordonnées de contact, on affiche les boutons de modification */
-		if(userController.isEtudiant() && configController.isModificationCoordonneesPersoAutorisee()){
+		/* Si user étudiant , modifications autorisée des coordonnées de contact
+		 * et si l'étudiant possède une addresse annuelle, on affiche les boutons de modification */
+		if(userController.isEtudiant() && configController.isModificationCoordonneesPersoAutorisee()
+			&& MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
 			//Layout pour les boutons de modification
 			HorizontalLayout btnLayout = new HorizontalLayout();
 			btnLayout.setSizeFull();
