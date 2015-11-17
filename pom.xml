@@ -254,7 +254,7 @@
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>7.6.0.beta1</version>
+				<version>${vaadin.version}</version>
 				<configuration>
 						<!--  <modules>
                                 <module>fr.univlorraine.mondossierweb.AppWidgetset</module>
