@@ -112,7 +112,9 @@ public class PreferencesApplicationWindow extends Window {
 
 						@Override
 						public void textChange(TextChangeEvent event) {
-							field.setValue(event.getText());
+							if(!field.isReadOnly()){
+								field.setValue(event.getText());
+							}
 						}
 					});
 					return fieldType.cast(field);
