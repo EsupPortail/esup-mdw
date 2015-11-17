@@ -113,10 +113,11 @@
 	
 	
 	<!--  Interface pour la récupération du login à partir du codetu -->
+	<!-- loginFromCodetuLdapImpl : On passe par le ldap pour récupérer le login -->
+	<Parameter name="loginFromCodetu.implementation" value="loginFromCodetuLdapImpl" /> 
 	<!--  loginFromCodetuUnivLorraineImpl : Utilisation d'une table annu_mel_login dans Apogée  -->
-	<Parameter name="loginFromCodetu.implementation" value="loginFromCodetuUnivLorraineImpl" />
-	<!-- loginFromCodetuLdapImpl : On passe par le ldap pour récupérer le login
-	<Parameter name="loginFromCodetu.implementation" value="loginFromCodetuLdapImpl" />  -->
+	<!-- <Parameter name="loginFromCodetu.implementation" value="loginFromCodetuUnivLorraineImpl" /> -->
+
 
 	<!--  Interface pour la gestion des photos -->
 	<!-- photoEmptyImpl : Implémentation vide -->
