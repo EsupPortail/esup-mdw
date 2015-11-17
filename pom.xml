@@ -142,6 +142,7 @@
 		<profile>
 			<id>deploiement-national</id>
 			<build>
+				<finalName>${project.name}-${project-distribution.version}</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources</directory>
@@ -516,7 +517,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.9</version>
+				<version>1.9.1</version>
 				<executions>
 					<execution>
 						<id>add-generated-metamodel</id>
@@ -528,6 +529,21 @@
 							<sources>
 								<source>${project.build.directory}/generated-sources/metamodel</source>
 							</sources>
+						</configuration>
+					</execution>
+					
+					<!-- Le numero de version n'integre pas le snapshot. Cela créé une variable project-distribution.version -->
+					<execution>
+						<id>regex-property</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>project-distribution.version</name>
+							<value>${project.version}</value>
+							<regex>(\d+)\.(\d+)\.(\d+)-SNAPSHOT</regex>
+							<replacement>$1.$2.$3</replacement>
+							<failIfNoMatch>false</failIfNoMatch>
 						</configuration>
 					</execution>
 				</executions>
@@ -704,6 +720,7 @@
 										</versionRange>
 										<goals>
 											<goal>add-source</goal>
+											<goal>regex-property</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
