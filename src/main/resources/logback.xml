@@ -54,7 +54,7 @@
 	<if condition="Boolean.valueOf(p(&quot;context.productionMode&quot;))">
 		<then>
 			<!-- in production mode -->
-			<logger name="fr.univlorraine.mondossierweb" level="info" />
+			<logger name="fr.univlorraine.mondossierweb" level="error" />
 		</then>
 		<else>
 			<!-- in debug mode -->
