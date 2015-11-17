@@ -181,7 +181,9 @@
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
 							<exclude>**/*.scss</exclude>
-							<exclude>**/*sample.*</exclude>
+							<!-- <exclude>**/*sample.*</exclude>  -->
+							<exclude>i18n/*sample.*</exclude>
+							<exclude>configUrlServices.properties</exclude>
 						</excludes>
 					</resource>
 				</resources>
@@ -473,7 +475,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties</packagingExcludes>
+					<packagingExcludes>**/configUrlServices.properties, **/*.sample.css</packagingExcludes>
 				</configuration>
 			</plugin>
 
