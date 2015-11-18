@@ -175,12 +175,14 @@ public class NotesMobileView extends VerticalLayout implements View {
 					Label libelleButton = new Label(diplome.getLib_web_vdi());
 					libelleButton.setHeight("100%");
 					libelleButton.setWidth("100%");
+					libelleButton.addStyleName("label-centre");
 
 					//Appel de la window contenant le détail des notes
 					if(diplome.getResultats()!=null && diplome.getResultats().size()>0){
 						libelleLayout.addComponent(new Label(""));
 					}
 					libelleLayout.addComponent(libelleButton);
+					libelleLayout.setComponentAlignment(libelleButton, Alignment.MIDDLE_CENTER);
 
 
 
@@ -263,6 +265,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 						libelleLayout.addComponent(new Label(""));
 					}
 					libelleLayout.addComponent(libelleButton);
+					libelleLayout.setComponentAlignment(libelleButton, Alignment.MIDDLE_CENTER);
 
 
 
