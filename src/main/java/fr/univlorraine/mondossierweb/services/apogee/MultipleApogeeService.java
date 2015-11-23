@@ -45,5 +45,7 @@ public interface MultipleApogeeService {
 	public abstract String getCategorieSocioProfessionnelle(String cod_ind, String cod_anu);
 
 	public abstract int getNbPJnonValides(String cod_ind, String cod_anu);
+	
+	public abstract boolean isBoursier(String cod_ind, String cod_anu);
 
 }

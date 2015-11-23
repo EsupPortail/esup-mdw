@@ -212,9 +212,6 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
 				}
 
-				if (iaetu.getNumBoursier() != null ){
-					GenericUI.getCurrent().getEtudiant().setNumBoursier(iaetu.getNumBoursier());
-				}
 
 
 				//informations sur la naissance :
@@ -274,6 +271,12 @@ public class EtudiantController {
 							//Si IA non annulée
 							if(!insOkTrouvee && iaad!=null && iaad.getEtatIaa()!=null && iaad.getEtatIaa().getCodeEtatIAA()!=null && !iaad.getEtatIaa().getCodeEtatIAA().equals("A") ){
 								insOkTrouvee=true;
+								
+								//recuperer le code cat sociale
+								if( multipleApogeeService.isBoursier(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours())){
+									GenericUI.getCurrent().getEtudiant().setBoursier(true);
+								}
+								
 								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 								//Si témoin aménagement d'étude valué à O
 								if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){

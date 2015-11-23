@@ -262,7 +262,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				}
 
 				String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-				TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().getNumBoursier() == null ? applicationContext.getMessage(NAME+".boursier.non", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()));
+				TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().isBoursier() ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
 				formatTextField(fieldNumBoursier);
 				formInfosLayout.addComponent(fieldNumBoursier);
 

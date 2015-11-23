@@ -84,7 +84,7 @@ public class Etudiant {
 	/**
 	 * Le numéro de boursier
 	 */
-	private String numBoursier;
+	private boolean boursier;
 	/**
 	 * vrai si inscrit pour l'année en cours
 	 */

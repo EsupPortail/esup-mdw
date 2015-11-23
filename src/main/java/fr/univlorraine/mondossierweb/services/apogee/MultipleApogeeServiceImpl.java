@@ -15,6 +15,8 @@ import lombok.Data;
 
 
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 
 
@@ -267,6 +270,20 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			return nbPJnonValides.intValue();
 		}
 		return 0;
+	}
+
+	@Override
+	public boolean isBoursier(String cod_ind, String cod_anu) {
+		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
+			@SuppressWarnings("unchecked")
+			BigDecimal nbInsAdmBoursier = (BigDecimal)entityManagerApogee.createNativeQuery("select count(*) from ins_adm_anu iaa "+
+					"where iaa.COD_ANU = "+cod_anu+" "+
+					"and iaa.cod_soc = '"+Utils.COD_SOC_BOURSIER+"' "+
+					"and iaa.ETA_IAA = 'E' "+
+					"and iaa.cod_ind = "+cod_ind).getSingleResult();
+			return nbInsAdmBoursier.intValue() > 0;
+		}
+		return false;
 	}
 
 
