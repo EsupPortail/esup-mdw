@@ -42,9 +42,7 @@ public class MDWTouchkitServlet extends TouchKitServlet {
 
 	        TouchKitSettings s = getTouchKitSettings();
 	        s.getWebAppSettings().setWebAppCapable(true);
-
 	        s.getApplicationCacheSettings().setCacheManifestEnabled(true);
-	        s.getApplicationCacheSettings().setOfflineModeEnabled(false);
 	        
 	    }
 	

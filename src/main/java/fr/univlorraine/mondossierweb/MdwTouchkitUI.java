@@ -22,6 +22,7 @@ import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.addon.touchkit.annotations.OfflineModeEnabled;
 import com.vaadin.addon.touchkit.ui.NavigationManager;
 import com.vaadin.addon.touchkit.ui.TabBarView;
 import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeEvent;
@@ -78,6 +79,7 @@ import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
 @SuppressWarnings("serial")
+@OfflineModeEnabled(false)
 public class MdwTouchkitUI extends GenericUI{
 
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
