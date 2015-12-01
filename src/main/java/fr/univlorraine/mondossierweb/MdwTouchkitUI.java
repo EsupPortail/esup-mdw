@@ -36,15 +36,21 @@ import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -83,10 +89,10 @@ import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 public class MdwTouchkitUI extends GenericUI{
 
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
-	
+
 	/**
-	* Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
-	*/
+	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
+	 */
 	private static final int TENTATIVES_RECO = 3;
 
 	/* Redirige java.util.logging vers SLF4j */
@@ -240,7 +246,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 		//Paramétrage du comportement en cas de perte de connexion
 		configReconnectDialog();
-				
+
 		/* Construit le gestionnaire de vues */
 		navigator.addProvider(viewProvider);
 		navigator.setErrorProvider(new ViewProvider() {
@@ -376,9 +382,7 @@ public class MdwTouchkitUI extends GenericUI{
 	 * Affiche du message d'intro
 	 */
 	private void afficherMessageIntro(String text){
-		/**
-		 * NOUVELLE VERSION AVEC NOTIFICATION ATTENTION CHANGEMENT MESSAGES.PROPERTIES ET CSS
-		 */
+
 		Notification note = new Notification(text, "", Notification.TYPE_TRAY_NOTIFICATION, true);
 		note.setPosition(Position.MIDDLE_CENTER);
 		note.setDelayMsec(6000);
@@ -527,6 +531,18 @@ public class MdwTouchkitUI extends GenericUI{
 						notesDetailMobileView.refreshJavascript();
 					}
 				}
+
+				//test si on se rend sur la vue calendrier
+				if(menuEtudiant.getSelelectedTab().equals(tabCalendrier)){
+					/* Message d'info */
+					if(applicationContext.getMessage(CalendrierMobileView.NAME+".message.info", null, getLocale()) != null){
+						Notification note = new Notification(applicationContext.getMessage(CalendrierMobileView.NAME+".message.info", null, getLocale()),"", Notification.TYPE_TRAY_NOTIFICATION, true);
+						note.setPosition(Position.MIDDLE_CENTER);
+						note.setDelayMsec(6000);
+						note.show(Page.getCurrent());
+						//Notification.show("", applicationContext.getMessage(CalendrierMobileView.NAME+".message.info", null, getLocale()), Notification.TYPE_TRAY_NOTIFICATION);
+					}
+				}
 			}
 		});
 
@@ -641,15 +657,15 @@ public class MdwTouchkitUI extends GenericUI{
 		}
 		analyticsTracker.trackNavigator(navigator);
 	}
-	
+
 	/**
-	* Configure la reconnexion en cas de déconnexion.
-	*/
+	 * Configure la reconnexion en cas de déconnexion.
+	 */
 	private void configReconnectDialog() {
-	getReconnectDialogConfiguration().setDialogModal(true);
-	getReconnectDialogConfiguration().setReconnectAttempts(TENTATIVES_RECO);
-	getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
-	getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
+		getReconnectDialogConfiguration().setDialogModal(true);
+		getReconnectDialogConfiguration().setReconnectAttempts(TENTATIVES_RECO);
+		getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
+		getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
 	}
 
 }

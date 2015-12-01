@@ -20,6 +20,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -90,6 +91,7 @@ public class CalendrierView extends VerticalLayout implements View {
 				etudiantController.recupererCalendrierExamens();
 			}
 
+
 			/* Titre */
 			HorizontalLayout titleLayout = new HorizontalLayout();
 			titleLayout.setWidth("100%");
@@ -107,7 +109,7 @@ public class CalendrierView extends VerticalLayout implements View {
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
 				if(PropertyUtils.isPushEnabled()){
 					MyFileDownloader fd = new MyFileDownloader(calendrierController.exportPdf());
-				fd.extend(pdfButton);
+					fd.extend(pdfButton);
 				}else{
 					FileDownloader fd = new FileDownloader(calendrierController.exportPdf());
 					fd.setOverrideContentType(false);
@@ -124,8 +126,28 @@ public class CalendrierView extends VerticalLayout implements View {
 			globalLayout.setSpacing(true);
 
 
+			/* Message d'info */
+			if(applicationContext.getMessage(NAME+".message.info", null, getLocale()) != null){
+				Panel panelVue= new Panel();
+
+				HorizontalLayout vueLayout = new HorizontalLayout();
+				vueLayout.setMargin(true);
+				vueLayout.setSpacing(true);
+				vueLayout.setSizeFull();
+
+				Label vueLabel=new Label(applicationContext.getMessage(NAME+".message.info", null, getLocale()));
+				vueLabel.setContentMode(ContentMode.HTML); 
+				vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
+				vueLayout.addComponent(vueLabel);
+				vueLayout.setExpandRatio(vueLabel, 1);
+
+				panelVue.setContent(vueLayout);
+				globalLayout.addComponent(panelVue);
+			}
 
 
+
+			/* Le Calendrier */
 			Panel panelCalendrier= new Panel(applicationContext.getMessage(NAME + ".calendrier.title", null, getLocale()));
 			panelCalendrier.setSizeFull();
 
