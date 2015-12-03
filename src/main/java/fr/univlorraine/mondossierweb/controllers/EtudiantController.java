@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import org.apache.axis.AxisFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -271,12 +272,12 @@ public class EtudiantController {
 							//Si IA non annulée
 							if(!insOkTrouvee && iaad!=null && iaad.getEtatIaa()!=null && iaad.getEtatIaa().getCodeEtatIAA()!=null && !iaad.getEtatIaa().getCodeEtatIAA().equals("A") ){
 								insOkTrouvee=true;
-								
+
 								//recuperer le code cat sociale
 								if( multipleApogeeService.isBoursier(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours())){
 									GenericUI.getCurrent().getEtudiant().setBoursier(true);
 								}
-								
+
 								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 								//Si témoin aménagement d'étude valué à O
 								if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
@@ -287,7 +288,7 @@ public class EtudiantController {
 						if(!insOkTrouvee){
 							GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 						}
-						
+
 						String codeCatSocPro = multipleApogeeService.getCategorieSocioProfessionnelle(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours());
 						if(StringUtils.hasText(codeCatSocPro) && !codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
 								!codeCatSocPro.equals("99") &&
@@ -309,6 +310,9 @@ public class EtudiantController {
 						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 					}
 				} catch (WebBaseException ex) {
+					GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
+					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
+				} catch (AxisFault axf) {
 					GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				}
@@ -366,6 +370,14 @@ public class EtudiantController {
 					LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+ex.getNature(),ex);
 				}else{
 					LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+ex.getNature(),ex);
+				}
+				//On met l'étudiant à null pour remonter le problème
+				GenericUI.getCurrent().setEtudiant(null);
+			} catch (AxisFault axf) {
+				if(axf.getMessage()!=null && axf.getMessage().equals("technical.data.nullretrieve.elp")){
+					LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+axf.getMessage(),axf);
+				}else{
+					LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+axf.getMessage(),axf);
 				}
 				//On met l'étudiant à null pour remonter le problème
 				GenericUI.getCurrent().setEtudiant(null);
@@ -493,6 +505,12 @@ public class EtudiantController {
 					LOG.error("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				}else{
 					LOG.info("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}
+			} catch (AxisFault axf) {
+				if(axf.getMessage()!=null && axf.getMessage().equals("technical.data.nullretrieve.elp")){
+					LOG.info("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),axf);
+				}else{
+					LOG.error("Probleme avec le WS lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),axf);
 				}
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
@@ -753,72 +771,72 @@ public class EtudiantController {
 		if(monProxyPedagogique==null){
 			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
 		}
-		
+
 		if(e!=null && StringUtils.hasText(e.getCod_etu())){
-		try {
-			e.getDiplomes().clear();
-			e.getEtapes().clear();
-			
-			String temoin = configController.getTemoinNotesEnseignant();
-			if(temoin == null || temoin.equals("")){
-				temoin="AET";
-			}
+			try {
+				e.getDiplomes().clear();
+				e.getEtapes().clear();
 
-			String sourceResultat = PropertyUtils.getSourceResultats();
-			if(sourceResultat == null || sourceResultat.equals("")){
-				sourceResultat="Apogee";
-			}
-
-			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
-			// Si different annee en cours => sourceResultat = Apogee
-			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				// On recupere les resultats dans cpdto avec sourceResultat=Apogee
-				sourceResultat="Apogee";
-				ContratPedagogiqueResultatVdiVetDTO[] cpdtoResult = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
-				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
-				temoin=null;
-				sourceResultat="Apogee-extraction";
-				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
-				ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
-				try {
-					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
-				} catch (Exception ex) {
-					cpdtoExtract = null;
+				String temoin = configController.getTemoinNotesEnseignant();
+				if(temoin == null || temoin.equals("")){
+					temoin="AET";
 				}
 
-				// Et on fusionne cpdtoResult et cpdtoExtract
-				ArrayList<ContratPedagogiqueResultatVdiVetDTO> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO>();
-				for (int i = 0; i < cpdtoResult.length; i++ ) {
-					if (cpdtoResult[i].getAnnee() != null) {
-						if (cpdtoResult[i].getAnnee().compareTo(annee)!=0) {
-							cpdtoAl.add(cpdtoResult[i]);
+				String sourceResultat = PropertyUtils.getSourceResultats();
+				if(sourceResultat == null || sourceResultat.equals("")){
+					sourceResultat="Apogee";
+				}
+
+				// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
+				// Si different annee en cours => sourceResultat = Apogee
+				if(sourceResultat.compareTo("Apogee-extraction")==0){
+					// On recupere les resultats dans cpdto avec sourceResultat=Apogee
+					sourceResultat="Apogee";
+					ContratPedagogiqueResultatVdiVetDTO[] cpdtoResult = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
+					// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
+					temoin=null;
+					sourceResultat="Apogee-extraction";
+					String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
+					ContratPedagogiqueResultatVdiVetDTO[] cpdtoExtract;
+					try {
+						cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous");
+					} catch (Exception ex) {
+						cpdtoExtract = null;
+					}
+
+					// Et on fusionne cpdtoResult et cpdtoExtract
+					ArrayList<ContratPedagogiqueResultatVdiVetDTO> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO>();
+					for (int i = 0; i < cpdtoResult.length; i++ ) {
+						if (cpdtoResult[i].getAnnee() != null) {
+							if (cpdtoResult[i].getAnnee().compareTo(annee)!=0) {
+								cpdtoAl.add(cpdtoResult[i]);
+							}
 						}
 					}
-				}
-				if (cpdtoExtract!=null) {
-					for (int i = 0; i < cpdtoExtract.length; i++ ) {
-						cpdtoAl.add(cpdtoExtract[i]);
+					if (cpdtoExtract!=null) {
+						for (int i = 0; i < cpdtoExtract.length; i++ ) {
+							cpdtoAl.add(cpdtoExtract[i]);
+						}
 					}
+					ContratPedagogiqueResultatVdiVetDTO[] cpdto = cpdtoAl.toArray(new ContratPedagogiqueResultatVdiVetDTO[ cpdtoAl.size() ]);
+					setNotesEtResultats(e, cpdto);
+
+				} else {
+
+					ContratPedagogiqueResultatVdiVetDTO[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
+					setNotesEtResultats(e, cpdto);
 				}
-				ContratPedagogiqueResultatVdiVetDTO[] cpdto = cpdtoAl.toArray(new ContratPedagogiqueResultatVdiVetDTO[ cpdtoAl.size() ]);
-				setNotesEtResultats(e, cpdto);
 
-			} else {
-
-				ContratPedagogiqueResultatVdiVetDTO[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous");
-				setNotesEtResultats(e, cpdto);
+			} catch (WebBaseException ex) {
+				//Si on est dans un cas d'erreur non expliqué
+				if (ex.getNature().equals("remoteerror")){
+					LOG.error(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+				}else{
+					LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+				}
+			} catch (Exception ex) {
+				LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
-
-		} catch (WebBaseException ex) {
-			//Si on est dans un cas d'erreur non expliqué
-			if (ex.getNature().equals("remoteerror")){
-				LOG.error(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
-			}else{
-				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
-			}
-		} catch (Exception ex) {
-			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
-		}
 		}
 	}
 
@@ -1636,6 +1654,12 @@ public class EtudiantController {
 			}else{
 				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
+		} catch (AxisFault axf) {
+			if(axf.getMessage()!=null && axf.getMessage().equals("technical.data.nullretrieve.elp")){
+				LOG.info("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
+			}else{
+				LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
+			}
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -1692,6 +1716,9 @@ public class EtudiantController {
 			}else{
 				LOG.info(ex.getLastErrorMsg()+" pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant("+et.getAnnee()+ ","+et.getCode()+"/"+et.getVersion()+")");
 			}
+		} catch (AxisFault axf) {
+			LOG.info("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
+			
 		}catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
 		}
