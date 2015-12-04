@@ -374,7 +374,8 @@ public class EtudiantController {
 				//On met l'étudiant à null pour remonter le problème
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (AxisFault axf) {
-				LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+axf.getMessage(),axf);
+				//LOG.info("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" "+axf.getMessage(),axf);
+				axf.printStackTrace();
 				//On met l'étudiant à null pour remonter le problème
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
@@ -747,6 +748,8 @@ public class EtudiantController {
 			}else{
 				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
+		} catch (AxisFault ex) {
+			LOG.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -1647,7 +1650,8 @@ public class EtudiantController {
 				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
 		} catch (AxisFault axf) {
-				LOG.info("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
+			axf.printStackTrace();
+			//LOG.info("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -1705,7 +1709,8 @@ public class EtudiantController {
 				LOG.info(ex.getLastErrorMsg()+" pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant("+et.getAnnee()+ ","+et.getCode()+"/"+et.getVersion()+")");
 			}
 		} catch (AxisFault axf) {
-			LOG.info("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
+			axf.printStackTrace();
+			//LOG.info("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),axf);
 		}catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
 		}
@@ -1990,10 +1995,12 @@ public class EtudiantController {
 		List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
 		if(lelp != null && lelp.size()>0){
 			List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
-			String codeEtpEnCours = lelp.get(0).getCode();
-			for(String code : codesAutorises){
-				if(code.equals(codeEtpEnCours)){
-					return true;
+			if(codesAutorises!=null && codesAutorises.size()>0 ){
+				String codeEtpEnCours = lelp.get(0).getCode();
+				for(String code : codesAutorises){
+					if(code.equals(codeEtpEnCours)){
+						return true;
+					}
 				}
 			}
 		}
