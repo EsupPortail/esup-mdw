@@ -65,7 +65,7 @@
 	<logger name="org.springframework" level="warn" />
 
 
-	<logger name="com.vaadin" level="warn" />
+	<logger name="com.vaadin" level="error" />
 	<!-- Ne mail pas les erreurs push -->
 	<logger name="com.vaadin.server.DefaultErrorHandler" level="warn" additivity="false" >
 		<appender-ref ref="consoleAppender" />
