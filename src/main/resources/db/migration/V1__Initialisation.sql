@@ -13,10 +13,10 @@
 -- --------------------------------------------------------
 
 --
--- Structure de la table `administrateurs`
+-- Structure de la table `ADMINISTRATEURS`
 --
 
-CREATE TABLE IF NOT EXISTS `administrateurs` (
+CREATE TABLE IF NOT EXISTS `ADMINISTRATEURS` (
   `LOGIN` varchar(20) NOT NULL,
   PRIMARY KEY (`LOGIN`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -24,10 +24,10 @@ CREATE TABLE IF NOT EXISTS `administrateurs` (
 
 
 --
--- Structure de la table `favoris`
+-- Structure de la table `FAVORIS`
 --
 
-CREATE TABLE IF NOT EXISTS `favoris` (
+CREATE TABLE IF NOT EXISTS `FAVORIS` (
   `LOGIN` varchar(20) NOT NULL,
   `TYP_FAV` varchar(5) NOT NULL,
   `ID_FAV` varchar(20) NOT NULL,
@@ -37,10 +37,10 @@ CREATE TABLE IF NOT EXISTS `favoris` (
 
 
 --
--- Structure de la table `preferences_application`
+-- Structure de la table `PREFERENCES_APPLICATION`
 --
 
-CREATE TABLE IF NOT EXISTS `preferences_application` (
+CREATE TABLE IF NOT EXISTS `PREFERENCES_APPLICATION` (
   `PREF_ID` varchar(40) NOT NULL,
   `PREF_DESC` text NOT NULL,
   `VALEUR` varchar(200) NOT NULL,
@@ -48,10 +48,10 @@ CREATE TABLE IF NOT EXISTS `preferences_application` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Contenu de la table `preferences_application`
+-- Contenu de la table `PREFERENCES_APPLICATION`
 --
 
-INSERT INTO `preferences_application` (`PREF_ID`, `PREF_DESC`, `VALEUR`) VALUES
+INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `VALEUR`) VALUES
 ('affECTSEtudiant', 'Affichage ou non des informations credits ECTS par la page du detail des notes', 'false'),
 ('afficherRangEtudiant', 'Affichage du rang de l''etudiant', 'false'),
 ('affMentionEtudiant', 'Affichage ou non de la mention aux diplomes et etapes a la page des notes', 'false'),
@@ -97,10 +97,10 @@ INSERT INTO `preferences_application` (`PREF_ID`, `PREF_DESC`, `VALEUR`) VALUES
 -- --------------------------------------------------------
 
 --
--- Structure de la table `preferences_utilisateur`
+-- Structure de la table `PREFERENCES_UTILISATEUR`
 --
 
-CREATE TABLE IF NOT EXISTS `preferences_utilisateur` (
+CREATE TABLE IF NOT EXISTS `PREFERENCES_UTILISATEUR` (
   `LOGIN` varchar(20) NOT NULL,
   `PREF_ID` varchar(40) NOT NULL,
   `VALEUR` varchar(200) NOT NULL,
@@ -111,10 +111,10 @@ CREATE TABLE IF NOT EXISTS `preferences_utilisateur` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `utilisateur_swap`
+-- Structure de la table `UTILISATEUR_SWAP`
 --
 
-CREATE TABLE IF NOT EXISTS `utilisateur_swap` (
+CREATE TABLE IF NOT EXISTS `UTILISATEUR_SWAP` (
   `LOGIN_SOURCE` varchar(20) NOT NULL,
   `LOGIN_CIBLE` varchar(20) NOT NULL,
   `DAT_CRE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
