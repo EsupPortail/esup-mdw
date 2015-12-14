@@ -1932,7 +1932,7 @@ public class EtudiantController {
 			return false;
 		}
 		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();
-		if ( listeCertScolTypDiplomeDesactive!=null || !listeCertScolTypDiplomeDesactive.isEmpty()) {
+		if ( listeCertScolTypDiplomeDesactive!=null && !listeCertScolTypDiplomeDesactive.isEmpty()) {
 			// interdit les certificats pour certains types de diplomes
 			DiplomeApogee dip = diplomeService.findDiplome(ins.getCod_dip());
 			if(dip!=null && StringUtils.hasText(dip.getCodTpdEtb())){
