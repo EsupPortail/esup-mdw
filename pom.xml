@@ -5,7 +5,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -45,9 +45,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://subversion.renater.fr/mdw-vaadin/trunk</connection>
-		<developerConnection>scm:svn:https://subversion.renater.fr/mdw-vaadin/trunk</developerConnection>
-		<url>scm:svn:https://subversion.renater.fr/mdw-vaadin/trunk</url>
+		<connection>scm:svn:https://subversion.renater.fr/mdw-vaadin/tags/mdw-vaadin-1.0.2</connection>
+		<developerConnection>scm:svn:https://subversion.renater.fr/mdw-vaadin/tags/mdw-vaadin-1.0.2</developerConnection>
+		<url>scm:svn:https://subversion.renater.fr/mdw-vaadin/tags/mdw-vaadin-1.0.2</url>
 	</scm>
 
 	<repositories>
