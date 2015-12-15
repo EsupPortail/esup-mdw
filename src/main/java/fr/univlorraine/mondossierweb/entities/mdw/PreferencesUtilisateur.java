@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
-@Table(name="preferences_utilisateur")
+@Table(name="PREFERENCES_UTILISATEUR")
 @EqualsAndHashCode(of="id")
 public class PreferencesUtilisateur implements Serializable {
 	
