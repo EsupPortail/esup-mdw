@@ -373,7 +373,6 @@ public class UserController {
 			boolean userldap = false;
 			//Si pas user uportal on va chercher dans le ldap si mdw est configuré pour cela
 			if(!useruportal){
-
 				//on recupère la liste de groupes ldap mis dans le bean security
 				List<String> listegroupes = PropertyUtils.getListeGroupesLdapAutorises();
 
