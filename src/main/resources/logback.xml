@@ -43,6 +43,14 @@
 		<to>${context.mail.to}</to>
 		<subject>[mondossierweb] Logback Message from ${context.app.url}</subject>
 		<asynchronousSending>false</asynchronousSending>
+		
+		<!-- <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+    		<evaluator>
+        		<expression>org.apache.catalina.connector.ClientAbortException.isInstance</expression>
+    		</evaluator>
+    		<onMatch>DENY</onMatch>
+		</filter>  -->
+
 		<filter class="fr.univlorraine.tools.logback.TimeFilter">
 			<startDisabling>${context.mail.startDisabling}</startDisabling>
 			<stopDisabling>${context.mail.stopDisabling}</stopDisabling>
@@ -62,42 +70,46 @@
 		</else>
 	</if>
 
-	<logger name="org.springframework" level="warn" />
-
-
-	<logger name="com.vaadin" level="error" />
-	<!-- Ne mail pas les erreurs push -->
-	<logger name="com.vaadin.server.DefaultErrorHandler" level="warn" additivity="false" >
-		<appender-ref ref="consoleAppender" />
-		<appender-ref ref="fileAppender" />
-	</logger>
-	<!-- Ne mail pas les erreurs Socket closed -->
-	<logger name="org.apache.catalina.connector.ClientAbortException" level="warn" additivity="false" >
-		<appender-ref ref="consoleAppender" />
-		<appender-ref ref="fileAppender" />
-	</logger>
-	<!-- Ne mail pas les erreurs Socket closed -->
-	<logger name="java.net.SocketException" level="warn" additivity="false" >
-		<appender-ref ref="consoleAppender" />
-		<appender-ref ref="fileAppender" />
-	</logger>
-	<!-- Ne prend pas en compte les warn sur ServerRpcHandler(Resynchronizing client) -->
-	<logger name="com.vaadin.server.communication" level="error" additivity="false" >
-		<appender-ref ref="consoleAppender" />
-		<appender-ref ref="fileAppender" />
-	</logger>
-	<logger name="org.apache.catalina.core.ContainerBase" level="warn" additivity="false" >
-		<appender-ref ref="consoleAppender" />
-		<appender-ref ref="fileAppender" />
-	</logger>
-	<!-- -->
-
-	<logger name="org.atmosphere" level="error" />
-
 	<root level="warn">
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
 		<appender-ref ref="mailAppender" />
 	</root>
+	
+	<logger name="org.springframework" level="warn" />
+
+	<logger name="com.vaadin" level="error" />
+	
+	<!-- Ne mail pas les erreurs push -->
+	<logger name="com.vaadin.server.DefaultErrorHandler" level="warn" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+	
+	<!-- Ne mail pas les erreurs Socket closed -->
+	<logger name="org.apache.catalina.connector.ClientAbortException" level="error" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+	</logger>
+	
+	<!-- Ne mail pas les erreurs Socket closed -->
+	<logger name="java.net.SocketException" level="error" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+	</logger>
+	
+	<!-- Ne prend pas en compte les warn sur ServerRpcHandler(Resynchronizing client) -->
+	<logger name="com.vaadin.server.communication" level="error" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+	
+	<logger name="org.apache.catalina.core.ContainerBase" level="warn" additivity="false" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+
+	<logger name="org.atmosphere" level="error" />
+	
+	
+
 
 </configuration>
