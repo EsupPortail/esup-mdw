@@ -3,8 +3,12 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +25,7 @@ import org.springframework.security.ldap.search.LdapUserSearch;
 import com.vaadin.spring.annotation.EnableVaadin;
 
 import fr.univlorraine.mondossierweb.Initializer;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Configuration Spring
@@ -78,12 +83,29 @@ public class SpringConfig {
 	
 	@Bean
 	public LdapUserSearch ldapUserSearch() {
-		return new FilterBasedLdapUserSearch("ou=people", "uid={0}", ldapServer());
+		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch("ou=people", "uid={0}", ldapServer());
+		fbus.setReturningAttributes(getLdapAttributes());
+		return fbus;
 	}
 	
 	@Bean
 	public LdapUserSearch ldapEtudiantSearch() {
-		return new FilterBasedLdapUserSearch("ou=people", environment.getProperty("attributLdapCodEtu")+"={0}", ldapServer());
+		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch("ou=people", environment.getProperty("attributLdapCodEtu")+"={0}", ldapServer());
+		fbus.setReturningAttributes(getLdapAttributes());
+		return fbus;
 	}
 
+	private String[] getLdapAttributes(){
+		List<String> lattributes = new LinkedList<>();
+		lattributes.add("uid");
+		lattributes.add("mail");
+		lattributes.add(PropertyUtils.getAttributLdapEtudiant());
+		lattributes.add(PropertyUtils.getAttributLdapCodEtu());
+		if(StringUtils.hasText(PropertyUtils.getAttributGroupeLdap())){
+			lattributes.add(PropertyUtils.getAttributGroupeLdap());
+		}
+		String[] tat =new String[lattributes.size()];
+		lattributes.toArray(tat);
+		return tat;
+	}
 }
