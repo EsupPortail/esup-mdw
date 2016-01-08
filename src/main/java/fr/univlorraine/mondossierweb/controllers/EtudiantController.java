@@ -1042,10 +1042,10 @@ public class EtudiantController {
 											et.setRang(ret.getNbrRngEtuVet()+"/"+ret.getNbrRngEtuVetTot());
 											//On calcule si on affiche ou non le rang.
 											boolean cetteEtapeDoitEtreAffiche=false;
-											for(String codetape : configController.getListeCodesEtapeAffichageRang()){
-												if(codetape.equals(et.getCode())){
-													cetteEtapeDoitEtreAffiche=true;
-												}
+
+											List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
+											if(codesAutorises!=null && codesAutorises.contains(et.getCode())){
+														cetteEtapeDoitEtreAffiche=true;
 											}
 											if(configController.isAffRangEtudiant() || cetteEtapeDoitEtreAffiche){
 												//On affichera le rang de l'étape.
@@ -1995,13 +1995,8 @@ public class EtudiantController {
 		List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
 		if(lelp != null && lelp.size()>0){
 			List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
-			if(codesAutorises!=null && codesAutorises.size()>0 ){
-				String codeEtpEnCours = lelp.get(0).getCode();
-				for(String code : codesAutorises){
-					if(code.equals(codeEtpEnCours)){
+			if(codesAutorises!=null && codesAutorises.contains(lelp.get(0).getCode())){
 						return true;
-					}
-				}
 			}
 		}
 		return false;

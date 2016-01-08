@@ -108,6 +108,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("temNotesEtuSem");
 	}
 	
+	public boolean isToujoursAfficherBareme() {
+		return getBooleanValueForParameter("affBaremeEtudiant");
+	}
+	
 	public boolean isCertScolUtiliseLogo() {
 		return getBooleanValueForParameter("certScolUtiliseLogo");
 	}

@@ -326,7 +326,7 @@ public class NotesView extends VerticalLayout implements View {
 			for( Resultat r : resultats){
 				String res = r.getNote();
 				//ajout du bareme si différent de 0 et de 20
-				if(r.getBareme()!=0 && r.getBareme()!=20){
+				if(r.getBareme()!=0 && (configController.isToujoursAfficherBareme() || r.getBareme()!=20)){
 					res = res + "/"+r.getBareme();
 				}
 				sessionLayout.addComponent(new Label(res));

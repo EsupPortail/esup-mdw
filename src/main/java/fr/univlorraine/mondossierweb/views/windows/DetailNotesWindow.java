@@ -382,7 +382,7 @@ public class DetailNotesWindow extends Window {
 
 				//indentation des libelles dans la liste:
 				String note = el.getNote1();
-				if(el.getBareme1()!=0 && el.getBareme1()!=20){
+				if(el.getBareme1()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme1()!=20)){
 					note += "/"+el.getBareme1();
 				}
 				if(el.getLevel()==1 && !el.isEpreuve()){
@@ -418,7 +418,7 @@ public class DetailNotesWindow extends Window {
 
 				//indentation des libelles dans la liste:
 				String note = el.getNote2();
-				if(el.getBareme2()!=0 && el.getBareme2()!=20){
+				if(el.getBareme2()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme2()!=20)){
 					note += "/"+el.getBareme2();
 				}
 				if(el.getLevel()==1 && !el.isEpreuve()){
