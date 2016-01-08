@@ -395,7 +395,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 						// Image contenant la photo de l'étudiant
 						Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));
 						fotoEtudiant.setWidth("120px");
-						fotoEtudiant.setHeight("153px");
 						fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
 						// Gestion du clic sur la photo
 						fotoEtudiant.addClickListener(e->{

@@ -172,7 +172,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			if(MdwTouchkitUI.getCurrent().getEtudiant().getPhoto()!=null){
 				Image fotoEtudiant = new Image(null, new ExternalResource(MdwTouchkitUI.getCurrent().getEtudiant().getPhoto()));
 				fotoEtudiant.setWidth("120px");
-				fotoEtudiant.setHeight("153px");
 				fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
 				photoLayout.addComponent(fotoEtudiant);
 

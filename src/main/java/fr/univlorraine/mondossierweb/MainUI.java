@@ -741,7 +741,6 @@ public class MainUI extends GenericUI {
 				//Création de l'image contenant la photo
 				Image fotoEtudiant = new Image(null, new ExternalResource(etudiant.getPhoto()));
 				fotoEtudiant.setWidth("120px");
-				fotoEtudiant.setHeight("153px");
 				//Ajout de la photo au layout
 				photoLayout.addComponent(fotoEtudiant);
 				//Alignement de la photo
