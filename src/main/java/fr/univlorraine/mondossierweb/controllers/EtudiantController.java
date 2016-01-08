@@ -1356,12 +1356,11 @@ public class EtudiantController {
 									//      OU si le témoin TemCtlValCadEpr est égal au parametre TemoinCtlValCadEpr de monDossierWeb.xml.
 									boolean recuperationNote = false;
 
-									if(configController.getTypesEpreuveAffichageNote() != null && configController.getTypesEpreuveAffichageNote().size()>0){
+									List<String> lTypesEpreuveAffichageNote = configController.getTypesEpreuveAffichageNote();
+									if(lTypesEpreuveAffichageNote != null && lTypesEpreuveAffichageNote.size()>0){
 										//On a renseigné une liste de type épreuve à afficher
-										for(String typeEpreuve : configController.getTypesEpreuveAffichageNote()){
-											if(typeEpreuve.equals(epreuve.getEpreuve().getTypEpreuve().getCodTep())){
+										if(lTypesEpreuveAffichageNote.contains(epreuve.getEpreuve().getTypEpreuve().getCodTep())){
 												recuperationNote = true;
-											}
 										}
 									}
 									if(!recuperationNote){
