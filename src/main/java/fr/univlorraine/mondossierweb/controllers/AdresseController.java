@@ -135,7 +135,7 @@ public class AdresseController {
 				}
 			} 
 		}catch(WebBaseException | RemoteException e ){
-			LOG.error("Problème à la récupération de communes pour le code postal : "+codePostal,e);
+			LOG.info("Problème à la récupération de communes pour le code postal : "+codePostal,e);
 		}
 		return lvilles;
 	}
@@ -356,7 +356,7 @@ public class AdresseController {
 				}
 			}
 		} catch (RemoteException | WebBaseException e) {
-			LOG.error("Probleme avec le WS lors de la getCodeInseeVille : "+codepostal ,e);
+			LOG.info("Probleme avec le WS lors de la getCodeInseeVille : "+codepostal ,e);
 		}
 		return null;
 
