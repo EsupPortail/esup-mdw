@@ -44,12 +44,18 @@
 		<subject>[mondossierweb] Logback Message from ${context.app.url}</subject>
 		<asynchronousSending>false</asynchronousSending>
 		
-		<!-- <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
     		<evaluator>
         		<expression>org.apache.catalina.connector.ClientAbortException.isInstance</expression>
     		</evaluator>
     		<onMatch>DENY</onMatch>
-		</filter>  -->
+		</filter> 
+		 <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+    		<evaluator>
+        		<expression>java.net.SocketException.isInstance</expression>
+    		</evaluator>
+    		<onMatch>DENY</onMatch>
+		</filter> 
 
 		<filter class="fr.univlorraine.tools.logback.TimeFilter">
 			<startDisabling>${context.mail.startDisabling}</startDisabling>
