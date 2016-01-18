@@ -239,7 +239,7 @@ public class MainUI extends GenericUI {
 				}
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
-					if (simpleName.equals("ClientAbortException")) {
+					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
 						displayViewFullScreen(ErreurView.NAME);
 						return;

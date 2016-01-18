@@ -62,6 +62,7 @@ import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
@@ -202,7 +203,7 @@ public class MdwTouchkitUI extends GenericUI{
 				}
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
-					if (simpleName.equals("ClientAbortException")) {
+					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
 						navigator.navigateTo(ErreurView.NAME);
 						return;
