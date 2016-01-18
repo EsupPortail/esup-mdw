@@ -5,6 +5,7 @@ package fr.univlorraine.mondossierweb.views.windows;
 
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -37,6 +38,7 @@ import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Fenêtre du détail des notes
@@ -211,6 +213,9 @@ public class DetailNotesWindow extends Window {
 				Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
 				detailNotesTable.setSizeFull();
 				detailNotesTable.setVisibleColumns(new String[0]);
+				if(contientElpObtenusPrecedemment(lelp)){
+				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.annee", null, getLocale()), new AnneeColumnGenerator());
+				}
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale()), new Session1ColumnGenerator());
@@ -290,6 +295,49 @@ public class DetailNotesWindow extends Window {
 
 	}
 
+	private boolean contientElpObtenusPrecedemment(List<ElementPedagogique> lelp) {
+		for(ElementPedagogique el : lelp){
+			if(el.getLevel()>1 && !el.isEpreuve() && StringUtils.hasText(el.getAnnee())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Formats the position in a column containing Date objects. */
+	class AnneeColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+				Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
+			ElementPedagogique el = (ElementPedagogique) bid.getBean();
+			Label libLabel = new Label();
+
+			if((el.getLevel()==1 || !el.isEpreuve()) && StringUtils.hasText(el.getAnnee())){
+
+				
+				//indentation des libelles dans la liste:
+				String annee = Utils.convertAnneeUnivToDisplay(el.getAnnee());
+
+				if(el.getLevel()==1 && !el.isEpreuve()){
+					annee="<b>"+annee+"</b>";
+				}
+				if(el.isEpreuve()){
+					annee="<i>"+annee+"</i>";
+				}
+				libLabel.setValue(annee);
+			}
+			libLabel.setContentMode(ContentMode.HTML);
+			return libLabel;
+		}
+	}
 
 	/** Formats the position in a column containing Date objects. */
 	class CodeElpColumnGenerator implements Table.ColumnGenerator {

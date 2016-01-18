@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,17 +49,17 @@ public class Utils {
 	static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
 	public static final int NB_MAX_RESULT_QUICK_SEARCH=5;
-	
+
 	public static final int NB_MAX_RESULT_SEARCH=70;
 
 	public static final String TYPE_ELP = "Elément pédagogique";
 
 	public static final String ELP = "ELP";
-	
+
 	public static final String TYPE_COL = "Collection de groupes";
 
 	public static final String COL = "COL";
-	
+
 	public static final String TYPE_GRP = "Groupe";
 
 	public static final String GRP = "GRP";
@@ -78,9 +79,9 @@ public class Utils {
 	public static final String TYPE_VDI = "Diplôme";
 
 	public static final String VDI = "VDI";
-	
+
 	public static final String ES_TYPE ="TYP_OBJ";
-	
+
 	public static final String COD_SOC_BOURSIER ="BO";
 
 	public static final String LIBELLE_WS_INSCRIPTION_PAYEE ="Paiement effectué";
@@ -88,16 +89,16 @@ public class Utils {
 	public static final String SEPARATEUR_CODE_GROUPE = ";";
 
 	public static final String SHOW_MESSAGE_NOTES_PREFERENCE= "SHOW_MESSAGE_NOTES";
-	
+
 	public static final String SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE= "SHOW_MESSAGE_MOBILE_NOTES";
 
 	public static final String SHOW_MESSAGE_INTRO_PREFERENCE = "SHOW_MESSAGE_INTRO";
-	
+
 	public static final String SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE = "SHOW_MESSAGE_MOBILE_INTRO";
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;
-	
+
 	//liste des vues desktop
 	private static final String[] LISTE_VIEWS_DESKTOP = {
 		AccesBloqueView.NAME,
@@ -115,8 +116,8 @@ public class Utils {
 		NotesView.NAME,
 		RechercheArborescenteView.NAME,
 		RechercheRapideView.NAME
-		};
-	
+	};
+
 	//liste des vues mobiles
 	private static final String[] LISTE_VIEWS_MOBILE = {
 		AccesBloqueView.NAME,
@@ -129,10 +130,10 @@ public class Utils {
 		NotesDetailMobileView.NAME,
 		NotesMobileView.NAME,
 		RechercheMobileView.NAME};
-	
+
 	//liste des vues enseignants dont l'accès est à protéger
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
-			FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
+		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
 
 	/** formatage d'une date pour ne garder que jour, mois , annee*/
 	public static String formatDateToString(Date d){
@@ -169,6 +170,18 @@ public class Utils {
 		return type;
 	}
 
+	public static String convertAnneeUnivToDisplay(String annee){
+		if(StringUtils.hasText(annee)){
+			if(Pattern.matches("^[0-9]{4}", annee)){
+				int anneeUniv = Integer.parseInt(annee);
+				anneeUniv++;
+				annee += "/"+anneeUniv;
+			}
+		}
+		return annee;
+	}
+
+
 	public static boolean isViewEnseignant(String viewName) {
 		for(int i=0;i<LISTE_VIEWS_ENSEIGNANT.length;i++){
 			if(LISTE_VIEWS_ENSEIGNANT[i].equals(viewName)){
@@ -177,9 +190,9 @@ public class Utils {
 		}
 		return false;
 	}
-	
 
-	
+
+
 	public static boolean isViewDesktop(String viewName) {
 		if(viewName!=null && viewName.contains("!")){
 			viewName = viewName.replaceAll("!", "");
@@ -191,7 +204,7 @@ public class Utils {
 		}
 		return false;
 	}
-	
+
 	public static boolean isViewMobile(String viewName) {
 		if(viewName!=null && viewName.contains("!")){
 			viewName = viewName.replaceAll("!", "");
@@ -206,11 +219,11 @@ public class Utils {
 
 	public static boolean getBooleanFromString(String chaine) {
 		if(StringUtils.hasText(chaine) && chaine.equals("O")){
-				return true;
+			return true;
 		}
 		return false;
 	}
-	
+
 	//Formate bouton/lien pour appli mobile
 	public static void setButtonStyle(Button b){
 		b.setStyleName("v-nav-button");
@@ -218,7 +231,7 @@ public class Utils {
 		b.addStyleName("v-link");
 	}
 
-	
+
 
 	//Découpe des string séparés par des points virgules pour retourner une liste de string
 	public static List<String> splitStringFromSemiColon(String groupes){
