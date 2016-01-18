@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import javax.annotation.Resource;
 
 import lombok.Getter;
@@ -101,10 +102,10 @@ import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 public class MainUI extends GenericUI {
 
 	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
-	
+
 	/**
-	* Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
-	*/
+	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
+	 */
 	private static final int TENTATIVES_RECO = 3;
 
 	/* Redirige java.util.logging vers SLF4j */
@@ -236,6 +237,14 @@ public class MainUI extends GenericUI {
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
+				if(cause!=null && cause.getClass()!=null){
+					String simpleName = cause.getClass().getSimpleName();
+					if (simpleName.equals("ClientAbortException")) {
+						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+						displayViewFullScreen(ErreurView.NAME);
+						return;
+					}
+				}
 				cause = cause.getCause();
 			}
 			// Traite les autres erreurs normalement 
@@ -280,7 +289,7 @@ public class MainUI extends GenericUI {
 
 		//Paramétrage du comportement en cas de perte de connexion
 		configReconnectDialog();
-		
+
 		/* Construit le gestionnaire de vues utilisé par la barre d'adresse et pour naviguer dans le dossier d'un étudiant */
 		navigator.addProvider(viewProvider);
 		navigator.setErrorProvider(new ViewProvider() {
@@ -294,8 +303,8 @@ public class MainUI extends GenericUI {
 				return viewProvider.getView(ErreurView.NAME);
 			}
 		});
-		
-		
+
+
 		navigator.addViewChangeListener(new ViewChangeListener() {
 			private static final long serialVersionUID = 7905379446201794289L;
 
@@ -986,14 +995,14 @@ public class MainUI extends GenericUI {
 		}
 		analyticsTracker.trackNavigator(navigator);
 	}
-	
+
 	/**
-	* Configure la reconnexion en cas de déconnexion.
-	*/
+	 * Configure la reconnexion en cas de déconnexion.
+	 */
 	private void configReconnectDialog() {
-	getReconnectDialogConfiguration().setDialogModal(true);
-	getReconnectDialogConfiguration().setReconnectAttempts(TENTATIVES_RECO);
-	getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
-	getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
+		getReconnectDialogConfiguration().setDialogModal(true);
+		getReconnectDialogConfiguration().setReconnectAttempts(TENTATIVES_RECO);
+		getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
+		getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
 	}
 }

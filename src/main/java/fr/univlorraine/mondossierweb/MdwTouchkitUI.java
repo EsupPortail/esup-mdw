@@ -200,6 +200,14 @@ public class MdwTouchkitUI extends GenericUI{
 					afficherMessageAccesRefuse();
 					return;
 				}
+				if(cause!=null && cause.getClass()!=null){
+					String simpleName = cause.getClass().getSimpleName();
+					if (simpleName.equals("ClientAbortException")) {
+						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+						navigator.navigateTo(ErreurView.NAME);
+						return;
+					}
+				}
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
