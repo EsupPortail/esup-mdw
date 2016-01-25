@@ -111,7 +111,7 @@ public class AdresseController {
 		try{
 			//if (Pattern.matches("^[0-9]{2}[0-9]*", codePostal)) { 
 			if (Pattern.matches("^[0-9]{5}", codePostal)) { 
-				CommuneDTO[] cdto =monProxyGeo.recupererCommune(codePostal,  "O", "T");
+				CommuneDTO[] cdto =monProxyGeo.recupererCommune(codePostal,  "O", "O");
 				if(cdto!=null){
 					for (int i = 0; i < cdto.length; i++) {
 						boolean insere = false;
@@ -347,7 +347,7 @@ public class AdresseController {
 
 	
 		try {
-			CommuneDTO[] cdto = monProxyGeo.recupererCommune(codepostal, "O", "T");
+			CommuneDTO[] cdto = monProxyGeo.recupererCommune(codepostal, "O", "O");
 
 			for (int i = 0; i < cdto.length; i++) {
 				CommuneDTO c = cdto[i];
