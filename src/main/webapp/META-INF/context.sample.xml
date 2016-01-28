@@ -79,8 +79,8 @@
 	<Parameter name="mail.to" value="error@univ.fr" />
 	<Parameter name="mail.startDisabling" value="00:01" />
 	<Parameter name="mail.stopDisabling" value="00:02" />
-	<!-- Classes des erreurs à ingnorer separées par des ; Ex : ClientAbortException;AxisFault -->
-	<Parameter name="liste.erreur.a.ignorer" value=""/>
+	<!-- liste des erreurs à ignorer séparées par un point virgule -->
+	<Parameter name="liste.erreur.a.ignorer" value="ClientAbortException;IllegalStateException"/>
 
 	<!-- ELASTICSEARCH -->
  	<Parameter name="param.elasticsearch.url" value="localhost" /> 
