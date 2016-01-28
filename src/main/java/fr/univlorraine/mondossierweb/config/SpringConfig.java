@@ -66,7 +66,12 @@ public class SpringConfig {
 	@Bean
 	public LdapContextSource ldapServer() {
 		LdapContextSource ldapContextSource = new LdapContextSource();
-		ldapContextSource.setUrl(environment.getRequiredProperty("ldap.url"));
+		String urls= environment.getRequiredProperty("ldap.url");
+		if(urls!=null && urls.contains(";")){
+			ldapContextSource.setUrls(urls.split(";"));
+		}else{
+			ldapContextSource.setUrl(urls);
+		}
 
 		String userDn = environment.getProperty("ldap.userDn");
 		if (userDn instanceof String && !userDn.isEmpty()) {

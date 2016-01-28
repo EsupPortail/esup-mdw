@@ -33,6 +33,7 @@
 	<Parameter name="cas.url" value="https://auth.univ.fr" />
 
 	<!-- Configuration du LDAP -->
+	<!-- Url du ldap. Si plusieurs urls, les séparer par des points virgule -->
 	<Parameter name="ldap.url" value="ldap://ldap.univ.fr:389/dc=univ,dc=fr" />
 	<!-- Identifiants (facultatif) -->
 	<Parameter name="ldap.userDn" value="userDn" />
