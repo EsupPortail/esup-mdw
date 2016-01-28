@@ -45,6 +45,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Resultat;
@@ -867,7 +868,7 @@ public class NoteController {
 				table2.addCell(celltext3);
 
 
-				Paragraph pa5 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getNote1(), normal);
+				Paragraph pa5 = new Paragraph(getNote1(etudiant.getElementsPedagogiques().get(i)), normal);
 				PdfPCell celltext5 = new PdfPCell(pa5);
 				celltext5.setBorder(Rectangle.NO_BORDER);
 				table2.addCell(celltext5);
@@ -879,7 +880,7 @@ public class NoteController {
 				table2.addCell(celltext6);
 
 
-				Paragraph pa7 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getNote2(), normal);
+				Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
 				PdfPCell celltext7 = new PdfPCell(pa7);
 				celltext7.setBorder(Rectangle.NO_BORDER);
 				table2.addCell(celltext7);
@@ -961,6 +962,22 @@ public class NoteController {
 
 
 
+	}
+
+	private String getNote1(ElementPedagogique el) {
+		String note = el.getNote1();
+		if(el.getBareme1()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme1()!=20)){
+			note += "/"+el.getBareme1();
+		}
+		return note;
+	}
+	
+	private String getNote2(ElementPedagogique el) {
+		String note = el.getNote2();
+		if(el.getBareme2()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme2()!=20)){
+			note += "/"+el.getBareme2();
+		}
+		return note;
 	}
 
 	private PdfPCell makeCell(String str, Font font) {
