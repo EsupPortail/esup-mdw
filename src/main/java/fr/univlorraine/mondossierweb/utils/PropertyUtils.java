@@ -193,7 +193,6 @@ public class PropertyUtils {
 		String value = System.getProperty("context.liste.erreur.a.ignorer");
 		if(!StringUtils.hasText(value)) return values;
 		for(String s : value.split(";")){
-			System.out.println("s : "+s);
 			values.add(s);
 		}
 		return values;
