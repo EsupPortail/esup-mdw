@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
-import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 
 
 public interface ElementPedagogiqueService {

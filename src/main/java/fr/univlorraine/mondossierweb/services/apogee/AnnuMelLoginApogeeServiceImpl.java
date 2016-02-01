@@ -3,8 +3,6 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
 
 

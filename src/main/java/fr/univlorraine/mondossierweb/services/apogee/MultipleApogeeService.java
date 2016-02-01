@@ -4,7 +4,6 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
 import java.util.List;
-import java.util.Map;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
