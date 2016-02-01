@@ -7,15 +7,11 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import lombok.Data;
-
-
-
-
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +25,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
+import fr.univlorraine.mondossierweb.utils.RequestUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
 
@@ -40,8 +37,12 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 	private Logger LOG = LoggerFactory.getLogger(MultipleApogeeServiceImpl.class);
 
+
 	@PersistenceContext (unitName="entityManagerFactoryApogee")
 	private transient EntityManager entityManagerApogee;
+
+	@Resource
+	private RequestUtils requestUtils;
 
 	@Override
 	public String getAnneeEnCours() {
@@ -57,27 +58,40 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 	@Override
 	public List<Examen> getCalendrierExamens(String cod_ind) {
-		@SuppressWarnings("unchecked")
-		List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(
-				"SELECT DISTINCT  rownum ID,to_char(PESA.DAT_DEB_PES,'DD/MM/YYYY') datedeb, "+
-						"DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', "+
-						"TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| "+
-						"DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, "+
-						"PESA.DUR_EXA_EPR_PES duree, "+
-						"PESA.COD_SAL salle, SAL.LIB_SAL libsalle, "+
-						"NVL(TO_CHAR(PI.NUM_PLC_AFF_PSI),' ') place, "+
-						"BAT.LIB_BAT BATIMENT,BAT.LIB_LOC_BAT localisation, E.LIB_EPR epreuve, "+
-						"'' codcin "+
-						"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, "+
-						"APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX  "+
-						"WHERE  PI.COD_IND="+cod_ind+" "+
-						"AND PI.COD_PES=PESA.COD_PES  "+
-						"AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  "+
-						"AND  PEX.LIB_PXA LIKE '@%' AND  SAL.COD_SAL = PESA.COD_SAL  "+
-						"AND  BAT.COD_BAT = SAL.COD_BAT  "+
-						"ORDER BY DATEDEB,2", Examen.class).getResultList();
 
-		return lins;
+		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+		if(StringUtils.hasText(requestUtils.getCalendrierDesExamens())){
+			
+			//On utilise la requête indiquée dans le fichier XML
+			@SuppressWarnings("unchecked")
+			List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(
+					requestUtils.getCalendrierDesExamens().replaceAll("#COD_IND#", cod_ind), Examen.class).getResultList();
+
+			return lins;
+
+		}else{
+			@SuppressWarnings("unchecked")
+			List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(
+					"SELECT DISTINCT  rownum ID,to_char(PESA.DAT_DEB_PES,'DD/MM/YYYY') datedeb, "+
+							"DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', "+
+							"TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| "+
+							"DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, "+
+							"PESA.DUR_EXA_EPR_PES duree, "+
+							"PESA.COD_SAL salle, SAL.LIB_SAL libsalle, "+
+							"NVL(TO_CHAR(PI.NUM_PLC_AFF_PSI),' ') place, "+
+							"BAT.LIB_BAT BATIMENT,BAT.LIB_LOC_BAT localisation, E.LIB_EPR epreuve, "+
+							"'' codcin "+
+							"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, "+
+							"APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX  "+
+							"WHERE  PI.COD_IND="+cod_ind+" "+
+							"AND PI.COD_PES=PESA.COD_PES  "+
+							"AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  "+
+							"AND  PEX.LIB_PXA LIKE '@%' AND  SAL.COD_SAL = PESA.COD_SAL  "+
+							"AND  BAT.COD_BAT = SAL.COD_BAT  "+
+							"ORDER BY DATEDEB,2", Examen.class).getResultList();
+
+			return lins;
+		}
 	}
 
 	@Override
@@ -200,13 +214,13 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					" where VFV.COD_ETP='"+e.getCode()+"' "+
 					" and VFV.COD_VRS_VET="+e.getVersion()).getSingleResult());
 
-			
+
 			for(int i=anneeMax; i>=anneeMin;i--){
 				if(i<=anneeMaximum){
 					lannee.add(""+i);
 				}
 			}
-			
+
 		}catch(NumberFormatException nfe){
 			LOG.debug("Aucune année valide trouvée pour cette vet : "+e.getCode()+"/"+e.getVersion(), nfe);
 		}

@@ -83,7 +83,6 @@ public class EtudiantController {
 	 */
 	private final String SIGNIFICATION_TYP_RESULT_COR ="Obtenu par Correspondance";
 
-	private static final String COD_PAY_FRANCE = "100";
 
 	/* Injections */
 	@Resource

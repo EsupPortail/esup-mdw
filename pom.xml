@@ -156,6 +156,7 @@
 							<exclude>**/*.scss</exclude>
 							<exclude>**/favicon.ico</exclude>
 							<exclude>configUrlServices.properties</exclude>
+							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
 					</resource>
 				</resources>
@@ -186,6 +187,7 @@
 							<!-- <exclude>**/*sample.*</exclude>  -->
 							<exclude>i18n/*sample.*</exclude>
 							<exclude>configUrlServices.properties</exclude>
+							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
 					</resource>
 				</resources>
@@ -477,7 +479,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties, **/*.sample.css</packagingExcludes>
+					<packagingExcludes>**/configUrlServices.properties,**/apogeeRequest.xml, **/*.sample.css</packagingExcludes>
 				</configuration>
 			</plugin>
 
@@ -745,7 +747,8 @@
 			<artifactId>vaadin-touchkit-agpl</artifactId>
 			<!-- <version>4.0.4</version> -->
 			<!-- <version>4.1.0.alpha1</version>  -->
-			<version>4.1.0.rc1</version>
+			<!-- <version>4.1.0.rc1</version> -->
+			<version>4.1.0</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
