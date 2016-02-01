@@ -13,6 +13,7 @@
         <exclude>**/assembly/**</exclude>
         <exclude>**/.settings/**</exclude>
         <exclude>**/configUrlServices.properties</exclude>
+        <exclude>**/apogeeRequest.xml</exclude>
         <exclude>**/*messages.properties</exclude>
         <exclude>**/*messages*_*.properties</exclude>
         <exclude>**/styles.scss</exclude>
