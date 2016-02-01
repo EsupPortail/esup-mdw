@@ -11,8 +11,8 @@ APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX WHERE PI.COD_IND=#COD_IND# AND PI.COD_PE
 AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  AND  PEX.LIB_PXA LIKE '@%' 
 AND SAL.COD_SAL = PESA.COD_SAL  AND  BAT.COD_BAT = SAL.COD_BAT  ORDER BY DATEDEB,2</entry>
 
-<entry key="mailFromLogin"></entry>
-<entry key="loginFromCodEtu"></entry>
-<entry key="mailFromCodEtu"></entry>
+<entry key="mailFromLogin">select MAIL FROM ANNU_MEL_LOGIN WHERE LOGIN=#LOGIN#</entry>
+<entry key="loginFromCodEtu">select LOGIN FROM ANNU_MEL_LOGIN WHERE COD_ETU=#COD_ETU#</entry>
+<entry key="mailFromCodEtu">select MAIL FROM ANNU_MEL_LOGIN WHERE COD_ETU=#COD_ETU#</entry>
 
 </properties>
