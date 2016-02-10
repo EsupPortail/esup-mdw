@@ -165,6 +165,14 @@ public class ConfigController {
 		return getValeurForParameter("assistanceContactMail");
 	}
 	
+	public String getTemoinEtatIaeNotesEnseignant() {
+		return getValeurForParameter("temoinEtatIaeNotesEnseignant");
+	}
+	
+	public String getTemoinEtatIaeNotesEtudiant() {
+		return getValeurForParameter("temoinEtatIaeNotesEtudiant");
+	}
+	
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");
 	}
@@ -293,6 +301,8 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 		
 	}
+
+	
 
 
 
