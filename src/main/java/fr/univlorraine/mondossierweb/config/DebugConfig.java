@@ -1,5 +1,5 @@
-/**
- * ESUP-Portail MONDOSSIERWEB - Copyright (c) 2015 ESUP-Portail consortium
+/*
+ * ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium
  */
 package fr.univlorraine.mondossierweb.config;
 
