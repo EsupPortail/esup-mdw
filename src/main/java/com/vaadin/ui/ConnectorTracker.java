@@ -305,8 +305,15 @@ public class ConnectorTracker implements Serializable {
         // can be GC'ed
         Iterator<ClientConnector> iterator = connectorIdToConnector.values()
                 .iterator();
-        GlobalResourceHandler globalResourceHandler = uI.getSession()
-                .getGlobalResourceHandler(false);
+        
+        
+        //Debut code UL
+        GlobalResourceHandler globalResourceHandler = null;
+    	if(uI!=null && uI.getSession()!=null ){
+    		globalResourceHandler = uI.getSession().getGlobalResourceHandler(false);
+    	}
+    	//Fin code UL
+
         while (iterator.hasNext()) {
             ClientConnector connector = iterator.next();
             assert connector != null;
@@ -439,7 +446,6 @@ public class ConnectorTracker implements Serializable {
     	
     	//Debut code UL
     	GlobalResourceHandler globalResourceHandler = null;
-    
     	if(uI!=null && uI.getSession()!=null ){
     		globalResourceHandler = uI.getSession().getGlobalResourceHandler(false);
     	}else{
