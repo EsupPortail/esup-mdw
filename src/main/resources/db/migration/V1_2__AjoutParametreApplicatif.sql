@@ -6,7 +6,7 @@
 -- Version de PHP: 5.3.3
 
 
---
+-- ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium
 -- Base de donnees: `mdw`
 --
 

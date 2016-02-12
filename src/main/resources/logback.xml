@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium -->
 <configuration scan="true">
 
 	<property name="logsPath" value="${catalina.base}/logs" />

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium -->
 <properties>
 <entry key="calendrierExamen">
 SELECT DISTINCT  rownum ID,to_char(PESA.DAT_DEB_PES,'DD/MM/YYYY') datedeb, 
