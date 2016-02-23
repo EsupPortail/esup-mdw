@@ -769,6 +769,7 @@ public class MainUI extends GenericUI {
 			//Ajout du Prénom/Nom et codetu de l'étudiant dans le menu
 			Label usernameLabel = new Label(etudiant.getNom()+"<br />"+etudiant.getCod_etu(), ContentMode.HTML);
 			usernameLabel.addStyleName(ValoTheme.MENU_SUBTITLE);
+			usernameLabel.addStyleName("retourALaLigneAutomatique");
 			usernameLabel.setSizeUndefined();
 			mainMenu.addComponent(usernameLabel);
 

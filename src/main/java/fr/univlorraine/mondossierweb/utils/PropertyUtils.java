@@ -15,6 +15,10 @@ import org.springframework.util.StringUtils;
  */
 public class PropertyUtils {
 
+	
+	public final static String AFFICHAGE_NOM_BASIQUE = "basique";
+	
+	public final static String AFFICHAGE_NOM_STANDARD = "standard";
 
 	/** Retourne l'url de l'application */
 	public static String getAppUrl(){
@@ -198,5 +202,10 @@ public class PropertyUtils {
 		return values;
 	}
 	
-	
+	/** Façon d'afficher le nom des étudiants	 */
+	public static String getTypeAffichageNomEtatCivil() {
+		String value = System.getProperty("context.etatcivil.nom.affichage");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("etatcivil.nom.affichage cannot be null !");
+		return value;
+	}
 }

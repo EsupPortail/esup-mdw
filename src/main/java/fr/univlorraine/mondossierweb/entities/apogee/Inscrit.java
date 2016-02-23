@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import fr.univlorraine.mondossierweb.GenericUI;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import lombok.Data;
 
 /**
@@ -32,6 +34,12 @@ public class Inscrit {
 	 */
 	@Column(name="NOM")
 	private String nom;
+	
+	/**
+	 * le nom usuel.
+	 */
+	@Column(name="NOM_USUEL")
+	private String nomUsuel;
 	/**
 	 * le 1er prenom.
 	 */
@@ -108,7 +116,7 @@ public class Inscrit {
 	 */
 	@Override
 	public String toString() {
-		return "inscrit=  cod_etu : "+cod_etu+" nom : "+nom+" prenom : "+prenom;
+		return "inscrit=  cod_etu : "+cod_etu+" nom : "+getNom()+" prenom : "+prenom;
 	}
 	/**
 	 * constructeur.
@@ -132,6 +140,20 @@ public class Inscrit {
 		urlphoto = "";
 	}*/
 
+	public String getNom(){
+		//Si afichage utilisant le nom usuel
+		if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_BASIQUE)
+			&& nomUsuel != null && !nomUsuel.equals("")){
+			return nomUsuel;
+			
+		}else if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_STANDARD)
+				&& nomUsuel != null && !nomUsuel.equals("") && !nomUsuel.equals(nom)){
+				//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
+				return nom + " (" + nomUsuel + ")";
+			
+		}
+		return nom;
+	}
 	
 	
 }

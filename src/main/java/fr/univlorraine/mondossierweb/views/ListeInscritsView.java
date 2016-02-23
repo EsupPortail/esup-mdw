@@ -903,7 +903,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU, null);
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
-				nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
+				//nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
 
 				Label codetuLabel = new Label(inscrit.getCod_etu());
 				codetuLabel.setSizeFull();

@@ -206,15 +206,25 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
+				
+				
 				InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
-				//MODIF POUR UTILISER LE NOM USUEL SI RENSEIGNE 19/09/2012
-				if (iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
-					GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
-				}else{
-					GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
+				
+				//Utilisant du nom patronymique
+				GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
+				
+				//Si afichage utilisant le nom usuel
+				if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_BASIQUE)
+					&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
+						GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
+					
+				}else if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_STANDARD)
+						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("") && !iaetu.getNomUsuel().equals(iaetu.getNomPatronymique())){
+						//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
+						GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
+					
 				}
-
 
 
 				//informations sur la naissance :

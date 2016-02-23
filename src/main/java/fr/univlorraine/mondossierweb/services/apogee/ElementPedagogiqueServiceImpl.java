@@ -43,7 +43,7 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 	@Override
 	public List<Inscrit> getInscritsFromElp(String code, String annee) {
 		@SuppressWarnings("unchecked")
-		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select i.cod_ind,i.cod_etu, decode(I.LIB_NOM_USU_IND,null,i.lib_nom_pat_ind,I.LIB_NOM_USU_IND) NOM, i.lib_pr1_ind, "+
+		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select i.cod_ind,i.cod_etu, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, i.lib_pr1_ind, "+
 				" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,  "+
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_elp),null,rj.not_sub_elp,to_char(rj.not_elp)),' ')) notej,  "+
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj, "+

@@ -149,7 +149,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	@Override
 	public List<Inscrit> getInscritsEtapeJuinSep(Etape e) {
 		@SuppressWarnings("unchecked")
-		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select i.cod_ind,i.cod_etu, i.lib_pr1_ind, decode(I.LIB_NOM_USU_IND,null,i.lib_nom_pat_ind,I.LIB_NOM_USU_IND) NOM, "+
+		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select i.cod_ind,i.cod_etu, i.lib_pr1_ind, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, "+
 				" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,   "+
 				" decode(rj.tem_iae_ko_vet,0,'O','N') iae, "+
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_vet),null,rj.not_sub_vet,to_char(rj.not_vet)),' ')) notej ,  "+
