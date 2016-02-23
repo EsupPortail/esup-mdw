@@ -755,8 +755,8 @@ public class EtudiantController {
 			}else{
 				LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
-		} catch (AxisFault ex) {
-			LOG.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
+		} catch (AxisFault axf) {
+			LOG.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),axf);
 		} catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
@@ -841,6 +841,8 @@ public class EtudiantController {
 				}else{
 					LOG.info(ex.getLastErrorMsg()+" Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 				}
+			} catch (AxisFault axf) {
+				LOG.info("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),axf);
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 			}
