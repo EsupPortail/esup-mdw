@@ -148,7 +148,6 @@
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
 							<exclude>i18n/*messages.properties</exclude>
-							<exclude>i18n/*messages_*.properties</exclude>
 							<exclude>images/logo.png</exclude>
 							<exclude>**/*.scss</exclude>
 							<exclude>**/favicon.ico</exclude>
@@ -182,7 +181,7 @@
 							<exclude>repository/</exclude>
 							<exclude>**/*.scss</exclude>
 							<!-- <exclude>**/*sample.*</exclude>  -->
-							<exclude>i18n/*sample.*</exclude>
+							<!--  <exclude>i18n/*sample.*</exclude> -->
 							<exclude>configUrlServices.properties</exclude>
 							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
@@ -476,7 +475,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties,**/apogeeRequest.xml, **/*.sample.css</packagingExcludes>
+					<packagingExcludes>**/configUrlServices.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css</packagingExcludes>
 				</configuration>
 			</plugin>
 

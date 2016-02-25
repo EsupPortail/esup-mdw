@@ -18,6 +18,7 @@ import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
@@ -59,7 +60,27 @@ public class SpringConfig {
 	@Bean
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-		resourceBundleMessageSource.setBasenames("i18n/messages", "i18n/vaadin-messages");
+		
+		List<String> filesToLoad=new LinkedList<String>();
+		
+		
+		//Ajout du fichier de conf optionnel
+		ClassPathResource res = new ClassPathResource("i18n/messages.properties");
+		if(res.exists()){
+			filesToLoad.add("i18n/messages");
+		}
+		//Ajout du fichier de conf par défaut
+		filesToLoad.add("i18n/messages-default");
+		
+		//Ajout du fichier de conf optionnel
+		ClassPathResource resv = new ClassPathResource("i18n/vaadin-messages.properties");
+		if(resv.exists()){
+			filesToLoad.add("i18n/vaadin-messages");
+		}
+		//Ajout du fichier de conf par défaut
+		filesToLoad.add("i18n/vaadin-messages-default");
+		
+		resourceBundleMessageSource.setBasenames(filesToLoad.toArray(new String[filesToLoad.size()]));
 		return resourceBundleMessageSource;
 	}
 	
