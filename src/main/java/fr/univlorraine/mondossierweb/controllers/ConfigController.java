@@ -143,6 +143,10 @@ public class ConfigController {
 		return getListValeurForParameter("certScolCmpDesactive");
 	}
 	
+	public List<String> getListeCertScolStatutDesactive(){
+		return getListValeurForParameter("certScolStatutDesactive");
+	}
+	
 	public List<String> getListeCodesEtapeAffichageRang() {
 		return getListValeurForParameter("codesEtapeAffichageRang");
 	}

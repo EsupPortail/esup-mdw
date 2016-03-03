@@ -61,6 +61,14 @@ public class InscriptionServiceImpl implements InscriptionService{
 		return codCmp;
 	}
 
+	public String getStatut(String codAnu, String codInd) {
+		@SuppressWarnings("unchecked")
+		String codStu= (String)entityManagerApogee.createNativeQuery("select cod_stu"+
+				" from apogee.ins_adm_anu "+
+				" where cod_anu = "+codAnu+" "+
+				" and cod_ind = '"+codInd+"' ").getSingleResult();
+		return codStu;
+	}
 
 	@Override
 	public String getFormationEnCours(String codetu) {

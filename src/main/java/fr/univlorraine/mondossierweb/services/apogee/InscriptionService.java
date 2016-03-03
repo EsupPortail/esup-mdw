@@ -14,4 +14,6 @@ public interface InscriptionService {
 	public String getCmpFromCodIndIAE(String codAnu, String codInd, String codEtp, String vrsVet);
 
 	public String getFormationEnCours(String codetu);
+	
+	public String getStatut(String codAnu, String codInd);
 }

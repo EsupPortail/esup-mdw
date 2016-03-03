@@ -98,6 +98,10 @@ public class Etudiant {
 	 */
 	private boolean temSalarie;
 	/**
+	 * statut de l'étudiant
+	 */
+	private String statut;
+	/**
 	 * adresse annuelle
 	 */
 	private Adresse adresseAnnuelle;

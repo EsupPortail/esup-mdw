@@ -206,24 +206,24 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
-				
-				
+
+
 				InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
-				
+
 				//Utilisant du nom patronymique
 				GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
-				
+
 				//Si afichage utilisant le nom usuel
 				if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_BASIQUE)
-					&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
-						GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
-					
+						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
+					GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
+
 				}else if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_STANDARD)
 						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("") && !iaetu.getNomUsuel().equals(iaetu.getNomPatronymique())){
-						//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
-						GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
-					
+					//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
+					GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
+
 				}
 
 
@@ -289,6 +289,12 @@ public class EtudiantController {
 								if( multipleApogeeService.isBoursier(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours())){
 									GenericUI.getCurrent().getEtudiant().setBoursier(true);
 								}
+
+								//recuperer le statut
+								if(iaad.getStatut()!= null && iaad.getStatut().getCode()!=null){
+									GenericUI.getCurrent().getEtudiant().setStatut(iaad.getStatut().getCode());
+								}
+
 
 								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 								//Si témoin aménagement d'étude valué à O
@@ -2014,6 +2020,20 @@ public class EtudiantController {
 				return false;
 			}
 		}
+
+
+		//interdit l'édition de certificat pour les étudiants dont le statut est dans la liste des exclusions
+		List<String> listeCertScolStatutDesactive=configController.getListeCertScolStatutDesactive();
+		if ( listeCertScolStatutDesactive!=null && !listeCertScolStatutDesactive.isEmpty()) {
+
+			// interdit les certificats pour certains types de statut
+			String statut = inscriptionService.getStatut(codAnuIns, etu.getCod_ind());
+
+			if (statut!=null && listeCertScolStatutDesactive.contains(statut)) {
+				return false;
+			}
+		}
+
 
 
 
