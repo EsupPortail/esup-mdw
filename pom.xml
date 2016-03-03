@@ -289,6 +289,9 @@
         		<includes>
         		<include>**/*.java</include>
         		</includes>
+        		 <excludes>
+            		<exclude>src/main/java/com/vaadin/ui/ConnectorTracker.java</exclude>
+        		</excludes>
     			</configuration>
     			<executions>
         			<execution>
