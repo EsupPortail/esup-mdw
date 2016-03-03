@@ -324,6 +324,18 @@
     			</executions>
 			</plugin>
 			
+			<plugin>
+  				<groupId>org.jasig.maven</groupId>
+  				<artifactId>maven-notice-plugin</artifactId>
+  				<version>1.0.4</version>
+  				<configuration>
+    				<noticeTemplate>https://source.jasig.org/licenses/NOTICE.template</noticeTemplate>
+    				<licenseMapping>
+      					<param>https://source.jasig.org/licenses/license-mappings.xml</param>
+    				</licenseMapping>
+  				</configuration>
+			</plugin>
+			
 			<!-- Active le compile-time weaving, pour configurer l'AOP -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
