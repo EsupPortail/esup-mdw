@@ -468,6 +468,7 @@
 			</plugin> 
 			
 
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -476,6 +477,15 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
 					<packagingExcludes>**/configUrlServices.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css</packagingExcludes>
+					<webResources>
+            			<resource>
+              			<!-- this is relative to the pom.xml directory -->
+              				<directory>${basedir}</directory>
+              				 <includes>
+                				<include>LICENSE-2.0.txt</include>
+              					</includes>
+            			</resource>
+          			</webResources>
 				</configuration>
 			</plugin>
 
