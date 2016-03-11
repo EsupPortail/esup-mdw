@@ -142,8 +142,27 @@ public class ConfigController {
 	public boolean isAffNumPlaceExamen() {
 		return getBooleanValueForParameter("affNumPlaceExamen");
 	}
-				
-
+	
+	public boolean isAffAdresseEnseignants() {
+		return getBooleanValueForParameter("affAdressesEnseignants");
+	}
+	
+	public boolean isAffInfosAnnuellesEnseignants() {
+		return getBooleanValueForParameter("affInfosAnnuellesEnseignants");
+	}
+	
+	public boolean isAffInfosContactEnseignants() {
+		return getBooleanValueForParameter("affInfosContactEnseignants");
+	}
+	
+	public boolean isAffCalendrierEpreuvesEnseignants() {
+		return getBooleanValueForParameter("affCalendrierEpreuvesEnseignants");
+	}
+	
+	public boolean isAffCalendrierEpreuvesEtudiants() {
+		return getBooleanValueForParameter("affCalendrierEpreuvesEtudiants");
+	}
+	
 	
 	public List<String> getListeCertScolProfilDesactive(){
 		return getListValeurForParameter("certScolProfilDesactive");
@@ -240,6 +259,19 @@ public class ConfigController {
 	public String getExtensionMailEtudiant(){
 		return getValeurForParameter("extensionMailEtudiant");
 	}
+	public int getNotesNombreAnneesExtractionApogee() {
+        return  Integer.parseInt(getValeurForParameter("notesNombreAnneesExtractionApogee"));
+	}
+	public boolean isAffichagePdfNotesFormatPortrait() {
+        return getBooleanValueForParameter("notesPDFFormatPortrait");
+	}
+	public boolean isNotesPDFsignature() {
+        return getBooleanValueForParameter("notesPDFSignature");
+	}
+	public String getNotesPDFLieuEdition() {
+		return getValeurForParameter("notesPDFLieuEdition");
+	}
+	
 		
 		
 	/**

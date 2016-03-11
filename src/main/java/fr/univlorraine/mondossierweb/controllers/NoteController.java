@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,8 +39,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.lowagie.text.BadElementException;
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -64,7 +67,9 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Resultat;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Gestion des notes
@@ -100,7 +105,7 @@ public class NoteController {
 	private transient ConfigController configController;
 
 
-	
+
 	/**
 	 * 
 	 * @return le fichier pdf du résumé des notes.
@@ -108,10 +113,10 @@ public class NoteController {
 	public com.vaadin.server.Resource exportPdfResume() {
 
 
-		
+
 		String nomFichier = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
-		
+
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;
 
@@ -120,14 +125,15 @@ public class NoteController {
 				try {
 					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 					PdfWriter docWriter = null;
-					Document document = configureDocument(MARGE_PDF);
+					boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
+					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					docWriter.setStrictImageSequence(true);
 					if(configController.isInsertionFiligranePdfNotes()){
-						docWriter.setPageEvent(new Watermark());
+						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfResume(document,MainUI.getCurrent().getEtudiant());
+					creerPdfResume(document,MainUI.getCurrent().getEtudiant(),notesPDFFormatPortrait);
 					docWriter.close();
 					baosPDF.close();
 					//Creation de l'export
@@ -140,7 +146,7 @@ public class NoteController {
 					LOG.error("Erreur à la génération du résumé des notes : IOException ",e);
 					return null;
 				}
-				
+
 			}
 		};
 
@@ -158,10 +164,10 @@ public class NoteController {
 	public com.vaadin.server.Resource exportPdfDetail(Etape etape) {
 
 
-		
+
 		String nomFichier = applicationContext.getMessage("pdf.detail.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
-		
+
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;
 
@@ -170,14 +176,19 @@ public class NoteController {
 				try {
 					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 					PdfWriter docWriter = null;
-					Document document = configureDocument(MARGE_PDF);
+					boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
+					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					docWriter.setStrictImageSequence(true);
-					if(configController.isInsertionFiligranePdfNotes()){
-						docWriter.setPageEvent(new Watermark());
+					//récupération d'une eventuelle signature
+					String codSign=getCodeSignataire(MainUI.getCurrent().getEtudiant());
+					//Si on doit mettre le filigramme et qu'on n'a pas de signature à apposer au document
+					if(configController.isInsertionFiligranePdfNotes() && !StringUtils.hasText(codSign)){
+						//On ajoute le filigramme
+						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape);
+					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait,codSign);
 					docWriter.close();
 					baosPDF.close();
 					//Creation de l'export
@@ -190,7 +201,7 @@ public class NoteController {
 					LOG.error("Erreur à la génération du détail des notes : IOException ",e);
 					return null;
 				}
-				
+
 			}
 		};
 
@@ -210,11 +221,15 @@ public class NoteController {
 	 * @param margin
 	 * @return doc
 	 */
-	private Document configureDocument(final float margin) {
+	private Document configureDocument(final float margin, boolean notesPDFFormatPortrait) {
 
 		Document document = new Document();
 
-		document.setPageSize(PageSize.A4.rotate());
+		if(notesPDFFormatPortrait){
+			document.setPageSize(PageSize.A4);
+		}else{
+			document.setPageSize(PageSize.A4.rotate());
+		}
 		float marginPage = (margin / 2.54f) * 72f;
 		document.setMargins(marginPage, marginPage, marginPage, marginPage);
 
@@ -226,7 +241,7 @@ public class NoteController {
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfResume(final Document document, Etudiant etudiant) {
+	public void creerPdfResume(final Document document, Etudiant etudiant, boolean formatPortrait) {
 
 
 
@@ -236,6 +251,22 @@ public class NoteController {
 		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
+
+		if(formatPortrait){
+			normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
+			normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
+			legerita = FontFactory.getFont("Arial", 7, Font.ITALIC);
+			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
+			header = FontFactory.getFont("Arial", 11, Font.BOLD);
+		}
+
+		Color headerColor = new Color(153, 153, 255);
+		if(formatPortrait){
+			headerColor = new Color(142, 142, 142);
+		}
+
+
+
 
 		//pieds de pages:
 		Date d = new Date();
@@ -263,7 +294,10 @@ public class NoteController {
 		Phrase phra2 = new Phrase("- "+partie2, legerita);
 		HeaderFooter hf = new HeaderFooter(phra, phra2);
 		hf.setAlignment(HeaderFooter.ALIGN_CENTER);
-		document.setFooter(hf);	 
+		if(!formatPortrait){
+			document.setFooter(hf);	 
+		}
+
 
 
 		//ouverte du document.
@@ -275,7 +309,11 @@ public class NoteController {
 				float scaleRatio = 40 / image1.getHeight();
 				float newWidth=scaleRatio * image1.getWidth();
 				image1.scaleAbsolute(newWidth, 40);
-				image1.setAbsolutePosition(800 - newWidth, 528);
+				if(formatPortrait){
+					image1.setAbsolutePosition(560 - newWidth,760);
+				}else{
+					image1.setAbsolutePosition(800 - newWidth, 528);
+				}
 				document.add(image1);
 			}
 
@@ -283,47 +321,82 @@ public class NoteController {
 
 			//nouveau paragraphe
 			Paragraph p = new Paragraph(applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + "\n\n", headerbig);
-			p.setIndentationLeft(15);
+			p.setIndentationLeft(5);
+			if(!formatPortrait)
+				p.setIndentationLeft(10);
 			document.add(p);
+
+			// Phrase pour le header
+			Phrase phraheader = new Phrase("",normal);	
+
+			if(formatPortrait) {
+				// PFE : Ajout Université
+				Paragraph p000 = new Paragraph(multipleApogeeService.getLibEtablissementDef()+"\n", normalbig);
+				p000.setIndentationLeft(5);
+				if(!formatPortrait)
+					p000.setIndentationLeft(10);
+				document.add(p000);
+				phraheader.add(p000);
+			}
 
 			if (etudiant.getNom() != null) {
 				Paragraph p0 = new Paragraph(etudiant.getNom(), normal);
-				p0.setIndentationLeft(15);
+				p0.setIndentationLeft(5);
+				if(!formatPortrait)
+					p0.setIndentationLeft(10);
 				document.add(p0);
 			}
 			if (etudiant.getCod_etu() != null) {
 				Paragraph p01 = new Paragraph(applicationContext.getMessage("pdf.folder", null, Locale.getDefault()) + " : " + etudiant.getCod_etu(), normal);
-				p01.setIndentationLeft(15);
+				p01.setIndentationLeft(5);
+				if(!formatPortrait)
+					p01.setIndentationLeft(10);
 				document.add(p01);
 			}
-			if (etudiant.getCod_nne() != null) {
-				Paragraph p02 = new Paragraph(applicationContext.getMessage("pdf.nne", null, Locale.getDefault()) + " : " + etudiant.getCod_nne(), normal);
-				p02.setIndentationLeft(15);
-				document.add(p02);
-			}
-			if (etudiant.getEmail() != null) {
-				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.mail", null, Locale.getDefault()) +" : " + etudiant.getEmail(), normal);
-				p03.setIndentationLeft(15);
+			if (!formatPortrait) {
+				if (etudiant.getCod_nne() != null) {
+					Paragraph p02 = new Paragraph(applicationContext.getMessage("pdf.nne", null, Locale.getDefault()) + " : " + etudiant.getCod_nne(), normal);
+					p02.setIndentationLeft(5);
+					if(!formatPortrait)
+						p02.setIndentationLeft(10);
+					document.add(p02);
+				}
+				if (etudiant.getEmail() != null) {
+					Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.mail", null, Locale.getDefault()) +" : " + etudiant.getEmail(), normal);
+					p03.setIndentationLeft(5);
+					if(!formatPortrait)
+						p03.setIndentationLeft(10);
+					document.add(p03);
+				}
+
+				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);
+				p03.setIndentationLeft(5);
+				if(!formatPortrait)
+					p03.setIndentationLeft(10);
 				document.add(p03);
+				document.add(new Paragraph("\n"));
 			}
 
-			Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);
-			p03.setIndentationLeft(15);
-			document.add(p03);
-			document.add(new Paragraph("\n"));
+			if (formatPortrait) {
+				HeaderFooter headerdi = new HeaderFooter(phraheader,false);
+				headerdi.setAlignment(HeaderFooter.ALIGN_LEFT);
+				document.setHeader(headerdi);
+				document.add(new Paragraph("\n",normal));
+			}
 
 			//Partie DIPLOMES
 			PdfPTable table = new PdfPTable(1);
 			table.setWidthPercentage(98);
 			PdfPCell cell = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.diplomes", null, Locale.getDefault()).toUpperCase(Locale.getDefault())+ " ", header));
 			cell.setBorder(Rectangle.NO_BORDER);
-			cell.setBackgroundColor(new Color(153, 153, 255));
+			cell.setBackgroundColor(headerColor);
+
+
 			table.addCell(cell);
 
 			PdfPTable table2;
 
 
-			//if(!config.isAffRangEtudiant()){
 			if(!etudiant.isAfficherRang()){
 				table2= new PdfPTable(4);
 			}else{
@@ -336,7 +409,6 @@ public class NoteController {
 			if(affMentionEtudiant)
 				tailleColonneLib = 90;
 
-			//if(!config.isAffRangEtudiant()){
 			if(!etudiant.isAfficherRang()){
 				int [] tabWidth = {26,35,tailleColonneLib,70};
 				table2.setWidths(tabWidth);
@@ -405,7 +477,6 @@ public class NoteController {
 			PdfPCell ctrang  = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.rank", null, Locale.getDefault()),normalbig));
 			ctrang.setBorder(Rectangle.BOTTOM); ctrang.setBorderColorBottom(Color.black);
 
-			//if(config.isAffRangEtudiant()){
 			if(etudiant.isAfficherRang()){
 				table2.addCell(ctrang);
 			}
@@ -513,12 +584,13 @@ public class NoteController {
 			tabletape.setWidthPercentage(98);
 			PdfPCell celletape = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.etapes", null, Locale.getDefault()).toUpperCase(Locale.getDefault()), header));
 			celletape.setBorder(Rectangle.NO_BORDER);
-			celletape.setBackgroundColor(new Color(153, 153, 255));
+			celletape.setBackgroundColor(headerColor);
+
 			tabletape.addCell(celletape);
 
 			PdfPTable tabletape2;
 
-			//if(!config.isAffRangEtudiant()){
+
 			if(!etudiant.isAfficherRang()){
 				tabletape2= new PdfPTable(4);
 				tabletape2.setWidthPercentage(98);
@@ -541,7 +613,6 @@ public class NoteController {
 
 			tabletape2.addCell(ct7);
 
-			//if(!config.isAffRangEtudiant()){
 			if(etudiant.isAfficherRang()){
 				tabletape2.addCell(ctrang);
 			}
@@ -643,10 +714,11 @@ public class NoteController {
 				tablequestions.setWidthPercentage(98);
 				PdfPCell cellquestions = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.questions", null, Locale.getDefault())+ " ", header));
 				cellquestions.setBorder(Rectangle.NO_BORDER);
-				cellquestions.setBackgroundColor(new Color(153, 153, 255));
+				cellquestions.setBackgroundColor(headerColor);
+
 				tablequestions.addCell(cellquestions);
 
-				
+
 				String grilleSignficationResultats = "";
 				Set<String> ss = etudiant.getSignificationResultats().keySet();
 				for(String k : ss){
@@ -655,7 +727,7 @@ public class NoteController {
 						grilleSignficationResultats = grilleSignficationResultats + "   ";
 					}
 				}
-				
+
 				PdfPTable tablequestions2 = new PdfPTable(1);
 				tablequestions2.setWidthPercentage(98);
 				PdfPCell cellquestions2 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.code.resultat.signification", null, Locale.getDefault()) + " : \n" + grilleSignficationResultats, normal));
@@ -682,14 +754,14 @@ public class NoteController {
 
 
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape) {
+	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait,String codSign) {
 
 
 
@@ -699,12 +771,25 @@ public class NoteController {
 		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
+		if (formatPortrait) {
+			normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
+			normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
+			legerita = FontFactory.getFont("Arial", 7, Font.ITALIC);
+			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
+			header = FontFactory.getFont("Arial", 11, Font.BOLD);
+		}
+
+		Color headerColor = new Color(153, 153, 255);
+		if(formatPortrait){
+			headerColor = new Color(142, 142, 142);
+		}
 
 		//pieds de pages:
 		Date d = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		String date = dateFormat.format(d);
-		//alignement des libellï¿½s du pied de page:
+
+		//alignement des libellés du pied de page:
 		String partie1 = applicationContext.getMessage("pdf.notes.detail", null, Locale.getDefault()); 
 		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + date;
 		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
@@ -721,13 +806,74 @@ public class NoteController {
 			}
 		}
 
-		//creation du pied de page:
-		Phrase phra = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
-		Phrase phra2 = new Phrase("- "+partie2, legerita);
-		HeaderFooter hf = new HeaderFooter(phra, phra2);
-		hf.setAlignment(HeaderFooter.ALIGN_CENTER);
-		document.setFooter(hf);	 
-		document.setFooter(hf);
+		//Si on doit apposer une signature
+		if (configController.isNotesPDFsignature()) {
+
+			try {
+				if (StringUtils.hasText(codSign)) {
+					Signataire signataire = multipleApogeeService.getSignataire(codSign);
+					if (signataire.getImg_sig_std() != null){
+						float[] widthsSignataire = {2f, 1.3f};
+						PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
+
+						tableSignataire.setWidthPercentage(100f);
+						tableSignataire.addCell(makeCellSignataire("", normal));
+						tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" " + date , normal));
+						tableSignataire.addCell(makeCellSignataire("", normal));
+
+						tableSignataire.addCell(makeCellSignataire(signataire.getNom_sig(), normal));
+						tableSignataire.addCell(makeCellSignataire("", normal));
+
+
+						Paragraph para2 = new Paragraph();
+						para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + date + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),normal));
+
+						try {
+							Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
+							imageSignature.scaleAbsolute(78,46);
+							PdfPCell cellSignature = new PdfPCell();
+							cellSignature.setBorder(0);
+							cellSignature.setImage(imageSignature);
+							cellSignature.setFixedHeight(72f/(float)300 * imageSignature.getHeight());
+							cellSignature.setHorizontalAlignment(Element.ALIGN_CENTER);
+							tableSignataire.addCell(cellSignature);
+
+							Chunk ck = new Chunk (imageSignature, 0, -10, true);
+							para2.add(ck);
+
+						}
+						catch (IOException e){
+						}
+
+						HeaderFooter footer = new HeaderFooter(para2,false);
+						footer.setAlignment(HeaderFooter.ALIGN_LEFT);
+						document.setFooter(footer);
+					}
+				}
+				else {
+					Paragraph para2 = new Paragraph();
+					para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" "+ date, normal));
+					para2.add(new Phrase("\n"+applicationContext.getMessage("pdf.notes.info.original", null, Locale.getDefault()),normal));
+
+					HeaderFooter footer = new HeaderFooter(para2,false);
+					footer.setAlignment(HeaderFooter.ALIGN_LEFT);
+					document.setFooter(footer);
+
+				}
+			} catch (Exception e) {
+				LOG.error("Erreur lors de l'ajout de la signature sur le relevé de note ",e);
+			}
+
+
+		}else{
+			//creation du pied de page:
+			Phrase phra = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
+			Phrase phra2 = new Phrase("- "+partie2, legerita);
+			HeaderFooter hf = new HeaderFooter(phra, phra2);
+			hf.setAlignment(HeaderFooter.ALIGN_CENTER);
+			document.setFooter(hf);	 
+			document.setFooter(hf);
+		}
 
 		//ouverte du document.
 		document.open();
@@ -738,7 +884,11 @@ public class NoteController {
 				float scaleRatio = 40 / image1.getHeight();
 				float newWidth=scaleRatio * image1.getWidth();
 				image1.scaleAbsolute(newWidth, 40);
-				image1.setAbsolutePosition(800 - newWidth, 528);
+				if(formatPortrait){
+					image1.setAbsolutePosition(560 - newWidth,760);
+				}else{
+					image1.setAbsolutePosition(800 - newWidth, 528);
+				}
 				document.add(image1);
 			}
 
@@ -746,44 +896,94 @@ public class NoteController {
 
 			//nouveau paragraphe
 			Paragraph p = new Paragraph(applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + "\n\n", headerbig);
-			p.setIndentationLeft(15);
+			p.setIndentationLeft(5);
+			if(!formatPortrait)
+				p.setIndentationLeft(10);
 			document.add(p);
+
+			// Phrase pour le header
+			Phrase phraheader = new Phrase("",normal);
+
+			if (formatPortrait) {	
+				// PFE : Ajout Université
+				Paragraph p000 = new Paragraph(multipleApogeeService.getLibEtablissementDef()+"\n", normalbig);
+				p000.setIndentationLeft(5);
+				if(!formatPortrait)
+					p000.setIndentationLeft(10);
+				document.add(p000);
+				phraheader.add(p000);
+			}
 
 			if (etudiant.getNom() != null) {
 				Paragraph p0 = new Paragraph(etudiant.getNom(), normal);
-				p0.setIndentationLeft(15);
+				p0.setIndentationLeft(5);
+				if(!formatPortrait)
+					p0.setIndentationLeft(10);
 				document.add(p0);
 			}
 			if (etudiant.getCod_etu() != null) {
 				Paragraph p01 = new Paragraph(applicationContext.getMessage("pdf.folder", null, Locale.getDefault())+ " : " + etudiant.getCod_etu(), normal);
-				p01.setIndentationLeft(15);
+				p01.setIndentationLeft(5);
+				if(!formatPortrait)
+					p01.setIndentationLeft(10);
 				document.add(p01);
 			}
-			if (etudiant.getCod_nne() != null) {
-				Paragraph p02 = new Paragraph(applicationContext.getMessage("pdf.nne", null, Locale.getDefault())+ " : " + etudiant.getCod_nne(), normal);
-				p02.setIndentationLeft(15);
-				document.add(p02);
-			}
-			if (etudiant.getEmail() != null) {
-				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.mail", null, Locale.getDefault()) + " : " + etudiant.getEmail(), normal);
-				p03.setIndentationLeft(15);
+
+			if (!formatPortrait){
+				if (etudiant.getCod_nne() != null) {
+					Paragraph p02 = new Paragraph(applicationContext.getMessage("pdf.nne", null, Locale.getDefault())+ " : " + etudiant.getCod_nne(), normal);
+					p02.setIndentationLeft(5);
+					if(!formatPortrait)
+						p02.setIndentationLeft(10);
+					document.add(p02);
+				}
+				if (etudiant.getEmail() != null) {
+					Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.mail", null, Locale.getDefault()) + " : " + etudiant.getEmail(), normal);
+					p03.setIndentationLeft(5);
+					if(!formatPortrait)
+						p03.setIndentationLeft(10);
+					document.add(p03);
+				}
+
+				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);
+				p03.setIndentationLeft(5);
+				if(!formatPortrait)
+					p03.setIndentationLeft(10);
 				document.add(p03);
+				document.add(new Paragraph("\n"));
 			}
 
-			Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);
-			p03.setIndentationLeft(15);
-			document.add(p03);
-			document.add(new Paragraph("\n"));
-			
+			if (formatPortrait) {
+				// on teste s'il y a bien des elps presents
+				String annee = "";
+				if (etudiant.getElementsPedagogiques().size()>0){
+					annee = etudiant.getElementsPedagogiques().get(0).getAnnee().replaceAll("FICM", "");
+				}
+				annee = annee.replaceAll("epreuve", "");
+				Paragraph pYearAmu = new Paragraph(applicationContext.getMessage("pdf.year", null, Locale.getDefault()) + " : " + annee + "                                                                                                                                                                                                     page 1", normal);
+				pYearAmu.setIndentationLeft(5);
+				document.add(pYearAmu);
+				Phrase pAnnee = new Phrase(applicationContext.getMessage("pdf.year", null, Locale.getDefault()) + " : " + annee + "                                                                                                                                                                                                     page ", normal);
+				Phrase pAfter = new Phrase(" ", normal);
+				phraheader.add(pAnnee);
+				HeaderFooter headerp = new HeaderFooter(phraheader,pAfter);
+				headerp.setAlignment(HeaderFooter.ALIGN_LEFT);
+				document.setHeader(headerp);
+
+				document.add(new Paragraph("\n",normal));
+			}
 
 
 			//Partie des notes
 			PdfPTable table = new PdfPTable(1);
 			table.setWidthPercentage(98);
-			//PdfPCell cell = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.elements.epreuves", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + " - "+applicationContext.getMessage("pdf.annee.universitaire", null, Locale.getDefault()) + " : " + etape.getAnnee(), header));
 			PdfPCell cell = new PdfPCell(new Paragraph(etape.getLibelle()+" - "+applicationContext.getMessage("pdf.annee.universitaire", null, Locale.getDefault()) + " : " + etape.getAnnee(), header));
+			if(formatPortrait){
+				cell = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.elements.epreuves", null, Locale.getDefault()).toUpperCase(Locale.getDefault()), header));
+			}
 			cell.setBorder(Rectangle.NO_BORDER);
-			cell.setBackgroundColor(new Color(153, 153, 255));
+			cell.setBackgroundColor(headerColor);
+
 			table.addCell(cell);
 
 			PdfPTable table2; 
@@ -792,27 +992,45 @@ public class NoteController {
 			boolean afficherRangElpEpr = etudiantController.isAfficherRangElpEpr();
 			boolean affRangEtudiant = configController.isAffRangEtudiant();
 			boolean affECTSEtudiant =configController.isAffECTSEtudiant();
-			
+
+
+
 			if((!affRangEtudiant && !afficherRangElpEpr)&& !affECTSEtudiant){
 				//NI isAffRangEtudiant  NI isAffECTSEtudiant
 				table2= new PdfPTable(6);
 				table2.setWidthPercentage(98);
-				int [] tabWidth = {35,110,25,25,25,25};
-				table2.setWidths(tabWidth);
+				if(formatPortrait){
+					int [] tabWidthPortrait = {33,90,22,15,30,22};
+					table2.setWidths(tabWidthPortrait);
+				}else{
+					int [] tabWidth = {35,110,25,25,25,25};
+					table2.setWidths(tabWidth);
+				}
 			}else{
 				if(((affRangEtudiant || afficherRangElpEpr) && !affECTSEtudiant) ||
 						((!affRangEtudiant&& !afficherRangElpEpr) && affECTSEtudiant)){
 					//isAffRangEtudiant  OU isAffECTSEtudiant
 					table2= new PdfPTable(7);
 					table2.setWidthPercentage(98);
-					int [] tabWidth = {33,110,22,22,22,22,15};
-					table2.setWidths(tabWidth);
+					if(formatPortrait){
+						int [] tabWidthPortrait = {33,90,22,15,30,22,30};
+						table2.setWidths(tabWidthPortrait);
+					}else{
+						int [] tabWidth = {33,110,22,22,22,22,15};
+						table2.setWidths(tabWidth);
+					}
 				}else{
 					//isAffRangEtudiant  ET isAffECTSEtudiant
 					table2= new PdfPTable(8);
 					table2.setWidthPercentage(98);
-					int [] tabWidth = {33,110,22,22,22,22,15,15};
-					table2.setWidths(tabWidth);
+
+					if(formatPortrait){
+						int [] tabWidthPortrait = {33,90,22,15,30,22,30,22};
+						table2.setWidths(tabWidthPortrait);
+					}else{
+						int [] tabWidth = {33,110,22,22,22,22,15,15};
+						table2.setWidths(tabWidth);
+					}
 				}
 			}
 
@@ -845,34 +1063,45 @@ public class NoteController {
 			cellEcts.setBorder(Rectangle.BOTTOM); cellEcts.setBorderColorBottom(Color.black);
 
 
-			//table2.addCell(ct1);
-			table2.addCell(ct2);
-			table2.addCell(ct3);
-			table2.addCell(ct4);
-			table2.addCell(ct5);
-			table2.addCell(ct6);
-			table2.addCell(ct7);
-			if((affRangEtudiant|| afficherRangElpEpr)){
-				table2.addCell(cellRang);
-			}
-			if(affRangEtudiant){
-				table2.addCell(cellEcts);
-			}
+			if (formatPortrait) {
+				//table2.addCell(ct1);
+				table2.addCell(ct2);
+				table2.addCell(ct3);
+				if((affRangEtudiant|| afficherRangElpEpr)){
+					table2.addCell(cellRang);
+				}
+				if(affRangEtudiant){
+					table2.addCell(cellEcts);
+				}
+				table2.addCell(ct4);
+				table2.addCell(ct5);
+				table2.addCell(ct6);
+				table2.addCell(ct7);
+			} else {
 
+				//table2.addCell(ct1);
+				table2.addCell(ct2);
+				table2.addCell(ct3);
+				table2.addCell(ct4);
+				table2.addCell(ct5);
+				table2.addCell(ct6);
+				table2.addCell(ct7);
+				if((affRangEtudiant|| afficherRangElpEpr)){
+					table2.addCell(cellRang);
+				}
+				if(affRangEtudiant){
+					table2.addCell(cellEcts);
+				}
+			}
 
 			for (int i = 0; i < etudiant.getElementsPedagogiques().size(); i++) {
-				/*String annee = etudiant.getElementsPedagogiques().get(i).getAnnee().replaceAll(applicationContext.getMessage("pdf.replace.ficm", null, Locale.getDefault()), "");
-				Paragraph pa = new Paragraph(annee, normal);
-				PdfPCell celltext = new PdfPCell(pa);
-				celltext.setBorder(Rectangle.NO_BORDER);
-				table2.addCell(celltext);*/
 
 				Paragraph pa2 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getCode(), normal);
 				PdfPCell celltext2 = new PdfPCell(pa2);
 				celltext2.setBorder(Rectangle.NO_BORDER);
 				table2.addCell(celltext2);
 
-				
+
 				String indentation = "";
 				for(int j=0;j<etudiant.getElementsPedagogiques().get(i).getLevel();j++){
 					indentation= indentation + "     ";
@@ -883,28 +1112,29 @@ public class NoteController {
 				table2.addCell(celltext3);
 
 
-				Paragraph pa5 = new Paragraph(getNote1(etudiant.getElementsPedagogiques().get(i)), normal);
-				PdfPCell celltext5 = new PdfPCell(pa5);
-				celltext5.setBorder(Rectangle.NO_BORDER);
-				table2.addCell(celltext5);
+				if (!formatPortrait) {
+					Paragraph pa5 = new Paragraph(getNote1(etudiant.getElementsPedagogiques().get(i)), normal);
+					PdfPCell celltext5 = new PdfPCell(pa5);
+					celltext5.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext5);
 
 
-				Paragraph pa6 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes1(), normal);
-				PdfPCell celltext6 = new PdfPCell(pa6);
-				celltext6.setBorder(Rectangle.NO_BORDER);
-				table2.addCell(celltext6);
+					Paragraph pa6 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes1(), normal);
+					PdfPCell celltext6 = new PdfPCell(pa6);
+					celltext6.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext6);
 
 
-				Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
-				PdfPCell celltext7 = new PdfPCell(pa7);
-				celltext7.setBorder(Rectangle.NO_BORDER);
-				table2.addCell(celltext7);
+					Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
+					PdfPCell celltext7 = new PdfPCell(pa7);
+					celltext7.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext7);
 
-				Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
-				PdfPCell celltext8 = new PdfPCell(pa8);
-				celltext8.setBorder(Rectangle.NO_BORDER);
-				table2.addCell(celltext8);
-
+					Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
+					PdfPCell celltext8 = new PdfPCell(pa8);
+					celltext8.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext8);
+				}
 
 				if((affRangEtudiant || afficherRangElpEpr)){
 					Paragraph parRang2 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRang(), normal);
@@ -918,6 +1148,28 @@ public class NoteController {
 					PdfPCell cellEcts2 = new PdfPCell(parEcts2);
 					cellEcts2.setBorder(Rectangle.NO_BORDER);
 					table2.addCell(cellEcts2);
+				}
+
+				if (formatPortrait){
+					Paragraph pa5 = new Paragraph(getNote1(etudiant.getElementsPedagogiques().get(i)), normal);
+					PdfPCell celltext5 = new PdfPCell(pa5);
+					celltext5.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext5);
+
+					Paragraph pa6 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes1(), normal);
+					PdfPCell celltext6 = new PdfPCell(pa6);
+					celltext6.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext6);
+
+					Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
+					PdfPCell celltext7 = new PdfPCell(pa7);
+					celltext7.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext7);
+
+					Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
+					PdfPCell celltext8 = new PdfPCell(pa8);
+					celltext8.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(celltext8);
 				}
 
 			}
@@ -934,12 +1186,12 @@ public class NoteController {
 				tablequestions.setWidthPercentage(98);
 				PdfPCell cellquestions = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.questions", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + " ", header));
 				cellquestions.setBorder(Rectangle.NO_BORDER);
-				cellquestions.setBackgroundColor(new Color(153, 153, 255));
+				cellquestions.setBackgroundColor(headerColor);
 				tablequestions.addCell(cellquestions);
 
 				PdfPTable tablequestions2 = new PdfPTable(1);
 				tablequestions2.setWidthPercentage(98);
-				
+
 				String grilleSignficationResultats = "";
 				Set<String> ss = etudiant.getSignificationResultats().keySet();
 				for(String k : ss){
@@ -948,7 +1200,7 @@ public class NoteController {
 						grilleSignficationResultats = grilleSignficationResultats + "   ";
 					}
 				}
-				
+
 				PdfPCell cellquestions2 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.code.resultat.signification", null, Locale.getDefault()) + " : \n" + grilleSignficationResultats, normal));
 				cellquestions2.setBorder(Rectangle.NO_BORDER);
 				tablequestions2.addCell(cellquestions2);
@@ -986,7 +1238,7 @@ public class NoteController {
 		}
 		return note;
 	}
-	
+
 	private String getNote2(ElementPedagogique el) {
 		String note = el.getNote2();
 		if(el.getBareme2()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme2()!=20)){
@@ -1007,7 +1259,35 @@ public class NoteController {
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		return cell;
 	}
+
 	
+	private String getCodeSignataire(Etudiant etudiant){
+
+		String codSign=null;
+
+		//récupération de la source des résultats
+		String sourceResultat = PropertyUtils.getSourceResultats();
+		if(sourceResultat == null || sourceResultat.equals("")){
+			sourceResultat="Apogee";
+		}
+
+		// si sourceResultat = apogee-extraction
+		if(sourceResultat.compareTo("Apogee-extraction")==0){
+			//Si on doit aller chercher une signature à apposer sur le document
+			if(configController.isNotesPDFsignature()){
+				// on teste s'il y a bien des elps presents
+				if (etudiant.getElementsPedagogiques().size()>1){
+					// PFE : on teste si on a un relevé de notes (extraction) associé à l'élément pédagogique
+					List<BigDecimal> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4), etudiant.getElementsPedagogiques().get(1).getCode());
+					if (!CodRvn.isEmpty()) {
+						codSign = multipleApogeeService.getCodSignataireRvn(CodRvn.get(0));
+					}
+				}
+			}
+		}
+		return codSign;
+	}
+
 	/**
 	 * Inner class to add a watermark to every page.
 	 */
@@ -1015,13 +1295,26 @@ public class NoteController {
 
 		/** Default watermark font */
 		Font FONT = new Font(5, 52, Font.BOLD, new GrayColor(0.75f));
+		boolean formatPortrait;
+		float coordonneex;
+		float coordonneey;
+		public Watermark(boolean notesPDFFormatPortrait) {
+			formatPortrait = notesPDFFormatPortrait;
+			if(formatPortrait){
+				coordonneex=295;
+				coordonneey=400.5f;
+			}else{
+				coordonneex=421;
+				coordonneey=297.5f;
+			}
+		}
 		@Override
 		public void onEndPage(PdfWriter writer, Document document) {
 			ColumnText.showTextAligned(
 					writer.getDirectContentUnder(),
 					Element.ALIGN_CENTER,
 					new Phrase(applicationContext.getMessage("pdf.filigrane", null, Locale.getDefault()).toUpperCase(), FONT),
-					421, 297.5f,
+					coordonneex, coordonneey,
 					writer.getPageNumber() % 2 == 1 ? 45 : -45);
 		}
 	}

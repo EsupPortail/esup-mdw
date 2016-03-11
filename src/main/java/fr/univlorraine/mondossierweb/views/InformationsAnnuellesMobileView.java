@@ -47,6 +47,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
@@ -69,6 +70,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient ConfigController configController;
 
 
 
@@ -227,10 +230,13 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 
+			
 			Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
 			panelInfos.setStyleName("centertitle-panel");
 			panelInfos.addStyleName("v-colored-panel-caption");
 
+			
+			
 			//Si l'étudiant est inscrit pour l'année en cours
 			if(MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
 
@@ -293,8 +299,10 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 				panelInfos.setContent(formInfosLayout);
+				
 			}else{
-
+				//Etudiant non inscrit pour l'année en cours
+				
 				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
 				labelNonInscritLayout.setMargin(true);
 				labelNonInscritLayout.setSizeFull();
@@ -308,8 +316,11 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				
 				
 			}
-			globalLayout.addComponent(panelInfos);
-
+			
+			//Si étudiant non inscrit ou si user étudiant ou si on a autorisé la visualisation des infos annuelles par l'enseignant
+			if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours() || userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignants()){
+				globalLayout.addComponent(panelInfos);
+			}
 
 			addComponent(globalLayout);
 			setExpandRatio(globalLayout, 1);

@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -61,5 +62,9 @@ public interface MultipleApogeeService {
 	public abstract int getNbPJnonValides(String cod_ind, String cod_anu);
 	
 	public abstract boolean isBoursier(String cod_ind, String cod_anu);
+	
+	public abstract List<BigDecimal> getCodRvn(String cod_ind, String cod_anu, String cod_elp);
+	
+	public abstract String getCodSignataireRvn(BigDecimal cod_rvn);
 
 }

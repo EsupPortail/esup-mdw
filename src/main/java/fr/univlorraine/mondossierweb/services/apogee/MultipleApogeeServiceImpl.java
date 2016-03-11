@@ -76,7 +76,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
 		if(StringUtils.hasText(requestUtils.getCalendrierDesExamens())){
-			
+
 			//On utilise la requête indiquée dans le fichier XML
 			@SuppressWarnings("unchecked")
 			List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(
@@ -314,6 +314,30 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}
 		return false;
 	}
+
+
+	@Override
+	public List<BigDecimal> getCodRvn(String cod_ind, String cod_anu, String cod_elp) {
+		@SuppressWarnings("unchecked")
+		List<BigDecimal> codRvn = (List<BigDecimal>)entityManagerApogee.createNativeQuery("select distinct cod_rvn "+
+				" from trav_ext_rvm_res"+
+				" where cod_ind = "+cod_ind+
+				" and cod_obj_mnp = '"+cod_elp+"'"+
+				" and cod_anu = "+cod_anu).getResultList();
+		return codRvn;
+	}
+
+	@Override
+	public String getCodSignataireRvn(BigDecimal cod_rvn) {
+		@SuppressWarnings("unchecked")
+		String codSig = (String)entityManagerApogee.createNativeQuery("select distinct s.cod_sig "+
+				" from trav_ext_rvm_res t, releve_note rn, signataire s"+
+				" where t.cod_rvn=rn.cod_rvn and rn.cod_sig=s.cod_sig "+
+				"and t.cod_rvn="+cod_rvn ).getSingleResult();
+		return codSig;
+	}
+
+
 
 
 

@@ -356,8 +356,10 @@ public class MdwTouchkitUI extends GenericUI{
 						if(GenericUI.getCurrent().getEtudiant()==null){
 							navigator.navigateTo(ErreurView.NAME);
 						}else{
-							//On récupère le calendrier de l'étudiant
-							etudiantController.recupererCalendrierExamens();
+							if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
+								//On récupère le calendrier de l'étudiant
+								etudiantController.recupererCalendrierExamens();
+							}
 							//On récupère les notes de l'étudiant
 							etudiantController.recupererNotesEtResultats(etudiant);
 							//On affiche le dossier
@@ -495,7 +497,9 @@ public class MdwTouchkitUI extends GenericUI{
 		navigator.navigateTo(InformationsAnnuellesMobileView.NAME);
 		//Refresh des vues du dossier étudiant avec les données de l'étudiant
 		informationsAnnuellesMobileView.refresh();
-		calendrierMobileView.refresh();
+		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
+			calendrierMobileView.refresh();
+		}
 		notesMobileView.refresh();
 
 		//Si le menu étudiant n'a jamais été initialisé
@@ -526,9 +530,10 @@ public class MdwTouchkitUI extends GenericUI{
 		tabInfoAnnuelles.setId("tabInfoAnnuelles");
 
 		//Création de l'onglet Calendrier
-		tabCalendrier = menuEtudiant.addTab(calendrierMobileView, applicationContext.getMessage("mobileUI.calendrier.title", null, getLocale()), FontAwesome.CALENDAR);
-		tabCalendrier.setId("tabCalendrier");
-
+		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
+			tabCalendrier = menuEtudiant.addTab(calendrierMobileView, applicationContext.getMessage("mobileUI.calendrier.title", null, getLocale()), FontAwesome.CALENDAR);
+			tabCalendrier.setId("tabCalendrier");
+		}
 
 		//Si le navigationManager des notes est null
 		if(noteNavigationManager==null){

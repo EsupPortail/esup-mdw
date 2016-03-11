@@ -243,10 +243,11 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 
 				/* Info de contact */
-				panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
-				renseignerPanelContact();
-				globalLayout.addComponent(panelContact);
-
+				if(userController.isEtudiant() || configController.isAffInfosContactEnseignants()){
+					panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
+					renseignerPanelContact();
+					globalLayout.addComponent(panelContact);
+				}
 				addComponent(globalLayout);
 
 

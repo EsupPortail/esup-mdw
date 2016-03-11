@@ -791,21 +791,27 @@ public class MainUI extends GenericUI {
 			/* Etat Civil */
 			addItemMenu("Etat-civil", EtatCivilView.NAME, FontAwesome.USER);
 
-			//info annuelles visibles que si étudiant inscrit pour l'année en cours
-			if(etudiant.isInscritPourAnneeEnCours()){
-				addItemMenu("Informations annuelles", InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
+			//info annuelles 
+			if(userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignants()){
+				//visibles que si étudiant inscrit pour l'année en cours
+				if(etudiant.isInscritPourAnneeEnCours()){
+					addItemMenu("Informations annuelles", InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
+				}
+			}
+			
+			/* Adresses */
+			if(userController.isEtudiant() || configController.isAffAdresseEnseignants()){
+				addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
 			}
 
-			/* Adresses */
-			addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
 
 			/* Inscriptions */
 			addItemMenu("Inscriptions", InscriptionsView.NAME, FontAwesome.FILE_TEXT);
 
-
 			/* Calendrier */
-			addItemMenu("Calendrier des épreuves", CalendrierView.NAME, FontAwesome.CALENDAR);
-
+			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
+				addItemMenu("Calendrier des épreuves", CalendrierView.NAME, FontAwesome.CALENDAR);
+			}
 
 			/* Notes et Résultats */
 			addItemMenu(applicationContext.getMessage(NotesView.NAME + ".title", null, getLocale()), NotesView.NAME, FontAwesome.LIST);

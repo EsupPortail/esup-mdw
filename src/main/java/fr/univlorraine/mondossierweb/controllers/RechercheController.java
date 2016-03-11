@@ -56,6 +56,8 @@ public class RechercheController {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient UserController userController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	public void accessToRechercheArborescente(String code, String type) {
@@ -153,7 +155,9 @@ public class RechercheController {
 			if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
 				MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
-				etudiantController.recupererCalendrierExamens();
+				if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants()) || configController.isAffCalendrierEpreuvesEnseignants()){
+					etudiantController.recupererCalendrierExamens();
+				}
 				etudiantController.recupererNotesEtResultatsEnseignant(MdwTouchkitUI.getCurrent().getEtudiant());
 			}
 			if(fromSearch){

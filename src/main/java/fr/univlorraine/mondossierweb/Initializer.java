@@ -85,6 +85,7 @@ public class Initializer implements WebApplicationInitializer {
 		/* Configure les sessions */
 		Set<SessionTrackingMode> sessionTrackingModes = new HashSet<SessionTrackingMode>();
 		sessionTrackingModes.add(SessionTrackingMode.COOKIE);
+		//sessionTrackingModes.add(SessionTrackingMode.URL);
 		servletContext.setSessionTrackingModes(sessionTrackingModes);
 		servletContext.addListener(new HttpSessionListener() {
 			@Override

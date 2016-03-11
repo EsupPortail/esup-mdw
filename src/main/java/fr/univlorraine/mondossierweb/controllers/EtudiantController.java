@@ -1661,17 +1661,16 @@ public class EtudiantController {
 				sourceResultat="Apogee";
 			}
 
-			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
-			// Si different annee en cours => sourceResultat = Apogee
-			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
-				if (et.getAnnee().substring(0, 4).compareTo(annee)==0) {
-					sourceResultat="Apogee-extraction";
-					temoin=null;
-				} else {
-					sourceResultat="Apogee";
-				}
+			//Si on doit se baser sur l'extraction Apogée
+			if(utilisationExtractionApogee(et,sourceResultat)){
+				//On se base sur l'extraction apogée
+				sourceResultat="Apogee-extraction";
+				temoin=null;
+			}else{
+				//On va chercher les résultats directement dans Apogée
+				sourceResultat="Apogee";
 			}
+
 			//07/09/10
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
 				//07/09/10
@@ -1731,17 +1730,18 @@ public class EtudiantController {
 				sourceResultat="Apogee";
 			}
 
-			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
-			// Si different annee en cours => sourceResultat = Apogee
-			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
-				if (et.getAnnee().substring(0, 4).compareTo(annee)==0) {
-					sourceResultat="Apogee-extraction";
-					temoin=null;
-				} else {
-					sourceResultat="Apogee";
-				}
+
+			//Si on doit se baser sur l'extraction Apogée
+			if(utilisationExtractionApogee(et,sourceResultat)){
+				//On se base sur l'extraction apogée
+				sourceResultat="Apogee-extraction";
+				temoin=null;
+			}else{
+				//On va chercher les résultats directement dans Apogée
+				sourceResultat="Apogee";
 			}
+
+
 
 			// 07/12/11 récupération du fonctionnement identique à la récupéraition des notes pour les étudiants.
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
@@ -1768,6 +1768,23 @@ public class EtudiantController {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(),ex);
 		}
 
+	}
+
+	
+	private boolean utilisationExtractionApogee(Etape et, String sourceResultat) {
+		// Si sourceResultat = apogee-extraction :
+		if(sourceResultat.compareTo("Apogee-extraction")==0){
+			
+			int anneeEnCours = new Integer(getAnneeUnivEnCours(GenericUI.getCurrent()));
+			int anneeDemandee = new Integer(et.getAnnee().substring(0, 4));
+
+			//Si l'extraction Apogée couvre l'année demandée
+			if (anneeDemandee>=(anneeEnCours - (configController.getNotesNombreAnneesExtractionApogee() - 1 ))) {
+				//On peut se baser sur l'extraction apogée
+				return true;
+			} 
+		}
+		return false;
 	}
 
 	public void renseigneNotesEtResultats(Etudiant e) {
