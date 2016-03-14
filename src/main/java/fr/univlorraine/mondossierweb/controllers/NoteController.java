@@ -182,7 +182,7 @@ public class NoteController {
 					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					docWriter.setStrictImageSequence(true);
 					//récupération d'une eventuelle signature
-					String codSign=getCodeSignataire(MainUI.getCurrent().getEtudiant());
+					String codSign=getCodeSignataire(etape,MainUI.getCurrent().getEtudiant());
 					//Si on doit mettre le filigramme et qu'on n'a pas de signature à apposer au document
 					if(configController.isInsertionFiligranePdfNotes() && !StringUtils.hasText(codSign)){
 						//On ajoute le filigramme
@@ -1261,13 +1261,23 @@ public class NoteController {
 	}
 
 	
-	private String getCodeSignataire(Etudiant etudiant){
+	private String getCodeSignataire(Etape et,Etudiant etudiant){
 
 		String codSign=null;
 
 		//récupération de la source des résultats
 		String sourceResultat = PropertyUtils.getSourceResultats();
 		if(sourceResultat == null || sourceResultat.equals("")){
+			sourceResultat="Apogee";
+		}
+		
+
+		//Si on doit se baser sur l'extraction Apogée
+		if(etudiantController.utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
+			//On se base sur l'extraction apogée
+			sourceResultat="Apogee-extraction";
+		}else{
+			//On va chercher les résultats directement dans Apogée
 			sourceResultat="Apogee";
 		}
 
@@ -1278,7 +1288,7 @@ public class NoteController {
 				// on teste s'il y a bien des elps presents
 				if (etudiant.getElementsPedagogiques().size()>1){
 					// PFE : on teste si on a un relevé de notes (extraction) associé à l'élément pédagogique
-					List<BigDecimal> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4), etudiant.getElementsPedagogiques().get(1).getCode());
+					List<BigDecimal> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4));
 					if (!CodRvn.isEmpty()) {
 						codSign = multipleApogeeService.getCodSignataireRvn(CodRvn.get(0));
 					}

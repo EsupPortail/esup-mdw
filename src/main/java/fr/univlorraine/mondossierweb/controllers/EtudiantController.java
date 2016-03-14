@@ -737,6 +737,8 @@ public class EtudiantController {
 			if(sourceResultat == null || sourceResultat.equals("")){
 				sourceResultat="Apogee";
 			}
+
+			
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
@@ -824,6 +826,7 @@ public class EtudiantController {
 				if(sourceResultat == null || sourceResultat.equals("")){
 					sourceResultat="Apogee";
 				}
+				
 
 				// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 				// Si different annee en cours => sourceResultat = Apogee
@@ -1662,7 +1665,7 @@ public class EtudiantController {
 			}
 
 			//Si on doit se baser sur l'extraction Apogée
-			if(utilisationExtractionApogee(et,sourceResultat)){
+			if(utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
 				//On se base sur l'extraction apogée
 				sourceResultat="Apogee-extraction";
 				temoin=null;
@@ -1732,7 +1735,7 @@ public class EtudiantController {
 
 
 			//Si on doit se baser sur l'extraction Apogée
-			if(utilisationExtractionApogee(et,sourceResultat)){
+			if(utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
 				//On se base sur l'extraction apogée
 				sourceResultat="Apogee-extraction";
 				temoin=null;
@@ -1771,12 +1774,12 @@ public class EtudiantController {
 	}
 
 	
-	private boolean utilisationExtractionApogee(Etape et, String sourceResultat) {
+	public boolean utilisationExtractionApogee(String annee, String sourceResultat) {
 		// Si sourceResultat = apogee-extraction :
 		if(sourceResultat.compareTo("Apogee-extraction")==0){
 			
 			int anneeEnCours = new Integer(getAnneeUnivEnCours(GenericUI.getCurrent()));
-			int anneeDemandee = new Integer(et.getAnnee().substring(0, 4));
+			int anneeDemandee = new Integer(annee);
 
 			//Si l'extraction Apogée couvre l'année demandée
 			if (anneeDemandee>=(anneeEnCours - (configController.getNotesNombreAnneesExtractionApogee() - 1 ))) {
