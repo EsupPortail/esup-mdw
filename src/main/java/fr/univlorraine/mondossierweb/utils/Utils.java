@@ -102,6 +102,8 @@ public class Utils {
 	public static final String LIBELLE_WS_INSCRIPTION_PAYEE ="Paiement effectué";
 
 	public static final String SEPARATEUR_CODE_GROUPE = ";";
+	
+	public static final String FRAGMENT_ACCES_DOSSIER_ETUDIANT = "accesDossierEtudiant";
 
 	public static final String SHOW_MESSAGE_NOTES_PREFERENCE= "SHOW_MESSAGE_NOTES";
 

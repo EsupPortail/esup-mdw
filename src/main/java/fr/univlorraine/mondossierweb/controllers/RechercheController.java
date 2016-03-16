@@ -86,7 +86,7 @@ public class RechercheController {
 		int rangCode = 0;
 		//parcours du fragment pour trouver le codetu. Obligatoire en cas de "polution" de l'url.
 		for(int i=0 ; i < fragmentpart.length ; i++){
-			if(fragmentpart[i]!=null && fragmentpart[i].contains("accesDossierEtudiant")){
+			if(fragmentpart[i]!=null && fragmentpart[i].contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT)){
 				rangCode=i+1;
 			}
 		}

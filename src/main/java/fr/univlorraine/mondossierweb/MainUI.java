@@ -285,7 +285,7 @@ public class MainUI extends GenericUI {
 					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
 
-					if(source.getUriFragment().contains("accesDossierEtudiant") 
+					if(source.getUriFragment().contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) 
 							&& userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
 
@@ -489,7 +489,7 @@ public class MainUI extends GenericUI {
 						navigator.navigateTo(AdminView.NAME);
 						navigationComplete=true;
 					}
-					if(fragment.contains("accesDossierEtudiant") && userController.isEnseignant()){
+					if(fragment.contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) && userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigationComplete=true;
 					}
