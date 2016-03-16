@@ -276,7 +276,7 @@ public class MainUI extends GenericUI {
 		//car le fragment ne correspond pas à une vue existante)
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
 			public void uriFragmentChanged(UriFragmentChangedEvent source) {
-
+				
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
 						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
@@ -479,10 +479,9 @@ public class MainUI extends GenericUI {
 				/* Enregistre l'UI pour la réception de notifications */
 				uiController.registerUI(this);
 
-
-
 				boolean navigationComplete=false;
 				String fragment = Page.getCurrent().getUriFragment();
+				
 				if (fragment != null && !fragment.isEmpty()) {
 					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est gérer dans le listener du navigator
 					if(fragment.contains("adminView") && userController.userCanAccessAdminView()){

@@ -82,7 +82,16 @@ public class RechercheController {
 	public void accessToDossierEtudiantDeepLinking(String fragment) {
 		
 		String fragmentpart[] =fragment.split("/");
-		String code= fragmentpart[fragmentpart.length-1];
+
+		int rangCode = 0;
+		//parcours du fragment pour trouver le codetu. Obligatoire en cas de "polution" de l'url.
+		for(int i=0 ; i < fragmentpart.length ; i++){
+			if(fragmentpart[i]!=null && fragmentpart[i].contains("accesDossierEtudiant")){
+				rangCode=i+1;
+			}
+		}
+		String code= fragmentpart[rangCode];
+		
 		//On vérifie que l'étudiant avec ce code existe
 		if(etudiantController.isEtudiantExiste(code)){
 			//On accède au dossier
