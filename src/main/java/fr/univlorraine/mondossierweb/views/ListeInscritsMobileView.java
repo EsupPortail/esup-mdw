@@ -62,7 +62,7 @@ import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
  */
 @Component @Scope("prototype")
 @SpringView(name = ListeInscritsMobileView.NAME)
-//@PreAuthorize("hasRole('teacher')")
+//@PreAuthorize("@userController.hasRoleInProperty('teacher')")
 public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

@@ -70,7 +70,7 @@ import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
  */
 @Component @Scope("prototype")
 @SpringView(name = NotesView.NAME)
-@PreAuthorize("hasRole('consultation_dossier')")
+@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class NotesView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -6491779626961549383L;

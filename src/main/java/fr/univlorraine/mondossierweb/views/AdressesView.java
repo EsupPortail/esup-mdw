@@ -55,7 +55,7 @@ import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
  */
 @Component @Scope("prototype")
 @SpringView(name = AdressesView.NAME)
-@PreAuthorize("hasRole('consultation_dossier')")
+@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class AdressesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

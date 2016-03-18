@@ -52,7 +52,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  */
 @Component @Scope("prototype")
 @SpringView(name = InformationsAnnuellesView.NAME)
-@PreAuthorize("hasRole('consultation_dossier')")
+@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class InformationsAnnuellesView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

@@ -62,7 +62,7 @@ import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
  */
 @Component @Scope("prototype")
 @SpringView(name = EtatCivilView.NAME)
-@PreAuthorize("hasRole('consultation_dossier')")
+@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -2056224835347802529L;

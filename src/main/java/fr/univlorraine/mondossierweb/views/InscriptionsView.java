@@ -61,7 +61,7 @@ import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
  */
 @Component @Scope("prototype")
 @SpringView(name = InscriptionsView.NAME)
-@PreAuthorize("hasRole('consultation_dossier')")
+@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class InscriptionsView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 

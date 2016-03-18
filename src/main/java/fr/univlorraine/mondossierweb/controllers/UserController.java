@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -588,6 +589,19 @@ public class UserController {
 		}
 		return false;
 	}
+
+	/**
+	 * Vérifie que l'utilisateur courant a un rôle dans ceux listés dans une propriété.
+	 * @param propertyName propriété contenant les rôles
+	 * @return true si l'utilisateur a un rôle
+	 */
+	public boolean hasRoleInProperty(final String propertyName) {
+
+		return getCurrentAuthentication().getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.anyMatch(propertyName::contains);
+	}
+
 
 
 

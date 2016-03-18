@@ -76,7 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.exceptionHandling()
 				.authenticationEntryPoint(casEntryPoint())
 				.and()
-				.headers().frameOptions().disable()
 			.authorizeRequests()
 				.anyRequest().authenticated()
 				.and()
@@ -84,7 +83,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()))
 			.addFilter(casAuthenticationFilter())
 			// La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection
-			.csrf().disable();
+			.csrf().disable()
+			.headers()
+			         /* Autorise l'affichage en iFrame */
+			         .frameOptions().disable()
+			         /* Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https */
+			         .cacheControl().disable();
 	}
 
 	@Override
@@ -115,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public ServiceProperties casServiceProperties() {
 		ServiceProperties casServiceProperties = new ServiceProperties();
-		casServiceProperties.setService(environment.getRequiredProperty("app.url") + "/j_spring_cas_security_check");
+		casServiceProperties.setService(environment.getRequiredProperty("app.url") + "/login/cas");
 		return casServiceProperties;
 	}
 

@@ -76,7 +76,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  */ 
 @Component @Scope("session")
 @SpringView(name = RechercheMobileView.NAME)
-@PreAuthorize("hasRole('teacher')")
+@PreAuthorize("@userController.hasRoleInProperty('teacher')")
 public class RechercheMobileView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -3389183877488162603L;

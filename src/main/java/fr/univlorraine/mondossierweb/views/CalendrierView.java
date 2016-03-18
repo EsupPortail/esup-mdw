@@ -61,7 +61,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  */
 @Component @Scope("prototype")
 @SpringView(name = CalendrierView.NAME)
-@PreAuthorize("hasRole('consultation_dossier')")
+@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class CalendrierView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
 
