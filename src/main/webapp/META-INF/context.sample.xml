@@ -78,6 +78,8 @@
 	<Parameter name="typeEtudiantLdap" value="student" />  
 	<!-- La propriete ldap du contact désignant son codetu -->
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
+	<!-- attribut ldap stockant le login CAS de la personne. Le lien CAS/ldap sera fait sur cet attribut -->
+	<Parameter name="ldap.uid.attribute" value="uid" />
 	
 	
 	<!-- Source des résultats lors de l'appel aux Web Services Apogée pour récupérer les notes et résultats -->
