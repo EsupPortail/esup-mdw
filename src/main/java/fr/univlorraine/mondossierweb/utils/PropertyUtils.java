@@ -149,6 +149,15 @@ public class PropertyUtils {
 		return value;
 	}
 
+	
+	
+	/** Retourne la propriete ldap designant l'uid  */
+	public static String getAttributLdapUid(){
+		String value = System.getProperty("context.ldap.uid.attribute");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("ldap.uid.attribute cannot be null !");
+		return value;
+	}
+	
 	/** Retourne la propriete ldap du contact désignant son type (typeEtudiantLdap ou pas )  */
 	public static String getAttributLdapEtudiant(){
 		String value = System.getProperty("context.attributLdapEtudiant");

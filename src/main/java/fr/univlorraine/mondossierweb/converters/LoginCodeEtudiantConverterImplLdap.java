@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
 
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+
 
 
 
@@ -58,7 +60,7 @@ public class LoginCodeEtudiantConverterImplLdap implements LoginCodeEtudiantConv
 		
 		try {
 			if(ldapEtudiantSearch.searchForUser(codetu)!=null){
-				String[] vals= ldapEtudiantSearch.searchForUser(codetu).getStringAttributes("uid");
+				String[] vals= ldapEtudiantSearch.searchForUser(codetu).getStringAttributes(PropertyUtils.getAttributLdapUid());
 				if(vals!=null){
 					LOG.debug("login via codetu pour "+codetu+" => "+vals[0]);
 					return vals[0];
