@@ -245,6 +245,7 @@ public class MainUI extends GenericUI {
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();
+			
 			while (cause instanceof Throwable) {
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
@@ -269,6 +270,7 @@ public class MainUI extends GenericUI {
 			//DefaultErrorHandler.doDefault(e);
 		});
 
+		
 		// Affiche le nom de l'application dans l'onglet du navigateur 
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
@@ -289,14 +291,7 @@ public class MainUI extends GenericUI {
 							&& userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
 
-					}/*else{
-						if(source.getUriFragment().contains("accesNotesEtudiant") 
-								&& userController.isEnseignant()){
-							rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
-							navigator.navigateTo(NotesView.NAME);
-						}
-					}*/
-
+					}
 
 				}
 			}
@@ -493,6 +488,7 @@ public class MainUI extends GenericUI {
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigationComplete=true;
 					}
+					
 					/*if(fragment.contains("accesNotesEtudiant") && userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigator.navigateTo(NotesView.NAME);
@@ -555,7 +551,6 @@ public class MainUI extends GenericUI {
 	 */
 	public void afficherErreurView() {
 		navigator.navigateTo(ErreurView.NAME);
-		//displayViewFullScreen(ErreurView.NAME);
 	}
 
 	/**
@@ -833,7 +828,7 @@ public class MainUI extends GenericUI {
 				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 				decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 				decoBtn.addClickListener(e -> {
-					getUI().getPage().setLocation("j_spring_security_logout");
+					getUI().getPage().setLocation("logout");
 				});
 				mainMenu.addComponent(decoBtn);
 			}

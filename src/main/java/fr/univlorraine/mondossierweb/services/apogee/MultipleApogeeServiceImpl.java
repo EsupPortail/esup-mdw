@@ -317,11 +317,12 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 
 	@Override
-	public List<BigDecimal> getCodRvn(String cod_ind, String cod_anu) {
+	public List<BigDecimal> getCodRvn(String cod_ind, String cod_anu, String listeCodesElp) {
 		@SuppressWarnings("unchecked")
 		List<BigDecimal> codRvn = (List<BigDecimal>)entityManagerApogee.createNativeQuery("select distinct cod_rvn "+
 				" from trav_ext_rvm_res"+
 				" where cod_ind = "+cod_ind+
+				" and cod_obj_mnp in ("+listeCodesElp+") "+
 				" and cod_anu = "+cod_anu).getResultList();
 		return codRvn;
 	}

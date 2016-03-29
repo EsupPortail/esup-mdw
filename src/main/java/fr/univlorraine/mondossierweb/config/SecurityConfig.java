@@ -49,6 +49,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 
 
+
 /**
  * Configuration Spring Security
  * 
@@ -64,6 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Resource
 	private MdwUserDetailsService mdwUserDetailsService;
+	
 	
 	@Bean(name="authenticationManager")
 	@Override
@@ -120,6 +122,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public ServiceProperties casServiceProperties() {
 		ServiceProperties casServiceProperties = new ServiceProperties();
 		casServiceProperties.setService(environment.getRequiredProperty("app.url") + "/login/cas");
+		casServiceProperties.setSendRenew(false);
 		return casServiceProperties;
 	}
 
@@ -137,6 +140,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		casEntryPoint.setServiceProperties(casServiceProperties());
 		return casEntryPoint;
 	}
+
 
 	@Bean
 	public CasAuthenticationProvider casAuthenticationProvider() throws Exception {

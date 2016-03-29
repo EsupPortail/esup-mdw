@@ -1288,7 +1288,7 @@ public class NoteController {
 				// on teste s'il y a bien des elps presents
 				if (etudiant.getElementsPedagogiques().size()>1){
 					// PFE : on teste si on a un relevé de notes (extraction) associé à l'élément pédagogique
-					List<BigDecimal> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4));
+					List<BigDecimal> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4), getListeCodElpForSQL(etudiant.getElementsPedagogiques()));
 					if (!CodRvn.isEmpty()) {
 						codSign = multipleApogeeService.getCodSignataireRvn(CodRvn.get(0));
 					}
@@ -1296,6 +1296,21 @@ public class NoteController {
 			}
 		}
 		return codSign;
+	}
+
+	/**
+	 * 
+	 * @param elementsPedagogiques
+	 * @return la liste des codeElp concaténés avec des simples quotes et séparés par des virgules
+	 */
+	private String getListeCodElpForSQL(List<ElementPedagogique> elementsPedagogiques) {
+		String listeCodes="";
+		for(ElementPedagogique e : elementsPedagogiques){
+			if(StringUtils.hasText(listeCodes))
+				listeCodes += ",";
+			listeCodes += "'"+e.getCode()+"'";
+		}
+		return listeCodes;
 	}
 
 	/**

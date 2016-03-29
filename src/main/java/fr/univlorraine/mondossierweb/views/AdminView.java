@@ -259,7 +259,7 @@ public class AdminView extends VerticalLayout implements View {
 		Button decoBtn = new Button("Se Déconnecter", FontAwesome.SIGN_OUT);
 		decoBtn.setEnabled(true);
 		decoBtn.addClickListener(e -> {
-			getUI().getPage().setLocation("j_spring_security_logout");
+			getUI().getPage().setLocation("logout");
 		});
 		buttonsLayout.addComponent(decoBtn);
 		buttonsLayout.setComponentAlignment(decoBtn, Alignment.MIDDLE_RIGHT);
