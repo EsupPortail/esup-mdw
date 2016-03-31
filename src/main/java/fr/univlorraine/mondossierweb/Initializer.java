@@ -170,6 +170,11 @@ public class Initializer implements WebApplicationInitializer {
 		springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
 	
 	
+		
+		/* Servlet REST */
+		ServletRegistration.Dynamic restServlet = servletContext.addServlet("link", new DispatcherServlet(springContext));
+		restServlet.setLoadOnStartup(1);
+		restServlet.addMapping("/link", "/link/*");
 	}
 	
 
