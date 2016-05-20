@@ -340,10 +340,13 @@ public class UserController {
 	public String determineTypeUser(String username) {
 
 		List<String> type = typeLdap(username);
+		List<String> typeEtudiant = PropertyUtils.getTypeEtudiantLdap();
 
-		if (StringUtils.hasText(PropertyUtils.getTypeEtudiantLdap()) && type!=null &&
-				type.contains(PropertyUtils.getTypeEtudiantLdap())) { 
+		//Si un des types du compte ldap correspond à un type étudiant
+		if (typeEtudiant!=null && typeEtudiant.size()>0 && type!=null && Utils.listHaveCommonValue(type, typeEtudiant)) { 
+			
 			return STUDENT_USER;
+			
 		} else {
 
 			//on cherche a savoir si l'employé a acces (ex: c'est un enseignant)

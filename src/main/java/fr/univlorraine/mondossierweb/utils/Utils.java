@@ -248,7 +248,20 @@ public class Utils {
 		b.addStyleName("v-link");
 	}
 
-
+	//retourne vrai si les listes ont une valeur en commun
+	public static boolean listHaveCommonValue(List<String> l1,List<String> l2) {
+		if(l1!=null && l1.size()>0 && l2!=null && l2.size()>0){
+			for(String s1 : l1){
+				for(String s2: l2){
+					if(StringUtils.hasText(s1) && StringUtils.hasText(s2) && s1.equals(s2)){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
 
 	//Découpe des string séparés par des points virgules pour retourner une liste de string
 	public static List<String> splitStringFromSemiColon(String groupes){

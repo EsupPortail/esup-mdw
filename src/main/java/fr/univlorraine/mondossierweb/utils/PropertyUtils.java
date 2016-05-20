@@ -143,10 +143,14 @@ public class PropertyUtils {
 	
 
 	/** Retourne le type Etudiant dans Ldap */
-	public static String getTypeEtudiantLdap(){
+	public static List<String> getTypeEtudiantLdap(){
+		LinkedList<String> values = new LinkedList<String>();
 		String value = System.getProperty("context.typeEtudiantLdap");
 		if(!StringUtils.hasText(value)) throw new NullPointerException("typeEtudiantLdap cannot be null !");
-		return value;
+		for(String s : value.split(";")){
+			values.add(s);
+		}
+		return values;
 	}
 
 	
