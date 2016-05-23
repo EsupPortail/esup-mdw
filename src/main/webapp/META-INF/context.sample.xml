@@ -74,7 +74,7 @@
 	<Parameter name="listeGroupesLdap" value=""/>
 	<!-- La propriete ldap du contact désignant son type (typeEtudiantLdap ou pas ) -->
 	<Parameter name="attributLdapEtudiant" value="edupersonprimaryaffiliation" />
-	<!-- Le type ldap designant un etudiant -->
+	<!-- Le type ldap designant un etudiant. Possibilité d'en indiquer plusieurs séparés par des point-virgules -->
 	<Parameter name="typeEtudiantLdap" value="student" />  
 	<!-- La propriete ldap du contact désignant son codetu -->
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />

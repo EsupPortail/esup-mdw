@@ -95,11 +95,12 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 							"PESA.COD_SAL salle, SAL.LIB_SAL libsalle, "+
 							"NVL(TO_CHAR(PI.NUM_PLC_AFF_PSI),' ') place, "+
 							"BAT.LIB_BAT BATIMENT,BAT.LIB_LOC_BAT localisation, E.LIB_EPR epreuve, "+
-							"'' codcin "+
-							"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, "+
+							"'' codcin,  E.COD_EPR codeepreuve, REPLACE(PEX.LIB_PXA ,'@' ) libsession , ICE.COD_ETP codeetape, ICE.COD_VRS_VET versionetape "+
+							"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, IND_CONTRAT_ELP ICE,apogee.EPR_SANCTIONNE_ELP ESE, "+
 							"APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX  "+
 							"WHERE  PI.COD_IND="+cod_ind+" "+
 							"AND PI.COD_PES=PESA.COD_PES  "+
+							"AND ICE.COD_IND = PI.COD_IND AND ICE.COD_ANU = PESA.COD_ANU and ice.cod_elp=ESE.COD_ELP and ese.cod_epr= E.COD_EPR " +
 							"AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  "+
 							"AND  PEX.LIB_PXA LIKE '@%' AND  SAL.COD_SAL = PESA.COD_SAL  "+
 							"AND  BAT.COD_BAT = SAL.COD_BAT  "+

@@ -143,6 +143,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("affNumPlaceExamen");
 	}
 	
+	public boolean isAffDetailExamen() {
+        return getBooleanValueForParameter("affDetailExamen");
+}
+	
 	public boolean isAffAdresseEnseignants() {
 		return getBooleanValueForParameter("affAdressesEnseignants");
 	}

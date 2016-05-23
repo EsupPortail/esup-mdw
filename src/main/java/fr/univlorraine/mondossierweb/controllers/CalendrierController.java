@@ -100,11 +100,11 @@ public class CalendrierController {
 	 */
 	public com.vaadin.server.Resource exportPdf() {
 
-		
+
 		String nomFichier = applicationContext.getMessage("pdf.calendrier.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 
 		nomFichier = nomFichier.replaceAll(" ","_");
-		
+
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;
 
@@ -249,17 +249,31 @@ public class CalendrierController {
 			PdfPTable table2;
 
 			boolean affNumPlaceExamen = configController.isAffNumPlaceExamen();
-			
+
+			boolean affDetailExamen = configController.isAffDetailExamen();
+
 			if(affNumPlaceExamen) {
 				table2 = new PdfPTable(7);
 				table2.setWidthPercentage(98);
 				int [] tabWidth = {15,10,10,40,30,10,60};
 				table2.setWidths(tabWidth);
+				if (affDetailExamen) {
+					table2 = new PdfPTable(11);
+					table2.setWidthPercentage(98);
+					tabWidth = new int[] {17,13,15,25,25,7,60,25,40,20,15};
+					table2.setWidths(tabWidth);
+				}
 			}else{
 				table2 = new PdfPTable(6);
 				table2.setWidthPercentage(98);
 				int [] tabWidth = {15,10,10,45,30,65};
 				table2.setWidths(tabWidth);
+				if (affDetailExamen) {
+					table2 = new PdfPTable(10);
+					table2.setWidthPercentage(98);
+					tabWidth = new int[] {15,7,10,25,25,63,25,40,25,30};
+					table2.setWidths(tabWidth);
+				}
 			}
 
 			Paragraph p1 = new Paragraph(applicationContext.getMessage("pdf.date", null, Locale.getDefault()),normalbig);
@@ -269,6 +283,10 @@ public class CalendrierController {
 			Paragraph p5 = new Paragraph(applicationContext.getMessage("pdf.salle", null, Locale.getDefault()),normalbig);
 			Paragraph p6 = new Paragraph(applicationContext.getMessage("pdf.place", null, Locale.getDefault()),normalbig);
 			Paragraph p7 = new Paragraph(applicationContext.getMessage("pdf.examen", null, Locale.getDefault()),normalbig);
+			Paragraph p8 = new Paragraph(applicationContext.getMessage("pdf.codeepreuve", null, Locale.getDefault()),normalbig);
+			Paragraph p9 = new Paragraph(applicationContext.getMessage("pdf.libsession", null, Locale.getDefault()),normalbig);
+			Paragraph p10 = new Paragraph(applicationContext.getMessage("pdf.codeetape", null, Locale.getDefault()),normalbig);
+			Paragraph p11 = new Paragraph(applicationContext.getMessage("pdf.versionetape", null, Locale.getDefault()),normalbig);
 
 			PdfPCell ct1 = new PdfPCell(p1);
 			PdfPCell ct2 = new PdfPCell(p2);
@@ -277,6 +295,10 @@ public class CalendrierController {
 			PdfPCell ct5 = new PdfPCell(p5);
 			PdfPCell ct6 =  new PdfPCell(p6);
 			PdfPCell ct7 = new PdfPCell(p7);
+			PdfPCell ct8 = new PdfPCell(p8);
+			PdfPCell ct9 = new PdfPCell(p9);
+			PdfPCell ct10 = new PdfPCell(p10);
+			PdfPCell ct11 = new PdfPCell(p11);
 
 			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
 			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
@@ -285,6 +307,10 @@ public class CalendrierController {
 			ct5.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
 			ct6.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
 			ct7.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
+			ct8.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
+			ct9.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
+			ct10.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
+			ct11.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
 
 			table2.addCell(ct1);
 			table2.addCell(ct2);
@@ -294,6 +320,12 @@ public class CalendrierController {
 			if(affNumPlaceExamen)
 				table2.addCell(ct6);
 			table2.addCell(ct7);
+			if(affDetailExamen) {
+				table2.addCell(ct8);
+				table2.addCell(ct9);
+				table2.addCell(ct10);
+				table2.addCell(ct11);
+			}
 
 
 
@@ -327,6 +359,22 @@ public class CalendrierController {
 				PdfPCell celltext7 = new PdfPCell(pa7);
 				celltext7.setBorder(Rectangle.NO_BORDER);
 
+				Paragraph pa8 = new Paragraph(etudiant.getCalendrier().get(i).getCodeepreuve(), normal);
+				PdfPCell celltext8 = new PdfPCell(pa8);
+				celltext8.setBorder(Rectangle.NO_BORDER);
+
+				Paragraph pa9 = new Paragraph(etudiant.getCalendrier().get(i).getLibsession(), normal);
+				PdfPCell celltext9 = new PdfPCell(pa9);
+				celltext9.setBorder(Rectangle.NO_BORDER);
+
+				Paragraph pa10 = new Paragraph(etudiant.getCalendrier().get(i).getCodeetape(), normal);
+				PdfPCell celltext10 = new PdfPCell(pa10);
+				celltext10.setBorder(Rectangle.NO_BORDER);
+
+				Paragraph pa11 = new Paragraph(etudiant.getCalendrier().get(i).getVersionetape(), normal);
+				PdfPCell celltext11 = new PdfPCell(pa11);
+				celltext11.setBorder(Rectangle.NO_BORDER);
+
 				table2.addCell(celltext);
 				table2.addCell(celltext2);
 				table2.addCell(celltext3);
@@ -335,6 +383,12 @@ public class CalendrierController {
 				if(affNumPlaceExamen)
 					table2.addCell(celltext6);
 				table2.addCell(celltext7);
+				if(affDetailExamen) {
+					table2.addCell(celltext8);
+					table2.addCell(celltext9);
+					table2.addCell(celltext10);
+					table2.addCell(celltext11);
+				}
 
 				/*PdfPCell celltext4 = new PdfPCell(table3);
 				celltext4.setBorder(Rectangle.NO_BORDER);

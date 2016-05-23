@@ -70,13 +70,22 @@ public class CalendrierView extends VerticalLayout implements View {
 	public static final String NAME = "calendrierView";
 
 	public static final String[] CAL_FIELDS = {"datedeb", "heure","duree","epreuve"};
+	
+	public static final String[] CAL_FIELDS_DETAIL = {"datedeb", "heure","duree","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
 
 	public static final String[] CAL_FIELDS_AVEC_PLACE = {"datedeb", "heure","duree","place","epreuve"};
+	
+	public static final String[] CAL_FIELDS_AVEC_PLACE_DETAIL = {"datedeb", "heure","duree","place","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
 
 	public static final String[] CAL_FIELDS_ORDER = {"datedeb", "heure","duree","batiment","salle","epreuve"};
 
 	public static final String[] CAL_FIELDS_ORDER_AVEC_PLACE = {"datedeb", "heure","duree","batiment","salle","place","epreuve"};
 
+	public static final String[] CAL_FIELDS_ORDER_DETAIL = {"datedeb", "heure","duree","batiment","salle","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
+
+	public static final String[] CAL_FIELDS_ORDER_AVEC_PLACE_DETAIL = {"datedeb", "heure","duree","batiment","salle","place","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
+
+	
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
@@ -172,8 +181,14 @@ public class CalendrierView extends VerticalLayout implements View {
 				Table calendrierTable = new Table(null, bic);
 				calendrierTable.setWidth("100%");
 				String[] colonnes_to_create = CAL_FIELDS;
+				if(configController.isAffDetailExamen()) {
+					colonnes_to_create = CAL_FIELDS_DETAIL;
+				}
 				if(configController.isAffNumPlaceExamen()){
 					colonnes_to_create = CAL_FIELDS_AVEC_PLACE;
+					if(configController.isAffDetailExamen()) {
+              	       colonnes_to_create = CAL_FIELDS_AVEC_PLACE_DETAIL;
+					}
 				}
 				for (String fieldName : colonnes_to_create) {
 					calendrierTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
@@ -183,8 +198,14 @@ public class CalendrierView extends VerticalLayout implements View {
 				calendrierTable.setColumnHeader("batiment", applicationContext.getMessage(NAME+".table.batiment", null, getLocale()));
 				calendrierTable.setColumnHeader("salle", applicationContext.getMessage(NAME+".table.salle", null, getLocale()));
 				String[] colonnes_to_display = CAL_FIELDS_ORDER;
+				if(configController.isAffDetailExamen()) {
+                    colonnes_to_display = CAL_FIELDS_ORDER_DETAIL;
+				}
 				if(configController.isAffNumPlaceExamen()){
 					colonnes_to_display = CAL_FIELDS_ORDER_AVEC_PLACE;
+					if(configController.isAffDetailExamen()) {
+                        colonnes_to_display = CAL_FIELDS_ORDER_AVEC_PLACE_DETAIL;
+                	}
 				}
 				calendrierTable.setVisibleColumns((Object[]) colonnes_to_display);
 				calendrierTable.setColumnCollapsingAllowed(true);

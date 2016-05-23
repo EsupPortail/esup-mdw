@@ -86,6 +86,25 @@ public class Examen {
 	 */
 	@Column(name = "codcin")
 	private String codcin;
-
+	/**
+     * code de l'épreuve
+     */
+    @Column(name = "codeepreuve")
+    private String codeepreuve;
+    /**
+     * libellé session
+     */
+    @Column(name = "libsession")
+    private String libsession;
+    /**
+     * code de l'étape
+     */
+    @Column(name = "codeetape")
+    private String codeetape;
+    /**
+     * version de l'étape
+     */
+    @Column(name = "versionetape")
+    private String versionetape;
 	
 }
