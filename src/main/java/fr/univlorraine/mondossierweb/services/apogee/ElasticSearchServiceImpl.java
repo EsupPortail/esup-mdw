@@ -138,7 +138,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 					}else{
 						
 						//On initialise la query avec le premier mot
-						BoolQueryBuilder bqb=QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[0]));
+						BoolQueryBuilder bqb=QueryBuilders.boolQuery().must(QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[0]));
 
 						//Pour chaqu'un des mots suivant
 						for(int i=1; i<mots.length;i++){
@@ -146,7 +146,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 							//Si ce n'est pas le dernier mot
 							if(i<(mots.length-1)){
 								//On ajoute simplement le mot dans la recherche
-								bqb.must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[i]));
+								bqb.must(QueryBuilders.matchQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[i]));
 							}else{
 								//c'est le dernier, on ajoute * si il n'y avait pas d'espace apres (lastWordCompletion)
 								bqb.must(QueryBuilders.wildcardQuery(PropertyUtils.getElasticSearchChampRecherche(), mots[i]+lastWordCompletion));
