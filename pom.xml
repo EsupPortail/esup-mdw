@@ -326,16 +326,17 @@
 			</plugin>
 			
 			<plugin>
-  				<groupId>org.jasig.maven</groupId>
-  				<artifactId>maven-notice-plugin</artifactId>
-  				<version>1.0.4</version>
-  				<configuration>
-    				<noticeTemplate>https://source.jasig.org/licenses/NOTICE.template</noticeTemplate>
-    				<licenseMapping>
-      					<param>https://source.jasig.org/licenses/license-mappings.xml</param>
-    				</licenseMapping>
-  				</configuration>
-			</plugin>
+                <groupId>org.jasig.maven</groupId>
+                <artifactId>maven-notice-plugin</artifactId>
+                <version>1.0.4</version>
+                <configuration>
+                    <noticeTemplate>license/NOTICE.template</noticeTemplate>
+                    <licenseMapping>
+                        <param>https://source.jasig.org/licenses/license-mappings.xml</param>
+                        <param>license/license-mappings.xml</param>
+                    </licenseMapping>
+                </configuration>
+	    	</plugin>
 			
 			<!-- Active le compile-time weaving, pour configurer l'AOP -->
 			<plugin>
@@ -810,9 +811,6 @@
 		<dependency>
 			<groupId>com.vaadin.addon</groupId>
 			<artifactId>vaadin-touchkit-agpl</artifactId>
-			<!-- <version>4.0.4</version> -->
-			<!-- <version>4.1.0.alpha1</version>  -->
-			<!-- <version>4.1.0.rc1</version> -->
 			<version>4.1.0</version>
 			<type>jar</type>
 		</dependency>
@@ -922,8 +920,8 @@
 		<dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservicesclient</artifactId>
-			<!-- <version>4.70.la</version>   -->  
-			<version>4.70.laa</version>  
+			<!-- <version>4.70.laa</version>   -->  
+			<version>4.70.lba</version>  
 		</dependency>
 	
 		<!-- <dependency>
