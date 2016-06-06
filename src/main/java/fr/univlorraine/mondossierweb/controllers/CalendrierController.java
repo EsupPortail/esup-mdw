@@ -56,6 +56,7 @@ import com.vaadin.server.StreamResource;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Gestion du calendrier des examens
@@ -331,7 +332,7 @@ public class CalendrierController {
 
 
 			for (int i = 0; i < etudiant.getCalendrier().size(); i++) {
-				Paragraph pa = new Paragraph(etudiant.getCalendrier().get(i).getDatedeb(), normal);
+				Paragraph pa = new Paragraph(Utils.formatDateToString(etudiant.getCalendrier().get(i).getDatedeb()), normal);
 				PdfPCell celltext = new PdfPCell(pa);
 				celltext.setBorder(Rectangle.NO_BORDER);
 

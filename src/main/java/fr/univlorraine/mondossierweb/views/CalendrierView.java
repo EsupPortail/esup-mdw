@@ -52,6 +52,7 @@ import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.converters.DateToStringConverter;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -212,6 +213,7 @@ public class CalendrierView extends VerticalLayout implements View {
 				calendrierTable.setColumnReorderingAllowed(true);
 				calendrierTable.setSelectable(false);
 				calendrierTable.setImmediate(true);
+				calendrierTable.setConverter("datedeb", new DateToStringConverter());
 				calendrierTable.setStyleName("noscrollabletable");
 				calendrierTable.setPageLength(calendrierTable.getItemIds().size() );
 

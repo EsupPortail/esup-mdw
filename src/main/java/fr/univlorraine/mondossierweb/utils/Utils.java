@@ -19,6 +19,7 @@
 package fr.univlorraine.mondossierweb.utils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -273,6 +274,23 @@ public class Utils {
 			}
 		}
 		return lgroupes;
+	}
+
+	public static Date formatDateFromString(String date) {
+		if(StringUtils.hasText(date)){
+			date = date.substring(0,10);
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date d;
+			try {
+				d = formatter.parse(date);
+			} catch (ParseException e) {
+				LOG.error("String to date : "+date+" en objet Date");
+				return null;
+			}
+			return d;
+		}else{
+			return null;
+		}
 	}
 
 }

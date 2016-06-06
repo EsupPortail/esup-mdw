@@ -48,6 +48,7 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Page de calendrier sur mobile
@@ -156,7 +157,7 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					VerticalLayout detailLayout = new VerticalLayout();
 					detailLayout.setSizeFull();
 					//ajout de la date
-					Label dateLabel = new Label(exam.getDatedeb());
+					Label dateLabel = new Label(Utils.formatDateToString(exam.getDatedeb()));
 					dateLabel.setStyleName(ValoTheme.LABEL_BOLD);
 					detailLayout.addComponent(dateLabel);
 					dateLabel.addStyleName("v-label-align-right");

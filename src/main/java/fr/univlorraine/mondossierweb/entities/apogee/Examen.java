@@ -18,6 +18,10 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
+
+
+import java.sql.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -40,7 +44,7 @@ public class Examen {
 	 * date de l'événement.
 	 */
 	@Column(name = "datedeb")
-	private String datedeb;
+	private Date datedeb;
 	/**
 	 * heure de l'événement.
 	 */
