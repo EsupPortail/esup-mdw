@@ -87,7 +87,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}else{
 			@SuppressWarnings("unchecked")
 			List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(
-					"SELECT DISTINCT  rownum ID,PESA.DAT_DEB_PES datedeb, "+
+					"SELECT rownum ID, t.* from (SELECT DISTINCT PESA.DAT_DEB_PES datedeb, "+
 							"DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', "+
 							"TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| "+
 							"DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, "+
@@ -104,7 +104,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 							"AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  "+
 							"AND  PEX.LIB_PXA LIKE '@%' AND  SAL.COD_SAL = PESA.COD_SAL  "+
 							"AND  BAT.COD_BAT = SAL.COD_BAT  "+
-							"ORDER BY DATEDEB,2", Examen.class).getResultList();
+							"ORDER BY DATEDEB,2) t", Examen.class).getResultList();
 
 			return lins;
 		}
