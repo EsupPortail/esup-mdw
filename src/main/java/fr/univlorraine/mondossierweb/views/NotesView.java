@@ -210,10 +210,11 @@ public class NotesView extends VerticalLayout implements View {
 			notesDiplomesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.diplomes.note", null, getLocale()), new NoteColumnGenerator());
 			notesDiplomesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.diplomes.resultat", null, getLocale()), new ResultatColumnGenerator());
 
-			if(MainUI.getCurrent().getEtudiant().isAfficherRang()){
+			if(configController.isAffMentionEtudiant()){
 				notesDiplomesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.diplomes.mention", null, getLocale()), new MentionColumnGenerator());
 			}
-			if(configController.isAffMentionEtudiant()){
+
+			if(MainUI.getCurrent().getEtudiant().isAfficherRang()){
 				notesDiplomesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.diplomes.rang", null, getLocale()), new RangColumnGenerator());
 			}
 
@@ -243,10 +244,11 @@ public class NotesView extends VerticalLayout implements View {
 			notesEtapesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.etapes.note", null, getLocale()), new NoteColumnGenerator());
 			notesEtapesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.etapes.resultat", null, getLocale()), new ResultatColumnGenerator());
 
-			if(MainUI.getCurrent().getEtudiant().isAfficherRang()){
+			if(configController.isAffMentionEtudiant()){
 				notesEtapesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.etapes.mention", null, getLocale()), new MentionColumnGenerator());
 			}
-			if(configController.isAffMentionEtudiant()){
+
+			if(MainUI.getCurrent().getEtudiant().isAfficherRang()){
 				notesEtapesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.etapes.rang", null, getLocale()), new RangColumnGenerator());
 			}
 
