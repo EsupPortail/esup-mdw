@@ -65,7 +65,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.services.apogee.ElasticSearchServiceImpl;
+import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
@@ -98,12 +98,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	@Resource
 	private transient EtudiantController etudiantController;
 
-
-
-
-	/** {@link ElasticSearchServiceImpl} */
 	@Resource
-	private ElasticSearchServiceImpl ElasticSearchService;
+	private ElasticSearchApogeeService ElasticSearchService;
 
 	private VerticalLayout mainVerticalLayout;
 
@@ -160,7 +156,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
-			if(ElasticSearchService.initConnexion(true)){
+			if(ElasticSearchService.initConnexion()){
 
 				//CHAMP DE RECHERCHE
 				champRecherche = new AutoComplete();

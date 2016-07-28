@@ -66,7 +66,7 @@ import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.services.apogee.ElasticSearchServiceImpl;
+import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
@@ -95,9 +95,8 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient RechercheArborescenteController rechercheArborescenteController;
-	/** {@link ElasticSearchServiceImpl} */
 	@Resource
-	private ElasticSearchServiceImpl ElasticSearchService;
+	private ElasticSearchApogeeService ElasticSearchService;
 
 
 	private Button returnButton;
@@ -188,7 +187,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			mainVerticalLayout.setSizeFull();
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
-			if(ElasticSearchService.initConnexion(true)){
+			if(ElasticSearchService.initConnexion()){
 
 				//Création du champ autoComplete
 				champRecherche = new AutoComplete();

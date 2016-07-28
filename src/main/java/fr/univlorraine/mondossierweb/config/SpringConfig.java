@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.elasticsearch.client.Client;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,7 +42,10 @@ import org.springframework.security.ldap.search.LdapUserSearch;
 import com.vaadin.spring.annotation.EnableVaadin;
 
 import fr.univlorraine.mondossierweb.Initializer;
+import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
+import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Configuration Spring
@@ -151,5 +155,26 @@ public class SpringConfig {
 		String[] tat =new String[lattributes.size()];
 		lattributes.toArray(tat);
 		return tat;
+	}
+	
+	@Bean
+	public ElasticSearchApogeeService ElasticSearchApogeeService(){
+		ElasticSearchApogeeServiceImpl esas = new ElasticSearchApogeeServiceImpl();
+		
+		esas.setTypCmp(Utils.CMP);
+		esas.setTypVet(Utils.VET);
+		esas.setTypElp(Utils.ELP);
+		esas.setTypEtu(Utils.ETU);
+		esas.setEsTyp(Utils.ES_TYPE);
+		esas.setElasticSearchCluster(PropertyUtils.getElasticSearchCluster());
+		esas.setElasticSearchUrl(PropertyUtils.getElasticSearchUrl());
+		esas.setElasticSearchPort(PropertyUtils.getElasticSearchPort());
+		esas.setElasticSearchIndex(PropertyUtils.getElasticSearchIndex());
+		esas.setElasticSearchChampCodeObjet(PropertyUtils.getElasticSearchChampCodeObjet());
+		esas.setElasticSearchChampRecherche(PropertyUtils.getElasticSearchChampRecherche());
+		esas.setElasticSearchChampVersionObjet(PropertyUtils.getElasticSearchChampVersionObjet());
+		
+		return esas;
+		
 	}
 }
