@@ -33,5 +33,7 @@ public interface ElementPedagogiqueService {
 	
 	public List<BigDecimal> getCodIndInscritsFromGroupe(String code, String annee);
 	
+	public BigDecimal getDureeConservation(String code);
+	
 	
 }

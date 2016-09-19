@@ -53,6 +53,8 @@ import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
@@ -116,6 +118,8 @@ public class EtudiantController {
 	/** {@link ComposanteServiceImpl} */
 	@Resource
 	private ComposanteService composanteService;
+	@Resource
+	private ElementPedagogiqueService elementPedagogiqueService;
 	@Resource
 	private transient UiController uiController;
 	@Resource
@@ -738,7 +742,7 @@ public class EtudiantController {
 				sourceResultat="Apogee";
 			}
 
-			
+
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
@@ -826,7 +830,7 @@ public class EtudiantController {
 				if(sourceResultat == null || sourceResultat.equals("")){
 					sourceResultat="Apogee";
 				}
-				
+
 
 				// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 				// Si different annee en cours => sourceResultat = Apogee
@@ -1157,7 +1161,7 @@ public class EtudiantController {
 	 * @param reedto objet retourne par le WS
 	 * @param temoinEtatDelib
 	 */
-	public void setNotesElpEpr(Etudiant e, Etape et, ContratPedagogiqueResultatElpEprDTO5[] reedto,String temoinEtatDelib) {
+	public void setNotesElpEpr(Etudiant e, Etape et, ContratPedagogiqueResultatElpEprDTO5[] reedto,String temoinEtatDelib, int anneeResultat) {
 		try {
 
 			e.getElementsPedagogiques().clear();
@@ -1202,6 +1206,9 @@ public class EtudiantController {
 
 					//vrai si l'ELP est il dans un etat de delib qui nous convient en session2:
 					boolean elpEtatDelibS2OK=false;
+
+					//contient l'année de la PRC si les résultats sont obtenus en PRC
+					String anneePrc = null;
 
 					//On s'occupe des résultats :
 					ResultatElpDTO3[] relpdto = reedto[i].getResultatsElp();
@@ -1263,6 +1270,7 @@ public class EtudiantController {
 										if(relpdto[j].getCodAnu()!=null && !relpdto[j].getCodAnu().equals("")
 												&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
 											elp.setAnnee(relpdto[j].getCodAnu());
+											anneePrc = relpdto[j].getCodAnu();
 										}
 
 										//on recupere les crédits ECTS si pas déjà renseigné via la session de juin.
@@ -1299,6 +1307,7 @@ public class EtudiantController {
 										//on récupère l'année car si getCodAnu()!=null c'est un PRC
 										if(relpdto[j].getCodAnu()!=null && !relpdto[j].getCodAnu().equals("")){
 											elp.setAnnee(relpdto[j].getCodAnu());
+											anneePrc = relpdto[j].getCodAnu();
 										}
 										//on recupere les crédits ECTS 
 										if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
@@ -1333,6 +1342,29 @@ public class EtudiantController {
 						}
 					}
 
+					//Si il y a un PRC
+					if(anneePrc!=null){
+						//On doit vérifier que la PRC est valide
+						int anneeObtPrc=Integer.parseInt(anneePrc);
+						//Récupération de la durée de conservation de  l'élément conservable
+						BigDecimal durConElp = elementPedagogiqueService.getDureeConservation(elp.getCode());
+						if(durConElp!=null){
+							int duree = durConElp.intValue();
+							//On test si la conservation est encore valide
+							if((anneeObtPrc + duree) < anneeResultat){
+								//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
+								elp.setAnnee("");
+								elp.setNote1("");
+								elp.setBareme1(0);
+								elp.setRes1("");
+								elp.setNote2("");
+								elp.setBareme2(0);
+								elp.setRes2("");
+								elp.setEcts("");
+								elp.setEtatDelib("");
+							}
+						}
+					}
 
 					//ajout de l'élément dans la liste par ordre alphabétique:
 					//liste1.add(elp);
@@ -1674,19 +1706,22 @@ public class EtudiantController {
 				sourceResultat="Apogee";
 			}
 
+			String anneeParam=et.getAnnee().substring(0, 4);
+			int annee = Integer.parseInt(anneeParam);
+
 			//07/09/10
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
 				//07/09/10
 				//on prend le témoin pour Apogee-extraction
-				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), et.getAnnee().substring(0, 4), et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
+				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 				//29/01/10
 				//on est dans le cas d'une extraction apogée
-				setNotesElpEpr(e, et, cpdto,"AET");
+				setNotesElpEpr(e, et, cpdto,"AET",annee);
 			}else{
 				//29/01/10
 				//On récupère pour tout les états de délibération et on fera le trie après
-				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), et.getAnnee().substring(0, 4), et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,temoin);
+				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
+				setNotesElpEpr(e, et, cpdto,temoin,annee);
 			}
 
 
@@ -1745,14 +1780,16 @@ public class EtudiantController {
 			}
 
 
+			String anneeParam=et.getAnnee().substring(0, 4);
+			int annee = Integer.parseInt(anneeParam);
 
 			// 07/12/11 récupération du fonctionnement identique à la récupéraition des notes pour les étudiants.
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
-				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), et.getAnnee().substring(0, 4), et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,"AET");
+				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
+				setNotesElpEpr(e, et, cpdto,"AET",annee);
 			}else{
-				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), et.getAnnee().substring(0, 4), et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,temoin);
+				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
+				setNotesElpEpr(e, et, cpdto,temoin,annee);
 			}
 
 
@@ -1773,11 +1810,11 @@ public class EtudiantController {
 
 	}
 
-	
+
 	public boolean utilisationExtractionApogee(String annee, String sourceResultat) {
 		// Si sourceResultat = apogee-extraction :
 		if(sourceResultat.compareTo("Apogee-extraction")==0){
-			
+
 			int anneeEnCours = new Integer(getAnneeUnivEnCours(GenericUI.getCurrent()));
 			int anneeDemandee = new Integer(annee);
 

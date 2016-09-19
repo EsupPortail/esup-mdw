@@ -113,6 +113,12 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 	}
 
 
+	@Override
+	public BigDecimal getDureeConservation(String code) {
+		return (BigDecimal) entityManagerApogee.createNativeQuery("select DUR_CON_ELP from ELEMENT_PEDAGOGI where COD_ELP='"+code+"'").getSingleResult();
+	}
+
+
 
 
 }
