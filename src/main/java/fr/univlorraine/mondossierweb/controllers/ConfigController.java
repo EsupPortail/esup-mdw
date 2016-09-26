@@ -99,6 +99,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("afficherRangEtudiant");
 	}
 	
+	public boolean isAffBtnCertifNouvelleLigne(){
+		return getBooleanValueForParameter("afficherBoutonCertifNouvelleLigne");
+	}
+	
 	public boolean isLogoutCasPropose() {
 		return getBooleanValueForParameter("logoutCasPropose");
 	}

@@ -39,6 +39,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -49,6 +50,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Inscription;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.InscriptionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -84,6 +86,8 @@ public class InscriptionsView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient InscriptionController inscriptionController;
+	@Resource
+	private transient ConfigController configController;
 
 
 
@@ -244,6 +248,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 			libelleLayout.addComponent(lib_label);
 			libelleLayout.setComponentAlignment(lib_label, Alignment.MIDDLE_CENTER);
 
+			Layout layoutToAdd = libelleLayout;
 
 			//Si c'est une inscription sur l'année en cours
 			if(inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent()))){
@@ -283,13 +288,21 @@ public class InscriptionsView extends VerticalLayout implements View {
 					fd.setOverrideContentType(false);
 					fd.extend(bCertificatInscription);
 				}
-				libelleLayout.addComponent(bCertificatInscription);
+				if(!configController.isAffBtnCertifNouvelleLigne()){
+					libelleLayout.addComponent(bCertificatInscription);
+				}else{
+					bCertificatInscription.setStyleName(ValoTheme.BUTTON_TINY);
+					bCertificatInscription.addStyleName("red-button-icon");
+					bCertificatInscription.setCaption(applicationContext.getMessage(NAME + ".certificatScolarite.btn.link", null, getLocale()));
+					VerticalLayout vLayout = new VerticalLayout();
+					vLayout.addComponent(libelleLayout);
+					vLayout.addComponent(bCertificatInscription);
+					layoutToAdd=vLayout;
+				}
 			}			
 
 
-
-
-			return libelleLayout;
+			return layoutToAdd;
 		}
 	}
 
