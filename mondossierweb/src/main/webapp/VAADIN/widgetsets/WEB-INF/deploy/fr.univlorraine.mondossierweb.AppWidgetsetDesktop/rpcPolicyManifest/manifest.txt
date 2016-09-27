@@ -1,0 +1,2 @@
+# Module fr.univlorraine.mondossierweb.AppWidgetsetDesktop
+# RPC service class, partial path of RPC policy file
