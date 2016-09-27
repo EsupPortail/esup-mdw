@@ -811,7 +811,7 @@ public class NoteController {
 
 			try {
 				if (StringUtils.hasText(codSign)) {
-					Signataire signataire = multipleApogeeService.getSignataire(codSign);
+					Signataire signataire = multipleApogeeService.getSignataire(codSign,PropertyUtils.getClefApogeeDecryptBlob());
 					if (signataire.getImg_sig_std() != null){
 						float[] widthsSignataire = {2f, 1.3f};
 						PdfPTable tableSignataire = new PdfPTable(widthsSignataire);

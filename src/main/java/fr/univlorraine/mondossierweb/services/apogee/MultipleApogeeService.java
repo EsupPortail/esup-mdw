@@ -43,7 +43,7 @@ public interface MultipleApogeeService {
 	
 	public abstract List<String> getDernieresAnneesUniversitaires();
 	
-	public abstract Signataire getSignataire(String codeSignataire);
+	public abstract Signataire getSignataire(String codeSignataire, String cleApogee);
 	
 	public abstract String getCodCivFromCodInd(String cod_ind);
 

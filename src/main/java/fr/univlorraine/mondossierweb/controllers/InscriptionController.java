@@ -56,6 +56,7 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Gestion des inscriptions et du certificat de scolarité
@@ -184,7 +185,7 @@ public class InscriptionController {
 		try {
 
 
-			Signataire signataire = multipleApogeeService.getSignataire(configController.getCertScolCodeSignataire());
+			Signataire signataire = multipleApogeeService.getSignataire(configController.getCertScolCodeSignataire(), PropertyUtils.getClefApogeeDecryptBlob());
 
 			// Ajout Bordeaux1
 			if (configController.isCertScolUtiliseLogo()){

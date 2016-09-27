@@ -141,6 +141,13 @@ public class PropertyUtils {
 		return false;
 	}
 	
+	/** Retourne la clé apogée pour décrypter les blob de la base apogée */
+	public static String getClefApogeeDecryptBlob(){
+		String value = System.getProperty("context.clefApogeeDecryptBlob");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("clefApogeeDecryptBlob cannot be null !");
+		return value;
+	}
+	
 
 	/** Retourne le type Etudiant dans Ldap */
 	public static List<String> getTypeEtudiantLdap(){

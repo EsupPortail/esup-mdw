@@ -44,7 +44,8 @@
 		logAbandoned="true"
 		validationQuery="select '1' from dual" />
 		
-		
+		<!-- Clé apogée pour décrypter les Blob de la base Apogée (ex : signature certificat de scolarité) -->
+		<Parameter name="clefApogeeDecryptBlob" value="cleapogee" />
 	
 	<!-- URL de l'application -->
 	<Parameter name="app.url" value="http://mdw.univ.fr:8080" /> 
