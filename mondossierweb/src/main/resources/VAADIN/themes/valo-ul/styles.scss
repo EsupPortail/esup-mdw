@@ -1,0 +1,147 @@
+/* Couleurs UL */
+	$ul_pantone_101_C: rgb(255,237,69); /* Jaune */
+	/* Couleurs d'accompagnement chaudes */
+	$ul_pantone_7531_C: rgb(137,119,107); /* Marron */
+	$ul_pantone_212_C: rgb(233,96,146); /* Rose */
+	$ul_pantone_7416_C: rgb(238,132,120); /* Rouge clair */
+	$ul_pantone_warm_red_C: rgb(233,94,56); /* Rouge : Domaine SCOL */
+	$ul_pantone_2583_U: rgb(167,120,174); /* Violet */
+	$ul_pantone_2635_C: rgb(199,185,216); /* Violet clair */
+	$ul_pantone_1375_C: rgb(244,160,65); /* Orange */
+	/* Couleurs d'accompagnement froides */
+	$ul_pantone_2726_C: rgb(85,96,164); /* Indigo : Domaine DN */
+	$ul_pantone_7480_C: rgb(79,175,108); /* Vert : Domaine GFC */
+	$ul_pantone_3268_C: rgb(0,160,143); /* Vert emeraude */
+	$ul_pantone_659_C: rgb(113,151,202); /* Bleu : Domaine RH */
+	$ul_pantone_325_C: rgb(122,198,197); /* Turquoise clair */
+	$ul_pantone_638_U: rgb(60,173,202); /* Turquoise */
+	$ul_pantone_7451_C: rgb(177,194,225); /* Bleu clair */
+
+/* Parametrage Valo */
+	$v-focus-color: $ul_pantone_2726_C; /* Changer ici la couleur principale en fonction du domaine métier */
+	$v-border-radius: 2px;
+/*	$v-font-size: 15px;*/
+	$v-bevel: false;
+	$v-layout-margin-top: 10px;
+	$v-layout-margin-right: 10px;
+	$v-layout-margin-bottom: 10px;
+	$v-layout-margin-left: 10px;
+	$v-animations-enabled: false;
+
+@import "../valo/valo";
+
+.valo-ul {
+	@include valo;
+
+/* Reduction de l'espace entre titres */
+	h1, .h1 {
+		margin-top: .6em;
+		margin-bottom: .2em;
+	}
+	h2, .h2 {
+		margin-top: .3em;
+		margin-bottom: .1em;
+	}
+	h3, .h3 {
+		margin-top: .2em;
+		margin-bottom: 0;
+	}
+	h4, .h4 {
+		margin-top: .1em;
+		margin-bottom: 0;
+	}
+
+/* Changement couleur des titres de menu */
+	.valo-menu-subtitle {
+		color: mix(valo-font-color($valo-menu-background-color), $v-selection-color);
+	}
+	
+	.v-button-primary {
+		min-width: 0px;
+	}
+	
+	.flexwrap {
+	
+    	.itembox {
+        white-space: normal;
+        vertical-align: top;
+    	}
+    
+	}
+    
+	.flexwrap[width-range~="0-1199px"] {
+		.firstitembox {
+    	width: 100%;
+    	padding-bottom: 12px;
+    	}
+    	.itembox {
+    	width: 100%;
+    	}
+	}
+    
+	.flexwrap[width-range~="1200px-"] {
+		.firstitembox {
+    	width: 50%; 
+    	padding-right: 12px;
+    	}
+    	.itembox {
+    	width: 50%; 
+    	}
+	}
+	
+	.flexwrap .firstitembox .v-slot {
+		width: 100%;
+	}
+	
+	.flexwrap .firstitembox .v-slot .v-panel {
+		width: 100%;
+	}
+	
+	.flexwrap .itembox .v-slot {
+		width: 100%;
+	}
+	
+	.flexwrap .itembox .v-slot .v-panel {
+		width: 100%;
+	}
+	
+	
+/* Correction bug d'affichage cf. http://dev.vaadin.com/ticket/14873 */
+	.v-window-modalitycurtain {
+		@include animation(valo-animate-in-fade 400ms 100ms backwards);
+	}
+
+/* Supprime la largeur minimum des fenêtres */
+	html & .v-window {
+		min-width: 0 !important;
+	}
+	
+	
+	/*.v-loading-indicator,  
+ .v-loading-indicator-delay,  
+ .v-loading-indicator-wait {  
+   width: 100%;  
+   height: 100%;  
+   margin: 0;  
+   background-position: 50%;  
+   background-color: gray;  
+   background-repeat: no-repeat;  
+   background-attachment: fixed;   
+   opacity: .8;  
+   -ms-filter: alpha(opacity=80);  
+   filter: alpha(opacity=80);  
+ }  */
+ 
+ .v-loading-indicator,  
+ .v-loading-indicator-delay,  
+ .v-loading-indicator-wait {  
+   /*background-color: black;   */
+   background-color: rgb(255,237,69);
+   background: rgb(255,237,69);
+   opacity: .9;  
+   
+}
+ 
+
+
+}
