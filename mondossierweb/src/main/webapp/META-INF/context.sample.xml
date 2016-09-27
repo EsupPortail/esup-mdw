@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+
+     ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium
+
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+
+-->
+<Context>
+	<!-- Desactive la persistence des sessions apres un redemarrage -->
+	<Manager pathname="" />
+
+	<!-- Base MySQL propre à l'application -->
+	<Resource name="jdbc/dbMdw" type="javax.sql.DataSource" username="usermdw"
+		password="xxxxx" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw"
+		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
+		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1'" />
+
+	<!-- Connexion sur Apogée -->
+	<Resource name="jdbc/dbApogee"
+		type="javax.sql.DataSource"
+		username="usermdw"
+		password="xxxxx"
+		driverClassName="oracle.jdbc.driver.OracleDriver"
+		url="jdbc:oracle:thin:@apogee.univ.fr:1521:APOGEE"
+		maxActive="20"
+		maxIdle="4"
+		maxWait="10000"
+		removeAbandoned="true"
+		removeAbandonedTimeout="600"
+		logAbandoned="true"
+		validationQuery="select '1' from dual" />
+		
+		<!-- Clé apogée pour décrypter les Blob de la base Apogée (ex : signature certificat de scolarité) -->
+		<Parameter name="clefApogeeDecryptBlob" value="cleapogee" />
+	
+	<!-- URL de l'application -->
+	<Parameter name="app.url" value="http://mdw.univ.fr:8080" /> 
+
+	<!-- URL du CAS -->
+	<Parameter name="cas.url" value="https://auth.univ.fr" />
+
+	<!-- Configuration du LDAP -->
+	<!-- Url du ldap. Si plusieurs urls, les séparer par des points virgule -->
+	<Parameter name="ldap.url" value="ldap://ldap.univ.fr:389/dc=univ,dc=fr" />
+	<!-- Identifiants (facultatif) -->
+	<Parameter name="ldap.userDn" value="userDn" />
+	<Parameter name="ldap.password" value="xxxxx" />
+
+
+	<!-- Ws uportal -->
+	<Parameter name="uportal.ws" value="http://ent.univ.fr/services/UportalService" />
+	<!-- liste des groupes uportal autorisés séparés par un point virgule -->
+	<Parameter name="uportal.groupes.autorises" value="Utilisateurs MDW" />
+
+
+	<!-- Utilisation de la table Utilisateur d'Apogee pour l'acces à MDW pour les enseignants. Mettre false pour ne pas utiliser cette fonctionnalite -->
+	<Parameter name="loginApogee" value="true" />
+	<!-- le nom de l'attribut contenant les groupes ldap pour une authentification via les groupes ldap. Laisser vide pour ne pas utiliser -->
+	<Parameter name="attributGroupeLdap" value=""/>
+	<!-- La liste des groupes ldap autorisant l'acces à mondossierWeb en tant qu'enseignant séparés par un point virgule. Laisser vide pour ne pas utiliser -->
+	<Parameter name="listeGroupesLdap" value=""/>
+	<!-- La propriete ldap du contact désignant son type (typeEtudiantLdap ou pas ) -->
+	<Parameter name="attributLdapEtudiant" value="edupersonprimaryaffiliation" />
+	<!-- Le type ldap designant un etudiant. Possibilité d'en indiquer plusieurs séparés par des point-virgules -->
+	<Parameter name="typeEtudiantLdap" value="student" />  
+	<!-- La propriete ldap du contact désignant son codetu -->
+	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
+	<!-- attribut ldap stockant le login CAS de la personne. Le lien CAS/ldap sera fait sur cet attribut -->
+	<Parameter name="ldap.uid.attribute" value="uid" />
+	
+	
+	<!-- Source des résultats lors de l'appel aux Web Services Apogée pour récupérer les notes et résultats -->
+	<Parameter name="sourceResultats" value="Apogee" />
+	
+	<!-- Mode production : Desactive le mode debug -->
+	<Parameter name="productionMode" value="true" />
+	
+	<!-- Active/Desactive le push -->
+	<Parameter name="enablePush" value="true" />
+	<!-- Active/Desactive les webSockets pour le push -->
+	<Parameter name="webSocketPush" value="false" />
+	<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans. Push obligatoire -->
+	<Parameter name="showLoadingIndicator" value="true" />
+	
+	<!-- Configuration de l'envoi de mails d'erreur -->
+	<Parameter name="mail.smtpHost" value="smtp-sig.univ-lorraine.fr" />
+	<Parameter name="mail.from" value="mdw@univ.fr" />
+	<Parameter name="mail.to" value="error@univ.fr" />
+	<Parameter name="mail.startDisabling" value="00:01" />
+	<Parameter name="mail.stopDisabling" value="00:02" />
+	<!-- liste des erreurs à ignorer séparées par un point virgule -->
+	<Parameter name="liste.erreur.a.ignorer" value="ClientAbortException;IllegalStateException"/>
+
+	<!-- ELASTICSEARCH -->
+ 	<Parameter name="param.elasticsearch.url" value="localhost" /> 
+	<Parameter name="param.elasticsearch.port" value="9300" /> 
+	<Parameter name="param.elasticsearch.cluster" value="dev-1.3.4" />
+	<Parameter name="param.elasticsearch.index" value="apogee" />
+	<Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
+	<Parameter name="param.elasticsearch.index.champcodeobjet" value="COD_OBJ" />
+	<Parameter name="param.elasticsearch.index.champversionobjet" value="COD_VRS_OBJ" />
+	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="LIB_OBJ" />
+	
+	
+
+
+	<!-- true pour que l'email de l'étudiant (état-civil) soit récupéré par 
+		le WS dans l'annuaire. false pour que ce soit une implementation différente qui s'en charge. 
+		Note : à true, pkb_annu et TEM_ACC_ANNUAIRE doivent être actifs dans APOGEE -->
+	<Parameter name="param.apogee.mail.annuaire" value="false" />
+
+
+	<!--  Interface pour la récupération du mail -->
+	<!-- emailConverterLdapImpl : récupération du "mail" dans le ldap -->
+	<Parameter name="emailConverter.implementation" value="emailConverterLdapImpl" />
+	<!-- emailConverterUnivLorraineImpl : Utilisation d'une table annu_mel_login dans Apogée 
+ 	<Parameter name="emailConverter.implementation" value="emailConverterUnivLorraineImpl" />   --> 
+	<!-- emailConverterBasicImpl : Concaténation du login avec l'extension indiquée dans la configuration 
+	<Parameter name="emailConverter.implementation" value="emailConverterBasicImpl" />  -->
+	
+	
+	<!--  Interface pour la récupération du cod_etu à partir du login -->
+	<!-- codetuFromLoginLdapImpl : On passe par le ldap pour récupérer le cod_etu -->
+	<Parameter name="codetuFromLogin.implementation" value="codetuFromLoginLdapImpl" />
+	
+	
+	<!--  Interface pour la récupération du login à partir du codetu -->
+	<!-- loginFromCodetuLdapImpl : On passe par le ldap pour récupérer le login -->
+	<Parameter name="loginFromCodetu.implementation" value="loginFromCodetuLdapImpl" /> 
+	<!--  loginFromCodetuUnivLorraineImpl : Utilisation d'une table annu_mel_login dans Apogée  -->
+	<!-- <Parameter name="loginFromCodetu.implementation" value="loginFromCodetuUnivLorraineImpl" /> -->
+
+		<!--  Méthode d'affichage du nom -->
+	<!-- basique : nom usuel prioritaire -->
+	<!-- <Parameter name="etatcivil.nom.affichage" value="basique" />  -->
+	<!-- standard : Nom patronymique (Nom usuel s'il est différent du nom patronymique) -->
+	<Parameter name="etatcivil.nom.affichage" value="standard" />
+
+	<!--  Interface pour la gestion des photos -->
+	<!-- photoEmptyImpl : Implémentation vide -->
+	<Parameter name="serveurphoto.implementation" value="photoEmptyImpl" />
+	<!-- photoUnivLorraineImpl : implémentation pour université de Lorraine
+	<Parameter name="serveurphoto.implementation" value="photoUnivLorraineImpl" /> -->
+	
+	
+	<!-- Config Photoserver UL 
+	<Parameter name="param.photoserver.ressourceurl"
+		value="http://photoserver-test.univ-lorraine.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&amp;chksum=%chksum%" />
+	<Parameter name="param.photoserver.ticketurl"
+		value="http://photoserver-test.univ-lorraine.fr/PhotoServer/getTicket?ip=%ip%&amp;mode=%mode%&amp;typ_lim=%typLim%&amp;val_lim=%valLim%&amp;client=%client%" />
+	<Parameter name="param.photoserver.codeapp" value="0" /> -->
+
+
+
+	<!-- Compte Google Analytics, facultatif -->
+	<!--  <Parameter name="google.analytics.account" value="UA-00000000-1" /> -->
+	
+	<!-- Compte Piwik Analytics, facultatif -->
+	<Parameter name="piwik.tracker.url" value="piwik.univ.fr" /> 
+	<Parameter name="piwik.site.id" value="1" />
+	
+
+
+</Context>

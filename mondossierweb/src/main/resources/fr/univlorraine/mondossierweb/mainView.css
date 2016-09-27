@@ -1,0 +1,277 @@
+/* ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium */
+.valo-menu {
+	color: #ff0000;
+}
+
+.valo-ul .v-slot-btn-reset {
+border-right: 1px solid #c5c5c5 !important;
+border-left: 0px solid #c5c5c5 !important;
+border-top: 1px solid #c5c5c5 !important;
+border-bottom: 1px solid #c5c5c5 !important;
+height: 35px !important;
+}
+
+.valo-ul .textfield-resetable {
+border-radius: 0px !important;
+border-right: 0px !important;
+border-left: 1px solid #c5c5c5 !important;
+border-top: 1px solid #c5c5c5 !important;
+border-bottom: 1px solid #c5c5c5 !important;
+}
+
+.v-slot-googlepopupview {
+	position: absolute;
+	/* left:112px; */
+	/* top: 54px; */
+	/* left:137px; 
+	 top: 66px; */
+	 left:122px; 
+	 top: 61px;
+	z-index: 2;
+}
+
+.valo-ul .v-popupview-popup-googlepopupview {
+padding: 0px 0px !important;
+}
+
+.v-table-body-googletable{
+     /*  overflow: hidden !important; */
+    overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.valo-ul .valo-menu-subtitle {
+color: silver;
+font-size: inherit;
+font-weight: bold;
+}
+
+.v-table-row-highlighted {
+	color: #ff0000;
+}
+
+.valo-ul .v-textfield.v-disabled {
+	opacity: inherit !important;
+	font-weight: bold !important;
+}
+
+.valo-ul .button-big-icon {
+font-size: xx-large;
+}
+
+
+.valo-ul .red-button-icon {
+color: #ff0000;
+}
+
+.valo-ul .red-button-icon:hover {
+	color: #bb382e;
+}
+
+.valo-ul .button-icon {
+	font-size: x-large;
+}
+
+.valo-ul .retourALaLigneAutomatique{
+	white-space: normal !important;
+}
+
+
+.valo-ul .v-formlayout.light  > table > tbody > tr > td {
+	padding-top: 0;
+	height: 37px;
+	border-bottom: none;
+	padding-bottom: initial;
+}
+
+.valo-ul .v-formlayout.light  > table > tbody > [class*="lastrow"] > td {
+	padding-top: 0;
+	height: 37px;
+	border-bottom: none;
+	padding-bottom: initial;
+}
+
+.valo-ul .small-font-element{
+	font-size: small;
+}
+
+.valo-ul .v-panel {
+	border-radius: 5px !important;
+}
+
+.valo-ul .v-panel-caption {
+background-color: #6E6E6E !important;
+background-image: none !important;
+color: white !important;
+ font-size: inherit !important;
+ border-top-right-radius: 5px !important;
+border-top-left-radius: 5px !important;
+}
+
+
+.valo-ul .v-table-noscrollabletable{
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.valo-ul .v-table-body-noscrollabletable{
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+
+.valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
+	background : rgb(85,96,164) !important;
+	color: white !important;
+	height: 37px !important;
+	font: 400 12px/1.55 "Open Sans", sans-serif !important;
+}
+
+.valo-ul .v-link {
+color: inherit;
+}
+
+
+.valo-ul .label-centre {
+	text-align: center;
+}
+
+.valo-ul .label-align-right{
+	text-align: right;
+}
+
+.valo-ul .v-image-link{
+	cursor: pointer;
+}
+
+.valo-ul .scrollableelement{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+
+/*
+.valo-ul .v-table-body-scrollabletable{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.valo-ul .v-table-scrollabletable{
+    overflow-x: auto;
+	overflow-y: auto;
+}
+
+.valo-ul .v-slot-scrollabletable{
+	overflow-x: auto;
+	overflow-y: auto;
+}
+*/
+
+.v-window {
+@include transition(none);
+}
+
+
+.v-scrollablepanel{
+overflow-y: auto;
+overflow-x: hidden;
+}
+
+/* pour bloquer le bug qui ajoute des scrollbar sur les table de un element */
+.v-table-body-wrapper.v-table-body > div:nth-child(1) > table > tbody td:last-child > div{
+width: auto !important;
+}
+
+/* couleur header des tables et footer */
+/*.valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .headerTable {
+	background: rgba(65, 102, 169, 0.65);
+	color: white;
+	height: 37px;
+	font: 400 12px/1.55 "Open Sans", sans-serif;
+}*/
+
+.valo-ul .deletefavbutton {
+width: 52px;
+}
+
+.dropicon .v-icon {
+color: red;
+}
+    
+/* .dropicon .v-icon:before {
+content: "\f05e";
+color: red;
+}*/
+
+.valo-ul .v-window-modalitycurtain {
+-webkit-animation: none;
+-moz-animation: none;
+animation: none;
+}
+
+
+.valo-ul .v-window {
+-webkit-transition: none;
+-moz-transition: none;
+transition: none;
+}
+
+
+.valo-ul .table-without-column-selector .v-table-column-selector {
+display: none !important;
+}
+
+.valo-ul .v-reconnect-dialog {
+color: white;
+top: 12px;
+right: 12px;
+max-width: 100%;
+border-radius: 0;
+-webkit-box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.25);
+box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.25);
+padding: 12px 15px;
+background-color: #444;
+background-color: rgba(68, 68, 68, 0.9);
+line-height: 22px;
+text-align: center;
+}
+
+.valo-ul .v-reconnect-dialog .text {
+display: inline-block;
+padding-left: 10px;
+}
+
+.valo-ul .v-reconnect-dialog .spinner {
+height: 24px !important;
+width: 24px !important;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+border: 2px solid rgba(79, 175, 108, 0.2);
+border-top-color: #4faf6c;
+border-right-color: #4faf6c;
+border-radius: 100%;
+-webkit-animation: v-rotate-360 500ms infinite linear;
+-moz-animation: v-rotate-360 500ms infinite linear;
+animation: v-rotate-360 500ms infinite linear;
+pointer-events: none;
+display: none;
+vertical-align: middle;
+}
+
+.v-ie8 .valo-ul .v-reconnect-dialog .spinner, .v-ie9 .valo-ul .v-reconnect-dialog .spinner {
+border: none;
+border-radius: 2px;
+background: #fff url(../valo/shared/img/spinner.gif) no-repeat 50% 50%;
+background-size: 80%;
+}
+
+.v-ie8 .valo-ul .v-reconnect-dialog .spinner {
+min-width: 30px;
+min-height: 30px;
+}
+
+.valo-ul .v-reconnect-dialog.active .spinner {
+display: inline-block;
+}
+
