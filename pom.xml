@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.1.9</version>
+	<version>1.1.9-SNAPSHOT</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -69,8 +69,7 @@
 	<developerConnection>scm:git:git@github.com/EsupPortail/esup-mdw.git</developerConnection> 
 <!--  	<connection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</developerConnection>-->
-	  <tag>mdw-vaadin-1.1.9</tag>
-  </scm>
+	</scm>
 
 	<repositories>
 		<repository>
