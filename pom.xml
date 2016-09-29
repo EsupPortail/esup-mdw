@@ -70,8 +70,10 @@
 	
 	<scm>
 		<url>https://github.com/EsupPortail/esup-mdw</url>
-		<connection>scm:git:git://github.com/EsupPortail/esup-mdw.git</connection>
-		<developerConnection>scm:git:git@github.com/EsupPortail/esup-mdw.git</developerConnection>
+	<!-- <connection>scm:git:git://github.com/EsupPortail/esup-mdw.git</connection>
+	<developerConnection>scm:git:git@github.com/EsupPortail/esup-mdw.git</developerConnection> -->	
+	<connection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</developerConnection>
 	</scm>
 
 	<repositories>
