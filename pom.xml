@@ -71,7 +71,7 @@
 	<scm>
 		<url>https://github.com/EsupPortail/esup-mdw</url>
 		<connection>scm:git:git://github.com/EsupPortail/esup-mdw.git</connection>
-		<developerConnection>scm:git:git://github.com/EsupPortail/esup-mdw.git</developerConnection>
+		<developerConnection>scm:git:git@github.com/EsupPortail/esup-mdw.git</developerConnection>
 	</scm>
 
 	<repositories>
