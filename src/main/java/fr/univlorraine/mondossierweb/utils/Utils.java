@@ -113,6 +113,12 @@ public class Utils {
 	public static final String SHOW_MESSAGE_INTRO_PREFERENCE = "SHOW_MESSAGE_INTRO";
 
 	public static final String SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE = "SHOW_MESSAGE_MOBILE_INTRO";
+	
+	public static final String PARAM_TYP_BOOLEAN = "BOOLEAN";
+	
+	public static final String PARAM_TYP_LIST = "LIST";
+	
+	public static final String PARAM_TYP_STRING = "STRING";
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;

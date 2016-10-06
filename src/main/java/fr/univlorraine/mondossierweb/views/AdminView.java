@@ -18,6 +18,8 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
@@ -44,6 +46,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationCategorie;
 import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
 import fr.univlorraine.mondossierweb.views.windows.PreferencesApplicationWindow;
 import fr.univlorraine.mondossierweb.views.windows.SwapUtilisateurWindow;
@@ -79,10 +82,9 @@ public class AdminView extends VerticalLayout implements View {
 
 	//le tabSheet global affiché
 	private TabSheet tabSheetGlobal;
-	private Button btnEdit;
+
 	private Button btnEditSwap;
 	private Button btnAddSwap;
-	private Table confAppTable;
 	private Table confSwapTable;
 	private int tabSelectedPosition;
 
@@ -134,17 +136,24 @@ public class AdminView extends VerticalLayout implements View {
 			tabSheetGlobal.setSizeFull();
 			tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
-			//ajout de l'onglet principal 'parametres'
-			layoutConfigApplication = new VerticalLayout();
-			layoutConfigApplication.setSizeFull();
-			ajoutGestionParametresApplicatifs();
-			tabSheetGlobal.addTab(layoutConfigApplication, "Paramètres de l'application", FontAwesome.COGS);
+			/* Récupération des Categories de configuration */
 
+			List<PreferencesApplicationCategorie> categories = configController.getCategories();
+
+			int tabNumber = 0;
+			for(PreferencesApplicationCategorie categorie : categories){
+				//ajout de l'onglet principal 'parametres'
+				layoutConfigApplication = new VerticalLayout();
+				layoutConfigApplication.setSizeFull();
+				ajoutGestionParametresApplicatifs(categorie,tabNumber);
+				tabSheetGlobal.addTab(layoutConfigApplication, categorie.getCatDesc(), FontAwesome.COGS);
+				tabNumber++;
+			}
 
 			//ajout de l'onglet 'swap'
 			layoutSwapUser = new VerticalLayout();
 			layoutSwapUser.setSizeFull();
-			ajoutGestionSwap();
+			ajoutGestionSwap(tabNumber);
 			tabSheetGlobal.addTab(layoutSwapUser, "Swap utilisateur", FontAwesome.GROUP);
 
 
@@ -158,35 +167,32 @@ public class AdminView extends VerticalLayout implements View {
 		}
 	}
 
-	private void ajoutGestionParametresApplicatifs() {
+	private void ajoutGestionParametresApplicatifs(PreferencesApplicationCategorie categorie,int tabNumber) {
 
 
 		layoutConfigApplication.setMargin(true);
 		layoutConfigApplication.setSpacing(true);
+
+
+
 		/* Boutons */
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setSpacing(true);
 		layoutConfigApplication.addComponent(buttonsLayout);
 
+		Label categorieLabel = new Label();
+		categorieLabel.setCaption(categorie.getCatDesc());
+		buttonsLayout.addComponent(categorieLabel);
 
-		btnEdit = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
+		Button btnEdit = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
 		btnEdit.setEnabled(false);
-		btnEdit.addClickListener(e -> {
-			if (confAppTable.getValue() instanceof PreferencesApplication) {
-				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
-				PreferencesApplicationWindow paw = new PreferencesApplicationWindow((PreferencesApplication) confAppTable.getValue());
-				paw.addCloseListener(f->init());
-				tabSelectedPosition=0;
-				MainUI.getCurrent().addWindow(paw);
-			}
-		});
+		
 		buttonsLayout.addComponent(btnEdit);
 		buttonsLayout.setComponentAlignment(btnEdit, Alignment.MIDDLE_CENTER);
 
-
 		/* Table des conf */
-		confAppTable = new Table(null, new BeanItemContainer<>(PreferencesApplication.class, configController.getAppParameters()));
+		Table confAppTable = new Table(null, new BeanItemContainer<>(PreferencesApplication.class, configController.getAppParametersForCatId(categorie.getCatId())));
 		confAppTable.setSizeFull();
 		confAppTable.setVisibleColumns((Object[]) CONF_APP_FIELDS_ORDER);
 		for (String fieldName : CONF_APP_FIELDS_ORDER) {
@@ -210,13 +216,26 @@ public class AdminView extends VerticalLayout implements View {
 				btnEdit.click();
 			}
 		});
+		
+		btnEdit.addClickListener(e -> {
+			if (confAppTable.getValue() instanceof PreferencesApplication) {
+				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
+				PreferencesApplicationWindow paw = new PreferencesApplicationWindow((PreferencesApplication) confAppTable.getValue());
+				paw.addCloseListener(f->init());
+				tabSelectedPosition=tabNumber;
+				MainUI.getCurrent().addWindow(paw);
+			}
+		});
+		
 		layoutConfigApplication.addComponent(confAppTable);
 		layoutConfigApplication.setExpandRatio(confAppTable, 1);
+
+
 	}
 
 
 
-	private void ajoutGestionSwap() {
+	private void ajoutGestionSwap(int tabNumber) {
 
 
 		layoutSwapUser.setMargin(true);
@@ -235,7 +254,7 @@ public class AdminView extends VerticalLayout implements View {
 				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
 				SwapUtilisateurWindow suw = new SwapUtilisateurWindow((UtilisateurSwap) confSwapTable.getValue(), false);
 				suw.addCloseListener(f->init());
-				tabSelectedPosition=1;
+				tabSelectedPosition=tabNumber;
 				MainUI.getCurrent().addWindow(suw);
 			}
 		});
@@ -248,13 +267,13 @@ public class AdminView extends VerticalLayout implements View {
 
 			SwapUtilisateurWindow suw = new SwapUtilisateurWindow(new UtilisateurSwap(), true);
 			suw.addCloseListener(f->init());
-			tabSelectedPosition=1;
+			tabSelectedPosition=tabNumber;
 			MainUI.getCurrent().addWindow(suw);
 
 		});
 		buttonsLayout.addComponent(btnAddSwap);
 		buttonsLayout.setComponentAlignment(btnAddSwap, Alignment.MIDDLE_CENTER);
-		
+
 		// Deconnexion 
 		Button decoBtn = new Button("Se Déconnecter", FontAwesome.SIGN_OUT);
 		decoBtn.setEnabled(true);
