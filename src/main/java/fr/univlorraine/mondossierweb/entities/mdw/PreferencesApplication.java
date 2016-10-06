@@ -19,17 +19,24 @@
 package fr.univlorraine.mondossierweb.entities.mdw;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
 @Table(name="PREFERENCES_APPLICATION")
+@EqualsAndHashCode(of = "prefId")
+@ToString(exclude = {"preferencesApplicationValeurs"})
 public class PreferencesApplication implements Serializable {
 
 	private static final long serialVersionUID = 5299213936744275485L;
@@ -43,5 +50,27 @@ public class PreferencesApplication implements Serializable {
 	
 	@Column(name="VALEUR")
 	private String valeur;
+	
+	@Column(name="TYPE")
+	private String type;
+	
+	@Column(name="CAT_ID")
+	private Integer catId;
+	
+	@OneToMany(mappedBy="preferencesApplication", cascade = {CascadeType.ALL}, orphanRemoval = true)
+	private List<PreferencesApplicationValeurs> preferencesApplicationValeurs;
 
+	public PreferencesApplicationValeurs addPreferencesApplicationValeur(PreferencesApplicationValeurs preferencesApplicationValeur) {
+		getPreferencesApplicationValeurs().add(preferencesApplicationValeur);
+		preferencesApplicationValeur.setPreferencesApplication(this);
+
+		return preferencesApplicationValeur;
+	}
+
+	public PreferencesApplicationValeurs removePreferencesApplicationValeur(PreferencesApplicationValeurs preferencesApplicationValeur) {
+		getPreferencesApplicationValeurs().remove(preferencesApplicationValeur);
+		preferencesApplicationValeur.setPreferencesApplication(null);
+
+		return preferencesApplicationValeur;
+	}
 }

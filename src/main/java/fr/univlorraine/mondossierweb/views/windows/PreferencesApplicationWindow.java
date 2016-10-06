@@ -18,27 +18,38 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
+import java.util.LinkedList;
+import java.util.Locale;
+
 import javax.annotation.Resource;
 
+import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
 
+import com.vaadin.data.Container.ItemSetChangeEvent;
+import com.vaadin.data.Container.ItemSetChangeListener;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroupFieldFactory;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -46,6 +57,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 
 
@@ -61,11 +74,15 @@ public class PreferencesApplicationWindow extends Window {
 
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
 
+	public static final String[]  PAV_FIELD_ORDER = {"valeur"}; 
+
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient ConfigController configController;
 
+	private BeanItemContainer<PreferencesApplicationValeurs> pavContainer;
+	
 	/* Composants */
 	private BeanFieldGroup<PreferencesApplication> fieldGroup;
 	private Button btnEnregistrer;
@@ -149,17 +166,87 @@ public class PreferencesApplicationWindow extends Window {
 		for (String fieldName : CONF_APP_FIELDS_ORDER) {
 			String caption = applicationContext.getMessage(NAME+".confAppTable." + fieldName, null, getLocale());
 			//Si on est sur un parametre booleen
-			if(fieldName.equals("valeur") && estUneValeurBooleenne(prefApp.getValeur())){
+			if(fieldName.equals("valeur") && prefApp.getType().equals(Utils.PARAM_TYP_BOOLEAN)){
 				//On forme le nativeSelect
 				Field<?> field = fieldGroup.buildAndBind(caption, fieldName, NativeSelect.class);
 				formLayout.addComponent(field);
 			}else{
-				Field<?> field = fieldGroup.buildAndBind(caption, fieldName);
-				if (field instanceof AbstractTextField) {
-					((AbstractTextField) field).setNullRepresentation("");
-					field.setWidth("100%");
+				//Si on est sur un parametre List
+				if(fieldName.equals("valeur") && prefApp.getType().equals(Utils.PARAM_TYP_LIST)){
+
+					//On forme le modificateur de liste
+					VerticalLayout listlayout= new VerticalLayout();
+					listlayout.setWidth("100%");
+					HorizontalLayout nvl= new HorizontalLayout();
+					nvl.setWidth("100%");
+					//champ de saisie
+					final TextField listInputField = new TextField();
+					listInputField.setImmediate(true);
+					listInputField.setNullRepresentation("");
+					listInputField.setWidth("100%");
+					nvl.addComponent(listInputField);
+					//Bouton add
+					Button btnAddInput = new Button(applicationContext.getMessage(NAME+".list.addbtn", null, Locale.getDefault()));
+					btnAddInput.setIcon(FontAwesome.PLUS);
+					btnAddInput.addClickListener(e->addListValueToPrefApp( prefApp,listInputField));
+					nvl.addComponent(btnAddInput);
+					listlayout.addComponent(nvl);
+					nvl.setExpandRatio(listInputField, 1);
+					//bouton supprimer
+					Button boutonSupprimerPav = new Button(applicationContext.getMessage(NAME+".btnPavDelete", null, Locale.getDefault()));
+					boutonSupprimerPav.setEnabled(false);
+					boutonSupprimerPav.setIcon(FontAwesome.MINUS);
+					//affichage des pav
+					pavContainer = new BeanItemContainer<PreferencesApplicationValeurs>(PreferencesApplicationValeurs.class);
+					refreshPavContainer(prefApp);
+					Table pavTable = new Table(null, pavContainer);
+					pavTable.setWidth("100%");
+					pavTable.setHeight("200px");
+					pavTable.setVisibleColumns((Object[]) PAV_FIELD_ORDER);
+					pavTable.setColumnHeader("valeur", "Valeur");
+					pavTable.setSelectable(true);
+					pavTable.setImmediate(true);
+					pavTable.addItemSetChangeListener(new ItemSetChangeListener() {
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void containerItemSetChange(ItemSetChangeEvent event) {
+							pavTable.sanitizeSelection();
+						}
+					});
+					pavTable.addValueChangeListener(new Property.ValueChangeListener() {
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void valueChange(ValueChangeEvent event) {
+							boutonSupprimerPav.setEnabled(true);
+						}
+
+					});
+					boutonSupprimerPav.addClickListener(new Button.ClickListener() {
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void buttonClick(ClickEvent event) {
+							if(pavTable.getValue()!=null &&  pavTable.getValue() instanceof PreferencesApplicationValeurs){
+								PreferencesApplicationValeurs pavChoisie =  ((PreferencesApplicationValeurs)pavTable.getValue());
+								supprimerPav(prefApp, pavChoisie);
+							}
+						}
+
+					});
+					listlayout.addComponent(pavTable);
+					listlayout.setComponentAlignment(pavTable, Alignment.MIDDLE_LEFT);
+					listlayout.addComponent(boutonSupprimerPav);
+
+					formLayout.addComponent(listlayout);
+
+
+				}else{
+					Field<?> field = fieldGroup.buildAndBind(caption, fieldName);
+					if (field instanceof AbstractTextField) {
+						((AbstractTextField) field).setNullRepresentation("");
+						field.setWidth("100%");
+					}
+					formLayout.addComponent(field);
 				}
-				formLayout.addComponent(field);
 			}
 		}
 
@@ -200,12 +287,78 @@ public class PreferencesApplicationWindow extends Window {
 		center();
 	}
 
+	private void refreshPavContainer(PreferencesApplication prefApp) {
+		pavContainer.removeAllItems();
+		if(prefApp.getPreferencesApplicationValeurs()!=null && prefApp.getPreferencesApplicationValeurs().size()>0){
+			for(PreferencesApplicationValeurs pav : prefApp.getPreferencesApplicationValeurs()){
+				pavContainer.addBean(pav);
+			}
+		}
+		
+	}
+
+	/* vajout d'un element */
+	private void addListValueToPrefApp(PreferencesApplication prefApp,TextField tf){
+		boolean ajouter = true;
+		String value = tf.getValue();
+		if(prefApp.getPreferencesApplicationValeurs()==null){
+			prefApp.setPreferencesApplicationValeurs(new LinkedList<PreferencesApplicationValeurs> ());
+		}else{
+			for(PreferencesApplicationValeurs p : prefApp.getPreferencesApplicationValeurs()){
+				if(p.getValeur()!=null && p.getValeur().equals(value)){
+					ajouter = false;
+				}
+			}
+		}
+		tf.setValue(null);
+		if(ajouter){
+			PreferencesApplicationValeurs pav = new PreferencesApplicationValeurs();
+			pav.setValeur(value);
+			pav.setPreferencesApplication(prefApp);
+			prefApp.getPreferencesApplicationValeurs().add(pav);
+			refreshPavContainer(prefApp);
+		}else{
+			Notification.show(applicationContext.getMessage(NAME+".notification.valeur.presente",null, getLocale()));
+		}
+		
+		
+	}
+
+
+	private void supprimerPav( PreferencesApplication prefApp, PreferencesApplicationValeurs pavChoisie) {
+		if(prefApp!=null && prefApp.getPreferencesApplicationValeurs()!=null && pavChoisie!=null && StringUtils.hasText(pavChoisie.getValeur())){
+			if(prefApp.getPreferencesApplicationValeurs().size()==1){
+				//On vérifie que c'est bien l'élément à supprimer
+				PreferencesApplicationValeurs p = prefApp.getPreferencesApplicationValeurs().get(0);
+				if(p.getValeur()!=null && p.getValeur().equals(pavChoisie.getValeur())){
+					prefApp.setPreferencesApplicationValeurs(null);
+				}
+			}else{
+				int i=0;
+				int rangToDelete = 0;
+				boolean pavToDeleted = false;
+				for(PreferencesApplicationValeurs p : prefApp.getPreferencesApplicationValeurs()){
+					//On test sur la valur car il se peut que l'objet n'ai pas encore d'id
+					if(!pavToDeleted && p.getValeur()!=null && p.getValeur().equals(pavChoisie.getValeur())){
+						rangToDelete = i;
+						pavToDeleted = true;
+					}
+					i++;
+				}
+				if(pavToDeleted){
+					prefApp.getPreferencesApplicationValeurs().remove(rangToDelete);
+				}
+			}
+		}
+		refreshPavContainer(prefApp);
+	}
+
 	/**
 	 * 
 	 * @param val
 	 * @return vrai si la valeur est booleenne
 	 */
-	boolean estUneValeurBooleenne(String val){
+	/*boolean estUneValeurBooleenne(String val){
 		return (StringUtils.hasText(val)&& (val.equals("true") || val.equals("false")));
-	}
+	}*/
 }

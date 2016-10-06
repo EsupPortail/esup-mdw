@@ -30,8 +30,12 @@ import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationCategorie;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
 import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
+import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationCategorieRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepository;
+import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationValeursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
 
 /**
@@ -45,14 +49,21 @@ public class ConfigController {
 	
 	@Resource
 	private PreferencesApplicationRepository preferencesApplicationRepository;
+	
+	@Resource
+	private PreferencesApplicationValeursRepository preferencesApplicationValeursRepository;
+	
+	@Resource
+	private PreferencesApplicationCategorieRepository preferencesApplicationCategorieRepository;
 
 	@Resource
 	private UtilisateurSwapRepository utilisateurSwapRepository;
 
-	/**
-	 * Edition pdf des certificats de scolarité : true pour l'activer, false sinon
-	 * @return
-	 */
+
+	public List<PreferencesApplicationCategorie> getCategories(){
+		return preferencesApplicationCategorieRepository.findAll();
+	}
+	
 	public boolean isCertificatScolaritePDF() {
 		return getBooleanValueForParameter("certificatScolaritePDF");
 	}
@@ -290,11 +301,19 @@ public class ConfigController {
 	private List<String> getListValeurForParameter(String parameter){
 		LinkedList<String> values = new LinkedList<String>();
 		PreferencesApplication pa = preferencesApplicationRepository.findOne(parameter);
-		if(pa!=null && StringUtils.hasText(pa.getValeur())){
+		/*if(pa!=null && StringUtils.hasText(pa.getValeur())){
 			for(String s : pa.getValeur().split(",")){
 				values.add(s);
 			}
 			return values;
+		}*/
+		if(pa!=null && pa.getPrefId()!=null){
+			List<PreferencesApplicationValeurs> lvaleurs = preferencesApplicationValeursRepository.findValeursFromPrefId(pa.getPrefId());
+			if(lvaleurs!=null && lvaleurs.size()>0){
+				for(PreferencesApplicationValeurs valeur : lvaleurs){
+					values.add(valeur.getValeur());
+				}
+			}
 		}
 		return null;
 	}
@@ -319,6 +338,14 @@ public class ConfigController {
 	 */
 	public List<PreferencesApplication> getAppParameters(){
 		return preferencesApplicationRepository.findAll();
+	}
+	
+	/**
+	 * 
+	 * @return les parametres applicatifs en base pour une catégorie donnée
+	 */
+	public List<PreferencesApplication> getAppParametersForCatId(Integer catId){
+		return preferencesApplicationRepository.findPreferencesApplicationFromCatId(catId);
 	}
 	
 	/**
@@ -353,8 +380,9 @@ public class ConfigController {
 
 	public void saveAppParameter(PreferencesApplication prefApp) {
 		preferencesApplicationRepository.saveAndFlush(prefApp);
-		
 	}
+	
+
 	
 	public void saveSwap(UtilisateurSwap swap) {
 		utilisateurSwapRepository.saveAndFlush(swap);
