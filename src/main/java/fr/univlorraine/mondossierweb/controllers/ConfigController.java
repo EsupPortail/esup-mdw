@@ -46,13 +46,13 @@ public class ConfigController {
 
 	private Logger LOG = LoggerFactory.getLogger(ConfigController.class);
 
-	
+
 	@Resource
 	private PreferencesApplicationRepository preferencesApplicationRepository;
-	
+
 	@Resource
 	private PreferencesApplicationValeursRepository preferencesApplicationValeursRepository;
-	
+
 	@Resource
 	private PreferencesApplicationCategorieRepository preferencesApplicationCategorieRepository;
 
@@ -63,236 +63,236 @@ public class ConfigController {
 	public List<PreferencesApplicationCategorie> getCategories(){
 		return preferencesApplicationCategorieRepository.findAll();
 	}
-	
+
 	public boolean isCertificatScolaritePDF() {
 		return getBooleanValueForParameter("certificatScolaritePDF");
 	}
-	
+
 	public boolean isCertificatScolariteTouteAnnee() {
 		return getBooleanValueForParameter("certificatScolariteTouteAnnee");
 	}
-	
+
 	public boolean isCertScolAutorisePersonnel() {
 		return getBooleanValueForParameter("certScolAutorisePersonnel");
 	}
-	
+
 	public boolean isCertificatScolaritePiecesNonValidees() {
 		return getBooleanValueForParameter("certificatScolaritePJinvalide");
 	}
-	
+
 	public boolean isApplicationActive() {
 		return getBooleanValueForParameter("applicationActive");
 	}
-	
+
 	public boolean isApplicationMobileActive() {
 		return getBooleanValueForParameter("applicationMobileActive");
 	}
-	
+
 	public boolean isPartieEnseignantActive() {
 		return getBooleanValueForParameter("partieEnseignantActive");
 	}
-	
+
 	public boolean isPartieEtudiantActive() {
 		return getBooleanValueForParameter("partieEtudiantActive");
 	}
-	
+
 	public List<String> getListeLoginsBloques() {
 		return getListValeurForParameter("listeLoginsBloques");
-		
+
 	}
-	
+
 	public List<String> getListeCertScolTypDiplomeDesactive() {
 		return getListValeurForParameter("certScolTypDiplomeDesactive");
-		
+
 	}
-	
+
 	public boolean isAffRangEtudiant() {
 		return getBooleanValueForParameter("afficherRangEtudiant");
 	}
-	
+
 	public boolean isAffBtnCertifNouvelleLigne(){
 		return getBooleanValueForParameter("afficherBoutonCertifNouvelleLigne");
 	}
-	
+
 	public boolean isLogoutCasPropose() {
 		return getBooleanValueForParameter("logoutCasPropose");
 	}
-	
+
 	public boolean isAffECTSEtudiant() {
 		return getBooleanValueForParameter("affECTSEtudiant");
 	}
-	
+
 	public boolean isModificationAdressesAutorisee() {
 		return getBooleanValueForParameter("modificationAdresses");
 	}
-	
+
 	public boolean isModificationCoordonneesPersoAutorisee() {
 		return getBooleanValueForParameter("modificationCoordonneesContactPerso");
 	}
-	
+
 	public boolean isAffMentionEtudiant() {
 		return getBooleanValueForParameter("affMentionEtudiant");
 	}
-	
+
 	public boolean isTemNotesEtuSem() {
 		return getBooleanValueForParameter("temNotesEtuSem");
 	}
-	
+
 	public boolean isToujoursAfficherBareme() {
 		return getBooleanValueForParameter("affBaremeEtudiant");
 	}
-	
+
 	public boolean isCertScolUtiliseLogo() {
 		return getBooleanValueForParameter("certScolUtiliseLogo");
 	}
-	
+
 	public boolean isPdfNotesActive() {
 		return getBooleanValueForParameter("notesPDF");
 	}
-	
+
 	public boolean isInsertionFiligranePdfNotes() {
 		return getBooleanValueForParameter("insertionFiligranePdfNotes");
 	}
-	
+
 	public boolean isAffNumPlaceExamen() {
 		return getBooleanValueForParameter("affNumPlaceExamen");
 	}
-	
+
 	public boolean isAffDetailExamen() {
-        return getBooleanValueForParameter("affDetailExamen");
-}
-	
+		return getBooleanValueForParameter("affDetailExamen");
+	}
+
 	public boolean isAffAdresseEnseignants() {
 		return getBooleanValueForParameter("affAdressesEnseignants");
 	}
-	
+
 	public boolean isAffInfosAnnuellesEnseignants() {
 		return getBooleanValueForParameter("affInfosAnnuellesEnseignants");
 	}
-	
+
 	public boolean isAffInfosContactEnseignants() {
 		return getBooleanValueForParameter("affInfosContactEnseignants");
 	}
-	
+
 	public boolean isAffCalendrierEpreuvesEnseignants() {
 		return getBooleanValueForParameter("affCalendrierEpreuvesEnseignants");
 	}
-	
+
 	public boolean isAffCalendrierEpreuvesEtudiants() {
 		return getBooleanValueForParameter("affCalendrierEpreuvesEtudiants");
 	}
-	
-	
+
+
 	public List<String> getListeCertScolProfilDesactive(){
 		return getListValeurForParameter("certScolProfilDesactive");
 	}
-	
+
 	public List<String> getListeCertScolCGEDesactive() {
 		return getListValeurForParameter("certScolCGEDesactive");
 	}
-	
-	
+
+
 	public List<String> getListeCertScolCmpDesactive() {
 		return getListValeurForParameter("certScolCmpDesactive");
 	}
-	
+
 	public List<String> getListeCertScolStatutDesactive(){
 		return getListValeurForParameter("certScolStatutDesactive");
 	}
-	
+
 	public List<String> getListeCodesEtapeAffichageRang() {
 		return getListValeurForParameter("codesEtapeAffichageRang");
 	}
-	
+
 	public List<String> getTypesEpreuveAffichageNote() {
 		return getListValeurForParameter("typesEpreuveAffichageNote");
 	}
-	
-	
+
+
 	public String getAssistanceDocUrl() {
 		return getValeurForParameter("assistanceDocUrl");
 	}
-	
-	
+
+
 	public String getAssistanceHelpdeskUrl() {
 		return getValeurForParameter("assistanceHelpdeskUrl");
 	}
-	
+
 	public String getAssistanceContactMail() {
 		return getValeurForParameter("assistanceContactMail");
 	}
-	
+
 	public String getTemoinEtatIaeNotesEnseignant() {
 		return getValeurForParameter("temoinEtatIaeNotesEnseignant");
 	}
-	
+
 	public String getTemoinEtatIaeNotesEtudiant() {
 		return getValeurForParameter("temoinEtatIaeNotesEtudiant");
 	}
-	
+
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");
 	}
 
-	
+
 	public String getTemoinNotesEnseignant() {
 		return getValeurForParameter("temoinNotesEnseignant");
 	}
-	
+
 	public String getTemoinCtlValCadEpr() {
 		return getValeurForParameter("temoinCtlValCadEpr");
 	}
-	
+
 	public String getTemoinFictif() {
 		return getValeurForParameter("temoinFictif");
 	}
-	
+
 	public String getCertScolCodeSignataire() {
 		return getValeurForParameter("certScolCodeSignataire");
 	}
-	
+
 	public String getLogoUniversitePdf() {
 		return getValeurForParameter("logoUniversitePdf");
 	}
-	
+
 	public String getCertScolHeaderUniv() {
 		return getValeurForParameter("certScolHeaderUniv");
 	}
-	
+
 	public String getCertScolFooter() {
 		return getValeurForParameter("certScolFooter");
 	}
-	
+
 	public String getCertScolLieuEdition() {
 		return getValeurForParameter("certScolLieuEdition");
 	}
-	
+
 	public String getCertScolTampon() {
 		return getValeurForParameter("certScolTampon");
 	}
-	
+
 	public int getTrombiMobileNbEtuParPage(){
 		return  Integer.parseInt(getValeurForParameter("trombiMobileNbEtuParPage"));
 	}
-	
+
 	public String getExtensionMailEtudiant(){
 		return getValeurForParameter("extensionMailEtudiant");
 	}
 	public int getNotesNombreAnneesExtractionApogee() {
-        return  Integer.parseInt(getValeurForParameter("notesNombreAnneesExtractionApogee"));
+		return  Integer.parseInt(getValeurForParameter("notesNombreAnneesExtractionApogee"));
 	}
 	public boolean isAffichagePdfNotesFormatPortrait() {
-        return getBooleanValueForParameter("notesPDFFormatPortrait");
+		return getBooleanValueForParameter("notesPDFFormatPortrait");
 	}
 	public boolean isNotesPDFsignature() {
-        return getBooleanValueForParameter("notesPDFSignature");
+		return getBooleanValueForParameter("notesPDFSignature");
 	}
 	public String getNotesPDFLieuEdition() {
 		return getValeurForParameter("notesPDFLieuEdition");
 	}
-	
-		
-		
+
+
+
 	/**
 	 * 
 	 * @param parameter
@@ -301,23 +301,16 @@ public class ConfigController {
 	private List<String> getListValeurForParameter(String parameter){
 		LinkedList<String> values = new LinkedList<String>();
 		PreferencesApplication pa = preferencesApplicationRepository.findOne(parameter);
-		/*if(pa!=null && StringUtils.hasText(pa.getValeur())){
-			for(String s : pa.getValeur().split(",")){
-				values.add(s);
-			}
-			return values;
-		}*/
 		if(pa!=null && pa.getPrefId()!=null){
-			List<PreferencesApplicationValeurs> lvaleurs = preferencesApplicationValeursRepository.findValeursFromPrefId(pa.getPrefId());
-			if(lvaleurs!=null && lvaleurs.size()>0){
-				for(PreferencesApplicationValeurs valeur : lvaleurs){
+			if(pa.getPreferencesApplicationValeurs()!=null && pa.getPreferencesApplicationValeurs().size()>0){
+				for(PreferencesApplicationValeurs valeur : pa.getPreferencesApplicationValeurs()){
 					values.add(valeur.getValeur());
 				}
 			}
 		}
-		return null;
+		return values;
 	}
-	
+
 	/**
 	 * 
 	 * @param parameter
@@ -330,7 +323,7 @@ public class ConfigController {
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 * 
@@ -339,7 +332,7 @@ public class ConfigController {
 	public List<PreferencesApplication> getAppParameters(){
 		return preferencesApplicationRepository.findAll();
 	}
-	
+
 	/**
 	 * 
 	 * @return les parametres applicatifs en base pour une catégorie donnée
@@ -347,7 +340,7 @@ public class ConfigController {
 	public List<PreferencesApplication> getAppParametersForCatId(Integer catId){
 		return preferencesApplicationRepository.findPreferencesApplicationFromCatId(catId);
 	}
-	
+
 	/**
 	 * 
 	 * @return les parametres applicatifs en base
@@ -355,7 +348,7 @@ public class ConfigController {
 	public List<UtilisateurSwap> getSwapUtilisateurs(){
 		return utilisateurSwapRepository.findAll();
 	}
-	
+
 	/**
 	 * 
 	 * @return les parametres applicatifs en base
@@ -363,7 +356,7 @@ public class ConfigController {
 	public UtilisateurSwap getSwapUtilisateur(String login){
 		return utilisateurSwapRepository.findOne(login);
 	}
-	
+
 	/**
 	 * 
 	 * @param parameter
@@ -381,15 +374,15 @@ public class ConfigController {
 	public void saveAppParameter(PreferencesApplication prefApp) {
 		preferencesApplicationRepository.saveAndFlush(prefApp);
 	}
-	
 
-	
+
+
 	public void saveSwap(UtilisateurSwap swap) {
 		utilisateurSwapRepository.saveAndFlush(swap);
-		
+
 	}
 
-	
+
 
 
 
