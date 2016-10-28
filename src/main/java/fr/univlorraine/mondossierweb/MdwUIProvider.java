@@ -18,18 +18,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import java.util.Enumeration;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
-
-
-
-
-
-
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +26,11 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
-
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
 
 public class MdwUIProvider extends SpringUIProvider  {
 
@@ -73,8 +57,10 @@ public class MdwUIProvider extends SpringUIProvider  {
 
 			/* Device Detection */
 			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
+			boolean isMobile =currentDevice.isMobile();
+			
 			// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-			if(currentDevice.isMobile() && (userAgent.contains("webkit")
+			if(isMobile && (userAgent.contains("webkit")
 					|| userAgent.contains("windows phone 8")
 					|| userAgent.contains("windows phone 9"))){
 				//On affiche la page proposant une redirection vers la version Mobile
@@ -105,8 +91,10 @@ public class MdwUIProvider extends SpringUIProvider  {
 
 		/* Device Detection */
 		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
+		boolean isMobile =currentDevice.isMobile();
+		
 		// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-		if(currentDevice.isMobile() && (userAgent.contains("webkit")
+		if(startServletMobile && isMobile && (userAgent.contains("webkit")
 				|| userAgent.contains("windows phone 8")
 				|| userAgent.contains("windows phone 9"))){
 			//On affiche la page proposant une redirection vers la version Mobile
