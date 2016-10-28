@@ -153,10 +153,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
-	
-
-
-	
 	@Bean(name="userDetailsService")
 	@Override
 	public UserDetailsService userDetailsServiceBean() throws Exception {

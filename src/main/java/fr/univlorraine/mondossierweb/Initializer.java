@@ -117,7 +117,7 @@ public class Initializer implements WebApplicationInitializer {
 		/* Filtre passant l'utilisateur courant à Logback */
 		FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
 		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");
-		
+
 		/* Filtre Spring Mobile permettant de détecter le device */
 		FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
 		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");
@@ -136,8 +136,8 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
-		
-		
+
+
 		/* Configure le Push */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
 
@@ -147,36 +147,38 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setAsyncSupported(true);
 		/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
 		springVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
-	
-	
-		/* Spring-Vaadin Touchkit Servlet  */
-		ServletRegistration.Dynamic springTouchkitVaadinServlet = servletContext.addServlet("springTouchkitVaadin", MDWTouchkitServlet.class);
-		//springTouchkitVaadinServlet.setLoadOnStartup(1);
-		springTouchkitVaadinServlet.addMapping("/m/*");
-		/* Défini le bean UI */
-		//springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
-		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
-		springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
-		springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 
-		
-		/* Configure le Push */
-		springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
-		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
-		springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
-		/* Active le support des requêtes asynchrones */
-		springTouchkitVaadinServlet.setAsyncSupported(true);
-		/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
-		springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
-	
-	
-		
+
+
+		if(Boolean.valueOf(servletContext.getInitParameter("startServletMobile"))){
+			/* Spring-Vaadin Touchkit Servlet  */
+			ServletRegistration.Dynamic springTouchkitVaadinServlet = servletContext.addServlet("springTouchkitVaadin", MDWTouchkitServlet.class);
+			//springTouchkitVaadinServlet.setLoadOnStartup(1);
+			springTouchkitVaadinServlet.addMapping("/m/*");
+			/* Défini le bean UI */
+			//springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
+			/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
+			springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
+			springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+
+
+			/* Configure le Push */
+			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
+			/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
+			springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
+			/* Active le support des requêtes asynchrones */
+			springTouchkitVaadinServlet.setAsyncSupported(true);
+			/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
+			springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
+		}
+
+
 		/* Servlet REST */
 		ServletRegistration.Dynamic restServlet = servletContext.addServlet("link", new DispatcherServlet(springContext));
 		restServlet.setLoadOnStartup(1);
 		restServlet.addMapping("/link", "/link/*");
 	}
-	
+
 
 
 }
