@@ -50,6 +50,9 @@
 	<!-- URL de l'application -->
 	<Parameter name="app.url" value="http://mdw.univ.fr:8080" /> 
 
+	<!-- true pour démarrer la servlet mobile, false ne proposer que la vue desktop -->
+    <Parameter name="startServletMobile" value="true" ></Parameter>
+
 	<!-- URL du CAS -->
 	<Parameter name="cas.url" value="https://auth.univ.fr" />
 

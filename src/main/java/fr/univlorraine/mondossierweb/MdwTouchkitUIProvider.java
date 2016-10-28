@@ -19,6 +19,8 @@
 package fr.univlorraine.mondossierweb;
 
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,16 +34,17 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+
 public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 	private static final long serialVersionUID = -1535055076149004931L;
 
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUIProvider.class);
 
-
 	
 	public MdwTouchkitUIProvider(WebApplicationContext webApplicationContext) {
-		super(webApplicationContext);
+		super(webApplicationContext);	
 	}
 	
 	@Override
@@ -51,7 +54,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		if(event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
 			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 			LOG.debug("UA : "+userAgent);
-
+			
 			// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
 			if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
 					|| userAgent.contains("windows phone 9")) {

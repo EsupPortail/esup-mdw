@@ -18,7 +18,14 @@
  */
 package fr.univlorraine.mondossierweb;
 
+import java.util.Enumeration;
+
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+
+
+
 
 
 
@@ -39,25 +46,28 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+
 public class MdwUIProvider extends SpringUIProvider  {
 
 
 	private static final long serialVersionUID = -1535055076149004931L;
 
 	private Logger LOG = LoggerFactory.getLogger(MdwUIProvider.class);
-
+	
+	private boolean startServletMobile;
 
 	
 	public MdwUIProvider(WebApplicationContext webApplicationContext) {
 		super(webApplicationContext);
-		// TODO Auto-generated constructor stub
+		startServletMobile = Boolean.valueOf(webApplicationContext.getEnvironment().getProperty("startServletMobile"));
 	}
 	
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
 		//Récupération du userAgent
-		if(event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
+		if(startServletMobile && event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
 			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 			LOG.debug("UA : "+userAgent);
 
