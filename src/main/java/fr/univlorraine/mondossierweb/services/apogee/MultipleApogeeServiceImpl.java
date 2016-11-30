@@ -72,7 +72,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	}
 
 	@Override
-	public List<Examen> getCalendrierExamens(String cod_ind) {
+	public List<Examen> getCalendrierExamens(String cod_ind, boolean recupererVet) {
 
 		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
 		if(StringUtils.hasText(requestUtils.getCalendrierDesExamens())){
@@ -85,28 +85,37 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			return lins;
 
 		}else{
+			//Préparation de la requête
+			String requeteSQL = "SELECT rownum ID, t.* from (SELECT DISTINCT PESA.DAT_DEB_PES datedeb, "+
+					"DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', "+
+					"TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| "+
+					"DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, "+
+					"PESA.DUR_EXA_EPR_PES duree, "+
+					"PESA.COD_SAL salle, SAL.LIB_SAL libsalle, "+
+					"NVL(TO_CHAR(PI.NUM_PLC_AFF_PSI),' ') place, "+
+					"BAT.LIB_BAT BATIMENT,BAT.LIB_LOC_BAT localisation, E.LIB_EPR epreuve, "+
+					"'' codcin,  E.COD_EPR codeepreuve, REPLACE(PEX.LIB_PXA ,'@' ) libsession , ICE.COD_ETP codeetape, ICE.COD_VRS_VET versionetape "+
+					"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, IND_CONTRAT_ELP ICE,apogee.EPR_SANCTIONNE_ELP ESE, "+
+					"APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX  "+
+					"WHERE  PI.COD_IND="+cod_ind+" "+
+					"AND PI.COD_PES=PESA.COD_PES  "+
+					"AND ICE.COD_IND = PI.COD_IND AND ICE.COD_ANU = PESA.COD_ANU and ice.cod_elp=ESE.COD_ELP and ese.cod_epr= E.COD_EPR " +
+					"AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  "+
+					"AND  PEX.LIB_PXA LIKE '@%' AND  SAL.COD_SAL = PESA.COD_SAL  "+
+					"AND  BAT.COD_BAT = SAL.COD_BAT  "+
+					"ORDER BY DATEDEB,2) t";
+
+			//Si on n'a pas besoin de récupérer la VET
+			if(!recupererVet){
+				//On ne recupere pas la VET, ce qui évite les lignes en doublons.
+				requeteSQL = requeteSQL.replaceFirst("ICE.COD_ETP codeetape, ICE.COD_VRS_VET versionetape", "'' codeetape, '' versionetape");
+			}
+
 			@SuppressWarnings("unchecked")
-			List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(
-					"SELECT rownum ID, t.* from (SELECT DISTINCT PESA.DAT_DEB_PES datedeb, "+
-							"DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', "+
-							"TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| "+
-							"DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, "+
-							"PESA.DUR_EXA_EPR_PES duree, "+
-							"PESA.COD_SAL salle, SAL.LIB_SAL libsalle, "+
-							"NVL(TO_CHAR(PI.NUM_PLC_AFF_PSI),' ') place, "+
-							"BAT.LIB_BAT BATIMENT,BAT.LIB_LOC_BAT localisation, E.LIB_EPR epreuve, "+
-							"'' codcin,  E.COD_EPR codeepreuve, REPLACE(PEX.LIB_PXA ,'@' ) libsession , ICE.COD_ETP codeetape, ICE.COD_VRS_VET versionetape "+
-							"FROM APOGEE.PRD_EPR_SAL_ANU PESA,APOGEE.EPREUVE E,APOGEE.PES_IND PI,APOGEE.BATIMENT BAT, IND_CONTRAT_ELP ICE,apogee.EPR_SANCTIONNE_ELP ESE, "+
-							"APOGEE.SALLE SAL,APOGEE.PERIODE_EXA PEX  "+
-							"WHERE  PI.COD_IND="+cod_ind+" "+
-							"AND PI.COD_PES=PESA.COD_PES  "+
-							"AND ICE.COD_IND = PI.COD_IND AND ICE.COD_ANU = PESA.COD_ANU and ice.cod_elp=ESE.COD_ELP and ese.cod_epr= E.COD_EPR " +
-							"AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  "+
-							"AND  PEX.LIB_PXA LIKE '@%' AND  SAL.COD_SAL = PESA.COD_SAL  "+
-							"AND  BAT.COD_BAT = SAL.COD_BAT  "+
-							"ORDER BY DATEDEB,2) t", Examen.class).getResultList();
+			List<Examen> lins = (List<Examen>)entityManagerApogee.createNativeQuery(requeteSQL, Examen.class).getResultList();
 
 			return lins;
+
 		}
 	}
 
