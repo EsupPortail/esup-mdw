@@ -35,7 +35,7 @@ public interface MultipleApogeeService {
 	
 	public abstract String getLibEtablissementDef();
 	
-	public abstract List<Examen> getCalendrierExamens(String cod_ind);
+	public abstract List<Examen> getCalendrierExamens(String cod_ind, boolean recupererVet);
 	
 	public abstract int getDerniereAnneeUniversitaire();
 

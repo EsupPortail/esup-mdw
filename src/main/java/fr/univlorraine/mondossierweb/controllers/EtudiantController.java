@@ -686,7 +686,7 @@ public class EtudiantController {
 	 */
 	public void recupererCalendrierExamens() {
 		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_ind())){
-			GenericUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(GenericUI.getCurrent().getEtudiant().getCod_ind()));
+			GenericUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(GenericUI.getCurrent().getEtudiant().getCod_ind(),configController.isAffDetailExamen()));
 			GenericUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
 		}
 	}
