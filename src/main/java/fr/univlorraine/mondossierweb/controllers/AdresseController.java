@@ -129,22 +129,25 @@ public class AdresseController {
 				CommuneDTO[] cdto =monProxyGeo.recupererCommune(codePostal,  "O", "O");
 				if(cdto!=null){
 					for (int i = 0; i < cdto.length; i++) {
-						boolean insere = false;
-						int j = 0;
-						while (!insere && j < lvilles.size()) {
-							if (lvilles.get(j).getLibCommune().compareTo(cdto[i].getLibCommune()) > 0) {
-								lvilles.add(j,cdto[i]);
-								insere = true;
-							}
-							if (lvilles.get(j).getLibCommune().equals(cdto[i].getLibCommune())) {
-								insere = true;
+						// Si TEM_EN_SVE_CBD = O
+						if(cdto[i]!=null && cdto[i].getTemSevBureauDis()!=null && cdto[i].getTemSevBureauDis().equals("O")){
+							boolean insere = false;
+							int j = 0;
+							while (!insere && j < lvilles.size()) {
+								if (lvilles.get(j).getLibCommune().compareTo(cdto[i].getLibCommune()) > 0) {
+									lvilles.add(j,cdto[i]);
+									insere = true;
+								}
+								if (lvilles.get(j).getLibCommune().equals(cdto[i].getLibCommune())) {
+									insere = true;
+								}
+								if (!insere) {
+									j++;
+								}
 							}
 							if (!insere) {
-								j++;
+								lvilles.add(cdto[i]);
 							}
-						}
-						if (!insere) {
-							lvilles.add(cdto[i]);
 						}
 					}
 				}
@@ -360,14 +363,17 @@ public class AdresseController {
 		if(monProxyGeo==null)
 			monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME);
 
-	
+
 		try {
 			CommuneDTO[] cdto = monProxyGeo.recupererCommune(codepostal, "O", "O");
 
 			for (int i = 0; i < cdto.length; i++) {
 				CommuneDTO c = cdto[i];
-				if (c.getLibCommune().equals(nom)){
-					return c.getCodeCommune();
+				// Si TEM_EN_SVE_CBD = O
+				if(c.getTemSevBureauDis()!=null && c.getTemSevBureauDis().equals("O")){
+					if (c.getLibCommune().equals(nom)){
+						return c.getCodeCommune();
+					}
 				}
 			}
 		} catch (RemoteException | WebBaseException e) {
