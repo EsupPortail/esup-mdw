@@ -56,6 +56,9 @@ public class AdresseController {
 
 	private Logger LOG = LoggerFactory.getLogger(AdresseController.class);
 
+	private static final String COD_HEBERG_DOMICILE_PARENTAL = "4";
+	private static final String COD_PAY_FRANCE = "100";
+	
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
@@ -63,11 +66,7 @@ public class AdresseController {
 	private transient Environment environment;
 	@Resource
 	private transient EtudiantController etudiantController;
-
-	private static final String COD_HEBERG_DOMICILE_PARENTAL = "4";
-	private static final String COD_PAY_FRANCE = "100";
-
-
+	
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
 	 */
@@ -83,16 +82,11 @@ public class AdresseController {
 	 */
 	protected AdministratifMetierServiceInterface monProxyAdministratif;
 
-
-
 	TypeHebergementDTO[] listeTypeHebergement;
 
 	PaysDTO[] listePays;
 
-
-
 	public TypeHebergementDTO[] getTypesHebergement(){
-
 		if(listeTypeHebergement==null || listeTypeHebergement.length==0){
 			if(monProxyEtu==null)
 				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
@@ -102,10 +96,8 @@ public class AdresseController {
 				LOG.error("Problème lors de getTypesHebergement", e);
 			}
 		}
-
 		return listeTypeHebergement;
 	}
-
 
 	public PaysDTO[] getPays(){
 		if(listePays == null || listePays.length == 0){
@@ -157,7 +149,6 @@ public class AdresseController {
 		}
 		return lvilles;
 	}
-
 
 	public List<String> majAdresses(Adresse adresseAnnuelle, Adresse adresseFixe) {
 		List<String> retour = new LinkedList<String>();
