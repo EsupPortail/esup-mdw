@@ -47,7 +47,31 @@
         <artifact>
         <groupId>fr.univlorraine.photoserver</groupId>
   		<artifactId>photoserver-client</artifactId>
-  		<version>0.0.5-RC3</version>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+       <artifact>
+        <groupId>fr.univlorraine</groupId>
+  		<artifactId>mdw-tools</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>  
+    <artifact>
+        <groupId>fr.univlorraine</groupId>
+  		<artifactId>mdw-vaadin</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+       <artifact>
+        <groupId>gouv.education.apogee</groupId>
+  		<artifactId>apo-webservicesclient</artifactId>
+        <license>Licence CeCILL-C</license>
+    </artifact>
+     <artifact>
+        <groupId>esup</groupId>
+  		<artifactId>esup-uportal-ws-client</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.xml</groupId>
+  		<artifactId>jaxrpc-api</artifactId>
         <license>Apache License, Version 2.0</license>
     </artifact>
   	<artifact>
