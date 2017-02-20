@@ -449,7 +449,7 @@ public class UserController {
 							return UNAUTHORIZED_USER;
 						}
 					} catch (Exception ex) {
-						LOG.error("Probleme lors de la vérification de l'existence de l'utilisateur dans la table Utilisateur de Apogee",ex);
+						LOG.error("Probleme lors de la vérification de l'existence de l'utilisateur "+username+" dans la table Utilisateur de Apogee",ex);
 					}
 				}else{
 					LOG.info("Utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal -> UTILISATEUR NON AUTORISE !");
