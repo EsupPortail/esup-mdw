@@ -753,10 +753,9 @@ public class EtudiantController {
 				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 				temoin=null;
 				sourceResultat="Apogee-extraction";
-				String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
 				ContratPedagogiqueResultatVdiVetDTO2[] cpdtoExtract;
 				try {
-					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet_v2(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
+					cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet_v2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 				} catch (Exception ex) {
 					cpdtoExtract = null;
 				}
@@ -764,15 +763,15 @@ public class EtudiantController {
 				// Et on fusionne cpdtoResult et cpdtoExtract
 				ArrayList<ContratPedagogiqueResultatVdiVetDTO2> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO2>();
 				for (int i = 0; i < cpdtoResult.length; i++ ) {
-					if (cpdtoResult[i].getAnnee() != null) {
-						if (cpdtoResult[i].getAnnee().compareTo(annee)!=0) {
+						if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
 							cpdtoAl.add(cpdtoResult[i]);
 						}
-					}
 				}
 				if (cpdtoExtract!=null) {
 					for (int i = 0; i < cpdtoExtract.length; i++ ) {
-						cpdtoAl.add(cpdtoExtract[i]);
+						if(cpdtoExtract[i].getAnnee() != null && utilisationExtractionApogee(cpdtoExtract[i].getAnnee())){
+							cpdtoAl.add(cpdtoExtract[i]);
+						}
 					}
 				}
 				ContratPedagogiqueResultatVdiVetDTO2[] cpdto = cpdtoAl.toArray(new ContratPedagogiqueResultatVdiVetDTO2[ cpdtoAl.size() ]);
@@ -841,10 +840,9 @@ public class EtudiantController {
 					// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 					temoin=null;
 					sourceResultat="Apogee-extraction";
-					String annee = getAnneeUnivEnCours(GenericUI.getCurrent());
 					ContratPedagogiqueResultatVdiVetDTO2[] cpdtoExtract;
 					try {
-						cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet_v2(e.getCod_etu(), annee, sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
+						cpdtoExtract = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet_v2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 					} catch (Exception ex) {
 						cpdtoExtract = null;
 					}
@@ -852,15 +850,15 @@ public class EtudiantController {
 					// Et on fusionne cpdtoResult et cpdtoExtract
 					ArrayList<ContratPedagogiqueResultatVdiVetDTO2> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO2>();
 					for (int i = 0; i < cpdtoResult.length; i++ ) {
-						if (cpdtoResult[i].getAnnee() != null) {
-							if (cpdtoResult[i].getAnnee().compareTo(annee)!=0) {
+							if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
 								cpdtoAl.add(cpdtoResult[i]);
 							}
-						}
 					}
 					if (cpdtoExtract!=null) {
 						for (int i = 0; i < cpdtoExtract.length; i++ ) {
-							cpdtoAl.add(cpdtoExtract[i]);
+							if(cpdtoExtract[i].getAnnee() != null && utilisationExtractionApogee(cpdtoExtract[i].getAnnee())){
+								cpdtoAl.add(cpdtoExtract[i]);
+							}
 						}
 					}
 					ContratPedagogiqueResultatVdiVetDTO2[] cpdto = cpdtoAl.toArray(new ContratPedagogiqueResultatVdiVetDTO2[ cpdtoAl.size() ]);
@@ -1811,18 +1809,24 @@ public class EtudiantController {
 	}
 
 
+	public boolean utilisationExtractionApogee(String annee) {
+
+		int anneeEnCours = new Integer(getAnneeUnivEnCours(GenericUI.getCurrent()));
+		int anneeDemandee = new Integer(annee);
+
+		//Si l'extraction Apogée couvre l'année demandée
+		if (anneeDemandee>=(anneeEnCours - (configController.getNotesNombreAnneesExtractionApogee() - 1 ))) {
+			//On peut se baser sur l'extraction apogée
+			return true;
+		} 
+
+		return false;
+	}
+
 	public boolean utilisationExtractionApogee(String annee, String sourceResultat) {
 		// Si sourceResultat = apogee-extraction :
 		if(sourceResultat.compareTo("Apogee-extraction")==0){
-
-			int anneeEnCours = new Integer(getAnneeUnivEnCours(GenericUI.getCurrent()));
-			int anneeDemandee = new Integer(annee);
-
-			//Si l'extraction Apogée couvre l'année demandée
-			if (anneeDemandee>=(anneeEnCours - (configController.getNotesNombreAnneesExtractionApogee() - 1 ))) {
-				//On peut se baser sur l'extraction apogée
-				return true;
-			} 
+			return utilisationExtractionApogee(annee); 
 		}
 		return false;
 	}
