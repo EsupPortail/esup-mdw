@@ -35,5 +35,7 @@ public interface ElementPedagogiqueService {
 	
 	public BigDecimal getDureeConservation(String code);
 	
+	public abstract BigDecimal getCreditAcquisElp(String cod_ind, String cod_elp, String annee);
+	
 	
 }

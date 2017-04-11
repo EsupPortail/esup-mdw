@@ -118,6 +118,13 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 		return (BigDecimal) entityManagerApogee.createNativeQuery("select DUR_CON_ELP from ELEMENT_PEDAGOGI where COD_ELP='"+code+"'").getSingleResult();
 	}
 
+	@Override
+	public BigDecimal getCreditAcquisElp(String cod_ind, String cod_elp, String annee) {
+		BigDecimal creditAcquis = (BigDecimal)entityManagerApogee.createNativeQuery("select APOGEE.PKB_CRD.CREDIT_ACQUIS_ELP("+cod_ind+",'"+cod_elp+"',"+annee+") from dual").getSingleResult();
+		return creditAcquis;
+	}
+
+
 
 
 

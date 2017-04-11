@@ -763,9 +763,9 @@ public class EtudiantController {
 				// Et on fusionne cpdtoResult et cpdtoExtract
 				ArrayList<ContratPedagogiqueResultatVdiVetDTO2> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO2>();
 				for (int i = 0; i < cpdtoResult.length; i++ ) {
-						if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
-							cpdtoAl.add(cpdtoResult[i]);
-						}
+					if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
+						cpdtoAl.add(cpdtoResult[i]);
+					}
 				}
 				if (cpdtoExtract!=null) {
 					for (int i = 0; i < cpdtoExtract.length; i++ ) {
@@ -850,9 +850,9 @@ public class EtudiantController {
 					// Et on fusionne cpdtoResult et cpdtoExtract
 					ArrayList<ContratPedagogiqueResultatVdiVetDTO2> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO2>();
 					for (int i = 0; i < cpdtoResult.length; i++ ) {
-							if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
-								cpdtoAl.add(cpdtoResult[i]);
-							}
+						if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
+							cpdtoAl.add(cpdtoResult[i]);
+						}
 					}
 					if (cpdtoExtract!=null) {
 						for (int i = 0; i < cpdtoExtract.length; i++ ) {
@@ -1271,10 +1271,16 @@ public class EtudiantController {
 											anneePrc = relpdto[j].getCodAnu();
 										}
 
-										//on recupere les crédits ECTS si pas déjà renseigné via la session de juin.
+										//on recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
 										if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
 												&& (elp.getEcts()==null || elp.getEcts().equals(""))){
-											elp.setEcts(relpdto[j].getNbrCrdElp().toString());
+											// récupère l'ECTS acquis
+											BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
+											if(ectsAcquis!=null){
+												elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
+											}else{
+												elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+											}
 										}
 
 										elp.setRes1(result);
@@ -1309,7 +1315,13 @@ public class EtudiantController {
 										}
 										//on recupere les crédits ECTS 
 										if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
-											elp.setEcts(relpdto[j].getNbrCrdElp().toString());
+											// récupère l'ECTS acquis
+											BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
+											if(ectsAcquis!=null){
+												elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
+											}else{
+												elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+											}
 										}
 										elp.setRes2(result);
 									}
