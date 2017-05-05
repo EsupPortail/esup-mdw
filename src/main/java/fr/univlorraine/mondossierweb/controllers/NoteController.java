@@ -1070,7 +1070,7 @@ public class NoteController {
 				if((affRangEtudiant|| afficherRangElpEpr)){
 					table2.addCell(cellRang);
 				}
-				if(affRangEtudiant){
+				if(affECTSEtudiant){
 					table2.addCell(cellEcts);
 				}
 				table2.addCell(ct4);
@@ -1089,7 +1089,7 @@ public class NoteController {
 				if((affRangEtudiant|| afficherRangElpEpr)){
 					table2.addCell(cellRang);
 				}
-				if(affRangEtudiant){
+				if(affECTSEtudiant){
 					table2.addCell(cellEcts);
 				}
 			}
