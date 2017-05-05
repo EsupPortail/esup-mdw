@@ -467,10 +467,18 @@ public class NotesView extends VerticalLayout implements View {
 
 			//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
 			boolean afficherMessage = true;
-			if(!userController.isEtudiant()){
-				String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE);
-				if(StringUtils.hasText(val)){
-					afficherMessage = Boolean.valueOf(val);
+			//Si on a paramétré l'application pour ne pas affiche le message
+			if(!configController.isAffMessageNotesInformatives()){
+				//On bloque l'affichage
+				afficherMessage = false;
+			}else{
+				//Si l'utilisateur n'est pas un étudiant
+				if(!userController.isEtudiant()){
+					//On vérifie s'il a demandé à ne plus afficher le message
+					String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_PREFERENCE);
+					if(StringUtils.hasText(val)){
+						afficherMessage = Boolean.valueOf(val);
+					}
 				}
 			}
 

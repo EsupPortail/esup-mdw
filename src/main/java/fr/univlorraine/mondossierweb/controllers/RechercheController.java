@@ -80,7 +80,7 @@ public class RechercheController {
 	 * @param type
 	 */
 	public void accessToDossierEtudiantDeepLinking(String fragment) {
-		
+
 		String fragmentpart[] =fragment.split("/");
 
 		int rangCode = 0;
@@ -91,7 +91,7 @@ public class RechercheController {
 			}
 		}
 		String code= fragmentpart[rangCode];
-		
+
 		//On vérifie que l'étudiant avec ce code existe
 		if(etudiantController.isEtudiantExiste(code)){
 			//On accède au dossier
@@ -99,10 +99,10 @@ public class RechercheController {
 		}else{
 			Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()), Notification.Type.WARNING_MESSAGE);
 		}
-		
+
 	}
 
-	
+
 	public void accessToDetail(String code, String type, String annee) {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
@@ -139,7 +139,7 @@ public class RechercheController {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
-		
+
 		//Si on vient de la recherche rapide, il faut que le bouton 'retour' de la recherche rapide arrive sur les favoris
 		//Sinon boucle possible dans la navigation
 		if(fromSearch){
@@ -186,14 +186,21 @@ public class RechercheController {
 
 		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
 		boolean afficherMessage = true;
-		if(!userController.isEtudiant()){
-			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
-
-			if(StringUtils.hasText(val)){
-				afficherMessage = Boolean.valueOf(val);
+		//Si on a paramétré l'application pour ne pas affiche le message
+		if(!configController.isAffMessageNotesInformatives()){
+			//On bloque l'affichage
+			afficherMessage = false;
+		}else{
+			//Si l'utilisateur n'est pas un étudiant
+			if(!userController.isEtudiant()){
+				//On vérifie s'il a demandé à ne plus afficher le message
+				String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
+				if(StringUtils.hasText(val)){
+					afficherMessage = Boolean.valueOf(val);
+				}
 			}
 		}
-		
+
 		if(afficherMessage){
 			String message =applicationContext.getMessage("notesDetailMobileView.window.message.info", null, null);
 			HelpMobileWindow hbw = new HelpMobileWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null),!userController.isEtudiant());
