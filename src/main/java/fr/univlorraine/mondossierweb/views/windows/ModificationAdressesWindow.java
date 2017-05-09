@@ -54,6 +54,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementDTO;
 import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
 import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO;
+import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO2;
 
 /**
  * Fenêtre de modification des adresses
@@ -261,13 +262,13 @@ public class ModificationAdressesWindow extends Window {
 		formAdresseAnnuelleLayout.addComponent(fieldCodePostal1);
 
 		//Ville pour adresse en france
-		List<CommuneDTO> villes1 = adresseController.getVilles(etudiant.getAdresseAnnuelle().getCodePostal());
+		List<CommuneDTO2> villes1 = adresseController.getVilles(etudiant.getAdresseAnnuelle().getCodePostal());
 		lville1 = new NativeSelect();
 		lville1.setCaption(applicationContext.getMessage(NAME+".ville1", null, getLocale()));
 		lville1.setNullSelectionAllowed(false);
 		lville1.setRequired(true);
 		lville1.setWidth("326px");
-		for(CommuneDTO v : villes1){
+		for(CommuneDTO2 v : villes1){
 			lville1.addItem(v.getLibCommune());
 			lville1.setItemCaption(v.getLibCommune(),v.getLibCommune());
 		}
@@ -402,13 +403,13 @@ public class ModificationAdressesWindow extends Window {
 		formAdresseFixeLayout.addComponent(fieldCodePostal2);
 
 		//Ville pour adresse en france
-		List<CommuneDTO> villes2 = adresseController.getVilles(etudiant.getAdresseFixe().getCodePostal());
+		List<CommuneDTO2> villes2 = adresseController.getVilles(etudiant.getAdresseFixe().getCodePostal());
 		lville2 = new NativeSelect();
 		lville2.setCaption(applicationContext.getMessage(NAME+".ville2", null, getLocale()));
 		lville2.setNullSelectionAllowed(false);
 		lville2.setRequired(true);
 		lville2.setWidth("326px");
-		for(CommuneDTO v : villes2){
+		for(CommuneDTO2 v : villes2){
 			lville2.addItem(v.getLibCommune());
 			lville2.setItemCaption(v.getLibCommune(),v.getLibCommune());
 		}
@@ -542,12 +543,12 @@ public class ModificationAdressesWindow extends Window {
 	}
 
 	private void updateListeVillesAnnuelle(String text) {
-		List<CommuneDTO> villes1 = adresseController.getVilles(text);
+		List<CommuneDTO2> villes1 = adresseController.getVilles(text);
 		if(villes1!=null && villes1.size()>0){
 			codePostalVillesAnnu = text;
 			if(lville1!=null){
 				lville1.removeAllItems();
-				for(CommuneDTO v : villes1){
+				for(CommuneDTO2 v : villes1){
 					lville1.addItem(v.getLibCommune());
 					lville1.setItemCaption(v.getLibCommune(),v.getLibCommune());
 				}
@@ -583,12 +584,12 @@ public class ModificationAdressesWindow extends Window {
 	}
 
 	private void updateListeVillesFixe(String text) {
-		List<CommuneDTO> villes2 = adresseController.getVilles(text);
+		List<CommuneDTO2> villes2 = adresseController.getVilles(text);
 		if(villes2!=null && villes2.size()>0){
 			codePostalVillesFixe = text;
 			if(lville2!=null){
 				lville2.removeAllItems();
-				for(CommuneDTO v : villes2){
+				for(CommuneDTO2 v : villes2){
 					lville2.addItem(v.getLibCommune());
 					lville2.setItemCaption(v.getLibCommune(),v.getLibCommune());
 				}

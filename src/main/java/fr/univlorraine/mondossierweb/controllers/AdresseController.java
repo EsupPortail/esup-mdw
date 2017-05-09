@@ -30,6 +30,7 @@ import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesDTO2;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementDTO;
 import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO;
+import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO2;
 import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
@@ -113,16 +114,16 @@ public class AdresseController {
 	}
 
 
-	public List<CommuneDTO> getVilles(String codePostal) {
-		List<CommuneDTO> lvilles  = new LinkedList<CommuneDTO>();
+	public List<CommuneDTO2> getVilles(String codePostal) {
+		List<CommuneDTO2> lvilles  = new LinkedList<CommuneDTO2>();
 		try{
 			//if (Pattern.matches("^[0-9]{2}[0-9]*", codePostal)) { 
 			if (Pattern.matches("^[0-9]{5}", codePostal)) { 
-				CommuneDTO[] cdto =monProxyGeo.recupererCommune(codePostal,  "O", "O");
+				CommuneDTO2[] cdto =monProxyGeo.recupererCommune_v2(codePostal,  "O", "O","O");
 				if(cdto!=null){
 					for (int i = 0; i < cdto.length; i++) {
 						// Si TEM_EN_SVE_CBD = O
-						if(cdto[i]!=null && cdto[i].getTemSevBureauDis()!=null && cdto[i].getTemSevBureauDis().equals("O")){
+						if(cdto[i]!=null && cdto[i].getTemoinEnServiceComBD()!=null && cdto[i].getTemoinEnServiceComBD().equals("O")){
 							boolean insere = false;
 							int j = 0;
 							while (!insere && j < lvilles.size()) {
@@ -356,12 +357,12 @@ public class AdresseController {
 
 
 		try {
-			CommuneDTO[] cdto = monProxyGeo.recupererCommune(codepostal, "O", "O");
+			CommuneDTO2[] cdto = monProxyGeo.recupererCommune_v2(codepostal, "O", "O","O");
 
 			for (int i = 0; i < cdto.length; i++) {
-				CommuneDTO c = cdto[i];
+				CommuneDTO2 c = cdto[i];
 				// Si TEM_EN_SVE_CBD = O
-				if(c.getTemSevBureauDis()!=null && c.getTemSevBureauDis().equals("O")){
+				if(c.getTemoinEnServiceComBD()!=null && c.getTemoinEnServiceComBD().equals("O")){
 					if (c.getLibCommune().equals(nom)){
 						return c.getCodeCommune();
 					}
