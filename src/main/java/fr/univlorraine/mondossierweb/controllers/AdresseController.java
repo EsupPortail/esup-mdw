@@ -362,7 +362,7 @@ public class AdresseController {
 			for (int i = 0; i < cdto.length; i++) {
 				CommuneDTO2 c = cdto[i];
 				// Si TEM_EN_SVE_CBD = O
-				if(c.getTemoinEnServiceComBD()!=null && c.getTemoinEnServiceComBD().equals("O")){
+				if(c!=null && c.getTemoinEnServiceComBD()!=null && c.getTemoinEnServiceComBD().equals("O")){
 					if (c.getLibCommune().equals(nom)){
 						return c.getCodeCommune();
 					}
