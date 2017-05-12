@@ -18,6 +18,8 @@
  */
 package fr.univlorraine.mondossierweb.repositories.mdw;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +28,6 @@ import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationCategori
 @Repository
 public interface PreferencesApplicationCategorieRepository extends JpaRepository<PreferencesApplicationCategorie, Integer> {
 
+	public List<PreferencesApplicationCategorie> findAllByOrderByOrdreAsc();
 	
 }

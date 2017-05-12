@@ -186,6 +186,14 @@ public class Etudiant {
 	 * la liste des numérots d'anonymat pour l'année en cours
 	 */
 	private List<Anonymat> numerosAnonymat;
+	/**
+	 * les données d'affiliation à la sécu de l'étudiant 
+	 */
+	private AffiliationSSO affilition_sso;
+	/**
+	 * les données de quittance des droits universitaires payés
+	 */
+	private QuittanceDroitsUniversitaires quittance_sso;
 	
 
 	

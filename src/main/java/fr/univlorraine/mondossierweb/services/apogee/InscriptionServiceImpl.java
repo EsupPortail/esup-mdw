@@ -75,6 +75,20 @@ public class InscriptionServiceImpl implements InscriptionService{
 				" and iae.eta_iae = 'E' ").getSingleResult();
 		return codCmp;
 	}
+	
+	@Override
+	public String getLicCmpFromCodIndIAE(String codAnu, String codInd, String codEtp, String vrsVet) {
+		@SuppressWarnings("unchecked")
+		String  codCmp= (String)entityManagerApogee.createNativeQuery("select c.lic_cmp "+
+				" from apogee.ins_adm_etp iae, composante c  "+
+				" where c.cod_cmp = iae.cod_cmp  "+
+				" and iae.cod_anu = "+codAnu+"  "+
+				" and iae.cod_ind = '"+codInd+"'  "+
+				" and iae.cod_etp = '"+codEtp+"'  "+
+				" and iae.cod_vrs_vet = "+vrsVet+"  "+
+				" and iae.eta_iae = 'E' ").getSingleResult();
+		return codCmp;
+	}
 
 	public String getStatut(String codAnu, String codInd) {
 		@SuppressWarnings("unchecked")
@@ -105,6 +119,9 @@ public class InscriptionServiceImpl implements InscriptionService{
 		return null;
 
 	}
+
+
+	
 
 
 

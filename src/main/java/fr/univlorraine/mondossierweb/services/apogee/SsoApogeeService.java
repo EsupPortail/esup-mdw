@@ -18,19 +18,16 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.util.Map;
 
+public interface SsoApogeeService {
 
-public interface InscriptionService {
+	public String getMutuelle(String codAnu, String codInd);
+	
+	public Map<String,String> getCentrePayeur(String codAnu, String codInd, boolean affilie);
+	
+	public String getDateCotisation(String codAnu, String codInd);
+	
+	public boolean isAffilieSso(String codAnu, String codInd);
 
-	public String getProfil(String codAnu, String codInd);
-	
-	public String getCgeFromCodIndIAE(String codAnu, String codInd, String codEtp, String vrsVet);
-	
-	public String getCmpFromCodIndIAE(String codAnu, String codInd, String codEtp, String vrsVet);
-	
-	public String getLicCmpFromCodIndIAE(String codAnu, String codInd, String codEtp, String vrsVet);
-
-	public String getFormationEnCours(String codetu);
-	
-	public String getStatut(String codAnu, String codInd);
 }

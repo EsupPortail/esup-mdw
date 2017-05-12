@@ -214,6 +214,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return linscrits;
 
 	}
+	
 
 	@Override
 	public String getLibelleEtape(Etape e) {
@@ -222,6 +223,15 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" from version_etape "+
 				" where cod_etp = '"+e.getCode()+"' "+
 				" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
+		return libelle;
+	}
+	
+	@Override
+	public String getLibelleCourtEtape(String codeEtp) {
+		@SuppressWarnings("unchecked")
+		String libelle = (String)entityManagerApogee.createNativeQuery("select lic_etp "+
+				" from etape "+
+				" where cod_etp = '"+codeEtp+"'").getSingleResult();
 		return libelle;
 	}
 

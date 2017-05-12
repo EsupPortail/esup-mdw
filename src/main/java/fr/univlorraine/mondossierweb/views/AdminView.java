@@ -138,7 +138,7 @@ public class AdminView extends VerticalLayout implements View {
 
 			/* Récupération des Categories de configuration */
 
-			List<PreferencesApplicationCategorie> categories = configController.getCategories();
+			List<PreferencesApplicationCategorie> categories = configController.getCategoriesOrderByOrdre();
 
 			int tabNumber = 0;
 			for(PreferencesApplicationCategorie categorie : categories){

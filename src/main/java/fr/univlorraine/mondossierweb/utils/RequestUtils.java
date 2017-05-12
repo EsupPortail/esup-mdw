@@ -67,8 +67,23 @@ public class RequestUtils {
 	public String getCalendrierDesExamens(){
 		return properties.getProperty("calendrierExamen");
 	}
-
-
+	
+	public String getCentrePayeurPourAffilie(){
+		return properties.getProperty("centrePayeurPourAffilie");
+	}
+	
+	public String getDateCotisation(){
+		return properties.getProperty("dateCotisation");
+	}
+	
+	public String getCentrePayeurPourNonAffilie(){
+		return properties.getProperty("centrePayeurPourNonAffilie");
+	}
+	
+	public String getMutuelle(){
+		return properties.getProperty("mutuelle");
+	}
+	
 	public String getMailFromLogin() {
 		return properties.getProperty("mailFromLogin");
 	}

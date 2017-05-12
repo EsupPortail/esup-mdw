@@ -63,9 +63,20 @@ public class ConfigController {
 	public List<PreferencesApplicationCategorie> getCategories(){
 		return preferencesApplicationCategorieRepository.findAll();
 	}
+	
+	public List<PreferencesApplicationCategorie> getCategoriesOrderByOrdre(){
+		return preferencesApplicationCategorieRepository.findAllByOrderByOrdreAsc();
+	}
 
 	public boolean isCertificatScolaritePDF() {
 		return getBooleanValueForParameter("certificatScolaritePDF");
+	}
+	
+	public boolean isAttestationAffiliationSSO(){
+		return getBooleanValueForParameter("attestationAffiliationSSO");
+	}
+	public boolean isAttestSsoAutorisePersonnel(){
+		return getBooleanValueForParameter("attestSsoAutorisePersonnel");
 	}
 
 	public boolean isCertificatScolariteTouteAnnee() {
@@ -112,6 +123,14 @@ public class ConfigController {
 
 	public boolean isAffBtnCertifNouvelleLigne(){
 		return getBooleanValueForParameter("afficherBoutonCertifNouvelleLigne");
+	}
+	
+	public boolean isAffBtnAttestSsoNouvelleLigne(){
+		return getBooleanValueForParameter("afficherBoutonAttestSsoNouvelleLigne");
+	}
+	
+	public boolean isAffBtnQuittanceSsoNouvelleLigne(){
+		return getBooleanValueForParameter("afficherBoutonQuittanceSsoNouvelleLigne");
 	}
 
 	public boolean isLogoutCasPropose() {

@@ -2041,6 +2041,22 @@ public class EtudiantController {
 		}
 	}
 
+	public boolean proposerAttestationAffiliationSSO(Inscription ins, Etudiant etu){
+		
+		// autoriser ou non la generation de l'attestation
+		if (!configController.isAttestationAffiliationSSO()) {
+					return false;
+		}
+		// autoriser ou non les personnels à imprimer les attestations.
+		if ( !configController.isAttestSsoAutorisePersonnel() && userController.isEnseignant()) {
+					return false;
+		}
+		String codAnuIns=ins.getCod_anu().substring(0, 4);
+		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
+			return false;
+		}
+		return true;
+	}
 
 	public boolean proposerCertificat(Inscription ins, Etudiant etu) {
 

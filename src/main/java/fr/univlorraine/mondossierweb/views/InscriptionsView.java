@@ -53,6 +53,7 @@ import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.InscriptionController;
+import fr.univlorraine.mondossierweb.controllers.SsoController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -86,6 +87,8 @@ public class InscriptionsView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient InscriptionController inscriptionController;
+	@Resource
+	private transient SsoController ssoController;
 	@Resource
 	private transient ConfigController configController;
 
@@ -299,7 +302,37 @@ public class InscriptionsView extends VerticalLayout implements View {
 					vLayout.addComponent(bCertificatInscription);
 					layoutToAdd=vLayout;
 				}
-			}			
+			}		
+			
+
+			//Si on peut proposer l'attestation d'affiliation
+			if(etudiantController.proposerAttestationAffiliationSSO(inscription, MainUI.getCurrent().getEtudiant())){
+				//On affiche le bouton pour éditer le certificat de scolarité
+				Button bAttestationAffiliationSso=new Button();
+				bAttestationAffiliationSso.setIcon(FontAwesome.FILE_PDF_O);
+				bAttestationAffiliationSso.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				bAttestationAffiliationSso.addStyleName("blue-button-icon");
+				bAttestationAffiliationSso.setDescription(applicationContext.getMessage(NAME + ".affiliationSso.link", null, getLocale()));
+				if(PropertyUtils.isPushEnabled()){
+					MyFileDownloader fd = new MyFileDownloader(ssoController.exportAffiliationSsoPdf(MainUI.getCurrent().getEtudiant(),inscription));
+					fd.extend(bAttestationAffiliationSso);
+				}else{
+					FileDownloader fd = new FileDownloader(ssoController.exportAffiliationSsoPdf(MainUI.getCurrent().getEtudiant(),inscription));
+					fd.setOverrideContentType(false);
+					fd.extend(bAttestationAffiliationSso);
+				}
+				if(!configController.isAffBtnAttestSsoNouvelleLigne()){
+					libelleLayout.addComponent(bAttestationAffiliationSso);
+				}else{
+					bAttestationAffiliationSso.setStyleName(ValoTheme.BUTTON_TINY);
+					bAttestationAffiliationSso.addStyleName("blue-button-icon");
+					bAttestationAffiliationSso.setCaption(applicationContext.getMessage(NAME + ".affiliationSso.btn.link", null, getLocale()));
+					VerticalLayout vLayout = new VerticalLayout();
+					vLayout.addComponent(libelleLayout);
+					vLayout.addComponent(bAttestationAffiliationSso);
+					layoutToAdd=vLayout;
+				}
+			}
 
 
 			return layoutToAdd;

@@ -51,6 +51,8 @@ public interface MultipleApogeeService {
 
 	public abstract String getLibelleEtape(Etape e);
 	
+	public String getLibelleCourtEtape(String codeEtp);
+	
 	public abstract String getNatureElp(String codElp);
 
 	public abstract List<String> getAnneesFromVetDesc(Etape e, int anneeMaximum);

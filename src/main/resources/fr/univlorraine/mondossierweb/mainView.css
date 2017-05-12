@@ -61,11 +61,19 @@ font-size: xx-large;
 
 
 .valo-ul .red-button-icon {
-color: #ff0000;
+color: #ff0000 !important;
 }
 
 .valo-ul .red-button-icon:hover {
-	color: #bb382e;
+	color: #bb382e !important;
+}
+
+.valo-ul .blue-button-icon {
+color: #0080ff !important;
+}
+
+.valo-ul .bluebutton-icon:hover {
+	color: #0000ff !important;
 }
 
 .valo-ul .button-icon {
