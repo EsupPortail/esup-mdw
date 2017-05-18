@@ -35,5 +35,68 @@ AND SAL.COD_SAL = PESA.COD_SAL  AND  BAT.COD_BAT = SAL.COD_BAT  ORDER BY DATEDEB
 <entry key="mailFromLogin">select MAIL FROM ANNU_MEL_LOGIN WHERE LOGIN=#LOGIN#</entry>
 <entry key="loginFromCodEtu">select LOGIN FROM ANNU_MEL_LOGIN WHERE COD_ETU=#COD_ETU#</entry>
 <entry key="mailFromCodEtu">select MAIL FROM ANNU_MEL_LOGIN WHERE COD_ETU=#COD_ETU#</entry>
+<entry key="quittances">SELECT TO_CHAR(sqr.num_occ_qut) numoccqut, TO_CHAR(sqr.dat_sqr,'DD/MM/YYYY') datsqr, 
+cge.lic_cge liccge, TO_CHAR(sqr.num_occ_sqr) numoccsqr
+FROM    situation_quittance_rmb sqr, centre_gestion cge
+WHERE sqr.cod_anu = '#COD_ANU#' 
+AND sqr.cod_ind = #COD_IND#
+AND sqr.cod_typ_sqr = 'Q' 
+AND sqr.eta_qut = 'V' 
+AND cge.cod_cge = sqr.cod_cge 
+ORDER BY sqr.num_occ_qut DESC</entry>
+<entry key="centrePayeurPourAffilie">SELECT ctp.lic_ctp LIC_CTP, TO_CHAR(iaa.dat_afl_sso,'DD/MM/YYYY') DAT_AFL_SSO 
+FROM ins_adm_anu iaa, centre_payeur ctp 
+WHERE iaa.cod_anu = '#COD_ANU#' 
+AND iaa.cod_ind = #COD_IND# AND iaa.tem_afl_sso = 'O' AND iaa.cod_ctp = ctp.cod_ctp (+) 
+AND ((EXISTS 
+(SELECT 1 FROM iaa_iae_dim iid, situation_quittance_rmb sqr, droit drt 
+WHERE iid.cod_ind = iaa.cod_ind 
+AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = drt.cod_drt 
+AND drt.cod_tdr = 'SS' AND sqr.cod_ind = iid.cod_ind 
+AND sqr.cod_anu = iid.cod_anu AND sqr.num_occ_sqr = iid.num_occ_sqr 
+AND sqr.eta_qut = 'V') 
+AND NOT EXISTS 
+(SELECT 1 FROM iaa_iae_dim iid, droit drt 
+WHERE iid.cod_ind = iaa.cod_ind 
+AND iid.cod_anu = iaa.cod_anu 
+AND iid.cod_drt = drt.cod_drt 
+AND drt.cod_tdr = 'SS' 
+AND iid.cod_typ_iad = 'N' 
+AND iid.tem_exo_iad IS NULL 
+AND iid.num_occ_sqr IS NULL)) 
+OR EXISTS 
+(SELECT 1 FROM iaa_iae_dim iid, droit drt 
+WHERE iid.cod_ind = iaa.cod_ind 
+AND iid.cod_anu = iaa.cod_anu 
+AND iid.cod_drt =drt.cod_drt 
+AND drt.cod_tdr = 'SS' 
+AND iid.cod_typ_iad = 'E'))</entry>
+<entry key="centrePayeurPourNonAffilie">SELECT ctp.lic_ctp LIC_CTP, TO_CHAR(iaa.dat_afl_sso,'DD/MM/YYYY') DAT_AFL_SSO 
+FROM ins_adm_anu iaa, centre_payeur ctp 
+WHERE iaa.cod_anu = '#COD_ANU#' 
+AND iaa.cod_ind = #COD_IND#
+AND iaa.tem_afl_sso = 'N' 
+AND iaa.cod_ctp = ctp.cod_ctp (+)</entry>
+<entry key="montant1erPaiement">SELECT to_char(SUM(mnt_pmt_ech1)) 
+FROM paiement 
+WHERE cod_ind= #COD_IND#
+AND cod_anu= '#COD_ANU#' </entry>
+<entry key="montant2emPaiement">SELECT to_char(SUM(mnt_pmt_ech2)) 
+FROM paiement 
+WHERE cod_ind= #COD_IND#
+AND cod_anu= '#COD_ANU#'</entry>
+<entry key="montant3emPaiement">SELECT to_char(SUM(mnt_pmt_ech3)) 
+FROM paiement 
+WHERE cod_ind= #COD_IND#
+AND cod_anu= '#COD_ANU#'</entry>
+<entry key="date1erPaiement"></entry>
+<entry key="date2emPaiement"></entry>
+<entry key="date3emPaiement"></entry>
+<entry key="paiement3X"></entry>
+<entry key="moyensDePaiement"></entry>
+<entry key="montantTotalPaye"></entry>
+<entry key="montantsPayes"></entry>
+<entry key="dateCotisation"></entry>
+<entry key="mutuelle"></entry>
 
 </properties>

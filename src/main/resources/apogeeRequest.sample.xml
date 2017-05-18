@@ -25,6 +25,21 @@
 <entry key="mailFromLogin"></entry>
 <entry key="loginFromCodEtu"></entry>
 <entry key="mailFromCodEtu"></entry>
+<entry key="quittances"></entry>
+<entry key="centrePayeurPourAffilie"></entry>
+<entry key="centrePayeurPourNonAffilie"></entry>
+<entry key="montant1erPaiement"></entry>
+<entry key="montant2emPaiement"></entry>
+<entry key="montant3emPaiement"></entry>
+<entry key="date1erPaiement"></entry>
+<entry key="date2emPaiement"></entry>
+<entry key="date3emPaiement"></entry>
+<entry key="paiement3X"></entry>
+<entry key="moyensDePaiement"></entry>
+<entry key="montantTotalPaye"></entry>
+<entry key="montantsPayes"></entry>
+<entry key="dateCotisation"></entry>
+<entry key="mutuelle"></entry>
 
 
 </properties>

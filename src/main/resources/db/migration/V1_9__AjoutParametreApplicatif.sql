@@ -25,13 +25,13 @@ INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`,
 ('afficherBoutonAttestSsoNouvelleLigne','Affichage du bouton de téléchargement de l''attestation sécu sur une nouvelle ligne : true pour l''activer, false sinon','BOOLEAN',9, 'false');
 
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES 
-('quittanceSSO','Edition PDF de versement des droits universitaires : true pour l''activer, false sinon','BOOLEAN',9, 'false');
+('quittanceDroitsPayes','Edition PDF de versement des droits universitaires : true pour l''activer, false sinon','BOOLEAN',9, 'false');
 
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES 
-('quittanceSsoAutorisePersonnel','Autoriser les enseignants à éditer le PDF de versement des droits universitaires : true pour l''activer, false sinon','BOOLEAN',9, 'false');
+('quittanceDroitsPayesAutorisePersonnel','Autoriser les enseignants à éditer le PDF de versement des droits universitaires : true pour l''activer, false sinon','BOOLEAN',9, 'false');
 
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES 
-('afficherBoutonQuittanceSsoNouvelleLigne','Affichage du bouton de téléchargement du versement des droits universitaires sur une nouvelle ligne : true pour l''activer, false sinon','BOOLEAN',9, 'false');
+('afficherBoutonQuittanceNouvelleLigne','Affichage du bouton de téléchargement du versement des droits universitaires sur une nouvelle ligne : true pour l''activer, false sinon','BOOLEAN',9, 'false');
 
 UPDATE `PREFERENCES_APPLICATION_CATEGORIE` SET ORDRE=6 where CAT_ID=5;
 

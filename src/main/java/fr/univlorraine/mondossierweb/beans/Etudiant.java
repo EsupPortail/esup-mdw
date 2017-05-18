@@ -101,6 +101,10 @@ public class Etudiant {
 	 */
 	private boolean boursier;
 	/**
+	 * affilié à la sécu pour l'année en cours
+	 */
+	private boolean affilieSso;
+	/**
 	 * vrai si inscrit pour l'année en cours
 	 */
 	private boolean inscritPourAnneeEnCours;

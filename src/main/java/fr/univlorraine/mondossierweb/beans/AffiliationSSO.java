@@ -17,4 +17,5 @@ public class AffiliationSSO {
 	private String centre_payeur;
 	private String mutuelle;
 
+
 }

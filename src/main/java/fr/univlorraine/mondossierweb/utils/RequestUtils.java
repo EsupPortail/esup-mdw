@@ -68,8 +68,51 @@ public class RequestUtils {
 		return properties.getProperty("calendrierExamen");
 	}
 	
+	public String getQuittances(){
+		return properties.getProperty("quittances");
+	}
 	public String getCentrePayeurPourAffilie(){
 		return properties.getProperty("centrePayeurPourAffilie");
+	}
+	
+	public String getMontant1erPaiement() {
+		return properties.getProperty("montant1erPaiement");
+	}
+	
+	public String getMontant2emPaiement() {
+		return properties.getProperty("montantsPayes");
+	}
+	
+	public String getMontantsPayes(){
+		return properties.getProperty("montant2emPaiement");
+	}
+	
+	public String getMontantTotalPaye(){
+		return properties.getProperty("montantTotalPaye");
+	}
+	
+	public String getMontant3emPaiement() {
+		return properties.getProperty("montant3emPaiement");
+	}
+	
+	public String getDate1erPaiement(){
+		return properties.getProperty("date1erPaiement");
+	}
+	
+	public String getDate2emPaiement(){
+		return properties.getProperty("date2emPaiement");
+	}
+	
+	public String getDate3emPaiement(){
+		return properties.getProperty("date3emPaiement");
+	}
+	
+	public String isPaiement3X(){
+		return properties.getProperty("paiement3X");
+	}
+	
+	public String getMoyensDePaiement(){
+		return properties.getProperty("moyensDePaiement");
 	}
 	
 	public String getDateCotisation(){
@@ -97,5 +140,8 @@ public class RequestUtils {
 	public String getMailFromCodEtu() {
 		return properties.getProperty("mailFromCodEtu");
 	}
+
+
+	
 
 }

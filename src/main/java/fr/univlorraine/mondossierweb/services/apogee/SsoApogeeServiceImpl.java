@@ -34,9 +34,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
-import fr.univlorraine.mondossierweb.entities.apogee.Examen;
-import fr.univlorraine.mondossierweb.repositories.apogee.DiplomeApogeeRepository;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
 
 @Component
@@ -94,6 +91,36 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		}
 
 		return mutuelle;
+	}
+
+	@Override
+	public List<Map<String,String>> getQuittances(String codAnu, String codInd){
+
+		String requeteSQL = "";
+		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+		if(StringUtils.hasText(requestUtils.getQuittances())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getQuittances().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL=" SELECT TO_CHAR(sqr.num_occ_qut) numoccqut, TO_CHAR(sqr.dat_sqr,'DD/MM/YYYY') datsqr, cge.lic_cge liccge, TO_CHAR(sqr.num_occ_sqr) numoccsqr "+
+					"FROM    situation_quittance_rmb sqr, centre_gestion cge "+
+					"WHERE sqr.cod_anu = '"+codAnu+"' "+
+					"AND sqr.cod_ind = "+codInd+" "+
+					"AND sqr.cod_typ_sqr = 'Q' "+
+					"AND sqr.eta_qut = 'V' "+
+					"AND cge.cod_cge = sqr.cod_cge "+
+					"ORDER BY sqr.num_occ_qut DESC";
+		}
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+
+		query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+
+		@SuppressWarnings("unchecked")
+		List<Map<String,String>> r = (List<Map<String,String>>) query.getResultList();
+
+		return r;
 	}
 
 	@Override
@@ -196,21 +223,29 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 					"AND sqr.cod_typ_sqr = 'Q' AND sqr.eta_qut = 'V' AND cge.cod_cge = sqr.cod_cge "+
 					"AND sqr.num_occ_sqr = 1 ";
 		}
-		
+
 		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-		
+
 		String dateCotisation = (String) query.getSingleResult();
-		
+
 		return dateCotisation;
 	}
 
 
-	@Override
+	/*@Override
 	public boolean isAffilieSso(String codAnu, String codInd) {
+		String requeteSQL = "";
 
-		String requeteSQL = "SELECT iaa.tem_afl_sso FROM ins_adm_anu iaa "+
-				"WHERE iaa.cod_anu = '"+codAnu+"' "+
-				" AND iaa.cod_ind = "+codInd;
+		if(StringUtils.hasText(requestUtils.isAffilieSso())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.isAffilieSso().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL = "SELECT iaa.tem_afl_sso FROM ins_adm_anu iaa "+
+					"WHERE iaa.cod_anu = '"+codAnu+"' "+
+					" AND iaa.cod_ind = "+codInd;
+		}
 
 		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
@@ -221,9 +256,289 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		}
 
 		return false;
+	}*/
+
+	@Override
+	public List<String> getMoyensDePaiement(String codAnu,  String codInd, String NumOccSqr) {
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getMoyensDePaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getMoyensDePaiement().replaceAll("#NUM_OCC_SQR#", NumOccSqr).replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL = "SELECT mdp.lic_mdp "+
+					"FROM paiement pmt, mode_paiement mdp "+
+					"WHERE pmt.cod_anu = '"+codAnu+"' "+
+					"AND pmt.cod_ind = "+codInd+" "+
+					"AND pmt.num_occ_sqr = "+NumOccSqr+ " "+
+					"AND mdp.cod_mdp = pmt.cod_mdp order by pmt.num_occ_pmt";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			List<String> mdps = (List<String>) query.getResultList();
+
+			if(mdps!=null && mdps.size()>0 && mdps.get(0)!=null && StringUtils.hasText(mdps.get(0))){
+				return mdps;
+			}
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+
+		return null;
+	}
+
+	@Override
+	public boolean isPaiement3X(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.isPaiement3X())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.isPaiement3X().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL= "SELECT tem_pmt_3f "+
+					"FROM ins_adm_anu "+
+					"WHERE cod_ind="+codInd+" "+
+					"AND cod_anu='"+codAnu+"' ";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+
+		String tem_pmt_3xf = (String) query.getSingleResult();
+
+		if(tem_pmt_3xf!=null && tem_pmt_3xf.equals("O")){
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public String getDate1erPaiement(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getDate1erPaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getDate1erPaiement().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT TO_CHAR(dat_ech1,'DD/MM') "+
+					"FROM paiement "+
+					"WHERE cod_ind="+codInd+" "+
+					"AND cod_anu='"+codAnu+"' "+
+					"AND dat_ech1 IS NOT NULL "+
+					"ORDER BY dat_ech1";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String date = (String) query.getSingleResult();
+			return date;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
+	@Override
+	public String getDate2emPaiement(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getDate2emPaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getDate2emPaiement().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT TO_CHAR(dat_ech2,'DD/MM') "+
+					"FROM paiement "+
+					"WHERE cod_ind="+codInd+" "+
+					"AND cod_anu='"+codAnu+"' "+
+					"AND dat_ech2 IS NOT NULL "+
+					"ORDER BY dat_ech2";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String date = (String) query.getSingleResult();
+			return date;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
+	@Override
+	public String getDate3emPaiement(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getDate3emPaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getDate3emPaiement().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT TO_CHAR(dat_ech3,'DD/MM') "+
+					"FROM paiement "+
+					"WHERE cod_ind="+codInd+" "+
+					"AND cod_anu='"+codAnu+"' "+
+					"AND dat_ech3 IS NOT NULL "+
+					"ORDER BY dat_ech3";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String date = (String) query.getSingleResult();
+			return date;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
 	}
 
 
+
+	@Override
+	public String getMontant1erPaiement(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getMontant1erPaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getMontant1erPaiement().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT to_char(SUM(mnt_pmt_ech1)) "+
+					"FROM paiement "+
+					"WHERE cod_ind= "+codInd+" "+
+					"AND cod_anu= '"+codAnu+"' ";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String date = (String) query.getSingleResult();
+			return date;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
+	@Override
+	public String getMontant2emPaiement(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getMontant2emPaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getMontant2emPaiement().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT to_char(SUM(mnt_pmt_ech2)) "+
+					"FROM paiement "+
+					"WHERE cod_ind= "+codInd+" "+
+					"AND cod_anu= '"+codAnu+"' ";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String date = (String) query.getSingleResult();
+			return date;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
+	@Override
+	public String getMontant3emPaiement(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getMontant3emPaiement())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getMontant3emPaiement().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT to_char(SUM(mnt_pmt_ech3)) "+
+					"FROM paiement "+
+					"WHERE cod_ind= "+codInd+" "+
+					"AND cod_anu= '"+codAnu+"' ";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String date = (String) query.getSingleResult();
+			return date;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
+
+
+	@Override
+	public String getMontantTotalPaye(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getMontantTotalPaye())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getMontantTotalPaye().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT to_char(sum( nvl(iid.mnt_pai_iad,0) - nvl(iid.mnt_rmb_iad,0) )) "+
+					"FROM    situation_quittance_rmb sqr,  iaa_iae_dim iid "+
+					"WHERE sqr.cod_anu = '"+codAnu+"' "+
+					"AND sqr.cod_ind ="+codInd+" "+
+					"AND sqr.eta_qut IN ( 'V','T','S','C') "+
+					"AND iid.cod_anu = sqr.cod_anu "+
+					"AND iid.cod_ind = sqr.cod_ind "+
+					"AND iid.num_occ_sqr = sqr.num_occ_sqr "+
+					"GROUP BY sqr.cod_ind ";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+		try{
+			String montant = (String) query.getSingleResult();
+			return montant;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
+	@Override
+	public List<Map<String,String>> getMontantsPayes(String codAnu,  String codInd){
+		String requeteSQL = "";
+
+		if(StringUtils.hasText(requestUtils.getMontantsPayes())){
+
+			//On utilise la requête indiquée dans le fichier XML
+			requeteSQL = requestUtils.getMontantsPayes().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+		}else{
+			requeteSQL="SELECT nrg.lic_nrg LIC_NRG, to_char(sum( nvl(iid.mnt_pai_iad,0) - nvl(iid.mnt_rmb_iad,0))) MONTANT "+
+					"FROM  situation_quittance_rmb sqr,  iaa_iae_dim iid, droit drt, niv_regroup nrg "+
+					"WHERE sqr.cod_anu = '"+codAnu+"' "+
+					"AND sqr.cod_ind ="+codInd+" "+
+					"AND sqr.eta_qut IN ( 'V','T','S','C') "+
+					"AND iid.cod_anu = sqr.cod_anu "+
+					"AND iid.cod_ind = sqr.cod_ind "+
+					"AND iid.num_occ_sqr = sqr.num_occ_sqr "+
+					"AND iid.cod_drt = drt.cod_drt "+
+					"AND nrg.cod_nrg = drt.cod_nrg "+
+					"GROUP BY nrg.lic_nrg ";
+		}
+
+		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+
+		query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+
+		@SuppressWarnings("unchecked")
+		List<Map<String,String>> r = (List<Map<String,String>>) query.getResultList();
+
+		return r;
+	}
 
 
 

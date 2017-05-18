@@ -314,6 +314,11 @@ public class EtudiantController {
 									GenericUI.getCurrent().getEtudiant().setStatut(iaad.getStatut().getCode());
 								}
 
+								//recupérer le témoin d'affiliation à la sécu
+								if(iaad.getTemoinAffiliationSS()!=null && iaad.getTemoinAffiliationSS().equals("O")){
+									GenericUI.getCurrent().getEtudiant().setAffilieSso(true);
+								}
+
 
 								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 								//Si témoin aménagement d'étude valué à O
@@ -2042,14 +2047,35 @@ public class EtudiantController {
 	}
 
 	public boolean proposerAttestationAffiliationSSO(Inscription ins, Etudiant etu){
-		
+
 		// autoriser ou non la generation de l'attestation
 		if (!configController.isAttestationAffiliationSSO()) {
-					return false;
+			return false;
 		}
 		// autoriser ou non les personnels à imprimer les attestations.
 		if ( !configController.isAttestSsoAutorisePersonnel() && userController.isEnseignant()) {
-					return false;
+			return false;
+		}
+		String codAnuIns=ins.getCod_anu().substring(0, 4);
+		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
+			return false;
+		}
+		//Si pas affilié à la sécu
+		if(!etu.isAffilieSso()){
+			return false;
+		}
+		return true;
+	}
+
+	public boolean proposerQuittanceDroitsPayes(Inscription ins, Etudiant etu){
+
+		// autoriser ou non la generation de la quittance
+		if (!configController.isQuittanceDroitsPayes()) {
+			return false;
+		}
+		// autoriser ou non les personnels à imprimer les quittance
+		if ( !configController.isQuittanceDroitsPayesAutorisePersonnel() && userController.isEnseignant()) {
+			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
 		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {

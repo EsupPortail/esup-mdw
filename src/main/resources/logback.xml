@@ -94,7 +94,7 @@
 		</then>
 		<else>
 			<!-- in debug mode -->
-			<logger name="fr.univlorraine.mondossierweb" level="trace" />
+			<logger name="fr.univlorraine.mondossierweb" level="debug" />
 		</else>
 	</if>
 

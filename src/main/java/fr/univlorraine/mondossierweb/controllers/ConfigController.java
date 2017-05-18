@@ -129,8 +129,15 @@ public class ConfigController {
 		return getBooleanValueForParameter("afficherBoutonAttestSsoNouvelleLigne");
 	}
 	
-	public boolean isAffBtnQuittanceSsoNouvelleLigne(){
-		return getBooleanValueForParameter("afficherBoutonQuittanceSsoNouvelleLigne");
+	public boolean isQuittanceDroitsPayes(){
+		return getBooleanValueForParameter("quittanceDroitsPayes");
+	}
+	public boolean isQuittanceDroitsPayesAutorisePersonnel(){
+		return getBooleanValueForParameter("quittanceDroitsPayesAutorisePersonnel");
+	}
+	
+	public boolean isAffBtnQuittanceDroitsPayesNouvelleLigne(){
+		return getBooleanValueForParameter("afficherBoutonQuittanceNouvelleLigne");
 	}
 
 	public boolean isLogoutCasPropose() {

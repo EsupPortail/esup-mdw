@@ -18,16 +18,39 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SsoApogeeService {
 
 	public String getMutuelle(String codAnu, String codInd);
 	
+	public List<Map<String,String>> getQuittances(String codAnu, String codInd);
+	
 	public Map<String,String> getCentrePayeur(String codAnu, String codInd, boolean affilie);
 	
 	public String getDateCotisation(String codAnu, String codInd);
 	
-	public boolean isAffilieSso(String codAnu, String codInd);
+	//public boolean isAffilieSso(String codAnu, String codInd);
+	
+	public List<String> getMoyensDePaiement(String codAnu,String codInd, String NumOccSqr);
+
+	public boolean isPaiement3X(String codAnu, String codInd);
+
+	public String getDate1erPaiement(String codAnu, String codInd);
+
+	public String getDate2emPaiement(String codAnu, String codInd);
+
+	public String getDate3emPaiement(String codAnu, String codInd);
+
+	public String getMontant1erPaiement(String codAnu, String codInd);
+
+	public String getMontant2emPaiement(String codAnu, String codInd);
+
+	public String getMontant3emPaiement(String codAnu, String codInd);
+
+	public String getMontantTotalPaye(String codAnu, String codInd);
+
+	public List<Map<String, String>> getMontantsPayes(String codAnu, String codInd);
 
 }

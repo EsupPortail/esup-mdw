@@ -72,8 +72,16 @@ color: #ff0000 !important;
 color: #0080ff !important;
 }
 
-.valo-ul .bluebutton-icon:hover {
+.valo-ul .blue-button-icon:hover {
 	color: #0000ff !important;
+}
+
+.valo-ul .green-button-icon {
+color: #008000 !important;
+}
+
+.valo-ul .green-button-icon:hover {
+	color: #004000 !important;
 }
 
 .valo-ul .button-icon {

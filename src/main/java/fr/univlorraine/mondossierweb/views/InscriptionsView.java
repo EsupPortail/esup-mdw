@@ -307,7 +307,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 			//Si on peut proposer l'attestation d'affiliation
 			if(etudiantController.proposerAttestationAffiliationSSO(inscription, MainUI.getCurrent().getEtudiant())){
-				//On affiche le bouton pour éditer le certificat de scolarité
+				//On affiche le bouton pour éditer l'attestation d'affiliation
 				Button bAttestationAffiliationSso=new Button();
 				bAttestationAffiliationSso.setIcon(FontAwesome.FILE_PDF_O);
 				bAttestationAffiliationSso.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
@@ -330,6 +330,35 @@ public class InscriptionsView extends VerticalLayout implements View {
 					VerticalLayout vLayout = new VerticalLayout();
 					vLayout.addComponent(libelleLayout);
 					vLayout.addComponent(bAttestationAffiliationSso);
+					layoutToAdd=vLayout;
+				}
+			}
+			
+			//Si on peut proposer la quittance
+			if(etudiantController.proposerQuittanceDroitsPayes(inscription, MainUI.getCurrent().getEtudiant())){
+				//On affiche le bouton pour éditer la quittance
+				Button bQuittanceSso=new Button();
+				bQuittanceSso.setIcon(FontAwesome.FILE_PDF_O);
+				bQuittanceSso.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+				bQuittanceSso.addStyleName("green-button-icon");
+				bQuittanceSso.setDescription(applicationContext.getMessage(NAME + ".quittance.link", null, getLocale()));
+				if(PropertyUtils.isPushEnabled()){
+					MyFileDownloader fd = new MyFileDownloader(ssoController.exportQuittancePdf(MainUI.getCurrent().getEtudiant(),inscription));
+					fd.extend(bQuittanceSso);
+				}else{
+					FileDownloader fd = new FileDownloader(ssoController.exportQuittancePdf(MainUI.getCurrent().getEtudiant(),inscription));
+					fd.setOverrideContentType(false);
+					fd.extend(bQuittanceSso);
+				}
+				if(!configController.isAffBtnQuittanceDroitsPayesNouvelleLigne()){
+					libelleLayout.addComponent(bQuittanceSso);
+				}else{
+					bQuittanceSso.setStyleName(ValoTheme.BUTTON_TINY);
+					bQuittanceSso.addStyleName("green-button-icon");
+					bQuittanceSso.setCaption(applicationContext.getMessage(NAME + ".quittance.btn.link", null, getLocale()));
+					VerticalLayout vLayout = new VerticalLayout();
+					vLayout.addComponent(libelleLayout);
+					vLayout.addComponent(bQuittanceSso);
 					layoutToAdd=vLayout;
 				}
 			}
