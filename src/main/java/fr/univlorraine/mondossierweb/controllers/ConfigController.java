@@ -237,6 +237,10 @@ public class ConfigController {
 	public List<String> getListeCodesBlocageAffichageNotes(){
 		return getListValeurForParameter("codesBlocageAffichageNotes");
 	}
+	
+	public List<String> getListeCodesBlocageAccesApplication(){
+		return getListValeurForParameter("codesBlocageAccesApplication");
+	}
 
 	public List<String> getTypesEpreuveAffichageNote() {
 		return getListValeurForParameter("typesEpreuveAffichageNote");

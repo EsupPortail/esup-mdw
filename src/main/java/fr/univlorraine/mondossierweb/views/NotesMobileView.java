@@ -334,17 +334,22 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 
 
-
-
-
-
-
-
-
-
-
 			addComponent(globalLayout);
 			setExpandRatio(globalLayout, 1);
+		}else{
+			if(UI.getCurrent() instanceof MdwTouchkitUI 
+					&& MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null
+					&& userController.isEtudiant() && MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()){
+				//message non autorisé.
+				HorizontalLayout refusLayout = new HorizontalLayout();
+				refusLayout.setWidth("100%");
+				Label title = new Label(applicationContext.getMessage(NAME + ".blocage.msg", null, getLocale()));
+				refusLayout.addComponent(title);
+				refusLayout.setComponentAlignment(title,Alignment.MIDDLE_LEFT);
+				addComponent(refusLayout);
+				setExpandRatio(refusLayout, 1);
+			}
+			
 		}
 	}
 

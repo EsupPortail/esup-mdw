@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
 import com.vaadin.navigator.View;
 
 import fr.univlorraine.mondossierweb.GenericUI;
+import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
 import fr.univlorraine.mondossierweb.entities.mdw.Administrateurs;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
@@ -63,10 +64,13 @@ import fr.univlorraine.mondossierweb.repositories.mdw.AdministrateursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesUtilisateurRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Gestion de l'utilisateur
@@ -100,6 +104,8 @@ public class UserController {
 	private UtilisateurSwapRepository utilisateurSwapRepository;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private MultipleApogeeService multipleApogeeService;
 
 
 
@@ -344,9 +350,9 @@ public class UserController {
 
 		//Si un des types du compte ldap correspond à un type étudiant
 		if (typeEtudiant!=null && typeEtudiant.size()>0 && type!=null && Utils.listHaveCommonValue(type, typeEtudiant)) { 
-			
+
 			return STUDENT_USER;
-			
+
 		} else {
 
 			//on cherche a savoir si l'employé a acces (ex: c'est un enseignant)
@@ -478,8 +484,33 @@ public class UserController {
 			String type = determineTypeUser(getCurrentUserName());
 
 			if(type!=null && type.equals(STUDENT_USER)){
-				GenericUI.getCurrent().setTypeUser(STUDENT_USER);
-				GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant");
+				boolean etudiantBloque = false;
+				//vérifier si il y a un blocage sur l'étudiant
+				String codetu = GenericUI.getCurrent().getDaoCodeLoginEtudiant().getCodEtuFromLogin(getCurrentUserName());
+				//On vérifie si l'étudiant est interdit de consultation de l'application
+				List<String> lcodesBloquant = configController.getListeCodesBlocageAccesApplication();
+				//Si on a paramétré des codes bloquant
+				if(lcodesBloquant!=null && lcodesBloquant.size()>0){
+					//Récupération des éventuels blocage pour l'étudiant
+					List<String> lblo = multipleApogeeService.getListeCodeBlocage(codetu);
+					// Si l'étudiant a des blocages
+					if(lblo!=null && lblo.size()>0){
+						//Parcours des blocage
+						for(String codblo : lblo){
+							//Si le blocage est dans la liste des blocages configurés comme bloquant
+							if(codblo != null && lcodesBloquant.contains(codblo)){
+								etudiantBloque = true;
+								//étudiant non autorise a consulter ses notes
+								GenericUI.getCurrent().setTypeUser(UNAUTHORIZED_USER);
+								LOG.debug("utilisateur "+getCurrentUserName()+" bloqué car il possède des blocages dans Apogée");
+							}
+						}
+					}
+				}
+				if(!etudiantBloque){
+					GenericUI.getCurrent().setTypeUser(STUDENT_USER);
+					GenericUI.getCurrent().getAnalyticsTracker().trackEvent(getClass().getSimpleName(), "Identification_etudiant");
+				}
 			}
 			if(type!=null && type.equals(TEACHER_USER)){
 				GenericUI.getCurrent().setTypeUser(TEACHER_USER);

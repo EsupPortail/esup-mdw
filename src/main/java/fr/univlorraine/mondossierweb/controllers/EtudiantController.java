@@ -408,7 +408,7 @@ public class EtudiantController {
 				//Si on a paramétré des codes bloquant
 				if(lcodesBloquant!=null && lcodesBloquant.size()>0){
 					//Récupération des éventuels blocage pour l'étudiant
-					List<String> lblo = multipleApogeeService.getListeCodeBlocage(GenericUI.getCurrent().getEtudiant().getCod_ind());
+					List<String> lblo = multipleApogeeService.getListeCodeBlocage(GenericUI.getCurrent().getEtudiant().getCod_etu());
 					// Si l'étudiant a des blocages
 					if(lblo!=null && lblo.size()>0){
 						//Parcours des blocage

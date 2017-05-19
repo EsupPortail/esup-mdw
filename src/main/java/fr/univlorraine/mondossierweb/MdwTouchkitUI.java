@@ -205,7 +205,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 	@Override
 	protected void init(VaadinRequest request) {
-
+		LOG.debug("init(); MdwTouchkitUI");
 
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			Throwable cause = e.getThrowable();
@@ -213,7 +213,7 @@ public class MdwTouchkitUI extends GenericUI{
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
-					afficherMessageAccesRefuse();
+					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
 				if(cause!=null && cause.getClass()!=null){
@@ -377,24 +377,23 @@ public class MdwTouchkitUI extends GenericUI{
 			}
 		}else{
 			//Utilisateur ni enseignant, ni étudiant, on le redirige vers la vue accès refusé
-			afficherMessageAccesRefuse();
+			displayViewFullScreen(AccesRefuseView.NAME);
 		}
-
-
-
-
 	}
 
-
+	/**
+	 * Affichage d'une vue en full-screen
+	 * @param view
+	 */
+	private void displayViewFullScreen(String view){
+		setContent(contentLayout);
+		navigator.navigateTo(view);
+	}
+	
 	private void afficherMessageMaintenance(){
-		setContent(contentLayout);
-		navigator.navigateTo(AccesBloqueView.NAME);
+		displayViewFullScreen(AccesBloqueView.NAME);
 	}
 
-	private void afficherMessageAccesRefuse(){
-		setContent(contentLayout);
-		navigator.navigateTo(AccesRefuseView.NAME);
-	}
 
 	/**
 	 * Affiche du message d'intro pour les enseignants
@@ -662,7 +661,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 	private boolean applicationActive(){
 		return configController.isApplicationMobileActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-				|| (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+				|| (!userController.isEnseignant() && !userController.isEtudiant()) || (userController.isEnseignant() && configController.isPartieEnseignantActive()));
 	}
 
 	public void startBusyIndicator() {

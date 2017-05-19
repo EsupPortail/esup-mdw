@@ -295,6 +295,20 @@ public class NotesView extends VerticalLayout implements View {
 
 
 			addComponent(globalLayout);
+		}else{
+			//Si on est dans le cas d'un blocage apogée
+			if(UI.getCurrent() instanceof MainUI 
+					&& MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null 
+					&& userController.isEtudiant() && MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()){
+				//message non autorisé.
+				HorizontalLayout refusLayout = new HorizontalLayout();
+				refusLayout.setWidth("100%");
+				Label title = new Label(applicationContext.getMessage(NAME + ".blocage.msg", null, getLocale()));
+				refusLayout.addComponent(title);
+				refusLayout.setComponentAlignment(title,Alignment.MIDDLE_LEFT);
+				addComponent(refusLayout);
+				
+			}
 		}
 	}
 
