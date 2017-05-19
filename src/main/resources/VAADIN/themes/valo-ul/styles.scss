@@ -148,4 +148,12 @@
 	position:relative;
 }
 
+/* supprime le spin buggé sur l'application mobile*/
+.v-app-loading {
+	animation: none important;
+}
+.v-app-loading:after, .v-loading-indicator:after {
+	display: none;
+}
+
 }

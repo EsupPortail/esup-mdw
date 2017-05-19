@@ -20,7 +20,7 @@
 /* Parametrage Valo */
 	$v-focus-color: $ul_pantone_2726_C; /* Changer ici la couleur principale en fonction du domaine métier */
 	$v-border-radius: 2px;
-/*	$v-font-size: 15px; */
+/*	$v-font-size: 15px;*/
 	$v-bevel: false;
 	$v-layout-margin-top: 10px;
 	$v-layout-margin-right: 10px;
@@ -141,7 +141,19 @@
    opacity: .9;  
    
 }
- 
 
+/* l'indicateur de loading circulaire inutile sur mobile */
+.v-cache-loading-indicator {
+	display: none;
+	position:relative;
+}
+
+/* supprime le spin buggé sur l'application mobile*/
+.v-app-loading {
+	animation: none important;
+}
+.v-app-loading:after, .v-loading-indicator:after {
+	display: none;
+}
 
 }

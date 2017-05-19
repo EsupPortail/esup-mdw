@@ -423,9 +423,13 @@ color: rgb(85,96,164);
 text-align:right !important;
 }
 
+/*.valo-ul .v-app-loading {
+	animation: none important;
+}
+
 .valo-ul .v-app-loading:after, .v-loading-indicator:after {
 	display: none;
-}
+}*/
 .valo-ul .v-window-loadingIndicatorWindow .v-window-outerheader {
 	display: none;
 }
