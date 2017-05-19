@@ -21,6 +21,7 @@
 -->
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+
 <entry key="calendrierExamen">SELECT rownum ID, t.* from (select DISTINCT PESA.DAT_DEB_PES datedeb, 
 DECODE(SUBSTR(TO_CHAR(PESA.DHH_DEB_PES),1,1),'1', TO_CHAR(PESA.DHH_DEB_PES),'0'||TO_CHAR(PESA.DHH_DEB_PES)) ||':'|| DECODE(TO_CHAR(PESA.DMM_DEB_PES),'0','00',TO_CHAR(PESA.DMM_DEB_PES)) heure, 
 PESA.DUR_EXA_EPR_PES duree, PESA.COD_SAL salle, SAL.LIB_SAL libsalle, 
@@ -33,8 +34,11 @@ AND  PESA.COD_EPR=E.COD_EPR AND  PESA.COD_PXA = PEX.COD_PXA  AND  PEX.LIB_PXA LI
 AND SAL.COD_SAL = PESA.COD_SAL  AND  BAT.COD_BAT = SAL.COD_BAT  ORDER BY DATEDEB,2) t</entry>
 
 <entry key="mailFromLogin">select MAIL FROM ANNU_MEL_LOGIN WHERE LOGIN=#LOGIN#</entry>
+
 <entry key="loginFromCodEtu">select LOGIN FROM ANNU_MEL_LOGIN WHERE COD_ETU=#COD_ETU#</entry>
+
 <entry key="mailFromCodEtu">select MAIL FROM ANNU_MEL_LOGIN WHERE COD_ETU=#COD_ETU#</entry>
+
 <entry key="quittances">SELECT TO_CHAR(sqr.num_occ_qut) numoccqut, TO_CHAR(sqr.dat_sqr,'DD/MM/YYYY') datsqr, 
 cge.lic_cge liccge, TO_CHAR(sqr.num_occ_sqr) numoccsqr
 FROM    situation_quittance_rmb sqr, centre_gestion cge
@@ -44,6 +48,7 @@ AND sqr.cod_typ_sqr = 'Q'
 AND sqr.eta_qut = 'V' 
 AND cge.cod_cge = sqr.cod_cge 
 ORDER BY sqr.num_occ_qut DESC</entry>
+
 <entry key="centrePayeurPourAffilie">SELECT ctp.lic_ctp LIC_CTP, TO_CHAR(iaa.dat_afl_sso,'DD/MM/YYYY') DAT_AFL_SSO 
 FROM ins_adm_anu iaa, centre_payeur ctp 
 WHERE iaa.cod_anu = '#COD_ANU#' 
@@ -71,32 +76,105 @@ AND iid.cod_anu = iaa.cod_anu
 AND iid.cod_drt =drt.cod_drt 
 AND drt.cod_tdr = 'SS' 
 AND iid.cod_typ_iad = 'E'))</entry>
+
 <entry key="centrePayeurPourNonAffilie">SELECT ctp.lic_ctp LIC_CTP, TO_CHAR(iaa.dat_afl_sso,'DD/MM/YYYY') DAT_AFL_SSO 
 FROM ins_adm_anu iaa, centre_payeur ctp 
 WHERE iaa.cod_anu = '#COD_ANU#' 
 AND iaa.cod_ind = #COD_IND#
 AND iaa.tem_afl_sso = 'N' 
 AND iaa.cod_ctp = ctp.cod_ctp (+)</entry>
+
 <entry key="montant1erPaiement">SELECT to_char(SUM(mnt_pmt_ech1)) 
 FROM paiement 
 WHERE cod_ind= #COD_IND#
 AND cod_anu= '#COD_ANU#' </entry>
+
 <entry key="montant2emPaiement">SELECT to_char(SUM(mnt_pmt_ech2)) 
 FROM paiement 
 WHERE cod_ind= #COD_IND#
 AND cod_anu= '#COD_ANU#'</entry>
+
 <entry key="montant3emPaiement">SELECT to_char(SUM(mnt_pmt_ech3)) 
 FROM paiement 
 WHERE cod_ind= #COD_IND#
 AND cod_anu= '#COD_ANU#'</entry>
-<entry key="date1erPaiement"></entry>
-<entry key="date2emPaiement"></entry>
-<entry key="date3emPaiement"></entry>
-<entry key="paiement3X"></entry>
-<entry key="moyensDePaiement"></entry>
-<entry key="montantTotalPaye"></entry>
-<entry key="montantsPayes"></entry>
-<entry key="dateCotisation"></entry>
-<entry key="mutuelle"></entry>
+
+<entry key="date1erPaiement">SELECT TO_CHAR(dat_ech1,'DD/MM') 
+FROM paiement 
+WHERE cod_ind=#COD_IND#
+AND cod_anu='#COD_ANU#'
+AND dat_ech1 IS NOT NULL
+ORDER BY dat_ech1</entry>
+
+<entry key="date2emPaiement">SELECT TO_CHAR(dat_ech2,'DD/MM') 
+FROM paiement 
+WHERE cod_ind=#COD_IND#
+AND cod_anu='#COD_ANU#'
+AND dat_ech2 IS NOT NULL
+ORDER BY dat_ech2</entry>
+
+<entry key="date3emPaiement">SELECT TO_CHAR(dat_ech3,'DD/MM')
+FROM paiement 
+WHERE cod_ind=#COD_IND#
+AND cod_anu='#COD_ANU#'
+AND dat_ech3 IS NOT NULL
+ORDER BY dat_ech3</entry>
+
+<entry key="paiement3X">SELECT tem_pmt_3f 
+FROM ins_adm_anu 
+WHERE cod_ind=#COD_IND#
+AND cod_anu='#COD_ANU#'</entry>
+
+<entry key="moyensDePaiement">SELECT mdp.lic_mdp
+FROM paiement pmt, mode_paiement mdp 
+WHERE pmt.cod_anu = '#COD_ANU#'
+AND pmt.cod_ind = #COD_IND#
+AND pmt.num_occ_sqr = #NUM_OCC_SQR#
+AND mdp.cod_mdp = pmt.cod_mdp order by pmt.num_occ_pmt</entry>
+
+<entry key="montantTotalPaye">SELECT to_char(sum( nvl(iid.mnt_pai_iad,0) - nvl(iid.mnt_rmb_iad,0) )) 
+FROM    situation_quittance_rmb sqr,  iaa_iae_dim iid 
+WHERE sqr.cod_anu = '#COD_ANU#'
+AND sqr.cod_ind = #COD_IND#
+AND sqr.eta_qut IN ( 'V','T','S','C') 
+AND iid.cod_anu = sqr.cod_anu 
+AND iid.cod_ind = sqr.cod_ind 
+AND iid.num_occ_sqr = sqr.num_occ_sqr 
+GROUP BY sqr.cod_ind</entry>
+
+<entry key="montantsPayes">SELECT nrg.lic_nrg LIC_NRG, to_char(sum( nvl(iid.mnt_pai_iad,0) - nvl(iid.mnt_rmb_iad,0))) MONTANT 
+FROM  situation_quittance_rmb sqr,  iaa_iae_dim iid, droit drt, niv_regroup nrg 
+WHERE sqr.cod_anu = '#COD_ANU#'
+AND sqr.cod_ind = #COD_IND#
+AND sqr.eta_qut IN ( 'V','T','S','C') 
+AND iid.cod_anu = sqr.cod_anu 
+AND iid.cod_ind = sqr.cod_ind 
+AND iid.num_occ_sqr = sqr.num_occ_sqr 
+AND iid.cod_drt = drt.cod_drt 
+AND nrg.cod_nrg = drt.cod_nrg 
+GROUP BY nrg.lic_nrg </entry>
+
+<entry key="dateCotisation">SELECT TO_CHAR(sqr.dat_sqr,'DD/MM/YYYY') 
+FROM situation_quittance_rmb sqr, centre_gestion cge 
+WHERE sqr.cod_anu = '#COD_ANU#' AND sqr.cod_ind = #COD_IND#
+AND sqr.cod_typ_sqr = 'Q' AND sqr.eta_qut = 'V' AND cge.cod_cge = sqr.cod_cge 
+AND sqr.num_occ_sqr = 1 </entry>
+
+<entry key="mutuelle">SELECT decode(mut.lib_nom_mut,NULL,'* * * * * * * *',drt.lic_drt) 
+FROM ins_adm_anu iaa, mutuelle mut, droit drt 
+WHERE iaa.cod_anu = '#COD_ANU#'
+AND iaa.cod_ind = #COD_IND#
+AND iaa.cod_drt_mut = drt.cod_drt AND drt.cod_mut = mut.cod_mut 
+AND ((EXISTS 
+(SELECT 1 FROM iaa_iae_dim iid, situation_quittance_rmb sqr 
+WHERE iid.cod_ind = iaa.cod_ind AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = iaa.cod_drt_mut AND sqr.cod_ind = iid.cod_ind 
+AND sqr.cod_anu = iid.cod_anu AND sqr.num_occ_sqr = iid.num_occ_sqr AND sqr.eta_qut = 'V') 
+AND NOT EXISTS 
+(SELECT 1 FROM iaa_iae_dim iid 
+WHERE iid.cod_ind = iaa.cod_ind AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = iaa.cod_drt_mut 
+AND iid.cod_typ_iad = 'N' AND iid.tem_exo_iad IS NULL AND iid.num_occ_sqr IS NULL)) 
+OR EXISTS 
+(SELECT 1 FROM iaa_iae_dim iid 
+WHERE iid.cod_ind = iaa.cod_ind AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = iaa.cod_drt_mut AND iid.cod_typ_iad = 'E'))</entry>
 
 </properties>
