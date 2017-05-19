@@ -421,7 +421,7 @@ public class EtudiantController {
 						}
 					}
 				}
-				
+
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
 
@@ -1381,23 +1381,21 @@ public class EtudiantController {
 						//On doit vérifier que la PRC est valide
 						int anneeObtPrc=Integer.parseInt(anneePrc);
 						//Récupération de la durée de conservation de  l'élément conservable
-						BigDecimal durConElp = elementPedagogiqueService.getDureeConservation(elp.getCode());
-						if(durConElp!=null){
-							int duree = durConElp.intValue();
-							//On test si la conservation est encore valide
-							if((anneeObtPrc + duree) < anneeResultat){
-								//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
-								elp.setAnnee("");
-								elp.setNote1("");
-								elp.setBareme1(0);
-								elp.setRes1("");
-								elp.setNote2("");
-								elp.setBareme2(0);
-								elp.setRes2("");
-								elp.setEcts("");
-								elp.setEtatDelib("");
-							}
+						int durConElp = reedto[i].getElp().getDurConElp();
+						//On test si la conservation est encore valide
+						if((anneeObtPrc + durConElp) < anneeResultat){
+							//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
+							elp.setAnnee("");
+							elp.setNote1("");
+							elp.setBareme1(0);
+							elp.setRes1("");
+							elp.setNote2("");
+							elp.setBareme2(0);
+							elp.setRes2("");
+							elp.setEcts("");
+							elp.setEtatDelib("");
 						}
+
 					}
 
 					//ajout de l'élément dans la liste par ordre alphabétique:

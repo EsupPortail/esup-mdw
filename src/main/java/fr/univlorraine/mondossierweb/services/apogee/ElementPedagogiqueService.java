@@ -33,7 +33,7 @@ public interface ElementPedagogiqueService {
 	
 	public List<BigDecimal> getCodIndInscritsFromGroupe(String code, String annee);
 	
-	public BigDecimal getDureeConservation(String code);
+	//public BigDecimal getDureeConservation(String code);
 	
 	public abstract BigDecimal getCreditAcquisElp(String cod_ind, String cod_elp, String annee);
 	

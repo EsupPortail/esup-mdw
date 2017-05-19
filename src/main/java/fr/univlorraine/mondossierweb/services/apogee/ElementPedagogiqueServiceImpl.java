@@ -113,10 +113,10 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 	}
 
 
-	@Override
+	/*@Override
 	public BigDecimal getDureeConservation(String code) {
 		return (BigDecimal) entityManagerApogee.createNativeQuery("select DUR_CON_ELP from ELEMENT_PEDAGOGI where COD_ELP='"+code+"'").getSingleResult();
-	}
+	}*/
 
 	@Override
 	public BigDecimal getCreditAcquisElp(String cod_ind, String cod_elp, String annee) {
