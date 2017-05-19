@@ -334,6 +334,19 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}
 		return false;
 	}
+	
+	@Override
+	public List<String> getListeCodeBlocage(String cod_ind) {
+		if(StringUtils.hasText(cod_ind) ){
+			@SuppressWarnings("unchecked")
+			List<String> lblo = (List<String>)entityManagerApogee.createNativeQuery("select COD_BLO "+
+					 "from IND_SANCTIONNE_BLO "+
+					"where COD_IND="+cod_ind+ " "+
+					 "and DAT_DEB_BLO < SYSDATE and (DAT_FIN_BLO is null or DAT_FIN_BLO > SYSDATE)").getResultList();
+			return lblo;
+		}
+		return null;
+	}
 
 
 	@Override

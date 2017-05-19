@@ -105,7 +105,9 @@ public class NotesView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) 
+				&& MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null 
+				&& !(userController.isEtudiant() && MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes())){
 
 			LOG.debug(userController.getCurrentUserName()+" NotesView");
 

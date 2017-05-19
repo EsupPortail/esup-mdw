@@ -159,6 +159,10 @@ public class Etudiant {
 	 */
 	private List<Etape> etapes;
 	/**
+	 * vrai si l'étudiant n'est pas autorisé à consulter ses notes cad qu'il a un blocage spécifique
+	 */
+	private boolean NonAutoriseConsultationNotes;
+	/**
 	 * vrai si on affiche le rang de l'étudiant
 	 */
 	private boolean afficherRang;

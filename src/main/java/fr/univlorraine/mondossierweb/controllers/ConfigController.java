@@ -233,6 +233,10 @@ public class ConfigController {
 	public List<String> getListeCodesEtapeAffichageRang() {
 		return getListValeurForParameter("codesEtapeAffichageRang");
 	}
+	
+	public List<String> getListeCodesBlocageAffichageNotes(){
+		return getListValeurForParameter("codesBlocageAffichageNotes");
+	}
 
 	public List<String> getTypesEpreuveAffichageNote() {
 		return getListValeurForParameter("typesEpreuveAffichageNote");

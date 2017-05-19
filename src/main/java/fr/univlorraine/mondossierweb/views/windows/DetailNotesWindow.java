@@ -95,7 +95,9 @@ public class DetailNotesWindow extends Window {
 	private void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if((userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if((userController.isEnseignant() || userController.isEtudiant()) 
+				&& MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null
+				&& !(userController.isEtudiant() && MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes())){
 
 			/* Style */
 			setWidth(80, Unit.PERCENTAGE);

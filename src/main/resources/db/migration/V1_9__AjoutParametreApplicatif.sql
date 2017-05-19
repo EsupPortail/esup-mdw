@@ -33,6 +33,9 @@ INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`,
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES 
 ('afficherBoutonQuittanceNouvelleLigne','Affichage du bouton de téléchargement du versement des droits universitaires sur une nouvelle ligne : true pour l''activer, false sinon','BOOLEAN',9, 'false');
 
+INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES 
+('codesBlocageAffichageNotes','Liste des codes blocages empêchant l''affichage des notes','LIST',2, '');
+
 UPDATE `PREFERENCES_APPLICATION_CATEGORIE` SET ORDRE=6 where CAT_ID=5;
 
 UPDATE `PREFERENCES_APPLICATION_CATEGORIE` SET ORDRE=7 where CAT_ID=6;

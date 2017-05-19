@@ -403,6 +403,25 @@ public class EtudiantController {
 				//On recupere les numeros d'anonymat
 				GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
 
+				//On vérifie si l'étudiant est interdit de consultation de ses notes
+				List<String> lcodesBloquant = configController.getListeCodesBlocageAffichageNotes();
+				//Si on a paramétré des codes bloquant
+				if(lcodesBloquant!=null && lcodesBloquant.size()>0){
+					//Récupération des éventuels blocage pour l'étudiant
+					List<String> lblo = multipleApogeeService.getListeCodeBlocage(GenericUI.getCurrent().getEtudiant().getCod_ind());
+					// Si l'étudiant a des blocages
+					if(lblo!=null && lblo.size()>0){
+						//Parcours des blocage
+						for(String codblo : lblo){
+							//Si le blocage est dans la liste des blocages configurés comme bloquant
+							if(codblo != null && lcodesBloquant.contains(codblo)){
+								//étudiant non autorise a consulter ses notes
+								GenericUI.getCurrent().getEtudiant().setNonAutoriseConsultationNotes(true);
+							}
+						}
+					}
+				}
+				
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
 

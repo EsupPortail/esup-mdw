@@ -68,5 +68,7 @@ public interface MultipleApogeeService {
 	public abstract List<BigDecimal> getCodRvn(String cod_ind, String cod_anu, String listeCodesElp);
 	
 	public abstract String getCodSignataireRvn(BigDecimal cod_rvn);
+	
+	public abstract List<String> getListeCodeBlocage(String cod_ind);
 
 }
