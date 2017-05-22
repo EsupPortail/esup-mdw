@@ -96,7 +96,7 @@
 			<name>Repository local</name>
 			<layout>default</layout>
 			<url>file://${basedir}/src/main/resources/repository</url>
-		</repository>
+		</repository>  
 		
 		<!-- esup portail repo -->
 		<repository>

@@ -48,7 +48,8 @@ This project includes:
   Flute under W3C Software Copyright Notice and License
   flyway-core under Apache License, Version 2.0
   Groovy under The Apache Software License, Version 2.0
-  Guava: Google Core Libraries for Java under Apache License 2.0
+  gwt-elemental under GWT Terms
+  gwt-user under GWT Terms
   Hibernate Validator Engine under Apache License, Version 2.0
   HttpClient under Apache License
   iText, a Free Java-PDF library under Mozilla Public License
@@ -56,7 +57,6 @@ This project includes:
   Jasig CAS Client for Java - Core under Apache License Version 2.0
   Java API for XML Based RPC under Apache License, Version 2.0
   Java Servlet API under CDDL + GPLv2 with classpath exception
-  Java Stream HTML Parser from JSilver under Apache License 2.0
   JavaBeans Activation Framework (JAF) under Common Development and Distribution License (CDDL) v1.0
   JavaMail API (compat) under CDDL or GPLv2+CE
   Javax Persistence under Eclipse Public License v1.0 or Eclipse Distribution License v. 1.0
@@ -102,7 +102,6 @@ This project includes:
   OpenWS under Apache 2
   photoserver-client under Apache License, Version 2.0
   Project Lombok under The MIT License
-  Rhino under Mozilla Public License
   SDO API under Eclipse Public License v1.0 or Eclipse Distribution License v. 1.0
   Simple API for CSS under The W3C Software License
   SLF4J API Module under MIT License
@@ -130,11 +129,16 @@ This project includes:
   spring-security-web under The Apache Software License, Version 2.0
   StAX API under The Apache Software License, Version 2.0
   Tools under Apache License, Version 2.0
-  Vaadin under Apache License Version 2.0
   Vaadin Sass Compiler under Apache License 2.0
   Vaadin TouchKit under GNU General Public License, Version 3.0
+  vaadin-client under Apache License Version 2.0
+  vaadin-client-compiled under Apache License Version 2.0
+  vaadin-push under Apache License Version 2.0
+  vaadin-server under Apache License Version 2.0
+  vaadin-shared under Apache License Version 2.0
   vaadin-slf4j-jdk14 under The MIT License
   vaadin-spring under Apache License 2.0
+  vaadin-themes under Apache License Version 2.0
   WSDL4J under CPL
   Xalan Java under The Apache Software License, Version 2.0
   Xalan Java Serializer under The Apache Software License, Version 2.0
@@ -143,7 +147,6 @@ This project includes:
   XML Commons Resolver Component under The Apache Software License, Version 2.0
   XmlBeans under The Apache Software License, Version 2.0
   XMLTooling-J under Apache 2
-  yui compressor under BSD License
 
 
 This project also includes code of the following entities:
