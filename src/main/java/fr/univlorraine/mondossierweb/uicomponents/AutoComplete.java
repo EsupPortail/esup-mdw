@@ -90,11 +90,7 @@ public class AutoComplete extends TextField{
 						setValue(i.getItemProperty("lib").getValue().toString());
 						btnRecherche.click();
 					}
-					
-					
 				});
-
-
 			}else{
 				//On vide simplement la table de son contenu précédent
 				choices.removeAllItems();
@@ -146,8 +142,6 @@ public class AutoComplete extends TextField{
 			choicesPopup.setPopupVisible(true);
 			//La popup fait la même hauteur que la table qu'elle contient
 			choicesPopup.setHeight(choices.getHeight(), choices.getHeightUnits());
-
-
 
 		}else{
 			//Aucun texte n'ai saisi
