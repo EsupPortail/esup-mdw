@@ -1381,19 +1381,22 @@ public class EtudiantController {
 						//On doit vérifier que la PRC est valide
 						int anneeObtPrc=Integer.parseInt(anneePrc);
 						//Récupération de la durée de conservation de  l'élément conservable
-						int durConElp = reedto[i].getElp().getDurConElp();
-						//On test si la conservation est encore valide
-						if((anneeObtPrc + durConElp) < anneeResultat){
-							//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
-							elp.setAnnee("");
-							elp.setNote1("");
-							elp.setBareme1(0);
-							elp.setRes1("");
-							elp.setNote2("");
-							elp.setBareme2(0);
-							elp.setRes2("");
-							elp.setEcts("");
-							elp.setEtatDelib("");
+						int durConElp = 0;
+						if( reedto[i].getElp().getDurConElp()!=null){
+							durConElp =reedto[i].getElp().getDurConElp();
+							//On test si la conservation est encore valide
+							if((anneeObtPrc + durConElp) < anneeResultat){
+								//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
+								elp.setAnnee("");
+								elp.setNote1("");
+								elp.setBareme1(0);
+								elp.setRes1("");
+								elp.setNote2("");
+								elp.setBareme2(0);
+								elp.setRes2("");
+								elp.setEcts("");
+								elp.setEtatDelib("");
+							}
 						}
 
 					}
