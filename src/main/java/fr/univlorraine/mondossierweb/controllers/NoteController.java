@@ -128,7 +128,10 @@ public class NoteController {
 					boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
 					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					// Test si on doit activer l'encryption
+					if(PropertyUtils.isEnablePdfSecurity()){
+						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					}
 					docWriter.setStrictImageSequence(true);
 					if(configController.isInsertionFiligranePdfNotes()){
 						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
@@ -179,7 +182,10 @@ public class NoteController {
 					boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
 					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					// Test si on doit activer l'encryption
+					if(PropertyUtils.isEnablePdfSecurity()){
+						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					}
 					docWriter.setStrictImageSequence(true);
 					//récupération d'une eventuelle signature
 					String codSign=getCodeSignataire(etape,MainUI.getCurrent().getEtudiant());

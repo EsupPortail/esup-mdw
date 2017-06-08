@@ -113,6 +113,15 @@ public class PropertyUtils {
 		return false;
 	}
 	
+	/** Retourne vrai on doit activer l'encryption sur les pdf générés */
+	public static boolean isEnablePdfSecurity(){
+		if(StringUtils.hasText(System.getProperty("context.EnablePdfSecurity"))
+				&& System.getProperty("context.EnablePdfSecurity").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
 	/** Retourne vrai on doit affiche le l'indicateur de loading entre certains écrans */
 	public static boolean isShowLoadingIndicator(){
 		if(StringUtils.hasText(System.getProperty("context.showLoadingIndicator"))

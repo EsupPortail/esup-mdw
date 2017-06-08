@@ -117,7 +117,10 @@ public class InscriptionController {
 					PdfWriter docWriter = null;
 					Document document = configureDocument();
 					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					// Test si on doit activer l'encryption
+					if(PropertyUtils.isEnablePdfSecurity()){
+						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					}
 					docWriter.setStrictImageSequence(true);
 					creerPdfCertificatScolarite(document,MainUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();

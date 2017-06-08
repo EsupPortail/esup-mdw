@@ -99,6 +99,9 @@
 	<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans. Push obligatoire -->
 	<Parameter name="showLoadingIndicator" value="true" />
 	
+	<!-- Activer la sécurité sur les pdf générés par l'application (pdf encryption) -->
+	<Parameter name="EnablePdfSecurity" value="true" />
+	
 	<!-- Configuration de l'envoi de mails d'erreur -->
 	<Parameter name="mail.smtpHost" value="smtp-sig.univ-lorraine.fr" />
 	<Parameter name="mail.from" value="mdw@univ.fr" />

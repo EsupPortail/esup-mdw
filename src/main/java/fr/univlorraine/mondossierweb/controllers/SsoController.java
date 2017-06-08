@@ -62,6 +62,7 @@ import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
  * Gestion des infos de sécu (affiliation et quittance des droits)
@@ -262,7 +263,10 @@ public class SsoController {
 					PdfWriter docWriter = null;
 					Document document = configureDocument();
 					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					// Test si on doit activer l'encryption
+					if(PropertyUtils.isEnablePdfSecurity()){
+						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					}
 					docWriter.setStrictImageSequence(true);
 					creerPdfQuittance(document,MainUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();
@@ -312,7 +316,10 @@ public class SsoController {
 					PdfWriter docWriter = null;
 					Document document = configureDocument();
 					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					// Test si on doit activer l'encryption
+					if(PropertyUtils.isEnablePdfSecurity()){
+						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					}
 					docWriter.setStrictImageSequence(true);
 					creerPdfAffiliationSso(document,MainUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();

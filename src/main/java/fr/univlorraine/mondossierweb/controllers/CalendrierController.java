@@ -56,6 +56,7 @@ import com.vaadin.server.StreamResource;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
@@ -116,7 +117,10 @@ public class CalendrierController {
 					PdfWriter docWriter = null;
 					Document document = configureDocument(MARGE_PDF);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
-					docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					// Test si on doit activer l'encryption
+					if(PropertyUtils.isEnablePdfSecurity()){
+						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+					}
 					docWriter.setStrictImageSequence(true);
 					creerPdfCalendrier(document,MainUI.getCurrent().getEtudiant());
 					docWriter.close();

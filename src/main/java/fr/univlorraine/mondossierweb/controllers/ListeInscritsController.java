@@ -77,6 +77,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.utils.WSUtils;
 import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterface;
@@ -853,7 +854,10 @@ public class ListeInscritsController {
 			PdfWriter docWriter = null;
 			Document document = configureDocument(MARGE_PDF);
 			docWriter = PdfWriter.getInstance(document, baosPDF);
-			docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+			// Test si on doit activer l'encryption
+			if(PropertyUtils.isEnablePdfSecurity()){
+				docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+			}
 			docWriter.setStrictImageSequence(true);
 			creerPdfTrombinoscope(document, linscrits, listecodind, libObj, annee);
 			docWriter.close();
