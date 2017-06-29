@@ -182,7 +182,7 @@
 			</build>
 		</profile>
 		
-		<!-- Profil de déploiement local, avec les fichiers de config, sans les fichiers sample et avec Oracle -->
+		<!-- Profil de déploiement local, avec les fichiers de config, sans les fichiers sample -->
 		<profile>
 			<id>deploiement-local</id>
 			<activation>
