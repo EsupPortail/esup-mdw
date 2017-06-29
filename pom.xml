@@ -188,13 +188,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<dependencies>
-				<dependency>
-		            <groupId>com.oracle.weblogic</groupId>
-		            <artifactId>ojdbc7</artifactId>
-		            <version>${ojdbc7.version}</version>
-		        </dependency>		        
-			</dependencies>
 			<build>		
 				<resources>		
 					<resource>
@@ -230,6 +223,13 @@
 		            <layout>default</layout>
 		          </repository>
 			</repositories>
+			<dependencies> 
+				<dependency>
+		            <groupId>com.oracle.weblogic</groupId>
+		            <artifactId>ojdbc7</artifactId>
+		            <version>${ojdbc7.version}</version>
+		        </dependency>		        
+			</dependencies>
 		</profile>
     
 </profiles>
