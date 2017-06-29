@@ -662,7 +662,7 @@
         <artifactId>flyway-maven-plugin</artifactId>
         <version>3.2.1</version>
         <configuration>
-            <url>jdbc:mysql://localhost:3306/ecandidat</url>
+            <url>jdbc:mysql://localhost:3306/mdw</url>
             <user>root</user>
             <baselineOnMigrate>true</baselineOnMigrate>
             <!-- <locations>
