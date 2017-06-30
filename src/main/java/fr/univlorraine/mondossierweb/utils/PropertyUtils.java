@@ -41,6 +41,15 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value)) throw new NullPointerException("app.url cannot be null !");
 		return value;
 	}
+	
+	/** Retourne vrai si on doit rediriger automatique sur la version mobile si cela est possible */
+	public static boolean isEnableAutoredirectToMobileView(){
+		if(StringUtils.hasText(System.getProperty("context.autoredirect.to.mobileview"))
+				&& System.getProperty("context.autoredirect.to.mobileview").equals("true")){
+			return true;
+		}
+		return false;
+	}
 
 
 

@@ -38,6 +38,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 @Scope("prototype")
 @Component
@@ -55,15 +56,21 @@ public class MdwFallbackTouchkitUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
 
-    	Label label = new Label(applicationContext.getMessage("fallbackToMobile.message", new Object[] {PropertyUtils.getAppUrl()}, getLocale()), ContentMode.HTML);
-        label.setStyleName(ValoTheme.LABEL_HUGE);
-        VerticalLayout content = new VerticalLayout();
-        content.setSizeFull();
-        content.setMargin(true);
-        content.addComponent(label);
-        setContent(content);
+    	if(PropertyUtils.isEnableAutoredirectToMobileView()){
+    		//Redirection automatique
+        	String path = PropertyUtils.getAppUrl()+"/m";
+        	getUI().getPage().setLocation(path);
+    	}else{
+    		//Affichage du message proposant la redirection
+    		Label label = new Label(applicationContext.getMessage("fallbackToMobile.message", new Object[] {PropertyUtils.getAppUrl()}, getLocale()), ContentMode.HTML);
+            label.setStyleName(ValoTheme.LABEL_HUGE);
+            VerticalLayout content = new VerticalLayout();
+            content.setSizeFull();
+            content.setMargin(true);
+            content.addComponent(label);
+            setContent(content);
+    	}
 
-        
     }
 
 }
