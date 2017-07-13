@@ -120,6 +120,10 @@ public class ConfigController {
 	public boolean isAffRangEtudiant() {
 		return getBooleanValueForParameter("afficherRangEtudiant");
 	}
+	
+	public boolean isAffResultatsEpreuves(){
+		return getBooleanValueForParameter("affResultatsEpreuves");
+	}
 
 	public boolean isAffBtnCertifNouvelleLigne(){
 		return getBooleanValueForParameter("afficherBoutonCertifNouvelleLigne");

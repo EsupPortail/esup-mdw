@@ -1434,6 +1434,8 @@ public class EtudiantController {
 						for (int j = 0; j < epelpdto.length; j++ ) {
 							EpreuveElpDTO2 epreuve = epelpdto[j];
 							boolean EprNotee = false;  //vrai si l'épreuve est notée
+							boolean EprResult = false;  //vrai si l'épreuve a un résultat
+							boolean confAffResultatsEpreuve = configController.isAffResultatsEpreuves(); //le paramètre d'affichage des resultats aux épreuves
 							ElementPedagogique elp2 = new ElementPedagogique();
 							elp2.setLibelle(epreuve.getEpreuve().getLibEpr());
 							elp2.setCode(epreuve.getEpreuve().getCodEpr());
@@ -1469,7 +1471,7 @@ public class EtudiantController {
 									boolean recuperationNote = false;
 
 									List<String> lTypesEpreuveAffichageNote = configController.getTypesEpreuveAffichageNote();
-									if(lTypesEpreuveAffichageNote != null && lTypesEpreuveAffichageNote.size()>0){
+									if(lTypesEpreuveAffichageNote != null && !lTypesEpreuveAffichageNote.isEmpty()){
 										//On a renseigné une liste de type épreuve à afficher
 										if(lTypesEpreuveAffichageNote.contains(epreuve.getEpreuve().getTypEpreuve().getCodTep())){
 											recuperationNote = true;
@@ -1502,6 +1504,12 @@ public class EtudiantController {
 											if (elp2.getNote1() != null && !elp2.getNote1().equals("")) {
 												EprNotee = true;
 											}
+											
+											//le resultat à l'épreuve
+											if(confAffResultatsEpreuve && repdto[k].getTypResultat()!=null && StringUtils.hasText(repdto[k].getTypResultat().getCodTre())){
+												EprResult = true;
+												elp2.setRes1(repdto[k].getTypResultat().getCodTre());
+											}
 
 
 										} else {
@@ -1517,12 +1525,18 @@ public class EtudiantController {
 											if (elp2.getNote2() != null && !elp2.getNote2().equals("")) {
 												EprNotee = true;
 											}
+											
+											//le resultat à l'épreuve
+											if(confAffResultatsEpreuve && repdto[k].getTypResultat()!=null && StringUtils.hasText(repdto[k].getTypResultat().getCodTre())){
+												EprResult = true;
+												elp2.setRes2(repdto[k].getTypResultat().getCodTre());
+											}
 										}
 									}
 								}
 							}
-							//ajout de l'épreuve dans la liste en tant qu'élément si elle a une note
-							if (EprNotee) {
+							//ajout de l'épreuve dans la liste en tant qu'élément si elle a une note ou un résultat (si on veut afficher les résultats)
+							if (EprNotee || (confAffResultatsEpreuve && EprResult)) {
 								liste1.add(elp2);
 							}
 						}
