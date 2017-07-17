@@ -1043,7 +1043,8 @@
 	  	<dependency>
 			<groupId>fr.univlorraine</groupId>
 			<artifactId>tools</artifactId>
-			<version>1.5.9</version>
+			<!-- <version>1.5.9</version> -->
+			<version>1.5.11</version>
 		</dependency> 
 		
 		<!-- Lombok eclipse plugin -->
