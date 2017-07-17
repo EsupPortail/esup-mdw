@@ -400,7 +400,6 @@ public class MainUI extends GenericUI {
 
 		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
-
 			if(!applicationActive()){
 				displayViewFullScreen(AccesBloqueView.NAME);
 			}else{
@@ -478,7 +477,7 @@ public class MainUI extends GenericUI {
 				String fragment = Page.getCurrent().getUriFragment();
 				
 				if (fragment != null && !fragment.isEmpty()) {
-					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est gérer dans le listener du navigator
+					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est géré dans le listener du navigator
 					if(fragment.contains("adminView") && userController.userCanAccessAdminView()){
 						//Afficher la vue admin
 						navigator.navigateTo(AdminView.NAME);
@@ -518,10 +517,16 @@ public class MainUI extends GenericUI {
 						}else{
 							//Si utilisateur étudiant
 							if(userController.isEtudiant()){
-								//On affiche la vue de l'état-civil
-								navigator.navigateTo(EtatCivilView.NAME);
-								//Affichage du message d'intro si besoin
-								afficherMessageIntroEtudiants();
+								//Si on demande à accéder directement à la vue notesView
+								if(fragment!=null && fragment.contains(NotesView.NAME)){
+									//On affiche la vue notes
+									navigator.navigateTo(NotesView.NAME);
+								}else{
+									//On affiche la vue de l'état-civil
+									navigator.navigateTo(EtatCivilView.NAME);
+									//Affichage du message d'intro si besoin
+									afficherMessageIntroEtudiants();
+								}
 							}else{
 								//On affiche la vue d'erreur
 								displayViewFullScreen(ErreurView.NAME);
