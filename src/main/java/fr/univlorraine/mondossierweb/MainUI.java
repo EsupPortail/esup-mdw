@@ -522,10 +522,16 @@ public class MainUI extends GenericUI {
 									//On affiche la vue notes
 									navigator.navigateTo(NotesView.NAME);
 								}else{
-									//On affiche la vue de l'état-civil
-									navigator.navigateTo(EtatCivilView.NAME);
-									//Affichage du message d'intro si besoin
-									afficherMessageIntroEtudiants();
+									//Si on demande à accéder directement à la vue calendrier et que la vue est activée
+									if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiants()){
+										//On affiche la vue Calendrier
+										navigator.navigateTo(CalendrierView.NAME);
+									}else{
+										//On affiche la vue de l'état-civil
+										navigator.navigateTo(EtatCivilView.NAME);
+										//Affichage du message d'intro si besoin
+										afficherMessageIntroEtudiants();
+									}
 								}
 							}else{
 								//On affiche la vue d'erreur

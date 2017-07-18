@@ -144,8 +144,10 @@
 
 /* l'indicateur de loading circulaire inutile sur mobile */
 .v-cache-loading-indicator {
-	display: none;
-	position:relative;
+	display: none !important;
+}
+.v-cache-loading-indicator:after{
+	display: none !important;
 }
 
 /* supprime le spin buggé sur l'application mobile*/
