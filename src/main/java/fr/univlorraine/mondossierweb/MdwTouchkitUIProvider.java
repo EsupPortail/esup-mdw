@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.web.context.WebApplicationContext;
 
+import com.vaadin.annotations.StyleSheet;
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
@@ -36,6 +38,8 @@ import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 
+@Theme("valo-ul")
+@StyleSheet("mobileView.css")
 public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 	private static final long serialVersionUID = -1535055076149004931L;

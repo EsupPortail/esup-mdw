@@ -26,12 +26,16 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.vaadin.annotations.StyleSheet;
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
+@Theme("valo-ul")
+@StyleSheet("mainView.css")
 public class MdwUIProvider extends SpringUIProvider  {
 
 
