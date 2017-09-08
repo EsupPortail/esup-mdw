@@ -101,7 +101,7 @@ public class EtudiantController {
 	/**
 	 * la signification du type de résultat 'COR'.
 	 */
-	private final String SIGNIFICATION_TYP_RESULT_COR ="Obtenu par Correspondance";
+	private final String SIGNIFICATION_TYP_RESULT_COR ="Enseignement &eacutequivalent acquis";
 
 
 	/* Injections */
@@ -1183,7 +1183,7 @@ public class EtudiantController {
 	 * @param reedto objet retourne par le WS
 	 * @param temoinEtatDelib
 	 */
-	public void setNotesElpEpr(Etudiant e, Etape et, ContratPedagogiqueResultatElpEprDTO5[] reedto,String temoinEtatDelib, int anneeResultat) {
+	public void setNotesElpEpr(Etudiant e, Etape et, ContratPedagogiqueResultatElpEprDTO5[] reedto,String temoinEtatDelib, int anneeResultat, String sourceResultat) {
 		try {
 
 			e.getElementsPedagogiques().clear();
@@ -1194,47 +1194,45 @@ public class EtudiantController {
 			if (reedto != null && reedto.length > 0) {
 				//On parcourt les ELP:
 				for (int i = 0; i < reedto.length; i++ ) {
+					// On regarde les resultats
+                                        ResultatElpDTO3[] relpdto = reedto[i].getResultatsElp();
+                                        //vrai si l'ELP est il dans un etat de delib qui nous convient en session1:
+                                        boolean elpEtatDelibS1OK=false;
 
-					ElementPedagogique elp = new ElementPedagogique();
+                                        //vrai si l'ELP est il dans un etat de delib qui nous convient en session2:
+                                        boolean elpEtatDelibS2OK=false;
 
-					elp.setCode(reedto[i].getElp().getCodElp());
-					elp.setLevel(reedto[i].getRngElp());
-					elp.setCodElpSup(reedto[i].getCodElpSup());
-					elp.setLibelle(reedto[i].getElp().getLibElp());
-					elp.setAnnee("");
-					elp.setEpreuve(false);
+                                        //contient l'année de la PRC si les résultats sont obtenus en PRC
+                                        String anneePrc = null;
+
+                                        if (relpdto != null && relpdto.length > 0) {
+						ElementPedagogique elp = new ElementPedagogique();
+						elp.setCode(reedto[i].getElp().getCodElp());
+						elp.setLevel(reedto[i].getRngElp());
+						elp.setCodElpSup(reedto[i].getCodElpSup());
+						elp.setLibelle(reedto[i].getElp().getLibElp());
+						elp.setAnnee("");
+						elp.setEpreuve(false);
+
+	
+						if (reedto[i].getElp().getNatureElp().getCodNel().equals("FICM")) {
+							//utile pour ne pas afficher les FICM par la suite
+							elp.setAnnee("FICM");
+						}
 
 
-					if (reedto[i].getElp().getNatureElp().getCodNel().equals("FICM")) {
-						//utile pour ne pas afficher les FICM par la suite
-						elp.setAnnee("FICM");
-					}
+						elp.setNote1("");
+						elp.setBareme1(0);
+						elp.setRes1("");
+						elp.setNote2("");
+						elp.setBareme2(0);
+						elp.setRes2("");
+						elp.setEcts("");
+						elp.setTemFictif(reedto[i].getElp().getNatureElp().getTemFictif());
+						elp.setTemSemestre("N");
+						elp.setTemSemestre(reedto[i].getElp().getNatureElp().getTemSemestre());
+						elp.setEtatDelib("");
 
-
-					elp.setNote1("");
-					elp.setBareme1(0);
-					elp.setRes1("");
-					elp.setNote2("");
-					elp.setBareme2(0);
-					elp.setRes2("");
-					elp.setEcts("");
-					elp.setTemFictif(reedto[i].getElp().getNatureElp().getTemFictif());
-					elp.setTemSemestre("N");
-					elp.setTemSemestre(reedto[i].getElp().getNatureElp().getTemSemestre());
-					elp.setEtatDelib("");
-
-					//vrai si l'ELP est il dans un etat de delib qui nous convient en session1:
-					boolean elpEtatDelibS1OK=false;
-
-					//vrai si l'ELP est il dans un etat de delib qui nous convient en session2:
-					boolean elpEtatDelibS2OK=false;
-
-					//contient l'année de la PRC si les résultats sont obtenus en PRC
-					String anneePrc = null;
-
-					//On s'occupe des résultats :
-					ResultatElpDTO3[] relpdto = reedto[i].getResultatsElp();
-					if (relpdto != null && relpdto.length > 0) {
 						//on parcourt les résultats pour l'ELP:
 						for (int j = 0; j < relpdto.length; j++ ) {
 							if(relpdto[j] != null && relpdto[j].getEtatDelib() != null && relpdto[j].getEtatDelib().getCodEtaAvc()!= null)
@@ -1374,53 +1372,63 @@ public class EtudiantController {
 							}
 
 						}
-					}
 
-					//Si il y a un PRC
-					if(anneePrc!=null){
-						//On doit vérifier que la PRC est valide
-						int anneeObtPrc=Integer.parseInt(anneePrc);
+						//Si il y a un PRC
+						if(anneePrc!=null){
+							//On doit vérifier que la PRC est valide
+							int anneeObtPrc=Integer.parseInt(anneePrc);
+							//Répétion de la duréde conservation de  l'ément conservable
+							BigDecimal durConElp = elementPedagogiqueService.getDureeConservation(elp.getCode());
+							if(durConElp!=null){
+								int duree = durConElp.intValue();
+								//On test si la conservation est encore valide
+								if((anneeObtPrc + duree) < anneeResultat){
 						//Récupération de la durée de conservation de  l'élément conservable
-						int durConElp = 0;
-						if( reedto[i].getElp().getDurConElp()!=null){
-							durConElp =reedto[i].getElp().getDurConElp();
+//						int durConElp = 0;
+//						if( reedto[i].getElp().getDurConElp()!=null){
+//							durConElp =reedto[i].getElp().getDurConElp();
 							//On test si la conservation est encore valide
-							if((anneeObtPrc + durConElp) < anneeResultat){
+//							if((anneeObtPrc + durConElp) < anneeResultat){
 								//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
-								elp.setAnnee("");
-								elp.setNote1("");
-								elp.setBareme1(0);
-								elp.setRes1("");
-								elp.setNote2("");
-								elp.setBareme2(0);
-								elp.setRes2("");
-								elp.setEcts("");
-								elp.setEtatDelib("");
+									elp.setAnnee("");
+									elp.setNote1("");
+									elp.setBareme1(0);
+									elp.setRes1("");
+									elp.setNote2("");
+									elp.setBareme2(0);
+									elp.setRes2("");
+									elp.setEcts("");
+									elp.setEtatDelib("");
+								}
 							}
 						}
 
-					}
 
-					//ajout de l'élément dans la liste par ordre alphabétique:
-					//liste1.add(elp);
-					if (liste1.size() == 0) {
-						liste1.add(elp);
-					} else {
-						int rang = 0;
-						boolean insere = false;
-						while (rang < liste1.size() && !insere) {
-
-							if (liste1.get(rang).getCode().compareTo(elp.getCode()) > 0) {
-								liste1.add(rang, elp);
-								insere = true;
+						//ajout de l'élément dans la liste par ordre alphabétique:
+						//liste1.add(elp);
+						//ajout de l'élément dans la liste par ordre alphabétique (si pas d'extraction)
+	                                        if(sourceResultat.compareTo("Apogee-extraction")==0){
+		                                        liste1.add(elp);
+                	                        }else{
+							if (liste1.size() == 0) {
+								liste1.add(elp);
+							} else {
+								int rang = 0;
+								boolean insere = false;
+								while (rang < liste1.size() && !insere) {
+									if (liste1.get(rang).getCode().compareTo(elp.getCode()) > 0) {
+										liste1.add(rang, elp);
+										insere = true;
+									}
+		
+									if (!insere) {
+										rang++;
+									}
+								}
+								if (!insere) {
+									liste1.add(elp);
+								}
 							}
-
-							if (!insere) {
-								rang++;
-							}
-						}
-						if (!insere) {
-							liste1.add(elp);
 						}
 					}
 
@@ -1437,14 +1445,13 @@ public class EtudiantController {
 							ElementPedagogique elp2 = new ElementPedagogique();
 							elp2.setLibelle(epreuve.getEpreuve().getLibEpr());
 							elp2.setCode(epreuve.getEpreuve().getCodEpr());
-							elp2.setLevel(elp.getLevel() + 1);
-
+							elp2.setLevel(reedto[i].getRngElp() + 1);
 							//Modif 20/02/2012 pour les WS HttpInvoker
 							//elp2.setAnnee("epreuve");
 							elp2.setAnnee("");
 							elp2.setEpreuve(true);
 
-							elp2.setCodElpSup(elp.getCode());
+							elp2.setCodElpSup(reedto[i].getElp().getCodElp());
 							elp2.setNote1("");
 							elp2.setBareme1(0);
 							elp2.setRes1("");
@@ -1459,15 +1466,14 @@ public class EtudiantController {
 							if (repdto != null && repdto.length > 0) {
 								for (int k = 0; k < repdto.length; k++ ) {
 									int codsession = new Integer(repdto[k].getSession().getCodSes());
-									//09/01/13
-									//On recupere la note si :
+								//09/01/13
+								//On recupere la note si :
 									//  On a reseigné une liste de type épreuve à afficher et le type de l'épreuve en fait partie
 									//  OU SI :
 									//      le témoin d'avc fait partie de la liste des témoins paramétrés 
 									//      OU si le témoin d'avc de  l'elp pere fait partie de la liste des témoins paramétrés 
 									//      OU si le témoin TemCtlValCadEpr est égal au parametre TemoinCtlValCadEpr de monDossierWeb.xml.
 									boolean recuperationNote = false;
-
 									List<String> lTypesEpreuveAffichageNote = configController.getTypesEpreuveAffichageNote();
 									if(lTypesEpreuveAffichageNote != null && lTypesEpreuveAffichageNote.size()>0){
 										//On a renseigné une liste de type épreuve à afficher
@@ -1488,12 +1494,10 @@ public class EtudiantController {
 									//test si on recupere la note ou pas
 									if(recuperationNote){
 
-
 										if (codsession < 2) {
 											//1er session  : juin
 											if (repdto[k].getNotEpr() != null) {
 												elp2.setNote1(repdto[k].getNotEpr().replaceAll(",", "."));
-
 												//Gestion du barème:
 												if(repdto[k].getBarNotEpr() != null){
 													elp2.setBareme1(repdto[k].getBarNotEpr());
@@ -1502,13 +1506,11 @@ public class EtudiantController {
 											if (elp2.getNote1() != null && !elp2.getNote1().equals("")) {
 												EprNotee = true;
 											}
-
-
+		
 										} else {
 											//2er session  : septembre
 											if (repdto[k].getNotEpr() != null) {
 												elp2.setNote2(repdto[k].getNotEpr().replaceAll(",", "."));
-
 												//Gestion du barème:
 												if(repdto[k].getBarNotEpr() != null){
 													elp2.setBareme2(repdto[k].getBarNotEpr());
@@ -1521,6 +1523,7 @@ public class EtudiantController {
 									}
 								}
 							}
+							
 							//ajout de l'épreuve dans la liste en tant qu'élément si elle a une note
 							if (EprNotee) {
 								liste1.add(elp2);
@@ -1530,56 +1533,67 @@ public class EtudiantController {
 				}
 			}
 			//ajout des éléments dans la liste de l'étudiant en commençant par la ou les racine
-			int niveauRacine = 1;
-			if (liste1.size() > 0) {
-				int i = 0;
-				while (i < liste1.size()) {
-					ElementPedagogique el = liste1.get(i);
-					if (el.getCodElpSup() == null || el.getCodElpSup().equals("")) {
-						//on a une racine:
-						if (!el.getAnnee().equals("FICM")) {
-							e.getElementsPedagogiques().add(el);
+			// Si pas extraction, mise en forme de la liste
+	        	if(sourceResultat.compareTo("Apogee-extraction")!=0){
+				int niveauRacine = 1;
+				if (liste1.size() > 0) {
+					int i = 0;
+					while (i < liste1.size()) {
+						ElementPedagogique el = liste1.get(i);
+						if (el.getCodElpSup() == null || el.getCodElpSup().equals("")) {
+							//on a une racine:
+							if (!el.getAnnee().equals("FICM")) {
+								e.getElementsPedagogiques().add(el);
+							}
+	
+							insererElmtPedagoFilsDansListe(el, liste1, e, niveauRacine);
 						}
-
-						insererElmtPedagoFilsDansListe(el, liste1, e, niveauRacine);
+						i++;
 					}
-					i++;
 				}
-			}
 
 
-			//suppression des épreuve seules et quand elles ont les mêmes notes que l'element pere:
-			if (e.getElementsPedagogiques().size() > 0) {
-				int i = 1;
-				boolean suppr = false;
-				while (i < e.getElementsPedagogiques().size()) {
-					suppr = false;
-					ElementPedagogique elp = e.getElementsPedagogiques().get(i);
-					if (elp.isEpreuve()) {
-						ElementPedagogique elp0 = e.getElementsPedagogiques().get(i - 1);
-						if (i < (e.getElementsPedagogiques().size() - 1)) {
-							ElementPedagogique elp1 = e.getElementsPedagogiques().get(i + 1);
-							if (!elp0.isEpreuve() && !elp1.isEpreuve()) {
-								if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
+				//suppression des épreuve seules et quand elles ont les mêmes notes que l'element pere:
+				if (e.getElementsPedagogiques().size() > 0) {
+					int i = 1;
+					boolean suppr = false;
+					while (i < e.getElementsPedagogiques().size()) {
+						suppr = false;
+						ElementPedagogique elp = e.getElementsPedagogiques().get(i);
+						if (elp.isEpreuve()) {
+							ElementPedagogique elp0 = e.getElementsPedagogiques().get(i - 1);
+							if (i < (e.getElementsPedagogiques().size() - 1)) {
+								ElementPedagogique elp1 = e.getElementsPedagogiques().get(i + 1);
+								if (!elp0.isEpreuve() && !elp1.isEpreuve()) {
+									if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
+										//on supprime l'element i
+										e.getElementsPedagogiques().remove(i);
+										suppr = true;
+									}
+								}
+							} else {
+								if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
 									//on supprime l'element i
 									e.getElementsPedagogiques().remove(i);
 									suppr = true;
 								}
 							}
-						} else {
-							if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
-								//on supprime l'element i
-								e.getElementsPedagogiques().remove(i);
-								suppr = true;
-							}
+						}
+						if (!suppr) {
+							i++;
 						}
 					}
-					if (!suppr) {
-						i++;
-					}
 				}
-			}
-
+			}else {
+	                    	if (liste1.size() > 0) {
+	        	        	int i = 0;
+		                        while (i < liste1.size()) {
+        		         		ElementPedagogique el = liste1.get(i);
+                		                e.getElementsPedagogiques().add(el);
+                        		        i++;
+                                	}
+		                }
+        		}
 
 
 			//Gestion des temoins fictif si temoinFictif est renseigné dans monDossierWeb.xml
@@ -1600,19 +1614,19 @@ public class EtudiantController {
 					for(Integer rg:listeRangAsupprimer){
 						e.getElementsPedagogiques().remove(rg - NbElementSupprimes);
 						NbElementSupprimes++;
-					}
+					}	
 				}
-			}
+			}	
 
 			//Gestion de la descendance des semestres si temNotesEtuSem est renseigné et à true dans monDossierWeb.xml
 			if(configController.isTemNotesEtuSem()){
 				if (e.getElementsPedagogiques().size() > 0) {
 					List<Integer> listeRangAsupprimer=new LinkedList<Integer>();
 					int rang = 0;
-
+	
 					int curSemLevel = 0;
 					boolean supDesc = false;
-
+	
 					//on note les rangs des éléments à supprimer
 					for (ElementPedagogique el : e.getElementsPedagogiques()) {
 						if(el.getTemSemestre()!= null && !el.getTemSemestre().equals("") && el.getTemSemestre().equals("O")) {
@@ -1651,7 +1665,6 @@ public class EtudiantController {
 				}
 				if (et.getResultats().get(0).getAdmission() != null)
 					ep.setRes1(et.getResultats().get(0).getAdmission());
-
 			}
 			if (et.getResultats().size() > 1) {
 				if (et.getResultats().get(1).getNote() != null){
@@ -1751,12 +1764,12 @@ public class EtudiantController {
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 				//29/01/10
 				//on est dans le cas d'une extraction apogée
-				setNotesElpEpr(e, et, cpdto,"AET",annee);
+				setNotesElpEpr(e, et, cpdto,"AET",annee,sourceResultat);
 			}else{
 				//29/01/10
 				//On récupère pour tout les états de délibération et on fera le trie après
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,temoin,annee);
+				setNotesElpEpr(e, et, cpdto,temoin,annee,sourceResultat);
 			}
 
 
@@ -1821,10 +1834,10 @@ public class EtudiantController {
 			// 07/12/11 récupération du fonctionnement identique à la récupéraition des notes pour les étudiants.
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,"AET",annee);
+				setNotesElpEpr(e, et, cpdto,"AET",annee,sourceResultat);
 			}else{
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,temoin,annee);
+				setNotesElpEpr(e, et, cpdto,temoin,annee,sourceResultat);
 			}
 
 
@@ -2184,7 +2197,13 @@ public class EtudiantController {
 			}
 		}
 
-
+		//interdit l'édition de certificat pour les étudiants si i le t temoin reedition carte n'est pas coche
+                if(userController.isEtudiant()){
+                        String TemoinCarteEdit = multipleApogeeService.getTemoinEditionCarte(etu.getCod_ind(), codAnuIns);
+            		if ((TemoinCarteEdit==null)||(!TemoinCarteEdit.contains("E"))){
+                                return false;
+                        }
+                }
 
 
 		return true;
