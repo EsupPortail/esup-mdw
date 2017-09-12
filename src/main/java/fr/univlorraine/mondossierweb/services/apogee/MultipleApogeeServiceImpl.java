@@ -370,6 +370,14 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return codSig;
 	}
 
-
+	@Override
+        public String getTemoinEditionCarte(String cod_ind, String cod_anu) {
+                @SuppressWarnings("unchecked")
+                String etaEdtCrt = (String)entityManagerApogee.createNativeQuery("select iaa.eta_edt_crt "+
+                                " from apogee.ins_adm_anu iaa"+
+                                " where iaa.cod_anu="+cod_anu+
+                                " and iaa.cod_ind="+cod_ind ).getSingleResult();
+                return etaEdtCrt;
+        }
 
 }

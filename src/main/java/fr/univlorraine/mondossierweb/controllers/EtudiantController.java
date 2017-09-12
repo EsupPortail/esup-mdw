@@ -2198,7 +2198,7 @@ public class EtudiantController {
 		}
 
 		//interdit l'édition de certificat pour les étudiants si i le t temoin reedition carte n'est pas coche
-                if(userController.isEtudiant()){
+                if(userController.isEtudiant() && configController.isCertificatScolariteCarteEditee()){
                         String TemoinCarteEdit = multipleApogeeService.getTemoinEditionCarte(etu.getCod_ind(), codAnuIns);
             		if ((TemoinCarteEdit==null)||(!TemoinCarteEdit.contains("E"))){
                                 return false;
