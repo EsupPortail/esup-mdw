@@ -71,4 +71,6 @@ public interface MultipleApogeeService {
 	
 	public abstract List<String> getListeCodeBlocage(String cod_etu);
 
+	public abstract String getTemoinEditionCarte(String cod_ind, String cod_anu);
+
 }

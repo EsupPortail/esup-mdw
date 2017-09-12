@@ -91,6 +91,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("certificatScolaritePJinvalide");
 	}
 
+	public boolean isCertificatScolariteCarteEditee() {
+                return getBooleanValueForParameter("certificatScolariteEditionCarte");
+        }
+
 	public boolean isApplicationActive() {
 		return getBooleanValueForParameter("applicationActive");
 	}
