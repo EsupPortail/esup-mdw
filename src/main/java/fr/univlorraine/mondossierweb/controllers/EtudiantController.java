@@ -1508,7 +1508,6 @@ public class EtudiantController {
 											if (elp2.getNote1() != null && !elp2.getNote1().equals("")) {
 												EprNotee = true;
 											}
-<<<<<<< HEAD
 											
 											//le resultat à l'épreuve
 											if(confAffResultatsEpreuve && repdto[k].getTypResultat()!=null && StringUtils.hasText(repdto[k].getTypResultat().getCodTre())){
@@ -1516,10 +1515,6 @@ public class EtudiantController {
 												elp2.setRes1(repdto[k].getTypResultat().getCodTre());
 											}
 
-
-=======
-		
->>>>>>> correction-extraction
 										} else {
 											//2er session  : septembre
 											if (repdto[k].getNotEpr() != null) {
@@ -1542,14 +1537,8 @@ public class EtudiantController {
 									}
 								}
 							}
-<<<<<<< HEAD
 							//ajout de l'épreuve dans la liste en tant qu'élément si elle a une note ou un résultat (si on veut afficher les résultats)
 							if (EprNotee || (confAffResultatsEpreuve && EprResult)) {
-=======
-							
-							//ajout de l'épreuve dans la liste en tant qu'élément si elle a une note
-							if (EprNotee) {
->>>>>>> correction-extraction
 								liste1.add(elp2);
 							}
 						}
