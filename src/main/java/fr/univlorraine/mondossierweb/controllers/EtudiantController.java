@@ -101,7 +101,7 @@ public class EtudiantController {
 	/**
 	 * la signification du type de résultat 'COR'.
 	 */
-	private final String SIGNIFICATION_TYP_RESULT_COR ="Enseignement &eacutequivalent acquis";
+	private final String SIGNIFICATION_TYP_RESULT_COR ="Obtenu par Correspondance";
 
 
 	/* Injections */
