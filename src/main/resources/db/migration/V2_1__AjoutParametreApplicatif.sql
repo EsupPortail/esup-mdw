@@ -16,4 +16,7 @@
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES 
 ('certificatScolariteEditionCarte','Edition du certificat de scolarite si le temoin d edition de la carte d etudiant est coche dans Apogee: true pour l''activer, false sinon','BOOLEAN',4, 'false');
 
+INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES
+('affResAdmissibilite', 'Afficher le resultat meme dans le cas de l admissibilite: true pour l''activer, false sinon','BOOLEAN',2, 'false');
+
 
