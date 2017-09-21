@@ -163,6 +163,10 @@ public class ConfigController {
 	public boolean isAffMentionEtudiant() {
 		return getBooleanValueForParameter("affMentionEtudiant");
 	}
+
+	public boolean isAffResAdmissibilite() {
+                return getBooleanValueForParameter("affResAdmissibilite");
+        }
 	
 	public boolean isAffMessageNotesInformatives() {
 		return getBooleanValueForParameter("affMessageNotesInformatives");
