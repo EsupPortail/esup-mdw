@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -58,6 +59,7 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueServiceIm
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.utils.WSUtils;
@@ -118,6 +120,8 @@ public class EtudiantController {
 	/** {@link ComposanteServiceImpl} */
 	@Resource
 	private ComposanteService composanteService;
+	@Resource
+	private SsoApogeeService ssoApogeeService;
 	@Resource
 	private ElementPedagogiqueService elementPedagogiqueService;
 	@Resource
@@ -634,6 +638,19 @@ public class EtudiantController {
 							insc.setEstEnRegle(true);
 						}else{
 							insc.setEstEnRegle(false);
+						}
+						
+						//récupération de l'état de l'inscription
+						if(insdto.getEtatIae()!=null && StringUtils.hasText(insdto.getEtatIae().getCodeEtatIAE())){
+							insc.setEtatIae(insdto.getEtatIae().getCodeEtatIAE());
+							if(insdto.getEtatIae().getCodeEtatIAE().equals(Utils.ETAT_IAE_EN_COURS)){
+								insc.setEstEnCours(true);
+							}else{
+								insc.setEstEnCours(false);
+							}
+						}else{
+							insc.setEtatIae(null);
+							insc.setEstEnCours(false);
 						}
 
 						//ajout de l'inscription à la liste
@@ -2094,10 +2111,22 @@ public class EtudiantController {
 		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
+		//si l'IAE n'est pas à l'état 'E'
+		if (!ins.isEstEnCours()) {
+			return false;
+		}
 		//Si pas affilié à la sécu
 		if(!etu.isAffilieSso()){
 			return false;
 		}
+		//Si on n'arrive pas à récupérer le centre payeur
+		try{
+			ssoApogeeService.getCentrePayeur(codAnuIns, etu.getCod_ind(), etu.isAffilieSso());
+		}catch (Exception e){
+			LOG.debug("Non récupération du centre payeur pour "+etu.getCod_etu()+" => "+e.getCause());
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -2115,6 +2144,11 @@ public class EtudiantController {
 		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
+		//interdit l'edition de certificat si l'inscription n'est pas payée
+		if(!ins.isEstEnRegle()){
+			return false;
+		}
+
 		return true;
 	}
 

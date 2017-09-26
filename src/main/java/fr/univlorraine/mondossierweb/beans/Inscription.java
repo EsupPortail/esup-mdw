@@ -77,6 +77,14 @@ public class Inscription {
 	 */
 	private boolean estEnRegle;
 	/**
+	 * vrai si etat_iae='E'
+	 */
+	private boolean estEnCours;
+	/**
+	 * etat de l'IAE
+	 */
+	private String etatIae;
+	/**
 	 * code individu
 	 */
 	private String cod_ind;

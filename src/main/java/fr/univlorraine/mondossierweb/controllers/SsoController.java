@@ -215,8 +215,7 @@ public class SsoController {
 		AffiliationSSO affiliation = new AffiliationSSO();
 		//Récupérer les informations nécessaires dans apogée
 		//boolean isAffilieSso = ssoApogeeService.isAffilieSso(codAnuIns, e.getCod_ind());
-		boolean isAffilieSso = e.isAffilieSso();
-		Map<String,String> r = ssoApogeeService.getCentrePayeur(codAnuIns, e.getCod_ind(), isAffilieSso);
+		Map<String,String> r = ssoApogeeService.getCentrePayeur(codAnuIns, e.getCod_ind(), e.isAffilieSso());
 		affiliation.setCentre_payeur(r.get("LIC_CTP"));
 		affiliation.setMutuelle(ssoApogeeService.getMutuelle(codAnuIns, e.getCod_ind()));
 		//récupérer le libellé court de la composante
