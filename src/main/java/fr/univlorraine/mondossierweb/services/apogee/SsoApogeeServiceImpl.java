@@ -164,7 +164,8 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 						"AND iid.cod_anu = iaa.cod_anu "+
 						"AND iid.cod_drt =drt.cod_drt "+
 						"AND drt.cod_tdr = 'SS' "+
-						"AND iid.cod_typ_iad = 'E'))";
+						"AND iid.cod_typ_iad = 'E') "+
+						"OR  iaa.cod_rss ='450')";
 			}
 		}else{
 			//étudiant non affilé

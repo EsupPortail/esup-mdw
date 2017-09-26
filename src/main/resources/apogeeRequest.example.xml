@@ -75,7 +75,7 @@ WHERE iid.cod_ind = iaa.cod_ind
 AND iid.cod_anu = iaa.cod_anu 
 AND iid.cod_drt =drt.cod_drt 
 AND drt.cod_tdr = 'SS' 
-AND iid.cod_typ_iad = 'E'))</entry>
+AND iid.cod_typ_iad = 'E') OR  iaa.cod_rss ='450')</entry>
 
 <entry key="centrePayeurPourNonAffilie">SELECT ctp.lic_ctp LIC_CTP, TO_CHAR(iaa.dat_afl_sso,'DD/MM/YYYY') DAT_AFL_SSO 
 FROM ins_adm_anu iaa, centre_payeur ctp 
