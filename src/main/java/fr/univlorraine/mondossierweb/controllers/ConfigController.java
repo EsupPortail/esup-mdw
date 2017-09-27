@@ -215,7 +215,14 @@ public class ConfigController {
 	public boolean isAffCalendrierEpreuvesEtudiants() {
 		return getBooleanValueForParameter("affCalendrierEpreuvesEtudiants");
 	}
+	
+	public boolean isCertificatScolariteCarteEditee() {
+		return getBooleanValueForParameter("certificatScolariteEditionCarte");
+	}
 
+	public boolean isAffResAdmissibilite() {
+	     return getBooleanValueForParameter("affResAdmissibilite");
+    }
 
 	public List<String> getListeCertScolProfilDesactive(){
 		return getListValeurForParameter("certScolProfilDesactive");
