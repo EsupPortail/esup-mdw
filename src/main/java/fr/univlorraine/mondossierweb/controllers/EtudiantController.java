@@ -639,7 +639,7 @@ public class EtudiantController {
 						}else{
 							insc.setEstEnRegle(false);
 						}
-						
+
 						//récupération de l'état de l'inscription
 						if(insdto.getEtatIae()!=null && StringUtils.hasText(insdto.getEtatIae().getCodeEtatIAE())){
 							insc.setEtatIae(insdto.getEtatIae().getCodeEtatIAE());
@@ -1521,7 +1521,7 @@ public class EtudiantController {
 											if (elp2.getNote1() != null && !elp2.getNote1().equals("")) {
 												EprNotee = true;
 											}
-											
+
 											//le resultat à l'épreuve
 											if(confAffResultatsEpreuve && repdto[k].getTypResultat()!=null && StringUtils.hasText(repdto[k].getTypResultat().getCodTre())){
 												EprResult = true;
@@ -1542,7 +1542,7 @@ public class EtudiantController {
 											if (elp2.getNote2() != null && !elp2.getNote2().equals("")) {
 												EprNotee = true;
 											}
-											
+
 											//le resultat à l'épreuve
 											if(confAffResultatsEpreuve && repdto[k].getTypResultat()!=null && StringUtils.hasText(repdto[k].getTypResultat().getCodTre())){
 												EprResult = true;
@@ -2126,7 +2126,7 @@ public class EtudiantController {
 			LOG.debug("Non récupération du centre payeur pour "+etu.getCod_etu()+" => "+e.getCause());
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -2232,7 +2232,13 @@ public class EtudiantController {
 			}
 		}
 
-
+		//interdit l'édition de certificat pour les étudiants si le témoin edition carte n'est pas coche
+		if(userController.isEtudiant() && configController.isCertificatScolariteCarteEditee()){
+			String temoinCarteEdit = multipleApogeeService.getTemoinEditionCarte(etu.getCod_ind(), codAnuIns);
+			if ((temoinCarteEdit==null)||(!temoinCarteEdit.contains(Utils.TEMOIN_EDITION_CARTE_EDITEE))){
+				return false;
+			}
+		}
 
 
 		return true;
