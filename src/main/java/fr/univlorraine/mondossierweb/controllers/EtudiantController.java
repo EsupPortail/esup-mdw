@@ -100,11 +100,6 @@ public class EtudiantController {
 
 	private Logger LOG = LoggerFactory.getLogger(EtudiantController.class);
 
-	/**
-	 * la signification du type de résultat 'COR'.
-	 */
-	private final String SIGNIFICATION_TYP_RESULT_COR ="Obtenu par Correspondance";
-
 
 	/* Injections */
 	@Resource
@@ -1200,7 +1195,7 @@ public class EtudiantController {
 	 * @param reedto objet retourne par le WS
 	 * @param temoinEtatDelib
 	 */
-	public void setNotesElpEpr(Etudiant e, Etape et, ContratPedagogiqueResultatElpEprDTO5[] reedto,String temoinEtatDelib, int anneeResultat) {
+	public void setNotesElpEpr(Etudiant e, Etape et, ContratPedagogiqueResultatElpEprDTO5[] reedto,String temoinEtatDelib, int anneeResultat, boolean sourceExtractionApogee) {
 		try {
 
 			e.getElementsPedagogiques().clear();
@@ -1386,7 +1381,7 @@ public class EtudiantController {
 								elp.setNote1("COR");
 								//ajout de la signification du résultat dans la map
 								if ( !e.getSignificationResultats().containsKey("COR")) {
-									e.getSignificationResultats().put("COR",SIGNIFICATION_TYP_RESULT_COR);
+									e.getSignificationResultats().put("COR",applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
 								}
 							}
 
@@ -1782,12 +1777,12 @@ public class EtudiantController {
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 				//29/01/10
 				//on est dans le cas d'une extraction apogée
-				setNotesElpEpr(e, et, cpdto,"AET",annee);
+				setNotesElpEpr(e, et, cpdto,"AET",annee,true);
 			}else{
 				//29/01/10
 				//On récupère pour tout les états de délibération et on fera le trie après
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,temoin,annee);
+				setNotesElpEpr(e, et, cpdto,temoin,annee,false);
 			}
 
 
@@ -1852,12 +1847,11 @@ public class EtudiantController {
 			// 07/12/11 récupération du fonctionnement identique à la récupéraition des notes pour les étudiants.
 			if(sourceResultat.compareTo("Apogee-extraction")==0){
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,"AET",annee);
+				setNotesElpEpr(e, et, cpdto,"AET",annee,true);
 			}else{
 				ContratPedagogiqueResultatElpEprDTO5[] cpdto = monProxyPedagogique.recupererContratPedagogiqueResultatElpEpr_v6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, "AET", "toutes", "tous",temoinEtatIae);
-				setNotesElpEpr(e, et, cpdto,temoin,annee);
+				setNotesElpEpr(e, et, cpdto,temoin,annee,false);
 			}
-
 
 
 		} catch (WebBaseException ex) {
