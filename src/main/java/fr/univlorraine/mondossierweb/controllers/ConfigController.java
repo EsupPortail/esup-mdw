@@ -221,7 +221,7 @@ public class ConfigController {
 	}
 
 	public boolean isAffResAdmissibilite() {
-	     return getBooleanValueForParameter("affResAdmissibilite");
+	     return getBooleanValueForParameter("affResultatsAdmissibilite");
     }
 
 	public List<String> getListeCertScolProfilDesactive(){
