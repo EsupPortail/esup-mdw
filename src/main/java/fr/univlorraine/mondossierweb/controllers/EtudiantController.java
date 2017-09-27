@@ -1206,23 +1206,15 @@ public class EtudiantController {
 			if (reedto != null && reedto.length > 0) {
 				//On parcourt les ELP:
 				for (int i = 0; i < reedto.length; i++ ) {
-
+					
 					ElementPedagogique elp = new ElementPedagogique();
-
 					elp.setCode(reedto[i].getElp().getCodElp());
 					elp.setLevel(reedto[i].getRngElp());
 					elp.setCodElpSup(reedto[i].getCodElpSup());
 					elp.setLibelle(reedto[i].getElp().getLibElp());
 					elp.setAnnee("");
 					elp.setEpreuve(false);
-
-
-					if (reedto[i].getElp().getNatureElp().getCodNel().equals("FICM")) {
-						//utile pour ne pas afficher les FICM par la suite
-						elp.setAnnee("FICM");
-					}
-
-
+					
 					elp.setNote1("");
 					elp.setBareme1(0);
 					elp.setRes1("");
@@ -1234,209 +1226,215 @@ public class EtudiantController {
 					elp.setTemSemestre("N");
 					elp.setTemSemestre(reedto[i].getElp().getNatureElp().getTemSemestre());
 					elp.setEtatDelib("");
-
+					
 					//vrai si l'ELP est il dans un etat de delib qui nous convient en session1:
 					boolean elpEtatDelibS1OK=false;
 
 					//vrai si l'ELP est il dans un etat de delib qui nous convient en session2:
 					boolean elpEtatDelibS2OK=false;
+					
+					if(!sourceExtractionApogee || elpAvecResultats(reedto[i])){
 
-					//contient l'année de la PRC si les résultats sont obtenus en PRC
-					String anneePrc = null;
+						if (reedto[i].getElp().getNatureElp().getCodNel().equals("FICM")) {
+							//utile pour ne pas afficher les FICM par la suite
+							elp.setAnnee("FICM");
+						}
 
-					//On s'occupe des résultats :
-					ResultatElpDTO3[] relpdto = reedto[i].getResultatsElp();
-					if (relpdto != null && relpdto.length > 0) {
-						//on parcourt les résultats pour l'ELP:
-						for (int j = 0; j < relpdto.length; j++ ) {
-							if(relpdto[j] != null && relpdto[j].getEtatDelib() != null && relpdto[j].getEtatDelib().getCodEtaAvc()!= null)
-								elp.setEtatDelib(relpdto[j].getEtatDelib().getCodEtaAvc());
+						//contient l'année de la PRC si les résultats sont obtenus en PRC
+						String anneePrc = null;
 
-							//on affiche pas les résultats d'admissibilité
-							if(relpdto[j].getNatureResultat()==null || relpdto[j].getNatureResultat().getCodAdm()== null || !relpdto[j].getNatureResultat().getCodAdm().equals("0")){
-								//29/01/10
-								//On récupère les notes si l'ELP est dans un état de delibération compris dans la liste des témoins paramétrés.
-								if(relpdto[j].getEtatDelib()==null ||  temoinEtatDelib.contains(relpdto[j].getEtatDelib().getCodEtaAvc())){
+						//On s'occupe des résultats :
+						ResultatElpDTO3[] relpdto = reedto[i].getResultatsElp();
+						if (relpdto != null && relpdto.length > 0) {
+							//on parcourt les résultats pour l'ELP:
+							for (int j = 0; j < relpdto.length; j++ ) {
+								if(relpdto[j] != null && relpdto[j].getEtatDelib() != null && relpdto[j].getEtatDelib().getCodEtaAvc()!= null)
+									elp.setEtatDelib(relpdto[j].getEtatDelib().getCodEtaAvc());
 
-									int codsession = 0;
-									if(relpdto[j].getSession() != null){
-										codsession = new Integer(relpdto[j].getSession().getCodSes());
-									}else{
-										//Pour info, on arrive ici car on peut etre en VAC: validation d'acquis
-									}
+								//on affiche pas les résultats d'admissibilité
+								if(relpdto[j].getNatureResultat()==null || relpdto[j].getNatureResultat().getCodAdm()== null || !relpdto[j].getNatureResultat().getCodAdm().equals("0")){
+									//29/01/10
+									//On récupère les notes si l'ELP est dans un état de delibération compris dans la liste des témoins paramétrés.
+									if(relpdto[j].getEtatDelib()==null ||  temoinEtatDelib.contains(relpdto[j].getEtatDelib().getCodEtaAvc())){
 
-									String result = null;
+										int codsession = 0;
+										if(relpdto[j].getSession() != null){
+											codsession = new Integer(relpdto[j].getSession().getCodSes());
+										}else{
+											//Pour info, on arrive ici car on peut etre en VAC: validation d'acquis
+										}
 
-									//le résultat:
-									if (relpdto[j].getTypResultat() != null ) {
-										result = relpdto[j].getTypResultat().getCodTre();
-									}
+										String result = null;
 
-									//Test sur la session traitée
-									if (codsession < 2) {
-										//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
-										elpEtatDelibS1OK=true;
+										//le résultat:
+										if (relpdto[j].getTypResultat() != null ) {
+											result = relpdto[j].getTypResultat().getCodTre();
+										}
 
-										//1er session  : juin
-										if (relpdto[j].getNotElp() != null && !relpdto[j].getNotElp().equals("null")) {
-											elp.setNote1(relpdto[j].getNotElp().toString());
-											if(relpdto[j].getNotPntJurElp()!= null && !relpdto[j].getNotPntJurElp().equals(new BigDecimal(0))){
-												elp.setNote1(elp.getNote1()+"(+"+relpdto[j].getNotPntJurElp()+")");
+										//Test sur la session traitée
+										if (codsession < 2) {
+											//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
+											elpEtatDelibS1OK=true;
+
+											//1er session  : juin
+											if (relpdto[j].getNotElp() != null && !relpdto[j].getNotElp().equals("null")) {
+												elp.setNote1(relpdto[j].getNotElp().toString());
+												if(relpdto[j].getNotPntJurElp()!= null && !relpdto[j].getNotPntJurElp().equals(new BigDecimal(0))){
+													elp.setNote1(elp.getNote1()+"(+"+relpdto[j].getNotPntJurElp()+")");
+												}
+
+											} 
+											if ((elp.getNote1() == null || (elp.getNote1() != null && elp.getNote1().equals(""))) && result != null && result.equals("DEF")) {
+												elp.setNote1("DEF");
 											}
 
-										} 
-										if ((elp.getNote1() == null || (elp.getNote1() != null && elp.getNote1().equals(""))) && result != null && result.equals("DEF")) {
-											elp.setNote1("DEF");
-										}
-
-										//Gestion du barème:
-										if(relpdto[j].getBarNotElp() != null){
-											elp.setBareme1(relpdto[j].getBarNotElp());
-										}
-
-										//ajout du rang si pas déjà renseigné via la session de juin.
-										if(relpdto[j].getNbrRngEtuElp() != null && !relpdto[j].getNbrRngEtuElp().equals("")
-												&& (elp.getRang()==null || elp.getRang().equals(""))){
-											elp.setRang(relpdto[j].getNbrRngEtuElp()+"/"+relpdto[j].getNbrRngEtuElpTot());
-										}
-
-										//on récupère l'année car si année!=null c'est un PRC  si pas déjà renseigné via la session de juin.
-										if(relpdto[j].getCodAnu()!=null && !relpdto[j].getCodAnu().equals("")
-												&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
-											elp.setAnnee(relpdto[j].getCodAnu());
-											anneePrc = relpdto[j].getCodAnu();
-										}
-
-										//on recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
-										if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
-												&& (elp.getEcts()==null || elp.getEcts().equals(""))){
-											// récupère l'ECTS acquis
-											BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
-											if(ectsAcquis!=null){
-												elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
-											}else{
-												elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+											//Gestion du barème:
+											if(relpdto[j].getBarNotElp() != null){
+												elp.setBareme1(relpdto[j].getBarNotElp());
 											}
-										}
 
-										elp.setRes1(result);
-									} else {
-										//2em session  : septembre
-										//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
-										elpEtatDelibS2OK=true;
-
-										if (relpdto[j].getNotElp() != null && !relpdto[j].getNotElp().equals("null")) {
-											elp.setNote2(relpdto[j].getNotElp().toString());
-											if(relpdto[j].getNotPntJurElp()!= null && !relpdto[j].getNotPntJurElp().equals(new BigDecimal(0))){
-												elp.setNote2(elp.getNote2()+"(+"+relpdto[j].getNotPntJurElp()+")");
+											//ajout du rang si pas déjà renseigné via la session de juin.
+											if(relpdto[j].getNbrRngEtuElp() != null && !relpdto[j].getNbrRngEtuElp().equals("")
+													&& (elp.getRang()==null || elp.getRang().equals(""))){
+												elp.setRang(relpdto[j].getNbrRngEtuElp()+"/"+relpdto[j].getNbrRngEtuElpTot());
 											}
-										}
-										if ((elp.getNote2() == null || (elp.getNote2() != null && elp.getNote2().equals(""))) && result != null && result.equals("DEF")) {
-											elp.setNote2("DEF");
-										}
 
-										//Gestion du barème:
-										if(relpdto[j].getBarNotElp()!= null){
-											elp.setBareme2(relpdto[j].getBarNotElp());
-										}
-
-										//ajout du rang
-										if(relpdto[j].getNbrRngEtuElp() != null && !relpdto[j].getNbrRngEtuElp().equals("")){
-											elp.setRang(relpdto[j].getNbrRngEtuElp()+"/"+relpdto[j].getNbrRngEtuElpTot());
-										}
-										//on récupère l'année car si getCodAnu()!=null c'est un PRC
-										if(relpdto[j].getCodAnu()!=null && !relpdto[j].getCodAnu().equals("")){
-											elp.setAnnee(relpdto[j].getCodAnu());
-											anneePrc = relpdto[j].getCodAnu();
-										}
-										//on recupere les crédits ECTS 
-										if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
-											// récupère l'ECTS acquis
-											BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
-											if(ectsAcquis!=null){
-												elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
-											}else{
-												elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+											//on récupère l'année car si année!=null c'est un PRC  si pas déjà renseigné via la session de juin.
+											if(relpdto[j].getCodAnu()!=null && !relpdto[j].getCodAnu().equals("")
+													&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
+												elp.setAnnee(relpdto[j].getCodAnu());
+												anneePrc = relpdto[j].getCodAnu();
 											}
+
+											//on recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
+											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
+													&& (elp.getEcts()==null || elp.getEcts().equals(""))){
+												// récupère l'ECTS acquis
+												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
+												if(ectsAcquis!=null){
+													elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
+												}else{
+													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+												}
+											}
+
+											elp.setRes1(result);
+										} else {
+											//2em session  : septembre
+											//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
+											elpEtatDelibS2OK=true;
+
+											if (relpdto[j].getNotElp() != null && !relpdto[j].getNotElp().equals("null")) {
+												elp.setNote2(relpdto[j].getNotElp().toString());
+												if(relpdto[j].getNotPntJurElp()!= null && !relpdto[j].getNotPntJurElp().equals(new BigDecimal(0))){
+													elp.setNote2(elp.getNote2()+"(+"+relpdto[j].getNotPntJurElp()+")");
+												}
+											}
+											if ((elp.getNote2() == null || (elp.getNote2() != null && elp.getNote2().equals(""))) && result != null && result.equals("DEF")) {
+												elp.setNote2("DEF");
+											}
+
+											//Gestion du barème:
+											if(relpdto[j].getBarNotElp()!= null){
+												elp.setBareme2(relpdto[j].getBarNotElp());
+											}
+
+											//ajout du rang
+											if(relpdto[j].getNbrRngEtuElp() != null && !relpdto[j].getNbrRngEtuElp().equals("")){
+												elp.setRang(relpdto[j].getNbrRngEtuElp()+"/"+relpdto[j].getNbrRngEtuElpTot());
+											}
+											//on récupère l'année car si getCodAnu()!=null c'est un PRC
+											if(relpdto[j].getCodAnu()!=null && !relpdto[j].getCodAnu().equals("")){
+												elp.setAnnee(relpdto[j].getCodAnu());
+												anneePrc = relpdto[j].getCodAnu();
+											}
+											//on recupere les crédits ECTS 
+											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
+												// récupère l'ECTS acquis
+												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
+												if(ectsAcquis!=null){
+													elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
+												}else{
+													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+												}
+											}
+											elp.setRes2(result);
 										}
-										elp.setRes2(result);
-									}
 
 
 
-									//CAS DE NON OBTENTION PAR CORRESPONDANCE.
-									if(relpdto[j].getLcc() == null) {
+										//CAS DE NON OBTENTION PAR CORRESPONDANCE.
+										if(relpdto[j].getLcc() == null) {
 
-										//ajout de la signification du résultat dans la map
-										if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(result)) {
-											e.getSignificationResultats().put(result, relpdto[j].getTypResultat().getLibTre());
+											//ajout de la signification du résultat dans la map
+											if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(result)) {
+												e.getSignificationResultats().put(result, relpdto[j].getTypResultat().getLibTre());
+											}
+
 										}
-
 									}
 								}
+								//On affiche la correspondance meme si l'état de délibération n'est pas compris dans la liste des témoins paramétrés.
+								if(relpdto[j].getLcc() != null) {
+									//les notes ont été obtenues par correspondance a session 1.
+									elp.setNote1("COR");
+									//ajout de la signification du résultat dans la map
+									if ( !e.getSignificationResultats().containsKey("COR")) {
+										e.getSignificationResultats().put("COR",applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
+									}
+								}
+
 							}
-							//On affiche la correspondance meme si l'état de délibération n'est pas compris dans la liste des témoins paramétrés.
-							if(relpdto[j].getLcc() != null) {
-								//les notes ont été obtenues par correspondance a session 1.
-								elp.setNote1("COR");
-								//ajout de la signification du résultat dans la map
-								if ( !e.getSignificationResultats().containsKey("COR")) {
-									e.getSignificationResultats().put("COR",applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
+						}
+
+						//Si il y a un PRC
+						if(anneePrc!=null){
+							//On doit vérifier que la PRC est valide
+							int anneeObtPrc=Integer.parseInt(anneePrc);
+							//Récupération de la durée de conservation de  l'élément conservable
+							int durConElp = 0;
+							if( reedto[i].getElp().getDurConElp()!=null){
+								durConElp =reedto[i].getElp().getDurConElp();
+								//On test si la conservation est encore valide
+								if((anneeObtPrc + durConElp) < anneeResultat){
+									//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
+									elp.setAnnee("");
+									elp.setNote1("");
+									elp.setBareme1(0);
+									elp.setRes1("");
+									elp.setNote2("");
+									elp.setBareme2(0);
+									elp.setRes2("");
+									elp.setEcts("");
+									elp.setEtatDelib("");
 								}
 							}
 
 						}
-					}
 
-					//Si il y a un PRC
-					if(anneePrc!=null){
-						//On doit vérifier que la PRC est valide
-						int anneeObtPrc=Integer.parseInt(anneePrc);
-						//Récupération de la durée de conservation de  l'élément conservable
-						int durConElp = 0;
-						if( reedto[i].getElp().getDurConElp()!=null){
-							durConElp =reedto[i].getElp().getDurConElp();
-							//On test si la conservation est encore valide
-							if((anneeObtPrc + durConElp) < anneeResultat){
-								//Si ce n'est pas le cas on n'affiche pas les résulats ni l'année.
-								elp.setAnnee("");
-								elp.setNote1("");
-								elp.setBareme1(0);
-								elp.setRes1("");
-								elp.setNote2("");
-								elp.setBareme2(0);
-								elp.setRes2("");
-								elp.setEcts("");
-								elp.setEtatDelib("");
-							}
-						}
-
-					}
-
-					//ajout de l'élément dans la liste par ordre alphabétique:
-					//liste1.add(elp);
-					if (liste1.size() == 0) {
-						liste1.add(elp);
-					} else {
-						int rang = 0;
-						boolean insere = false;
-						while (rang < liste1.size() && !insere) {
-
-							if (liste1.get(rang).getCode().compareTo(elp.getCode()) > 0) {
-								liste1.add(rang, elp);
-								insere = true;
-							}
-
-							if (!insere) {
-								rang++;
-							}
-						}
-						if (!insere) {
+						//ajout de l'élément dans la liste
+						if (liste1.size() == 0 || sourceExtractionApogee) {
 							liste1.add(elp);
+						} else {
+							//ajout de l'élément dans la liste par ordre alphabétique
+							int rang = 0;
+							boolean insere = false;
+							while (rang < liste1.size() && !insere) {
+
+								if (liste1.get(rang).getCode().compareTo(elp.getCode()) > 0) {
+									liste1.add(rang, elp);
+									insere = true;
+								}
+
+								if (!insere) {
+									rang++;
+								}
+							}
+							if (!insere) {
+								liste1.add(elp);
+							}
 						}
 					}
-
-
 
 					//les epreuves de l'élément (si il y en a )
 					EpreuveElpDTO2[] epelpdto = reedto[i].getEpreuvesElp();
@@ -1561,13 +1559,17 @@ public class EtudiantController {
 				int i = 0;
 				while (i < liste1.size()) {
 					ElementPedagogique el = liste1.get(i);
-					if (el.getCodElpSup() == null || el.getCodElpSup().equals("")) {
-						//on a une racine:
-						if (!el.getAnnee().equals("FICM")) {
-							e.getElementsPedagogiques().add(el);
-						}
+					if(sourceExtractionApogee){
+						e.getElementsPedagogiques().add(el);
+					}else{
+						if (el.getCodElpSup() == null || el.getCodElpSup().equals("")) {
+							//on a une racine:
+							if (!el.getAnnee().equals("FICM")) {
+								e.getElementsPedagogiques().add(el);
+							}
 
-						insererElmtPedagoFilsDansListe(el, liste1, e, niveauRacine);
+							insererElmtPedagoFilsDansListe(el, liste1, e, niveauRacine);
+						}
 					}
 					i++;
 				}
@@ -1575,7 +1577,7 @@ public class EtudiantController {
 
 
 			//suppression des épreuve seules et quand elles ont les mêmes notes que l'element pere:
-			if (e.getElementsPedagogiques().size() > 0) {
+			if (!sourceExtractionApogee && e.getElementsPedagogiques().size() > 0) {
 				int i = 1;
 				boolean suppr = false;
 				while (i < e.getElementsPedagogiques().size()) {
@@ -1699,6 +1701,15 @@ public class EtudiantController {
 		}catch (Exception ex) {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
+	}
+
+	/**
+	 * 
+	 * @param elp
+	 * @return vrai si l'elp en paramètre a des résulats
+	 */
+	private boolean elpAvecResultats(ContratPedagogiqueResultatElpEprDTO5 elp) {
+		return elp!=null && elp.getResultatsElp()!=null && (elp.getResultatsElp().length > 0);
 	}
 
 	/**
