@@ -214,7 +214,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return linscrits;
 
 	}
-	
+
 
 	@Override
 	public String getLibelleEtape(Etape e) {
@@ -225,7 +225,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
 		return libelle;
 	}
-	
+
 	@Override
 	public String getLibelleCourtEtape(String codeEtp) {
 		@SuppressWarnings("unchecked")
@@ -334,15 +334,15 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public List<String> getListeCodeBlocage(String cod_etu) {
 		if(StringUtils.hasText(cod_etu) ){
 			@SuppressWarnings("unchecked")
 			List<String> lblo = (List<String>)entityManagerApogee.createNativeQuery("select COD_BLO "+
-					 "from IND_SANCTIONNE_BLO "+
+					"from IND_SANCTIONNE_BLO "+
 					"where COD_ETU="+cod_etu+ " "+
-					 "and DAT_DEB_BLO < SYSDATE and (DAT_FIN_BLO is null or DAT_FIN_BLO > SYSDATE)").getResultList();
+					"and DAT_DEB_BLO < SYSDATE and (DAT_FIN_BLO is null or DAT_FIN_BLO > SYSDATE)").getResultList();
 			return lblo;
 		}
 		return null;
@@ -368,6 +368,16 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" where t.cod_rvn=rn.cod_rvn and rn.cod_sig=s.cod_sig "+
 				"and t.cod_rvn="+cod_rvn ).getSingleResult();
 		return codSig;
+	}
+
+	@Override
+	public String getTemoinEditionCarte(String cod_ind, String cod_anu) {
+		@SuppressWarnings("unchecked")
+		String etaEdtCrt = (String)entityManagerApogee.createNativeQuery("select iaa.eta_edt_crt "+
+				" from apogee.ins_adm_anu iaa"+
+				" where iaa.cod_anu="+cod_anu+
+				" and iaa.cod_ind="+cod_ind ).getSingleResult();
+		return etaEdtCrt;
 	}
 
 
