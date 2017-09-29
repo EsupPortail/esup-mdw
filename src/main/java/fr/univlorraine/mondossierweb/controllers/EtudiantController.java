@@ -1206,7 +1206,7 @@ public class EtudiantController {
 			if (reedto != null && reedto.length > 0) {
 				//On parcourt les ELP:
 				for (int i = 0; i < reedto.length; i++ ) {
-					
+
 					ElementPedagogique elp = new ElementPedagogique();
 					elp.setCode(reedto[i].getElp().getCodElp());
 					elp.setLevel(reedto[i].getRngElp());
@@ -1214,7 +1214,7 @@ public class EtudiantController {
 					elp.setLibelle(reedto[i].getElp().getLibElp());
 					elp.setAnnee("");
 					elp.setEpreuve(false);
-					
+
 					elp.setNote1("");
 					elp.setBareme1(0);
 					elp.setRes1("");
@@ -1226,13 +1226,13 @@ public class EtudiantController {
 					elp.setTemSemestre("N");
 					elp.setTemSemestre(reedto[i].getElp().getNatureElp().getTemSemestre());
 					elp.setEtatDelib("");
-					
+
 					//vrai si l'ELP est il dans un etat de delib qui nous convient en session1:
 					boolean elpEtatDelibS1OK=false;
 
 					//vrai si l'ELP est il dans un etat de delib qui nous convient en session2:
 					boolean elpEtatDelibS2OK=false;
-					
+
 					if(!sourceExtractionApogee || elpAvecResultats(reedto[i])){
 
 						if (reedto[i].getElp().getNatureElp().getCodNel().equals("FICM")) {
@@ -2149,8 +2149,12 @@ public class EtudiantController {
 		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
-		//interdit l'edition de certificat si l'inscription n'est pas payée
+		//interdit l'edition de quittance si l'inscription n'est pas payée
 		if(!ins.isEstEnRegle()){
+			return false;
+		}
+		//interdit l'edition de quittance si l'inscription est annulée
+		if(ins.getEtatIae()!=null && ins.getEtatIae().equals(Utils.ETAT_IAE_ANNULEE)){
 			return false;
 		}
 

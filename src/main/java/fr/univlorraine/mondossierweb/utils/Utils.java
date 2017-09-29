@@ -102,6 +102,8 @@ public class Utils {
 	
 	public static final String ETAT_IAE_EN_COURS ="E";
 	
+	public static final String ETAT_IAE_ANNULEE ="A";
+	
 	public static final String TEMOIN_EDITION_CARTE_EDITEE = "E";
 
 	public static final String LIBELLE_WS_INSCRIPTION_PAYEE ="Paiement effectué";
