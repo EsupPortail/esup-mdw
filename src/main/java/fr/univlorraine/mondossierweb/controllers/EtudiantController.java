@@ -1252,7 +1252,7 @@ public class EtudiantController {
 									elp.setEtatDelib(relpdto[j].getEtatDelib().getCodEtaAvc());
 
 								//on affiche pas les résultats d'admissibilité
-								if(relpdto[j].getNatureResultat()==null || relpdto[j].getNatureResultat().getCodAdm()== null || !relpdto[j].getNatureResultat().getCodAdm().equals("0")){
+								if(configController.isAffResAdmissibilite() || relpdto[j].getNatureResultat()==null || relpdto[j].getNatureResultat().getCodAdm()== null || !relpdto[j].getNatureResultat().getCodAdm().equals("0")){
 									//29/01/10
 									//On récupère les notes si l'ELP est dans un état de delibération compris dans la liste des témoins paramétrés.
 									if(relpdto[j].getEtatDelib()==null ||  temoinEtatDelib.contains(relpdto[j].getEtatDelib().getCodEtaAvc())){
