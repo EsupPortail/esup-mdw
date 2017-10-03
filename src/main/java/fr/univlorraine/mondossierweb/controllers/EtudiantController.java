@@ -977,8 +977,6 @@ public class EtudiantController {
 									//on est en Admissibilité à l'étape.Pas en admission.
 									//on le note pour que ce soit plus clair pour l'étudiant
 									r.setNote(res.getNatureResultat().getLibAdm());
-
-
 								}
 
 								//recuperation de la mention
