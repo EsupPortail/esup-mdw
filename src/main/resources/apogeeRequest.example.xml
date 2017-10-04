@@ -155,10 +155,13 @@ AND nrg.cod_nrg = drt.cod_nrg
 GROUP BY nrg.lic_nrg </entry>
 
 <entry key="dateCotisation">SELECT TO_CHAR(sqr.dat_sqr,'DD/MM/YYYY') 
-FROM situation_quittance_rmb sqr, centre_gestion cge 
+FROM situation_quittance_rmb sqr
 WHERE sqr.cod_anu = '#COD_ANU#' AND sqr.cod_ind = #COD_IND#
-AND sqr.cod_typ_sqr = 'Q' AND sqr.eta_qut = 'V' AND cge.cod_cge = sqr.cod_cge 
-AND sqr.num_occ_sqr = 1 </entry>
+AND sqr.cod_typ_sqr = 'Q' AND sqr.eta_qut = 'V'
+AND sqr.num_occ_sqr = (SELECT MAX(sqr2.num_occ_sqr)
+FROM situation_quittance_rmb sqr2
+WHERE sqr2.cod_anu = '#COD_ANU#' AND sqr2.cod_ind = #COD_IND#
+AND sqr2.cod_typ_sqr = 'Q' AND sqr2.eta_qut = 'V') </entry>
 
 <entry key="mutuelle">SELECT decode(mut.lib_nom_mut,NULL,'* * * * * * * *',drt.lic_drt) 
 FROM ins_adm_anu iaa, mutuelle mut, droit drt 

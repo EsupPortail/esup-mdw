@@ -219,10 +219,12 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 
 		}else{
 			requeteSQL="SELECT TO_CHAR(sqr.dat_sqr,'DD/MM/YYYY') "+
-					"FROM situation_quittance_rmb sqr, centre_gestion cge "+
+					"FROM situation_quittance_rmb sqr "+
 					"WHERE sqr.cod_anu = '"+codAnu+"' AND sqr.cod_ind ="+codInd+" "+
-					"AND sqr.cod_typ_sqr = 'Q' AND sqr.eta_qut = 'V' AND cge.cod_cge = sqr.cod_cge "+
-					"AND sqr.num_occ_sqr = 1 ";
+					"AND sqr.cod_typ_sqr = 'Q' AND sqr.eta_qut = 'V' "+
+					"AND sqr.num_occ_qut = (select MAX(sqr2.num_occ_qut) FROM situation_quittance_rmb sqr2 "+
+					"WHERE sqr2.cod_anu = '"+codAnu+"' AND sqr2.cod_ind ="+codInd+" "+
+					"AND sqr2.cod_typ_sqr = 'Q' AND sqr2.eta_qut = 'V') ";
 		}
 
 		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
