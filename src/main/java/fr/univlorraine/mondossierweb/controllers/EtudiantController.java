@@ -149,6 +149,9 @@ public class EtudiantController {
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
 
+	@Resource
+	private transient SsoController ssoController;
+
 	/*@Resource
 	private SessionController sessionController;*/
 
@@ -592,8 +595,6 @@ public class EtudiantController {
 			}
 
 
-
-
 			GenericUI.getCurrent().getEtudiant().setLibEtablissement(multipleApogeeService.getLibEtablissementDef());
 
 			//cursus au sein de l'université:
@@ -695,6 +696,22 @@ public class EtudiantController {
 			}
 
 			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(true);
+
+			//Tentative de récupération des informations relatives à l'affiliation à la sécurité sociale
+			try{
+				GenericUI.getCurrent().getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
+			} catch(Exception e){
+				LOG.info("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+			}
+
+			//Tentative de récupération des informations relatives à la quittance des droits payés
+			try{
+				GenericUI.getCurrent().getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
+			} catch(Exception e){
+				LOG.info("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+			}
+
+
 		} catch (WebBaseException ex) {
 			//Si on est dans un cas d'erreur non expliqué
 			if (ex.getNature().equals("remoteerror")){
@@ -2114,6 +2131,10 @@ public class EtudiantController {
 		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
+		//si l'IAE n'est pas en règle
+		if (!ins.isEstEnRegle()) {
+			return false;
+		}
 		//si l'IAE n'est pas à l'état 'E'
 		if (!ins.isEstEnCours()) {
 			return false;
@@ -2122,11 +2143,8 @@ public class EtudiantController {
 		if(!etu.isAffilieSso()){
 			return false;
 		}
-		//Si on n'arrive pas à récupérer le centre payeur
-		try{
-			ssoApogeeService.getCentrePayeur(codAnuIns, etu.getCod_ind(), etu.isAffilieSso());
-		}catch (Exception e){
-			LOG.debug("Non récupération du centre payeur pour "+etu.getCod_etu()+" => "+e.getCause());
+		//interdit l'édition si on n'a pas réussi à récupérer les informations
+		if(!etu.isRecuperationInfosAffiliationSsoOk()){
 			return false;
 		}
 
@@ -2151,8 +2169,12 @@ public class EtudiantController {
 		if(!ins.isEstEnRegle()){
 			return false;
 		}
-		//interdit l'edition de quittance si l'inscription est annulée
-		if(ins.getEtatIae()!=null && ins.getEtatIae().equals(Utils.ETAT_IAE_ANNULEE)){
+		//interdit l'edition de quittance si l'inscription n'est pas "en cours"
+		if(!ins.isEstEnCours()){
+			return false;
+		}
+		//interdit l'édition si on n'a pas réussi à récupérer les informations
+		if(!etu.isRecuperationInfosQuittanceOk()){
 			return false;
 		}
 

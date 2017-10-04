@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 
@@ -202,7 +204,14 @@ public class Etudiant {
 	 * les données de quittance des droits universitaires payés
 	 */
 	private QuittanceDroitsUniversitaires quittance_sso;
-	
+	/**
+	 * Vrai si on a réussi à récupérer les informations sur l'affiliation à la sso.
+	 */
+	private boolean recuperationInfosAffiliationSsoOk;
+	/**
+	 * Vrai si on a réussi à récupérer les informations sur la quittance des droits payés.
+	 */
+	private boolean recuperationInfosQuittanceOk;
 
 	
 	

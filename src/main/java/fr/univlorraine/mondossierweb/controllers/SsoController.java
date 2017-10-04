@@ -52,11 +52,13 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.AffiliationSSO;
 import fr.univlorraine.mondossierweb.beans.DroitUniversitaire;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
+import fr.univlorraine.mondossierweb.beans.LibCmpEtape;
 import fr.univlorraine.mondossierweb.beans.QuittanceDroitsUniversitaires;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
@@ -104,13 +106,12 @@ public class SsoController {
 	/**
 	 * va chercher et renseigne les informations concernant l'affilication à la sécu
 	 */
-	public void recupererInfoQuittance(Etudiant e,Inscription ins){
+	public boolean recupererInfoQuittance(String codAnu,Etudiant e){
 		LOG.debug("-recupererQuittance pour codetu "+e.getCod_etu());
-		String codAnuIns=ins.getCod_anu().substring(0, 4);
 		QuittanceDroitsUniversitaires q = new QuittanceDroitsUniversitaires();
 		q.initValues();
 		// Récupérer les quittances
-		List<Map<String,String>> r = ssoApogeeService.getQuittances(codAnuIns, e.getCod_ind());
+		List<Map<String,String>> r = ssoApogeeService.getQuittances(codAnu, e.getCod_ind());
 		if(r!=null && r.size()>0){
 			LOG.debug("nb quittances : "+r.size());
 			if(r.get(0)!=null ){
@@ -126,7 +127,7 @@ public class SsoController {
 					q.setDat_quittance1(m1.get("DATSQR"));
 				}
 
-				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnuIns,e.getCod_ind(), m1.get("NUMOCCSQR"));
+				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnu,e.getCod_ind(), m1.get("NUMOCCSQR"));
 				if(mdps!=null && mdps.size()>0 && StringUtils.hasText(mdps.get(0))){
 					q.setLic_mdp1_quittance1(mdps.get(0));
 					if(mdps.size()>1 && StringUtils.hasText(mdps.get(1))){
@@ -147,7 +148,7 @@ public class SsoController {
 				if(m2.get("DATSQR")!=null){
 					q.setDat_quittance2(m2.get("DATSQR"));
 				}
-				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnuIns,e.getCod_ind(), m2.get("NUMOCCSQR"));
+				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnu,e.getCod_ind(), m2.get("NUMOCCSQR"));
 				if(mdps!=null && mdps.size()>0 && StringUtils.hasText(mdps.get(0))){
 					q.setLic_mdp1_quittance2(mdps.get(0));
 					if(mdps.size()>1 && StringUtils.hasText(mdps.get(1))){
@@ -159,37 +160,39 @@ public class SsoController {
 
 		q.setPmt_3x(false);
 		// récupérer info sur le paiement (3X, dates et montants)
-		if(ssoApogeeService.isPaiement3X(codAnuIns,e.getCod_ind())){
+		if(ssoApogeeService.isPaiement3X(codAnu,e.getCod_ind())){
 			q.setPmt_3x(true);
 			// récupérer info sur le paiement (3X, dates et montants)
-			String d1 = ssoApogeeService.getDate1erPaiement(codAnuIns,e.getCod_ind());
-			String d2 = ssoApogeeService.getDate2emPaiement(codAnuIns,e.getCod_ind());
-			String d3 = ssoApogeeService.getDate3emPaiement(codAnuIns,e.getCod_ind());
+			String d1 = ssoApogeeService.getDate1erPaiement(codAnu,e.getCod_ind());
+			String d2 = ssoApogeeService.getDate2emPaiement(codAnu,e.getCod_ind());
+			String d3 = ssoApogeeService.getDate3emPaiement(codAnu,e.getCod_ind());
 			if(StringUtils.hasText(d1)){
 				q.setDat_pmt1(d1);
 				// récupérer info sur le montant
-				q.setMnt_pmt1(ssoApogeeService.getMontant1erPaiement(codAnuIns,e.getCod_ind()));
+				q.setMnt_pmt1(ssoApogeeService.getMontant1erPaiement(codAnu,e.getCod_ind()));
 			}
 			if(StringUtils.hasText(d2)){
 				q.setDat_pmt2(d2);
 				// récupérer info sur le montant
-				q.setMnt_pmt2(ssoApogeeService.getMontant2emPaiement(codAnuIns,e.getCod_ind()));
+				q.setMnt_pmt2(ssoApogeeService.getMontant2emPaiement(codAnu,e.getCod_ind()));
 			}
 			if(StringUtils.hasText(d3)){
 				q.setDat_pmt3(d3);
 				// récupérer info sur le montant
-				q.setMnt_pmt3(ssoApogeeService.getMontant3emPaiement(codAnuIns,e.getCod_ind()));
+				q.setMnt_pmt3(ssoApogeeService.getMontant3emPaiement(codAnu,e.getCod_ind()));
 			}
 
 		}
 
 		// récupérer montant total des droits payés
-		q.setMnt_total(ssoApogeeService.getMontantTotalPaye(codAnuIns,e.getCod_ind()));
+		q.setMnt_total(ssoApogeeService.getMontantTotalPaye(codAnu,e.getCod_ind()));
 		// récupérer le détail des droits payés
-		List<Map<String,String>> ldp = ssoApogeeService.getMontantsPayes(codAnuIns,e.getCod_ind());
+		List<Map<String,String>> ldp = ssoApogeeService.getMontantsPayes(codAnu,e.getCod_ind());
 		q.setList_droits_payes(convertResultToListDroitUniversitaire(ldp));
 
 		e.setQuittance_sso(q);
+		
+		return true;
 	}
 
 	private List<DroitUniversitaire> convertResultToListDroitUniversitaire(List<Map<String, String>> ldp) {
@@ -209,40 +212,44 @@ public class SsoController {
 	/**
 	 * va chercher et renseigne les informations concernant l'affilication à la sécu
 	 */
-	public void recupererInfoAffiliationSso(Etudiant e,Inscription ins){
+	public boolean recupererInfoAffiliationSso(String codAnu,Etudiant e){
 		LOG.debug("-recupererInfoAffiliationSso pour codetu "+e.getCod_etu());
-		String codAnuIns=ins.getCod_anu().substring(0, 4);
+		List<Inscription> lins = e.getLinsciae();
 		AffiliationSSO affiliation = new AffiliationSSO();
 		//Récupérer les informations nécessaires dans apogée
 		//boolean isAffilieSso = ssoApogeeService.isAffilieSso(codAnuIns, e.getCod_ind());
-		Map<String,String> r = ssoApogeeService.getCentrePayeur(codAnuIns, e.getCod_ind(), e.isAffilieSso());
+		Map<String,String> r = ssoApogeeService.getCentrePayeur(codAnu, e.getCod_ind(), e.isAffilieSso());
 		affiliation.setCentre_payeur(r.get("LIC_CTP"));
-		affiliation.setMutuelle(ssoApogeeService.getMutuelle(codAnuIns, e.getCod_ind()));
-		//récupérer le libellé court de la composante
-		affiliation.setCmp(inscriptionService.getLicCmpFromCodIndIAE(codAnuIns, e.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet()));
-		// récupérer le libellé court de l'étape
-		affiliation.setEtape(multipleApogeeService.getLibelleCourtEtape(ins.getCod_etp()));
+		affiliation.setMutuelle(ssoApogeeService.getMutuelle(codAnu, e.getCod_ind()));
+
+		for(Inscription ins : lins){
+			// test si ins année en cours autorisées 
+			if(ins.isEstEnRegle() && ins.isEstEnCours() && ins.getCod_anu().substring(0, 4).equals(codAnu)){
+				//récupérer le libellé court de la composante
+				String cmp = inscriptionService.getLicCmpFromCodIndIAE(codAnu, e.getCod_ind(), ins.getCod_etp(), ins.getCod_vrs_vet());
+				// récupérer le libellé court de l'étape
+				String etape = multipleApogeeService.getLibelleCourtEtape(ins.getCod_etp());
+				if(affiliation.getList_lib_cmp_etape()==null){
+					affiliation.setList_lib_cmp_etape(new LinkedList<LibCmpEtape>());
+				}
+				affiliation.getList_lib_cmp_etape().add(new LibCmpEtape(cmp,etape));
+			}
+		}
+
 		// Récupérer la date de cotisation
-		affiliation.setDat_cotisation(ssoApogeeService.getDateCotisation(codAnuIns, e.getCod_ind()));
+		affiliation.setDat_cotisation(ssoApogeeService.getDateCotisation(codAnu, e.getCod_ind()));
 		// date d'effet
 		affiliation.setDat_effet(r.get("DAT_AFL_SSO"));
 
 		e.setAffilition_sso(affiliation);
+		
+		return true;
 
 	}
 
-	/**
-	 * va chercher et renseigne les informations concernant les droits payés par l'étudiant
-	 */
-	public void recupererInfoQuittanceDroitsPayes(Etudiant e){
-		LOG.debug("-recupererInfoQuittanceDroitsPayes pour codetu "+e.getCod_etu());
-
-	}
 
 	public com.vaadin.server.Resource exportQuittancePdf(Etudiant e, Inscription inscription) {
 		LOG.debug("-generation pdf Quittance pour "+e.getCod_etu());
-
-		recupererInfoQuittance(e, inscription);
 
 		// verifie les autorisations
 		if(!etudiantController.proposerQuittanceDroitsPayes(inscription, MainUI.getCurrent().getEtudiant())){
@@ -294,7 +301,6 @@ public class SsoController {
 	public com.vaadin.server.Resource exportAffiliationSsoPdf(Etudiant e, Inscription inscription) {
 		LOG.debug("-generation pdf AffiliationSso pour "+e.getCod_etu());
 
-		recupererInfoAffiliationSso(e, inscription);
 
 		// verifie les autorisations
 		if(!etudiantController.proposerAttestationAffiliationSSO(inscription, MainUI.getCurrent().getEtudiant())){
@@ -420,7 +426,7 @@ public class SsoController {
 				pNNE.add(codetuVal);
 				document.add(pNNE);
 			}
-			
+
 			Paragraph pBlank = new Paragraph(" ", normal);
 			document.add(pBlank);
 
@@ -605,7 +611,7 @@ public class SsoController {
 					PdfPCell celltt = new PdfPCell(pmnttotal);
 					celltt.setBorder(Rectangle.NO_BORDER);
 					table2.addCell(celltt);
-					
+
 					Paragraph pmnttotal2 = new Paragraph(etudiant.getQuittance_sso().getMnt_total(), normalBig);
 					pmnttotal2.setAlignment(Element.ALIGN_RIGHT);
 					PdfPCell celltt2 = new PdfPCell(pmnttotal2);
@@ -729,11 +735,13 @@ public class SsoController {
 				document.add(pCotisation);
 			}
 
-			// CMP + lib etape
-			if (etudiant.getAffilition_sso()!=null  && etudiant.getAffilition_sso().getCmp() != null) {
-				Paragraph pcge = new Paragraph(etudiant.getAffilition_sso().getCmp()+ "\t\t"+etudiant.getAffilition_sso().getEtape(), normalBig);
-				pcge.setAlignment(Element.ALIGN_LEFT);
-				document.add(pcge);
+			if(etudiant.getAffilition_sso()!=null && !etudiant.getAffilition_sso().getList_lib_cmp_etape().isEmpty()){
+				for(LibCmpEtape lce : etudiant.getAffilition_sso().getList_lib_cmp_etape()){
+					// CMP + lib etape
+					Paragraph pcge = new Paragraph(lce.getLib_cmp()+ "\t\t"+lce.getLib_etape(), normalBig);
+					pcge.setAlignment(Element.ALIGN_LEFT);
+					document.add(pcge);
+				}
 			}
 
 			// Centre payeur

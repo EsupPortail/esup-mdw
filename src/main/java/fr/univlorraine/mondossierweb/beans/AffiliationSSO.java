@@ -19,6 +19,8 @@
 package fr.univlorraine.mondossierweb.beans;
 
 
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -30,8 +32,7 @@ public class AffiliationSSO {
 	
 	private String dat_cotisation;
 	private String dat_effet;
-	private String cmp;
-	private String etape;
+	private List<LibCmpEtape> list_lib_cmp_etape;
 	private String centre_payeur;
 	private String mutuelle;
 

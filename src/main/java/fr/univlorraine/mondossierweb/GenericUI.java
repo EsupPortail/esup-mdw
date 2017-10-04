@@ -150,11 +150,11 @@ public class GenericUI  extends UI {
 	@Setter
 	//protected IAnalyticsTracker analyticsTracker = new GoogleAnalyticsTracker(this);
 	protected IAnalyticsTracker analyticsTracker;
-	
+
 	/*@Getter
 	@Setter
 	protected GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
-	
+
 	@Getter
 	@Setter
 	protected PiwikAnalyticsTracker piwikAnalyticsTracker = new PiwikAnalyticsTracker(this);*/
@@ -169,7 +169,7 @@ public class GenericUI  extends UI {
 	@Getter
 	@Resource(name="${serveurphoto.implementation}")
 	private IPhoto photoProvider;
-	
+
 	@Setter
 	@Getter
 	@Resource(name="${codetuFromLogin.implementation}")
@@ -188,7 +188,7 @@ public class GenericUI  extends UI {
 		return (GenericUI) UI.getCurrent();
 	}
 
-	
+
 	public String getIpClient() {     
 
 		if(!StringUtils.hasText(ipClient)){
@@ -222,9 +222,9 @@ public class GenericUI  extends UI {
 			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 				ip = hsRequest.getRemoteAddr();     
 			} 
-			
+
 			ipClient = ip;
-			
+
 		}
 
 		return ipClient;
