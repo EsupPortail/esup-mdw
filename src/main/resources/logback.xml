@@ -126,7 +126,11 @@
 		<appender-ref ref="fileAppender" />
 	</logger>
 
-	<logger name="org.atmosphere" level="error" />
+	<!-- Ne mail pas les erreurs atmosphere -->
+	<logger name="org.atmosphere" level="error" >
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+	</logger>
 	
 	
 
