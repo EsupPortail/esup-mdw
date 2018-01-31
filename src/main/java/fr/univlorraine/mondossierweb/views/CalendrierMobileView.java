@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -167,16 +168,22 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					detailLayout.addComponent(heureLabel);
 					heureLabel.setStyleName("v-label-align-right");
 
-					//ajout de la salle
-					Label salleLabel = new Label(exam.getLibsalle());
-					detailLayout.addComponent(salleLabel);
-					salleLabel.setStyleName("v-label-align-right");
-
 					//ajout du batiment
 					Label batimentLabel = new Label(exam.getBatiment());
 					detailLayout.addComponent(batimentLabel);
 					batimentLabel.setStyleName("v-label-align-right");
-
+					
+					//ajout de la salle
+					Label salleLabel = new Label(exam.getLibsalle());
+					detailLayout.addComponent(salleLabel);
+					salleLabel.setStyleName("v-label-align-right");
+					
+					//ajout de la place
+					if(configController.isAffNumPlaceExamen() && StringUtils.hasText(exam.getPlace())){
+						Label placeLabel = new Label(applicationContext.getMessage(NAME+".place", null, getLocale())+ " " +exam.getPlace());
+						detailLayout.addComponent(placeLabel);
+						placeLabel.setStyleName("v-label-align-right");
+					}
 
 					//Libelle de l'épreuve
 					VerticalLayout libelleLayout = new VerticalLayout();
