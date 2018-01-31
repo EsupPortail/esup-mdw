@@ -216,6 +216,13 @@ public class MdwTouchkitUI extends GenericUI{
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
+				
+				/* Gérer les erreurs quand l'application est en maintenance */
+				if(!applicationActive()){
+					afficherMessageMaintenance();
+					return;
+				}
+				
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {

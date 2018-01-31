@@ -253,8 +253,16 @@ public class MainUI extends GenericUI {
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
+				
+				/* Gérer les erreurs quand l'application est en maintenance */
+				if(!applicationActive()){
+					displayViewFullScreen(AccesBloqueView.NAME);
+					return;
+				}
+				
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
+					/* Gérer les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
 						displayViewFullScreen(ErreurView.NAME);
