@@ -312,12 +312,13 @@
         		</properties>
         		<includes>
         		<include>**/*.java</include>
-        		<include>**/*.properties</include>
+        		<!-- <include>**/*.properties</include> -->
         		<include>**/*.xml</include>
         		</includes>
         		 <excludes>
             		<exclude>src/main/java/com/vaadin/ui/ConnectorTracker.java</exclude>
             		<exclude>**/*.gwt.xml</exclude>
+            		<exclude>**/*.properties</exclude>
         		</excludes>
     			</configuration>
     			<executions>
