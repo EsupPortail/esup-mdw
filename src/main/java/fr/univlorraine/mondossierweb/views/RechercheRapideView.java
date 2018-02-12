@@ -234,7 +234,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			champRechercheLayout.setComponentAlignment(search1, Alignment.MIDDLE_LEFT);*/
 
 				champRechercheLayout.addComponent(champRecherche);
-				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
+				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.TOP_LEFT);
 
 				//BOUTON RESET
 				champRecherche.addStyleName("textfield-resetable");
