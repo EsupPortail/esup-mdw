@@ -260,7 +260,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 				bDetailInscription.setIcon(FontAwesome.SEARCH);
 				bDetailInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				bDetailInscription.setDescription(applicationContext.getMessage(NAME + ".inscriptionPedagogique.link", null, getLocale()));
-				//Appel de la window contenant le détail des notes
+				//Appel de la window contenant le détail de l'inscription
 				Etape etape = new Etape();
 				etape.setAnnee(inscription.getCod_anu());
 				etape.setCode(inscription.getCod_etp());

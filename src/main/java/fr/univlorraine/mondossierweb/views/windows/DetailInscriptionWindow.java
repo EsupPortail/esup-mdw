@@ -98,13 +98,13 @@ public class DetailInscriptionWindow extends Window {
 			setResizable(false);
 
 
-			//Test si user enseignant et en vue Enseignant
-			if(userController.isEnseignant() && MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
-				//On recupere les notes pour un enseignant
-				etudiantController.renseigneDetailNotesEtResultatsEnseignant(etape);
+			//Test si user enseignant
+			if(userController.isEnseignant()){
+				//On recupere le détail de l'IP pour un enseignant
+				etudiantController.renseigneDetailInscriptionEnseignant(etape);
 			}else{
-				//On récupère les notes pour un étudiant
-				etudiantController.renseigneDetailNotesEtResultats(etape);
+				//On récupère le détail de l'IP pour un étudiant
+				etudiantController.renseigneDetailInscription(etape);
 			}
 
 			/* Layout */

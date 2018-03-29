@@ -39,10 +39,16 @@ public class CacheResultats {
 	 */
 	private List<CacheResultatsElpEpr> ResultElpEpr;
 	
+	/**
+	 * liste des détails des IP pour la page 'Inscriptions' déjà récupérés.Fonction de l'étape observée.
+	 */
+	private List<CacheIP> Ip;
+	
 	public CacheResultats(){
 		super();
 		ResultVdiVet = new LinkedList<CacheResultatsVdiVet>();
 		ResultElpEpr = new LinkedList<CacheResultatsElpEpr>();
+		Ip = new LinkedList<CacheIP>();
 	}
 	
 	

@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.beans.CacheIP;
 import fr.univlorraine.mondossierweb.beans.CacheResultatsElpEpr;
 import fr.univlorraine.mondossierweb.beans.CacheResultatsVdiVet;
 import fr.univlorraine.mondossierweb.beans.Diplome;
@@ -1760,7 +1761,7 @@ public class EtudiantController {
 	 * et résultats des éléments de l'etape choisie
 	 * de l'étudiant placé en paramètre via le WS de l'Amue.
 	 */
-	public void recupererDetailNotesEtResultats(Etudiant e,Etape et){
+	public void recupererDetailNotesEtResultats(Etudiant e,Etape et, boolean forceSourceApogee){
 		try {
 
 			if(monProxyPedagogique==null)
@@ -1779,7 +1780,7 @@ public class EtudiantController {
 			}
 
 			String sourceResultat = PropertyUtils.getSourceResultats();
-			if(sourceResultat == null || sourceResultat.equals("")){
+			if(forceSourceApogee || sourceResultat == null || sourceResultat.equals("")){
 				sourceResultat="Apogee";
 			}
 
@@ -1832,7 +1833,7 @@ public class EtudiantController {
 	 * va chercher et renseigne les notes de
 	 * l'étudiant via le WS de l'Amue.
 	 */
-	public void recupererDetailNotesEtResultatsEnseignant(Etudiant e,Etape et){
+	public void recupererDetailNotesEtResultatsEnseignant(Etudiant e,Etape et, boolean forceSourceApogee){
 		try {
 
 			if(monProxyPedagogique==null){
@@ -1850,8 +1851,9 @@ public class EtudiantController {
 				temoinEtatIae="E";
 			}
 
+			
 			String sourceResultat = PropertyUtils.getSourceResultats();
-			if(sourceResultat == null || sourceResultat.equals("")){
+			if(forceSourceApogee || sourceResultat == null || sourceResultat.equals("")){
 				sourceResultat="Apogee";
 			}
 
@@ -1945,13 +1947,70 @@ public class EtudiantController {
 			recupererCacheResultatVdiVet(new Integer(rang),e);
 		}
 	}
+	public void renseigneDetailInscription(Etape etape) {
+		//Récupération de la source des résultats
+		String sourceResultat = PropertyUtils.getSourceResultats();
+		if(sourceResultat == null || sourceResultat.equals("")){
+			sourceResultat="Apogee";
+		}
+
+		//Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
+		if(utilisationExtractionApogee(etape.getAnnee().substring(0, 4),sourceResultat)){
+			LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
+			//On regarde si on a pas déjà les infos dans le cache:
+			String rang = getRangDetailInscriptionEnCache(etape,GenericUI.getCurrent().getEtudiant());
+			
+			if(rang == null){
+				recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,true);
+				//AJOUT DES INFOS recupérées dans le cache.
+				ajouterCacheDetailInscription(etape,GenericUI.getCurrent().getEtudiant());
+			}else{
+				//on récupére les infos du cache grace au rang :
+				recupererCacheDetailInscription(new Integer(rang),GenericUI.getCurrent().getEtudiant());
+			}
+
+		}else{
+			LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
+			//Méthode de récupération de l'IP commune aux notes
+			renseigneDetailNotesEtResultats(etape);
+		}
+	}
+
+	public void renseigneDetailInscriptionEnseignant(Etape etape) {
+		//Récupération de la source des résultats
+		String sourceResultat = PropertyUtils.getSourceResultats();
+		if(sourceResultat == null || sourceResultat.equals("")){
+			sourceResultat="Apogee";
+		}
+
+		//Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
+		if(utilisationExtractionApogee(etape.getAnnee().substring(0, 4),sourceResultat)){
+			LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
+			//On regarde si on a pas déjà les infos dans le cache:
+			String rang = getRangDetailInscriptionEnCache(etape,GenericUI.getCurrent().getEtudiant());
+			
+			if(rang == null){
+				recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape,true);
+				//AJOUT DES INFOS recupérées dans le cache.
+				ajouterCacheDetailInscription(etape,GenericUI.getCurrent().getEtudiant());
+			}else{
+				//on récupére les infos du cache grace au rang :
+				recupererCacheDetailInscription(new Integer(rang),GenericUI.getCurrent().getEtudiant());
+			}
+		}else{
+			LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
+			//Méthode de récupération de l'IP commune aux notes
+			renseigneDetailNotesEtResultatsEnseignant(etape);
+		}
+
+	}
 
 	public void renseigneDetailNotesEtResultats(Etape etape) {
 		//On regarde si on a pas déjà les infos dans le cache:
 		String rang = getRangDetailNotesEtResultatsEnCache(etape,true,GenericUI.getCurrent().getEtudiant());
 
 		if(rang == null){
-			recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape);
+			recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,false);
 			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
 			ajouterCacheDetailNotesEtResultats(etape,true,GenericUI.getCurrent().getEtudiant());
 		}else{
@@ -1964,7 +2023,7 @@ public class EtudiantController {
 		//On regarde si on a pas déjà les infos dans le cache:
 		String rang = getRangDetailNotesEtResultatsEnCache(etape,false,GenericUI.getCurrent().getEtudiant());
 		if(rang == null){
-			recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape);
+			recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape,false);
 			//AJOUT DES INFOS recupérées dans le cache. false car on est en vue Enseignant
 			ajouterCacheDetailNotesEtResultats(etape,false,GenericUI.getCurrent().getEtudiant());
 		}else{
@@ -1974,6 +2033,39 @@ public class EtudiantController {
 	}
 
 
+	/* 
+	 * @param etape
+	 * @param vueEtudiant
+	 * @return  le rang dans la liste des IP en cache pour la vueEtudiant
+	 */
+	private String getRangDetailInscriptionEnCache(Etape etape, Etudiant e){
+		int rang=0;
+		boolean enCache=false;
+
+		//on parcourt les IP pour voir si on a ce qu'on cherche:
+		for(CacheIP cip : e.getCacheResultats().getIp()){
+			//Si on n'a pas déjà trouvé les infos dans le cache
+			if(!enCache){
+				//test si on a les infos:
+				if(cip.getEtape().getAnnee().equals(etape.getAnnee())
+						&& cip.getEtape().getCode().equals(etape.getCode())
+						&& cip.getEtape().getVersion().equals(etape.getVersion())){
+					enCache=true;
+				}else{
+					//on a pas trouvé, on incrémente le rang pour se placer sur le rang suivant
+					rang++;
+				}
+			}
+		}
+
+		//si on a pas les infos en cache:
+		if(!enCache){
+			return null;
+		}
+
+		return ""+rang;
+
+	}
 
 	/* 
 	 * @param etape
@@ -2067,6 +2159,19 @@ public class EtudiantController {
 		}
 		e.getCacheResultats().getResultElpEpr().add(cree);
 	}
+	
+	
+	/**
+	 * On complète les infos du cache pour l'IP.
+	 */
+	public void ajouterCacheDetailInscription(Etape etape,Etudiant e){
+		CacheIP cip = new CacheIP();
+		cip.setEtape(etape);
+		if(e.getElementsPedagogiques()!=null && e.getElementsPedagogiques().size()>0){
+			cip.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getElementsPedagogiques()));
+		}
+		e.getCacheResultats().getIp().add(cip);
+	}
 
 
 	/**
@@ -2104,6 +2209,23 @@ public class EtudiantController {
 		//2-on récupère les infos du cache.
 		if(e.getCacheResultats().getResultElpEpr().get(rang).getElementsPedagogiques()!=null){
 			e.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getCacheResultats().getResultElpEpr().get(rang).getElementsPedagogiques()));
+		}
+
+	}
+	
+	/**
+	 * récupère les infos sur l'IP dans le cache (en s'indexant sur le rang)
+	 * @param rang
+	 */
+	private void recupererCacheDetailInscription(int rang, Etudiant e){
+		//1-on vide la liste existante
+		if(e.getElementsPedagogiques()!=null){
+			e.getElementsPedagogiques().clear();
+		}
+
+		//2-on récupère les infos du cache.
+		if(e.getCacheResultats().getIp().get(rang).getElementsPedagogiques()!=null){
+			e.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getCacheResultats().getIp().get(rang).getElementsPedagogiques()));
 		}
 
 	}
