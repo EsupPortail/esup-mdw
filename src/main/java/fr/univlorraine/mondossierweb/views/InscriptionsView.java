@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.client.ui.layout.VLayoutSlot;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -245,13 +246,16 @@ public class InscriptionsView extends VerticalLayout implements View {
 			BeanItem<Inscription> bid = (BeanItem<Inscription>) item;
 			Inscription inscription = (Inscription) bid.getBean();
 			HorizontalLayout libelleLayout = new HorizontalLayout();
-
+			HorizontalLayout secondLineLayout = new HorizontalLayout();
+			boolean secondLineEmpty = true;
+			
 			//ajout du libellé de l'étape concernée par l'inscription
 			Label lib_label = new Label(inscription.getLib_etp());
 			libelleLayout.addComponent(lib_label);
 			libelleLayout.setComponentAlignment(lib_label, Alignment.MIDDLE_CENTER);
 
-			Layout layoutToAdd = libelleLayout;
+			VerticalLayout twoLinesLayout = new VerticalLayout();
+			twoLinesLayout.addComponent(libelleLayout);
 
 			//Si c'est une inscription sur l'année en cours
 			if(inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent()))){
@@ -270,6 +274,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 					DetailInscriptionWindow dnw = new DetailInscriptionWindow(etape); 
 					UI.getCurrent().addWindow(dnw);
 				});
+				//ajout du bouton au layout
 				libelleLayout.addComponent(bDetailInscription);
 			}
 
@@ -291,16 +296,18 @@ public class InscriptionsView extends VerticalLayout implements View {
 					fd.setOverrideContentType(false);
 					fd.extend(bCertificatInscription);
 				}
+				//Si on n'affiche pas le bouton sur une nouvelle ligne
 				if(!configController.isAffBtnCertifNouvelleLigne()){
+					//ajout du bouton au layout du libellé
 					libelleLayout.addComponent(bCertificatInscription);
 				}else{
+					//on adapte le style du bouton
 					bCertificatInscription.setStyleName(ValoTheme.BUTTON_TINY);
 					bCertificatInscription.addStyleName("red-button-icon");
 					bCertificatInscription.setCaption(applicationContext.getMessage(NAME + ".certificatScolarite.btn.link", null, getLocale()));
-					VerticalLayout vLayout = new VerticalLayout();
-					vLayout.addComponent(libelleLayout);
-					vLayout.addComponent(bCertificatInscription);
-					layoutToAdd=vLayout;
+					//ajout du bouton au layout secondLine
+					secondLineLayout.addComponent(bCertificatInscription);
+					secondLineEmpty=false;
 				}
 			}		
 			
@@ -321,16 +328,18 @@ public class InscriptionsView extends VerticalLayout implements View {
 					fd.setOverrideContentType(false);
 					fd.extend(bAttestationAffiliationSso);
 				}
+				//Si on n'affiche pas le bouton sur une nouvelle ligne
 				if(!configController.isAffBtnAttestSsoNouvelleLigne()){
+					//ajout du bouton au layout du libellé
 					libelleLayout.addComponent(bAttestationAffiliationSso);
 				}else{
+					//on adapte le style du bouton
 					bAttestationAffiliationSso.setStyleName(ValoTheme.BUTTON_TINY);
 					bAttestationAffiliationSso.addStyleName("blue-button-icon");
 					bAttestationAffiliationSso.setCaption(applicationContext.getMessage(NAME + ".affiliationSso.btn.link", null, getLocale()));
-					VerticalLayout vLayout = new VerticalLayout();
-					vLayout.addComponent(libelleLayout);
-					vLayout.addComponent(bAttestationAffiliationSso);
-					layoutToAdd=vLayout;
+					//ajout du bouton au layout secondLine
+					secondLineLayout.addComponent(bAttestationAffiliationSso);
+					secondLineEmpty=false;
 				}
 			}
 			
@@ -350,21 +359,28 @@ public class InscriptionsView extends VerticalLayout implements View {
 					fd.setOverrideContentType(false);
 					fd.extend(bQuittanceSso);
 				}
+				//Si on n'affiche pas le bouton sur une nouvelle ligne
 				if(!configController.isAffBtnQuittanceDroitsPayesNouvelleLigne()){
+					//ajout du bouton au layout du libellé
 					libelleLayout.addComponent(bQuittanceSso);
 				}else{
+					//on adapte le style du bouton
 					bQuittanceSso.setStyleName(ValoTheme.BUTTON_TINY);
 					bQuittanceSso.addStyleName("green-button-icon");
 					bQuittanceSso.setCaption(applicationContext.getMessage(NAME + ".quittance.btn.link", null, getLocale()));
-					VerticalLayout vLayout = new VerticalLayout();
-					vLayout.addComponent(libelleLayout);
-					vLayout.addComponent(bQuittanceSso);
-					layoutToAdd=vLayout;
+					//ajout du bouton au layout secondLine
+					secondLineLayout.addComponent(bQuittanceSso);
+					secondLineEmpty=false;
 				}
 			}
 
+			//Si le secondLineLayout contient des éléments
+			if(!secondLineEmpty){
+				//ajout du secondLineLayout au layout retourné
+				twoLinesLayout.addComponent(secondLineLayout);
+			}
 
-			return layoutToAdd;
+			return twoLinesLayout;
 		}
 	}
 
