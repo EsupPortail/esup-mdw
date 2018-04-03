@@ -119,16 +119,17 @@
 	<Parameter name="param.elasticsearch.port" value="9300" /> 
 	<Parameter name="param.elasticsearch.cluster" value="dev-1.3.4" />
 	<Parameter name="param.elasticsearch.index" value="apogee" />
-	<!-- ElasticSearch v1 conf -->
-	<Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
-	<Parameter name="param.elasticsearch.index.champcodeobjet" value="COD_OBJ" />
-	<Parameter name="param.elasticsearch.index.champversionobjet" value="COD_VRS_OBJ" />
-	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="LIB_OBJ" />
-	<!-- ElasticSearch v2 conf -->
-	<!--   	<Parameter name="param.elasticsearch.index.champrecherche" value="lib_desc_obj" />
+    <!-- ElasticSearch v2 conf -->
+	<Parameter name="param.elasticsearch.index.champrecherche" value="lib_desc_obj" />
 	<Parameter name="param.elasticsearch.index.champcodeobjet" value="cod_obj" />
 	<Parameter name="param.elasticsearch.index.champversionobjet" value="cod_vrs_obj" />
-	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="lib_obj" />   -->
+	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="lib_obj" />   
+	<!-- ElasticSearch v1 conf -->
+	<!-- <Parameter name="param.elasticsearch.index.champrecherche" value="LIB_DESC_OBJ" />
+	<Parameter name="param.elasticsearch.index.champcodeobjet" value="COD_OBJ" />
+	<Parameter name="param.elasticsearch.index.champversionobjet" value="COD_VRS_OBJ" />
+	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="LIB_OBJ" />  -->
+
 	
 	
 
