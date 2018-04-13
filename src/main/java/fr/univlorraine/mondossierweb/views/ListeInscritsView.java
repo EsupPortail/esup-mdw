@@ -343,11 +343,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 								MainUI.getCurrent().setEtapeInscrits(vetSelectionnee);
 
 								//faire le changement
-								String groupeSelectionne = ((listeGroupes!=null && listeGroupes.getValue()!=null)?(String)listeGroupes.getValue():null);
-								if(groupeSelectionne!=null && groupeSelectionne.equals(TOUS_LES_GROUPES_LABEL)){
-									groupeSelectionne=null;
-								}
-								filtrerInscrits(vetSelectionnee, groupeSelectionne);
+								filtrerInscrits(vetSelectionnee, getGroupeSelectionne());
 
 							}
 						});
@@ -393,11 +389,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 								MainUI.getCurrent().setGroupeInscrits(grpSelectionnee);
 
 								//faire le changement
-								String etapeSelectionnee = ((listeEtapes!=null && listeEtapes.getValue()!=null)?(String)listeEtapes.getValue():null);
-								if(etapeSelectionnee!=null && etapeSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
-									etapeSelectionnee=null;
-								}
-								filtrerInscrits(etapeSelectionnee,grpSelectionnee);
+								filtrerInscrits(getEtapeSelectionnee(),grpSelectionnee);
 
 							}
 						});
@@ -825,6 +817,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
 					setExpandRatio(infoLayout, 1);
+					
+					//refresh de la liste à afficher au départ
+					resfreshListeToDisplay();
 
 					//Si on a demandé à afficher le trombinoscope
 					if(afficherTrombinoscope){
@@ -842,6 +837,28 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		}
 	}
 
+	//met à jour la liste des inscrit sans avoir à lever un événement
+	private void resfreshListeToDisplay() {
+		filtrerInscrits(getEtapeSelectionnee(),getGroupeSelectionne());
+	}
+	
+	//récupère l'étape sélectionnée
+	private String getEtapeSelectionnee() {
+		String etapeSelectionnee = ((listeEtapes!=null && listeEtapes.getValue()!=null)?(String)listeEtapes.getValue():null);
+		if(etapeSelectionnee!=null && etapeSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
+			etapeSelectionnee=null;
+		}
+		return etapeSelectionnee;
+	}
+	
+	//récupère le groupe sélectionné
+	private String getGroupeSelectionne() {
+		String grpSelectionne = ((listeGroupes!=null && listeGroupes.getValue()!=null)?(String)listeGroupes.getValue():null);
+		if(grpSelectionne!=null && grpSelectionne.equals(TOUS_LES_GROUPES_LABEL)){
+			grpSelectionne=null;
+		}
+		return grpSelectionne;
+	}
 	private void executeDisplayTrombinoscope() {
 
 		//On refresh le ticket de photo et on met a jour le trombinoscope avec les urls photo misent à jour
@@ -1104,6 +1121,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private void filtrerInscrits(String idEtape, String idgroupe) {
 
+		LOG.debug("filtre les inscrits pour idetape:"+idEtape +" et idgroupe :"+idgroupe);
 		if(inscritstable!=null){
 
 			BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
