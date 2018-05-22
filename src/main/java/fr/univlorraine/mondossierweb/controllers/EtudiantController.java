@@ -698,18 +698,21 @@ public class EtudiantController {
 
 			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(true);
 
-			//Tentative de récupération des informations relatives à l'affiliation à la sécurité sociale
-			try{
-				GenericUI.getCurrent().getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
-			} catch(Exception e){
-				LOG.info("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
-			}
+			//Si l'étudiant est inscrit pour l'année en cours
+			if(GenericUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
+				//Tentative de récupération des informations relatives à l'affiliation à la sécurité sociale
+				try{
+					GenericUI.getCurrent().getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
+				} catch(Exception e){
+					LOG.info("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+				}
 
-			//Tentative de récupération des informations relatives à la quittance des droits payés
-			try{
-				GenericUI.getCurrent().getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
-			} catch(Exception e){
-				LOG.info("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+				//Tentative de récupération des informations relatives à la quittance des droits payés
+				try{
+					GenericUI.getCurrent().getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
+				} catch(Exception e){
+					LOG.info("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+				}
 			}
 
 
@@ -1851,7 +1854,7 @@ public class EtudiantController {
 				temoinEtatIae="E";
 			}
 
-			
+
 			String sourceResultat = PropertyUtils.getSourceResultats();
 			if(forceSourceApogee || sourceResultat == null || sourceResultat.equals("")){
 				sourceResultat="Apogee";
@@ -1959,7 +1962,7 @@ public class EtudiantController {
 			LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
 			//On regarde si on a pas déjà les infos dans le cache:
 			String rang = getRangDetailInscriptionEnCache(etape,GenericUI.getCurrent().getEtudiant());
-			
+
 			if(rang == null){
 				recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,true);
 				//AJOUT DES INFOS recupérées dans le cache.
@@ -1988,7 +1991,7 @@ public class EtudiantController {
 			LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
 			//On regarde si on a pas déjà les infos dans le cache:
 			String rang = getRangDetailInscriptionEnCache(etape,GenericUI.getCurrent().getEtudiant());
-			
+
 			if(rang == null){
 				recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape,true);
 				//AJOUT DES INFOS recupérées dans le cache.
@@ -2159,8 +2162,8 @@ public class EtudiantController {
 		}
 		e.getCacheResultats().getResultElpEpr().add(cree);
 	}
-	
-	
+
+
 	/**
 	 * On complète les infos du cache pour l'IP.
 	 */
@@ -2212,7 +2215,7 @@ public class EtudiantController {
 		}
 
 	}
-	
+
 	/**
 	 * récupère les infos sur l'IP dans le cache (en s'indexant sur le rang)
 	 * @param rang
