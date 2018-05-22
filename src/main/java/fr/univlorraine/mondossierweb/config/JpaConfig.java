@@ -38,14 +38,13 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.repositories.mdw.FavorisRepository;
 
 /**
  * Configuration JPA
  * 
- * @author Adrien Colson
+ * @author Charlie Dubois
  */
 @Configuration
 @EnableTransactionManagement(mode=AdviceMode.ASPECTJ)
