@@ -208,18 +208,19 @@ public class MdwTouchkitUI extends GenericUI{
 		LOG.debug("init(); MdwTouchkitUI");
 
 		VaadinSession.getCurrent().setErrorHandler(e -> {
+			
+			/* Gérer les erreurs quand l'application est en maintenance */
+			if(!applicationActive()){
+				afficherMessageMaintenance();
+				return;
+			}
+			
 			Throwable cause = e.getThrowable();
 			while (cause instanceof Throwable) {
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
 					displayViewFullScreen(AccesRefuseView.NAME);
-					return;
-				}
-				
-				/* Gérer les erreurs quand l'application est en maintenance */
-				if(!applicationActive()){
-					afficherMessageMaintenance();
 					return;
 				}
 				

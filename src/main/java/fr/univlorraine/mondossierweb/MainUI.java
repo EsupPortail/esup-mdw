@@ -244,6 +244,13 @@ public class MainUI extends GenericUI {
 
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
+			
+			/* Gérer les erreurs quand l'application est en maintenance */
+			if(!applicationActive()){
+				displayViewFullScreen(AccesBloqueView.NAME);
+				return;
+			}
+			
 			Throwable cause = e.getThrowable();
 			
 			while (cause instanceof Throwable) {
@@ -251,12 +258,6 @@ public class MainUI extends GenericUI {
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
 					displayViewFullScreen(AccesRefuseView.NAME);
-					return;
-				}
-				
-				/* Gérer les erreurs quand l'application est en maintenance */
-				if(!applicationActive()){
-					displayViewFullScreen(AccesBloqueView.NAME);
 					return;
 				}
 				
