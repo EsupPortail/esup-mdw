@@ -61,6 +61,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
@@ -97,6 +98,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient ConfigController configController;
 
 	@Resource
 	private ElasticSearchApogeeService ElasticSearchService;
@@ -134,7 +137,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if( userController.isEnseignant()){
+		if(configController.isApplicationActive() && userController.isEnseignant()){
 
 
 			/* Style */

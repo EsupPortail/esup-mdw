@@ -67,7 +67,7 @@ public class AssistanceView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(userController.isEnseignant()){
+		if(configController.isApplicationActive() && userController.isEnseignant()){
 			// Style 
 			setMargin(true);
 			setSpacing(true);

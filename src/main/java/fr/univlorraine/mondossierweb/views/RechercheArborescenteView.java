@@ -64,6 +64,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
@@ -126,6 +127,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
+	@Resource
+	private transient ConfigController configController;
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -244,7 +247,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if( userController.isEnseignant() ){
+		if(configController.isApplicationActive() && userController.isEnseignant() ){
 			/* Style */
 			setMargin(false);
 			setSpacing(false);

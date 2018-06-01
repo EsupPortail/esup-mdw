@@ -47,6 +47,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
@@ -84,6 +85,8 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient FavorisController favorisController;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	/** Thread pool  */
@@ -109,7 +112,7 @@ public class FavorisView extends VerticalLayout implements View {
 
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
+		if(configController.isApplicationActive() && UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
 
 
 			removeAllComponents();
