@@ -807,7 +807,7 @@ public class EtudiantController {
 				sourceResultat="Apogee";
 				ContratPedagogiqueResultatVdiVetDTO2[] cpdtoResult = monProxyPedagogique.recupererContratPedagogiqueResultatVdiVet_v2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 
-				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
+				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction
 				temoin=null;
 				sourceResultat="Apogee-extraction";
 				ContratPedagogiqueResultatVdiVetDTO2[] cpdtoExtract;
