@@ -128,14 +128,14 @@ public class SpringConfig {
 	
 	@Bean
 	public LdapUserSearch ldapUserSearch() {
-		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch("ou=people", environment.getProperty("ldap.uid.attribute")+"={0}", ldapServer());
+		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch(environment.getProperty("ldap.ou.people"), environment.getProperty("ldap.uid.attribute")+"={0}", ldapServer());
 		fbus.setReturningAttributes(getLdapAttributes());
 		return fbus;
 	}
 	
 	@Bean
 	public LdapUserSearch ldapEtudiantSearch() {
-		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch("ou=people", environment.getProperty("attributLdapCodEtu")+"={0}", ldapServer());
+		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch(environment.getProperty("ldap.ou.student"), environment.getProperty("attributLdapCodEtu")+"={0}", ldapServer());
 		fbus.setReturningAttributes(getLdapAttributes());
 		return fbus;
 	}
