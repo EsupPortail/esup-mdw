@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import javax.annotation.Resource;
 
+import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -220,11 +221,12 @@ public class InscriptionController {
 				}
 			}
 
-			Paragraph pTitre = new Paragraph("\n\n"+applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault()).toUpperCase(), header);
+			Paragraph pTitre = new Paragraph("\n\n"+applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault()).toUpperCase()+"\n"+inscription.getCod_anu(), header);
 			pTitre.setAlignment(Element.ALIGN_CENTER);
 			document.add(pTitre);
 
-			Paragraph pCertifie = new Paragraph("\n\n\n\n" + signataire.getQua_sig() + " "+applicationContext.getMessage("pdf.certificat.certifie", null, Locale.getDefault())+"\n\n", normal);
+			String quaSignataire = StringUtils.hasText(configController.getCertScolDescSignataire())? configController.getCertScolDescSignataire() : signataire.getQua_sig();
+			Paragraph pCertifie = new Paragraph("\n\n\n\n" + quaSignataire + " "+applicationContext.getMessage("pdf.certificat.certifie", null, Locale.getDefault())+"\n\n", normal);
 			pCertifie.setAlignment(Element.ALIGN_LEFT);
 			document.add(pCertifie);
 
@@ -287,28 +289,33 @@ public class InscriptionController {
 
 			document.add(new Paragraph(" "));
 
+			String nomSignataire = StringUtils.hasText(configController.getCertScolDescSignataire())? configController.getCertScolDescSignataire() : signataire.getNom_sig();
+			
 			float[] widthsSignataire = {2f, 1.3f};
 			PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
 			tableSignataire.setWidthPercentage(100f);
 			tableSignataire.addCell(makeCellSignataire("", normal));
 			tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.certificat.fait1", null, Locale.getDefault())+" " + configController.getCertScolLieuEdition() + applicationContext.getMessage("pdf.certificat.fait2", null, Locale.getDefault())+" " + date, normal));
 			tableSignataire.addCell(makeCellSignataire("", normal));
-			tableSignataire.addCell(makeCellSignataire(signataire.getNom_sig(), normal));
+			tableSignataire.addCell(makeCellSignataire(nomSignataire, normal));
+			
+			document.add(tableSignataire);
+			
 			//ajout signature
 			if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){ //MODIF 09/10/2012
-				tableSignataire.addCell(makeCellSignataire("", normal));
+				//tableSignataire.addCell(makeCellSignataire("", normal));
 				LOG.debug(signataire.getImg_sig_std().toString());
 				Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
 
 				float scaleRatio = 100 / imageSignature.getHeight(); 
 				float newWidth=scaleRatio * imageSignature.getWidth();
 				imageSignature.scaleAbsolute(newWidth, 100);
-				imageSignature.setAbsolutePosition(350, 225);
+				imageSignature.setAbsolutePosition(350, 210);
 				document.add(imageSignature);
 
 			}
 
-			document.add(tableSignataire);
+			
 
 			// Ajout tampon
 			if (configController.getCertScolTampon() != null && !configController.getCertScolTampon().equals("")) {
@@ -316,7 +323,7 @@ public class InscriptionController {
 				float scaleTampon = 100 / imageTampon.getWidth();
 				float newHeigthTampon = scaleTampon * imageTampon.getHeight();
 				imageTampon.scaleAbsolute(100, newHeigthTampon);
-				imageTampon.setAbsolutePosition(415, 215);
+				imageTampon.setAbsolutePosition(415, 200);
 				document.add(imageTampon);
 			}
 

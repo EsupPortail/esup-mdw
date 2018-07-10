@@ -299,6 +299,11 @@ public class ConfigController {
 	public String getCertScolCodeSignataire() {
 		return getValeurForParameter("certScolCodeSignataire");
 	}
+	
+	public String getCertScolDescSignataire() {
+		return getValeurForParameter("certScolDescSignataire");
+	}
+	
 
 	public String getLogoUniversitePdf() {
 		return getValeurForParameter("logoUniversitePdf");
