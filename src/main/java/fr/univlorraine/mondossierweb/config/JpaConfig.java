@@ -30,6 +30,7 @@ import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -59,6 +60,7 @@ public class JpaConfig {
 	 * Source de données
 	 * @return
 	 */
+	@Primary
 	@Bean
 	public DataSource dataSource() {
 		JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
@@ -92,6 +94,7 @@ public class JpaConfig {
 	 * EntityManager Factory
 	 * @return
 	 */
+	@Primary
 	@Bean
 	@DependsOn("flyway")
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -120,6 +123,7 @@ public class JpaConfig {
 	 * Transaction Manager
 	 * @return
 	 */
+	@Primary
 	@Bean
 	public JpaTransactionManager transactionManager() {
 		return new JpaTransactionManager(entityManagerFactory().getObject());
