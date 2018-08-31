@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -178,6 +179,14 @@ public class Utils {
 	public static String getAnneeUniversitaireEnCours(String annee){
 		int anneeEnCours = Integer.parseInt(annee);
 		return anneeEnCours+"/"+(anneeEnCours+1);
+	}
+	
+	public static String getEctsToDisplay(BigDecimal ects) {
+		String s = ects.toString();
+		if(s!=null && s.length()>2 && s.substring(s.length()-2, s.length())!=null && s.substring(s.length()-2, s.length()).equals(".0")){
+			s=s.replaceFirst("\\.0", "");
+		}
+		return s;
 	}
 
 	public static String convertTypeToDisplay(String type) {

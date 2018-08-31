@@ -1331,7 +1331,7 @@ public class EtudiantController {
 												// récupère l'ECTS acquis
 												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
 												if(ectsAcquis!=null){
-													elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
+													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
 													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
 												}
@@ -1372,7 +1372,7 @@ public class EtudiantController {
 												// récupère l'ECTS acquis
 												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
 												if(ectsAcquis!=null){
-													elp.setEcts(ectsAcquis.intValue()+"/"+relpdto[j].getNbrCrdElp().toString());
+													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
 													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
 												}
@@ -1721,6 +1721,8 @@ public class EtudiantController {
 			LOG.error("Probleme lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(),ex);
 		}
 	}
+
+	
 
 	/**
 	 * 
