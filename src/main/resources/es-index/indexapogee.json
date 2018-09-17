@@ -1,0 +1,183 @@
+{
+   "settings": {
+		"analysis": {
+      		"analyzer": {
+        		"my_lib_desc_obj_analyzer": {
+          			"type": "custom",
+          			"tokenizer": "standard",
+          			"filter": [
+            			"lowercase",
+            			"my_ascii_folding"
+          			]
+        		}
+      		},
+      		 "filter" : {
+                "my_ascii_folding" : {
+                    "type" : "asciifolding",
+                    "preserve_original" : true
+                }
+            }
+    	},
+		"index" : {
+			"number_of_shards": "5",
+			"number_of_replicas": "1"
+		}
+    },
+    "mappings": {
+        "ELP": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "@timestamp": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
+                },
+                "lib_desc_obj": {
+                     "type": "string",
+                    "analyzer" : "my_lib_desc_obj_analyzer",
+                    "search_analyzer": "my_lib_desc_obj_analyzer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "lib_obj": {
+                    "type": "string"
+                },
+                "@version": {
+                    "type": "string"
+                },
+                "cod_vrs_obj": {
+                    "type": "long"
+                },
+                "cod_obj": {
+                    "type": "string"
+                }
+            }
+        },
+        "CMP": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "@timestamp": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
+                },
+                "lib_desc_obj": {
+                     "type": "string",
+                    "analyzer" : "my_lib_desc_obj_analyzer",
+                    "search_analyzer": "my_lib_desc_obj_analyzer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "lib_obj": {
+                    "type": "string"
+                },
+                "@version": {
+                    "type": "string"
+                },
+                "cod_vrs_obj": {
+                    "type": "long"
+                },
+                "cod_obj": {
+                    "type": "string"
+                }
+            }
+        },
+        "VET": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "@timestamp": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
+                },
+                "lib_desc_obj": {
+                     "type": "string",
+                    "analyzer" : "my_lib_desc_obj_analyzer",
+                    "search_analyzer": "my_lib_desc_obj_analyzer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "lib_obj": {
+                    "type": "string"
+                },
+                "@version": {
+                    "type": "string"
+                },
+                "cod_vrs_obj": {
+                    "type": "long"
+                },
+                "cod_obj": {
+                    "type": "string"
+                }
+            }
+        },
+        "ETU": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "@timestamp": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
+                },
+                "lib_desc_obj": {
+                     "type": "string",
+                    "analyzer" : "my_lib_desc_obj_analyzer",
+                    "search_analyzer": "my_lib_desc_obj_analyzer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "lib_obj": {
+                    "type": "string"
+                },
+                "@version": {
+                    "type": "string"
+                },
+                "cod_vrs_obj": {
+                    "type": "long"
+                },
+                "cod_obj": {
+                    "type": "string"
+                }
+            }
+        },
+        "VDI": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "@timestamp": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
+                },
+                "lib_desc_obj": {
+                     "type": "string",
+                    "analyzer" : "my_lib_desc_obj_analyzer",
+                    "search_analyzer": "my_lib_desc_obj_analyzer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "lib_obj": {
+                    "type": "string"
+                },
+                "@version": {
+                    "type": "string"
+                },
+                "cod_vrs_obj": {
+                    "type": "long"
+                },
+                "cod_obj": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
