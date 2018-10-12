@@ -19,7 +19,6 @@
 package fr.univlorraine.mondossierweb.views.windows;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -27,33 +26,26 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow.ECTSColumnGenerator;
 
 /**
  * Fenêtre du détail de l'inscription
@@ -72,6 +64,8 @@ public class DetailInscriptionWindow extends Window {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private transient ConfigController configController;
 
@@ -101,10 +95,10 @@ public class DetailInscriptionWindow extends Window {
 			//Test si user enseignant
 			if(userController.isEnseignant()){
 				//On recupere le détail de l'IP pour un enseignant
-				etudiantController.renseigneDetailInscriptionEnseignant(etape);
+				resultatController.renseigneDetailInscriptionEnseignant(etape);
 			}else{
 				//On récupère le détail de l'IP pour un étudiant
-				etudiantController.renseigneDetailInscription(etape);
+				resultatController.renseigneDetailInscription(etape);
 			}
 
 			/* Layout */

@@ -48,13 +48,13 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 
@@ -81,6 +81,8 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private transient NoteController noteController;
 	@Resource
@@ -141,10 +143,10 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				//Test si user enseignant
 				if(userController.isEnseignant()){
 					//On recupere les notes pour un enseignant
-					etudiantController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
+					resultatController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
 				}else{
 					//On récupère les notes pour un étudiant
-					etudiantController.renseigneDetailNotesEtResultats(etapeToDisplay);
+					resultatController.renseigneDetailNotesEtResultats(etapeToDisplay);
 				}
 				
 				//NAVBAR

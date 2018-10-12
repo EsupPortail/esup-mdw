@@ -58,6 +58,7 @@ import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -92,6 +93,8 @@ public class NotesView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private transient NoteController noteController;
 	@Resource
@@ -119,10 +122,10 @@ public class NotesView extends VerticalLayout implements View {
 			//Test si user enseignant et en vue Enseignant
 			if(userController.isEnseignant() && MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
 				//On recupere les notes pour un enseignant
-				etudiantController.renseigneNotesEtResultatsVueEnseignant(MainUI.getCurrent().getEtudiant());
+				resultatController.renseigneNotesEtResultatsVueEnseignant(MainUI.getCurrent().getEtudiant());
 			}else{
 				//On récupère les notes pour un étudiant
-				etudiantController.renseigneNotesEtResultats(MainUI.getCurrent().getEtudiant());
+				resultatController.renseigneNotesEtResultats(MainUI.getCurrent().getEtudiant());
 			}
 
 
@@ -179,7 +182,7 @@ public class NotesView extends VerticalLayout implements View {
 					changerVueButton.setCaption(applicationContext.getMessage(NAME+".button.vueEtudiant", null, getLocale()));
 				}
 				//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
-				changerVueButton.addClickListener(e -> {etudiantController.changerVueNotesEtResultats();init();});
+				changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init();});
 
 				Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
 				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){

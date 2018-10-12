@@ -169,6 +169,11 @@
 	<!-- <Parameter name="etatcivil.nom.affichage" value="basique" />  -->
 	<!-- standard : Nom patronymique (Nom usuel s'il est différent du nom patronymique) -->
 	<Parameter name="etatcivil.nom.affichage" value="standard" />
+	
+	<!--  Controlleur de récupération des notes et résultats -->
+	<!-- value par défaut: resultatController   -->
+	<!-- Sinon indiquer une class custom perso qui extends ResultatController -->
+	<Parameter name="resultat.implementation" value="resultatController"/>
 
 	<!--  Interface pour la gestion des photos -->
 	<!-- photoEmptyImpl : Implémentation vide -->

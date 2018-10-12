@@ -20,7 +20,6 @@ package fr.univlorraine.mondossierweb.views.windows;
 
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -50,6 +49,7 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -72,6 +72,8 @@ public class DetailNotesWindow extends Window {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private transient NoteController noteController;
 	@Resource
@@ -109,10 +111,10 @@ public class DetailNotesWindow extends Window {
 			//Test si user enseignant et en vue Enseignant
 			if(userController.isEnseignant() && MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
 				//On recupere les notes pour un enseignant
-				etudiantController.renseigneDetailNotesEtResultatsEnseignant(etape);
+				resultatController.renseigneDetailNotesEtResultatsEnseignant(etape);
 			}else{
 				//On récupère les notes pour un étudiant
-				etudiantController.renseigneDetailNotesEtResultats(etape);
+				resultatController.renseigneDetailNotesEtResultats(etape);
 			}
 
 			/* Layout */
@@ -200,7 +202,7 @@ public class DetailNotesWindow extends Window {
 					changerVueButton.setCaption(applicationContext.getMessage(NAME+".button.vueEtudiant", null, getLocale()));
 				}
 				//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
-				changerVueButton.addClickListener(e -> {etudiantController.changerVueNotesEtResultats();init();});
+				changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init();});
 
 				Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
 				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
@@ -240,7 +242,7 @@ public class DetailNotesWindow extends Window {
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
 				detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
 				detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
-				if(configController.isAffRangEtudiant() || etudiantController.isAfficherRangElpEpr()){
+				if(configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()){
 					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.rang", null, getLocale()), new RangColumnGenerator());
 				}
 				if(configController.isAffECTSEtudiant()){

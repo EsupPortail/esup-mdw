@@ -23,9 +23,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -49,23 +46,17 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.UI;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -75,6 +66,7 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UiController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -94,6 +86,8 @@ import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Scope("prototype")
@@ -128,6 +122,8 @@ public class MdwTouchkitUI extends GenericUI{
 	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
 	@Resource
@@ -369,7 +365,7 @@ public class MdwTouchkitUI extends GenericUI{
 								etudiantController.recupererCalendrierExamens();
 							}
 							//On récupère les notes de l'étudiant
-							etudiantController.recupererNotesEtResultats(etudiant);
+							resultatController.recupererNotesEtResultats(etudiant);
 							//On affiche le dossier
 							navigateToDossierEtudiant();
 						}

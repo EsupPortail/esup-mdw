@@ -54,6 +54,8 @@ public class RechercheController {
 	private transient Environment environment;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private transient UserController userController;
 	@Resource
@@ -167,7 +169,7 @@ public class RechercheController {
 				if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants()) || configController.isAffCalendrierEpreuvesEnseignants()){
 					etudiantController.recupererCalendrierExamens();
 				}
-				etudiantController.recupererNotesEtResultatsEnseignant(MdwTouchkitUI.getCurrent().getEtudiant());
+				resultatController.recupererNotesEtResultatsEnseignant(MdwTouchkitUI.getCurrent().getEtudiant());
 			}
 			if(fromSearch){
 				MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();

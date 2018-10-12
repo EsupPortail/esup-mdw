@@ -99,6 +99,8 @@ public class NoteController {
 	private transient Environment environment;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource(name="${resultat.implementation}")
+	private transient ResultatController resultatController;
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
 	@Resource
@@ -995,7 +997,7 @@ public class NoteController {
 			PdfPTable table2; 
 
 
-			boolean afficherRangElpEpr = etudiantController.isAfficherRangElpEpr();
+			boolean afficherRangElpEpr = resultatController.isAfficherRangElpEpr();
 			boolean affRangEtudiant = configController.isAffRangEtudiant();
 			boolean affECTSEtudiant =configController.isAffECTSEtudiant();
 
@@ -1279,7 +1281,7 @@ public class NoteController {
 		
 
 		//Si on doit se baser sur l'extraction Apogée
-		if(etudiantController.utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
+		if(resultatController.utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
 			//On se base sur l'extraction apogée
 			sourceResultat="Apogee-extraction";
 		}else{
