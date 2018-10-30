@@ -132,13 +132,15 @@ public class ResultatController {
 				// Et on fusionne cpdtoResult et cpdtoExtract
 				ArrayList<ContratPedagogiqueResultatVdiVetDTO2> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO2>();
 				for (int i = 0; i < cpdtoResult.length; i++ ) {
-					if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
+					String anneeResultat = getAnneeContratPedagogiqueResultatVdiVet(cpdtoResult[i]);
+					if (anneeResultat != null && !utilisationExtractionApogee(anneeResultat)) {
 						cpdtoAl.add(cpdtoResult[i]);
 					}
 				}
 				if (cpdtoExtract!=null) {
 					for (int i = 0; i < cpdtoExtract.length; i++ ) {
-						if(cpdtoExtract[i].getAnnee() != null && utilisationExtractionApogee(cpdtoExtract[i].getAnnee())){
+						String anneeResultat = getAnneeContratPedagogiqueResultatVdiVet(cpdtoExtract[i]);
+						if(anneeResultat != null && utilisationExtractionApogee(anneeResultat)){
 							cpdtoAl.add(cpdtoExtract[i]);
 						}
 					}
@@ -219,13 +221,15 @@ public class ResultatController {
 					// Et on fusionne cpdtoResult et cpdtoExtract
 					ArrayList<ContratPedagogiqueResultatVdiVetDTO2> cpdtoAl = new ArrayList<ContratPedagogiqueResultatVdiVetDTO2>();
 					for (int i = 0; i < cpdtoResult.length; i++ ) {
-						if (cpdtoResult[i].getAnnee() != null && !utilisationExtractionApogee(cpdtoResult[i].getAnnee())) {
+						String anneeResultat = getAnneeContratPedagogiqueResultatVdiVet(cpdtoResult[i]);
+						if (anneeResultat != null && !utilisationExtractionApogee(anneeResultat)) {
 							cpdtoAl.add(cpdtoResult[i]);
 						}
 					}
 					if (cpdtoExtract!=null) {
 						for (int i = 0; i < cpdtoExtract.length; i++ ) {
-							if(cpdtoExtract[i].getAnnee() != null && utilisationExtractionApogee(cpdtoExtract[i].getAnnee())){
+							String anneeResultat = getAnneeContratPedagogiqueResultatVdiVet(cpdtoExtract[i]);
+							if(anneeResultat != null && utilisationExtractionApogee(anneeResultat)){
 								cpdtoAl.add(cpdtoExtract[i]);
 							}
 						}
@@ -254,6 +258,21 @@ public class ResultatController {
 		}
 	}
 
+
+
+	private String getAnneeContratPedagogiqueResultatVdiVet(ContratPedagogiqueResultatVdiVetDTO2 ct) {
+		//Si l'année du contrat est non null
+		if(ct.getAnnee()!=null){
+			// on retourne l'année du contrat
+			return ct.getAnnee();
+		}
+		//Si l'année du premier item de la liste "etapes" est non null
+		if(ct.getEtapes()!=null && ct.getEtapes().length>0 && ct.getEtapes()[0]!=null && ct.getEtapes()[0].getCodAnu()!=null){
+			//On retourne l'année du premier item de la liste "etapes"
+			return ct.getEtapes()[0].getCodAnu();
+		}
+		return null;
+	}
 
 
 	/**
