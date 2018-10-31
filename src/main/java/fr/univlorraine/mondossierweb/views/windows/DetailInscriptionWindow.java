@@ -237,6 +237,10 @@ public class DetailInscriptionWindow extends Window {
 					libelp="<i>"+libelp+"</i>";
 				}
 				libLabel.setValue(lib+libelp);
+
+				if(StringUtils.hasText(el.getEcts())){
+					libLabel.addStyleName("ects-elp-label");
+				}
 			}
 			libLabel.setContentMode(ContentMode.HTML);
 			return libLabel;
@@ -262,7 +266,9 @@ public class DetailInscriptionWindow extends Window {
 
 			if(StringUtils.hasText(el.getEcts())){
 				libLabel.setValue(el.getEcts());
+				libLabel.addStyleName("ects-value-label");
 			}
+
 			return libLabel;
 		}
 	}
