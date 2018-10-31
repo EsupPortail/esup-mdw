@@ -945,7 +945,8 @@
 			<!--  <version>5.00.la</version> -->
 			<!--   <version>5.00.lba</version> -->
 			 <!--   <version>5.00.lbb</version> -->
-			<version>5.00.lca</version> 
+			<!-- <version>5.00.lca</version> --> 
+			<version>5.00.lcb</version> 
 		</dependency>
 		
 		<!-- PhotoServer UL -->
