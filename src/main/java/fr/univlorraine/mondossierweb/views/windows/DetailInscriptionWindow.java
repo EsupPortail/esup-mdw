@@ -132,12 +132,15 @@ public class DetailInscriptionWindow extends Window {
 				Table detailInscriptionTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
 				detailInscriptionTable.setSizeFull();
 				detailInscriptionTable.setVisibleColumns(new String[0]);
+				detailInscriptionTable.setColumnCollapsingAllowed(true);
 				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
 				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
 				if(configController.isAffECTSEtudiant()){
 					detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
+					if(configController.isMasqueECTSEtudiant()){
+						detailInscriptionTable.setColumnCollapsed(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), true);
+					}
 				}
-				detailInscriptionTable.setColumnCollapsingAllowed(true);
 				detailInscriptionTable.setColumnReorderingAllowed(false);
 				detailInscriptionTable.setSelectable(false);
 				detailInscriptionTable.setImmediate(true);

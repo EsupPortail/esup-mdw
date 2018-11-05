@@ -151,6 +151,10 @@ public class ConfigController {
 	public boolean isAffECTSEtudiant() {
 		return getBooleanValueForParameter("affECTSEtudiant");
 	}
+	
+	public boolean isMasqueECTSEtudiant() {
+		return getBooleanValueForParameter("masqueECTSEtudiant");
+	}
 
 	public boolean isModificationAdressesAutorisee() {
 		return getBooleanValueForParameter("modificationAdresses");

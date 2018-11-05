@@ -232,6 +232,7 @@ public class DetailNotesWindow extends Window {
 				Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
 				detailNotesTable.setSizeFull();
 				detailNotesTable.setVisibleColumns(new String[0]);
+				detailNotesTable.setColumnCollapsingAllowed(true);
 				if(contientElpObtenusPrecedemment(lelp)){
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.annee", null, getLocale()), new AnneeColumnGenerator());
 				}
@@ -247,8 +248,10 @@ public class DetailNotesWindow extends Window {
 				}
 				if(configController.isAffECTSEtudiant()){
 					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
+					if(configController.isMasqueECTSEtudiant()){
+						detailNotesTable.setColumnCollapsed(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), true);
+					}
 				}
-				detailNotesTable.setColumnCollapsingAllowed(true);
 				detailNotesTable.setColumnReorderingAllowed(false);
 				detailNotesTable.setSelectable(false);
 				detailNotesTable.setImmediate(true);
