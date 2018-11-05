@@ -25,6 +25,8 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,8 @@ import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApoge
 @Repository
 public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 
+	private Logger LOG = LoggerFactory.getLogger(ElementPedagogiqueServiceImpl.class);
+	
 	@Resource
 	private ElementPedagogiqueApogeeRepository elpRepository;
 
@@ -121,6 +125,7 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 	@Override
 	public BigDecimal getCreditAcquisElp(String cod_ind, String cod_elp, String annee) {
 		BigDecimal creditAcquis = (BigDecimal)entityManagerApogee.createNativeQuery("select APOGEE.PKB_CRD.CREDIT_ACQUIS_ELP("+cod_ind+",'"+cod_elp+"',"+annee+") from dual").getSingleResult();
+		LOG.info("getCreditAcquisElp : "+ cod_ind+", "+cod_elp+" , "+annee +" => "+creditAcquis);
 		return creditAcquis;
 	}
 

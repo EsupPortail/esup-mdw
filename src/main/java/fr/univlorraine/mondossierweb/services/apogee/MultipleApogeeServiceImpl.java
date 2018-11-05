@@ -30,6 +30,7 @@ import lombok.Data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -218,21 +219,31 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 	@Override
 	public String getLibelleEtape(Etape e) {
-		@SuppressWarnings("unchecked")
-		String libelle = (String)entityManagerApogee.createNativeQuery("select lib_web_vet "+
-				" from version_etape "+
-				" where cod_etp = '"+e.getCode()+"' "+
-				" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
-		return libelle;
+		try{
+			@SuppressWarnings("unchecked")
+			String libelle = (String)entityManagerApogee.createNativeQuery("select lib_web_vet "+
+					" from version_etape "+
+					" where cod_etp = '"+e.getCode()+"' "+
+					" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
+			return libelle;
+		}catch(EmptyResultDataAccessException ex){
+			LOG.info("Aucun lib_web_vet trouvé pour étape : "+e.getCode()+"/"+e.getVersion());
+		}
+		return null;
 	}
 
 	@Override
 	public String getLibelleCourtEtape(String codeEtp) {
-		@SuppressWarnings("unchecked")
-		String libelle = (String)entityManagerApogee.createNativeQuery("select lic_etp "+
-				" from etape "+
-				" where cod_etp = '"+codeEtp+"'").getSingleResult();
-		return libelle;
+		try{
+			@SuppressWarnings("unchecked")
+			String libelle = (String)entityManagerApogee.createNativeQuery("select lic_etp "+
+					" from etape "+
+					" where cod_etp = '"+codeEtp+"'").getSingleResult();
+			return libelle;
+		}catch(EmptyResultDataAccessException ex){
+			LOG.info("Aucun lic_etp trouvé pour étape : "+codeEtp);
+		}
+		return null;
 	}
 
 	@Override
@@ -283,12 +294,16 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	@Override
 	public String getNatureElp(String codElp) {
 		if(StringUtils.hasText(codElp) && StringUtils.hasText(codElp)){
-			@SuppressWarnings("unchecked")
-			NatureElp nature = (NatureElp)entityManagerApogee.createNativeQuery("select nel.COD_NEL, nel.LIB_NEL, nel.LIC_NEL, NEL.TEM_EN_SVE_NEL "+
-					"from ELEMENT_PEDAGOGI elp, NATURE_ELP  nel "+
-					"where nel.COD_NEL=elp.COD_NEL "+
-					"and elp.COD_ELP='"+codElp+"'", NatureElp.class).getSingleResult();
-			return nature.getLib_nel();
+			try{
+				@SuppressWarnings("unchecked")
+				NatureElp nature = (NatureElp)entityManagerApogee.createNativeQuery("select nel.COD_NEL, nel.LIB_NEL, nel.LIC_NEL, NEL.TEM_EN_SVE_NEL "+
+						"from ELEMENT_PEDAGOGI elp, NATURE_ELP  nel "+
+						"where nel.COD_NEL=elp.COD_NEL "+
+						"and elp.COD_ELP='"+codElp+"'", NatureElp.class).getSingleResult();
+				return nature.getLib_nel();
+			}catch(EmptyResultDataAccessException e){
+				LOG.info("Aucune nature trouvee pour ELP : "+codElp);
+			}
 		}
 		return null;
 	}

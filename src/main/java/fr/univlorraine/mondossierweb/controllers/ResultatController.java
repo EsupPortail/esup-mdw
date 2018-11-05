@@ -657,10 +657,10 @@ public class ResultatController {
 											}
 
 											//on recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
-											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
+											if(anneePrc!=null && relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
 													&& (elp.getEcts()==null || elp.getEcts().equals(""))){
 												// récupère l'ECTS acquis
-												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
+												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(),anneePrc);
 												if(ectsAcquis!=null){
 													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
@@ -699,9 +699,9 @@ public class ResultatController {
 												anneePrc = relpdto[j].getCodAnu();
 											}
 											//on recupere les crédits ECTS 
-											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
+											if(anneePrc!=null && relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
 												// récupère l'ECTS acquis
-												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), reedto[i].getCodAnu());
+												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), anneePrc);
 												if(ectsAcquis!=null){
 													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
