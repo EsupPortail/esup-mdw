@@ -657,10 +657,11 @@ public class ResultatController {
 											}
 
 											//on recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
-											if(anneePrc!=null && relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
+											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
 													&& (elp.getEcts()==null || elp.getEcts().equals(""))){
+												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
 												// récupère l'ECTS acquis
-												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(),anneePrc);
+												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(),anneeECTS);
 												if(ectsAcquis!=null){
 													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
@@ -699,9 +700,10 @@ public class ResultatController {
 												anneePrc = relpdto[j].getCodAnu();
 											}
 											//on recupere les crédits ECTS 
-											if(anneePrc!=null && relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
+											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
 												// récupère l'ECTS acquis
-												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), anneePrc);
+												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
+												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), anneeECTS);
 												if(ectsAcquis!=null){
 													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
