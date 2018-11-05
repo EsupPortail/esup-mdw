@@ -179,6 +179,10 @@ public class ConfigController {
 	public boolean isCertScolUtiliseLogo() {
 		return getBooleanValueForParameter("certScolUtiliseLogo");
 	}
+	
+	public boolean isCertScolRegimeIns(){
+		return getBooleanValueForParameter("certScolRegimeIns");
+	}
 
 	public boolean isPdfNotesActive() {
 		return getBooleanValueForParameter("notesPDF");

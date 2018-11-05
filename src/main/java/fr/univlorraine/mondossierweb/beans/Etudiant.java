@@ -107,6 +107,10 @@ public class Etudiant {
 	 */
 	private boolean affilieSso;
 	/**
+	 * régime d'inscription pour l'année en cours
+	 */
+	private String regimeIns;
+	/**
 	 * vrai si inscrit pour l'année en cours
 	 */
 	private boolean inscritPourAnneeEnCours;

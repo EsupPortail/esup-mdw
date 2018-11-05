@@ -300,6 +300,11 @@ public class EtudiantController {
 								if(iaad.getTemoinAffiliationSS()!=null && iaad.getTemoinAffiliationSS().equals("O")){
 									GenericUI.getCurrent().getEtudiant().setAffilieSso(true);
 								}
+								
+								//recupérer le régime d'inscription
+								if(iaad.getRegimeIns()!=null && StringUtils.hasText(iaad.getRegimeIns().getLibRgi())){
+									GenericUI.getCurrent().getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
+								}
 
 
 								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
