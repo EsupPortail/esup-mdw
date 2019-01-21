@@ -201,15 +201,10 @@ public class GenericUI  extends UI {
 			String ip = hsRequest.getHeader("x-forwarded-for");    
 			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 				ip = hsRequest.getHeader("X_FORWARDED_FOR");      
-			}else{
-				//Si x-forwarded-for contient plusieurs IP, on prend la deuxième
-				if(ip.contains(",")){
-					ip = ip.split(",")[1];
-				}
 			}
-			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			/*if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 				ip = hsRequest.getHeader("X-Forwarded-For");      
-			}
+			}*/
 			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 				ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
 			}
@@ -223,6 +218,11 @@ public class GenericUI  extends UI {
 				ip = hsRequest.getRemoteAddr();     
 			} 
 
+			//Si contient plusieurs IP, on prend la deuxième
+			if(StringUtils.hasText(ip) && ip.contains(",")){
+				ip = ip.split(",")[1];
+			}
+			
 			ipClient = ip;
 
 		}

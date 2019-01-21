@@ -19,13 +19,8 @@
 package fr.univlorraine.mondossierweb;
 
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
 import org.springframework.web.context.WebApplicationContext;
 
 import com.vaadin.annotations.StyleSheet;
@@ -35,8 +30,6 @@ import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
-
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
 
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
