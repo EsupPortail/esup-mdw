@@ -63,6 +63,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 @SpringView(name = FavorisMobileView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('teacher')")
 public class FavorisMobileView extends VerticalLayout implements View {
+	
 	private static final long serialVersionUID = -2056224835347802529L;
 
 	public static final String NAME = "favorisMobileView";
