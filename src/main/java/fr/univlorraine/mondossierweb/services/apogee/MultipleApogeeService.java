@@ -59,8 +59,6 @@ public interface MultipleApogeeService {
 	
 	public abstract List<Anonymat> getNumeroAnonymat(String cod_etu, String cod_anu);
 
-	public abstract String getCategorieSocioProfessionnelle(String cod_ind, String cod_anu);
-
 	public abstract int getNbPJnonValides(String cod_ind, String cod_anu);
 	
 	public abstract boolean isBoursier(String cod_ind, String cod_anu);
@@ -72,5 +70,7 @@ public interface MultipleApogeeService {
 	public abstract List<String> getListeCodeBlocage(String cod_etu);
 	
 	public abstract String getTemoinEditionCarte(String cod_ind, String cod_anu);
+
+	public abstract boolean isSalarie(String codInd, String codAnu);
 
 }

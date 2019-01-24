@@ -40,6 +40,6 @@
 <entry key="montantsPayes"></entry>
 <entry key="dateCotisation"></entry>
 <entry key="mutuelle"></entry>
-
+<entry key="codPcsSalarie"></entry>
 
 </properties>

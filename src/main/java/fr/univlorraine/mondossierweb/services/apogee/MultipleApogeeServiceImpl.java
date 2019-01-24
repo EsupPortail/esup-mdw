@@ -21,13 +21,18 @@ package fr.univlorraine.mondossierweb.services.apogee;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import lombok.Data;
 
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.ResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -310,14 +315,36 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 
 	@Override
-	public String getCategorieSocioProfessionnelle(String cod_ind, String cod_anu) {
-		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
-			@SuppressWarnings("unchecked")
-			String codPcsEtu = (String)entityManagerApogee.createNativeQuery("select COD_PCS_ETUDIANT from ins_adm_anu "
-					+ " where cod_ind='"+cod_ind+"' and cod_anu="+cod_anu).getSingleResult();
-			return codPcsEtu;
+	public boolean isSalarie(String codInd, String codAnu) {
+		if(StringUtils.hasText(codInd) && StringUtils.hasText(codAnu)){
+			String requeteSQL="";
+			//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+			if(StringUtils.hasText(requestUtils.getCodPcsSalarie())){
+
+				//On utilise la requête indiquée dans le fichier XML
+				requeteSQL = requestUtils.getCodPcsSalarie().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+
+			}else{
+				requeteSQL = "select COD_PCS_ETUDIANT from ins_adm_anu where cod_ind='"+codInd+"' and cod_anu="+codAnu+" and COD_PCS_ETUDIANT not in ('81', '82','99','A','84')";
+			
+			}
+			
+			try{
+				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+
+				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+
+				@SuppressWarnings("unchecked")
+				String codPcsSalarie = (String) query.getSingleResult();
+
+				if(StringUtils.hasText(codPcsSalarie)){
+					return true;
+				}
+			}catch (EmptyResultDataAccessException nre){
+				return false;
+			}
 		}
-		return null;
+		return false;
 	}
 
 	@Override

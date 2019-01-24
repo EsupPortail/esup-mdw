@@ -180,4 +180,7 @@ OR EXISTS
 (SELECT 1 FROM iaa_iae_dim iid 
 WHERE iid.cod_ind = iaa.cod_ind AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = iaa.cod_drt_mut AND iid.cod_typ_iad = 'E'))</entry>
 
+<entry key="codPcsSalarie">select COD_PCS_ETUDIANT from ins_adm_anu 
+where cod_ind=#COD_IND# and cod_anu='#COD_ANU#' and COD_PCS_ETUDIANT not in ('81', '82','99','A','84')</entry>
+
 </properties>

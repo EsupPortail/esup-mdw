@@ -318,12 +318,7 @@ public class EtudiantController {
 							GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 						}
 
-						String codeCatSocPro = multipleApogeeService.getCategorieSocioProfessionnelle(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours());
-						if(StringUtils.hasText(codeCatSocPro) && !codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
-								!codeCatSocPro.equals("99") &&
-								!codeCatSocPro.equals("A") ){
-							GenericUI.getCurrent().getEtudiant().setTemSalarie(true);
-						}
+						GenericUI.getCurrent().getEtudiant().setTemSalarie(multipleApogeeService.isSalarie(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours()));
 
 						//Si catégorie socio-professionnelle renseignée
 						/*if(iaad.getCatSocProfEtu()!=null && iaad.getCatSocProfEtu().getCodeCategorie()!=null){

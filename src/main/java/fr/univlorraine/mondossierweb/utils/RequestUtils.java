@@ -75,6 +75,10 @@ public class RequestUtils {
 		return properties.getProperty("centrePayeurPourAffilie");
 	}
 	
+	public String getCodPcsSalarie(){
+		return properties.getProperty("codPcsSalarie");
+	}
+	
 	public String getMontant1erPaiement() {
 		return properties.getProperty("montant1erPaiement");
 	}
