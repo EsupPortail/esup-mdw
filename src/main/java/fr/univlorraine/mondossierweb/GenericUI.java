@@ -48,25 +48,8 @@ import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
  * @author charlie dubois
  *
  */
+@SuppressWarnings("serial")
 public class GenericUI  extends UI {
-
-	private static final long serialVersionUID = 7686258492589590192L;
-
-
-	//login de l'utilisateur
-	@Setter
-	@Getter
-	protected String username;
-
-	//'O' ou 'N' si l'utilisateur est un enseignant ou pas
-	@Setter
-	@Getter
-	protected String userIsEnseignant;
-
-	//'O' ou 'N' si l'utilisateur est un étudiant ou pas
-	@Setter
-	@Getter
-	protected String userIsEtudiant;
 
 	//Adresse IP du client
 	@Setter
@@ -148,21 +131,9 @@ public class GenericUI  extends UI {
 
 	@Getter
 	@Setter
-	//protected IAnalyticsTracker analyticsTracker = new GoogleAnalyticsTracker(this);
 	protected IAnalyticsTracker analyticsTracker;
 
-	/*@Getter
-	@Setter
-	protected GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
 
-	@Getter
-	@Setter
-	protected PiwikAnalyticsTracker piwikAnalyticsTracker = new PiwikAnalyticsTracker(this);*/
-
-	//Type (rôle) de l'utilisateur connecté
-	@Setter
-	@Getter
-	protected String typeUser;
 
 	//Le photo provider
 	@Setter

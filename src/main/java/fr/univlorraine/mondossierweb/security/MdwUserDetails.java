@@ -21,28 +21,36 @@ package fr.univlorraine.mondossierweb.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import lombok.Getter;
-
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import lombok.Data;
+import lombok.Getter;
 
 @Configurable(preConstruction=true)
+@Data
 public class MdwUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = 6775838509968554127L;
 
 	private String username;
 	
+	private boolean admin;
+	
+	private boolean isEnseignant;
+	
+	private boolean isEtudiant;
+	
+	private String type;
+	
 
 	@Getter
 	private Collection<GrantedAuthority> authorities = new ArrayList<>();;
 
 	
-	@SuppressWarnings("unchecked")
 	public MdwUserDetails(String username, String droits, boolean canAccessToAdminView) {
 	
 		this.username = username;
@@ -55,14 +63,27 @@ public class MdwUserDetails implements UserDetails {
 			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_ADMINVIEW_AUTORISE));
 		}
 		
+		this.type = droits;
+		
+		if(droits.equals(Utils.TEACHER_USER)){
+			this.isEnseignant = true;
+		}
+		
+		if(droits.equals(Utils.STUDENT_USER)){
+			this.isEtudiant = true;
+		}
+		
 		//Si admin ou teacher ou student , le user est autorisé a consulter un dossier étudiant
-		if(droits.equals(MdwUserDetailsService.ADMIN_USER) || droits.equals(UserController.TEACHER_USER) || droits.equals(UserController.STUDENT_USER)){
+		if(droits.equals(Utils.ADMIN_USER) || droits.equals(Utils.TEACHER_USER) || droits.equals(Utils.STUDENT_USER)){
 			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE));
 		}
 		
-		//Si admin, on rajoute le droit teacher_user
-		if(droits.equals(MdwUserDetailsService.ADMIN_USER)){
-			authorities.add(new SimpleGrantedAuthority(UserController.TEACHER_USER));
+		//Si admin
+		if(droits.equals(Utils.ADMIN_USER)){
+			this.admin = true;
+			//on rajoute le droit teacher_user
+			this.isEnseignant = true;
+			authorities.add(new SimpleGrantedAuthority(Utils.TEACHER_USER));
 		}
 		
 		

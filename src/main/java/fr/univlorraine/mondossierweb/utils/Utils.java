@@ -64,6 +64,32 @@ import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 public class Utils {
 
 	static final Logger LOG = LoggerFactory.getLogger(Utils.class);
+	
+	/**
+	 * type utilisateur admin.
+	 */
+	public static final String ADMIN_USER = "admin";
+	/**
+	 * type utilisateur étudiant.
+	 */
+	public static final String STUDENT_USER = "student";
+	/**
+	 * type correspondant à un utilisateur dont le login doit être exclu de l'application.
+	 */
+	public static final String LOGIN_EXCLU = "exclu";
+
+	/**
+	 * type utilisateur enseignant.
+	 */
+	public static final String TEACHER_USER = "teacher";
+
+	/**
+	 * type utilisateur non-autorisé.
+	 */
+	public static final String UNAUTHORIZED_USER = "unauthorized";
+	
+	
+	
 
 	public static final int NB_MAX_RESULT_QUICK_SEARCH=5;
 
