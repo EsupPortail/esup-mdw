@@ -840,19 +840,22 @@ public class ResultatController {
 										}
 									}
 									if(!recuperationNote){
-										//On n'a pas renseigné de liste de type épreuve à afficher ou celui ci n'était pas dans la liste
-										if (codsession < 2) {
-											if(temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc()) || elpEtatDelibS1OK || TemCtlValCadEpr.equals(configController.getTemoinCtlValCadEpr()))
-												recuperationNote = true;
+										//Si on est dans le cas d'une extraction Apogée
+										if(sourceExtractionApogee){
+											recuperationNote = true;
 										}else{
-											if(temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc()) || elpEtatDelibS2OK || TemCtlValCadEpr.equals(configController.getTemoinCtlValCadEpr()))
-												recuperationNote = true;
+											//On n'a pas renseigné de liste de type épreuve à afficher ou celui ci n'était pas dans la liste
+											if (codsession < 2) {
+												if((repdto[k].getEtatDelib()!=null && temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc())) || elpEtatDelibS1OK || TemCtlValCadEpr.equals(configController.getTemoinCtlValCadEpr()))
+													recuperationNote = true;
+											}else{
+												if((repdto[k].getEtatDelib()!=null && temoinEtatDelib.contains(repdto[k].getEtatDelib().getCodEtaAvc())) || elpEtatDelibS2OK || TemCtlValCadEpr.equals(configController.getTemoinCtlValCadEpr()))
+													recuperationNote = true;
+											}
 										}
 									}
 									//test si on recupere la note ou pas
 									if(recuperationNote){
-
-
 										if (codsession < 2) {
 											//1er session  : juin
 											if (repdto[k].getNotEpr() != null) {
@@ -1055,7 +1058,7 @@ public class ResultatController {
 		}
 	}
 
-	
+
 
 	/**
 	 * 
@@ -1577,7 +1580,7 @@ public class ResultatController {
 		}
 	}
 
-	
+
 	public boolean isAfficherRangElpEpr(){
 		List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
 		if(lelp != null && lelp.size()>0){
