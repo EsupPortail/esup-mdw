@@ -30,11 +30,10 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import lombok.Data;
 import lombok.Getter;
 
+@SuppressWarnings("serial")
 @Configurable(preConstruction=true)
 @Data
 public class MdwUserDetails implements UserDetails {
-
-	private static final long serialVersionUID = 6775838509968554127L;
 
 	private String username;
 	
