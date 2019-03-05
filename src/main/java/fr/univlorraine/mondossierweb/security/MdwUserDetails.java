@@ -48,7 +48,7 @@ public class MdwUserDetails implements UserDetails {
 	
 
 	@Getter
-	private Collection<GrantedAuthority> authorities = new ArrayList<>();;
+	private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
 	
 	public MdwUserDetails(String username, String droits, boolean canAccessToAdminView) {

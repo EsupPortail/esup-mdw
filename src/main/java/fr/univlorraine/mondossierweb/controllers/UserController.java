@@ -103,7 +103,10 @@ public class UserController {
 	 * @return user utilisateur courant
 	 */
 	public MdwUserDetails getCurrentUser() {
-		return (MdwUserDetails) getCurrentAuthentication().getPrincipal();
+		if (getCurrentAuthentication() != null) {
+			return (MdwUserDetails) getCurrentAuthentication().getPrincipal();
+		}
+		return null;
 	}
 
 	/**
