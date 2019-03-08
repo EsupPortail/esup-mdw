@@ -273,7 +273,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	 */
 	public String getRemoteAdresse() {
 		WebBrowser browser;
-		//String ip =  getIpAddr();
+
 		String ip =  GenericUI.getCurrent().getIpClient();
 		LOG.debug("IP client via VaadinService Headers : "+ip);
 

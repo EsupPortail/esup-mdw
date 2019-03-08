@@ -107,7 +107,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 		//Si le login utilisé est admin
 		if(isAdmin(finalusername)){
-			return new MdwUserDetails(finalusername,new String[]{Utils.ADMIN_USER}, true, request.getRemoteAddr());
+			return new MdwUserDetails(finalusername,new String[]{Utils.ADMIN_USER}, true, getIP(request));
 		}
 		
 		log.info("loadUserByUsername "+username);
@@ -120,7 +120,36 @@ public class MdwUserDetailsService implements UserDetailsService {
 			canAccessAdminView= true;
 		}
 
-		return new MdwUserDetails(finalusername,determineTypeUser(finalusername), canAccessAdminView, request.getRemoteAddr());
+		return new MdwUserDetails(finalusername,determineTypeUser(finalusername), canAccessAdminView, getIP(request));
+	}
+
+
+
+	private String getIP(HttpServletRequest hsRequest) {
+
+		String ip = hsRequest.getHeader("x-forwarded-for");    
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("X_FORWARDED_FOR");      
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("Proxy-Client-IP");      
+		}   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getHeader("WL-Proxy-Client-IP");      
+		}   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+			ip = hsRequest.getRemoteAddr();     
+		} 
+
+		//Si contient plusieurs IP, on prend la deuxième
+		if(StringUtils.hasText(ip) && ip.contains(",")){
+			ip = ip.split(",")[1];
+		}
+		
+		return ip;
 	}
 
 

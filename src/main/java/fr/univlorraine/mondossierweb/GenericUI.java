@@ -23,10 +23,6 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.util.StringUtils;
 
 import com.vaadin.server.VaadinRequest;
@@ -38,11 +34,13 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * UI générique, pour gérer les attributs communs aux UI desktop ou Mobile sans se soucier de la version de l'UI appelée
@@ -176,9 +174,6 @@ public class GenericUI  extends UI {
 			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 				ip = hsRequest.getHeader("X_FORWARDED_FOR");      
 			}
-			/*if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
-				ip = hsRequest.getHeader("X-Forwarded-For");      
-			}*/
 			if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
 				ip = hsRequest.getHeader("HTTP_X_FORWARDED_FOR");      
 			}

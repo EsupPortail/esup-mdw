@@ -47,6 +47,8 @@ public class MdwUserDetails implements UserDetails {
 	private boolean isEtudiant;
 
 	private String type;
+	
+	private String ip;
 
 
 	@Getter
@@ -59,6 +61,8 @@ public class MdwUserDetails implements UserDetails {
 
 		this.username = username;
 		String droit = profil[0];
+		
+		this.ip = ip;
 
 		/* load Authorities */
 		authorities.add(new SimpleGrantedAuthority(droit));
