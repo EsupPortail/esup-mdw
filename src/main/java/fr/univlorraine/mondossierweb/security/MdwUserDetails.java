@@ -59,9 +59,9 @@ public class MdwUserDetails implements UserDetails {
 	private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
 
-	public MdwUserDetails(String username, String droits, boolean canAccessToAdminView) {
+	public MdwUserDetails(String username, String droits, boolean canAccessToAdminView, String ip) {
 
-		log.info("Connexion-Login:"+username+"-Profil:"+droits+"-AdminView:"+canAccessToAdminView);
+		log.info("Connexion-IP:"+ip+"-Login:"+username+"-Profil:"+droits+"-AdminView:"+canAccessToAdminView);
 
 		this.username = username;
 

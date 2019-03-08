@@ -24,10 +24,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.esupportail.portal.ws.client.PortalGroup;
 import org.esupportail.portal.ws.client.PortalUser;
 import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -88,6 +90,12 @@ public class MdwUserDetailsService implements UserDetailsService {
 	
 	@Resource(name="${codetuFromLogin.implementation}")
 	private CodeEtudiantLoginConverterInterface daoCodeLoginEtudiant;
+	
+	 /**
+     * Context http request
+     */
+    @Autowired
+    private HttpServletRequest request;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -97,7 +105,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 		//Si le login utilisé est admin
 		if(isAdmin(finalusername)){
-			return new MdwUserDetails(finalusername,Utils.ADMIN_USER, true);
+			return new MdwUserDetails(finalusername,Utils.ADMIN_USER, true, request.getRemoteAddr());
 		}
 		
 		log.info("loadUserByUsername "+username);
@@ -110,7 +118,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 			canAccessAdminView= true;
 		}
 
-		return new MdwUserDetails(finalusername,determineTypeUser(finalusername), canAccessAdminView);
+		return new MdwUserDetails(finalusername,determineTypeUser(finalusername), canAccessAdminView, request.getRemoteAddr());
 	}
 
 
