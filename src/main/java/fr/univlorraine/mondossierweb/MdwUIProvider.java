@@ -34,14 +34,13 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
+import lombok.extern.slf4j.Slf4j;
+
+@SuppressWarnings("serial")
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
+@Slf4j
 public class MdwUIProvider extends SpringUIProvider  {
-
-
-	private static final long serialVersionUID = -1535055076149004931L;
-
-	private Logger LOG = LoggerFactory.getLogger(MdwUIProvider.class);
 	
 	private boolean startServletMobile;
 
@@ -57,7 +56,6 @@ public class MdwUIProvider extends SpringUIProvider  {
 		//Récupération du userAgent
 		if(startServletMobile && event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
 			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-			LOG.debug("UA : "+userAgent);
 
 			/* Device Detection */
 			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
@@ -70,10 +68,8 @@ public class MdwUIProvider extends SpringUIProvider  {
 			// on teste que l'utilisateur est sur mobile
 			if(isMobile){
 				//On affiche la page proposant une redirection vers la version Mobile
-				LOG.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 				return MdwFallbackTouchkitUI.class;
 			}else{
-				LOG.debug("-Fallback UI provided ("+userAgent+")");
 				//On va vers la version desktop
 				return MainUI.class;
 			}
@@ -104,17 +100,18 @@ public class MdwUIProvider extends SpringUIProvider  {
 				|| userAgent.contains("windows phone 8")
 				|| userAgent.contains("windows phone 9"))){
 			//On affiche la page proposant une redirection vers la version Mobile
-			LOG.debug("-FallbackTouchkit UI provided ("+userAgent+")");
+			log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 			uiBeanNameObj = "mdwFallbackTouchkitUI";
 		}else{
 			//On va vers la version desktop
-			LOG.debug("-uiBeanNameObj = mainUI");
+			log.debug("-uiBeanNameObj = mainUI");
 			uiBeanNameObj = "mainUI";
 		}
 
 		//Stored in VaadinSession to use it in
 		// the ApplicationScope later to initialize vaadin application scope beans
 		final Integer uiId = event.getUiId();
+		log.debug("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
 		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);
 
 		//On retourne l'UI décidée plus haut (desktop ou mobile)

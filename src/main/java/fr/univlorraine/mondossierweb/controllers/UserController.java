@@ -116,6 +116,10 @@ public class UserController {
 		return getCurrentUser().getUsername();
 	}
 	
+	public String getCodetu(){
+		return getCurrentUser().getCodetu();
+	}
+	
 	public boolean isAdmin() {
 		return getCurrentUser().isAdmin();
 	}

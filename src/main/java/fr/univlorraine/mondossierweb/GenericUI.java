@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.util.StringUtils;
 
@@ -49,6 +50,7 @@ import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
  *
  */
 @SuppressWarnings("serial")
+@Slf4j
 public class GenericUI  extends UI {
 
 	//Adresse IP du client
@@ -141,15 +143,16 @@ public class GenericUI  extends UI {
 	@Resource(name="${serveurphoto.implementation}")
 	private IPhoto photoProvider;
 
+	/*
 	@Setter
 	@Getter
 	@Resource(name="${codetuFromLogin.implementation}")
-	protected CodeEtudiantLoginConverterInterface daoCodeLoginEtudiant;
+	protected CodeEtudiantLoginConverterInterface daoCodeLoginEtudiant;*/
 
 	@Override
 	protected void init(VaadinRequest request) {
 		// TODO Auto-generated method stub
-
+		log.info("init Generic UI");
 	}
 
 	/**

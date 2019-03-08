@@ -359,8 +359,8 @@ public class MdwTouchkitUI extends GenericUI{
 					//On consultera les notes en vue etudiant
 					vueEnseignantNotesEtResultats=false;
 					//On récupère le codetu de l'étudiant
-					String codetu=daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName());
-					etudiant = new Etudiant(codetu);
+					String codetu=userController.getCodetu();
+					etudiant = new Etudiant(userController.getCodetu());
 					try{
 						//On récupère l'état-civil et les adresses de l'étudiant
 						etudiantController.recupererEtatCivil();
@@ -374,8 +374,14 @@ public class MdwTouchkitUI extends GenericUI{
 							}
 							//On récupère les notes de l'étudiant
 							resultatController.recupererNotesEtResultats(etudiant);
-							//On affiche le dossier
-							navigateToDossierEtudiant();
+							//Test des erreurs de session éventuelles
+							if(!etudiant.getCod_etu().equals(userController.getCodetu())){
+								LOG.error("Erreur possible de session : "+userController.getCodetu()+"accede au dossier : "+etudiant.getCod_etu());
+								navigator.navigateTo(ErreurView.NAME);
+							}else{
+								//On affiche le dossier
+								navigateToDossierEtudiant();
+							}
 						}
 					} catch (WebBaseException ex) {
 						LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);

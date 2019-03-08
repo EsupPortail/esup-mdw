@@ -19,8 +19,7 @@
 package fr.univlorraine.mondossierweb;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.web.context.WebApplicationContext;
 
 import com.vaadin.annotations.StyleSheet;
@@ -31,13 +30,13 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
 
+import lombok.extern.slf4j.Slf4j;
+
+@SuppressWarnings("serial")
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
+@Slf4j
 public class MdwTouchkitUIProvider extends SpringUIProvider {
-
-	private static final long serialVersionUID = -1535055076149004931L;
-
-	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUIProvider.class);
 
 	
 	public MdwTouchkitUIProvider(WebApplicationContext webApplicationContext) {
@@ -72,9 +71,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 	@Override
 	public boolean isPreservedOnRefresh(UICreateEvent event)
 	{
-
 		return false;
-
 	}
 
 
@@ -100,6 +97,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		//Stored in VaadinSession to use it in
 		// the ApplicationScope later to initialize vaadin application scope beans
 		final Integer uiId = event.getUiId();
+		log.debug("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
 		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);
 
 		//On retourne l'UI décidée plus haut (desktop ou mobile)

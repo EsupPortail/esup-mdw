@@ -36,6 +36,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
@@ -54,7 +55,8 @@ import lombok.extern.slf4j.Slf4j;
 
 
 
-@Component
+//@Component
+@Service("userDetailsService")
 @Slf4j
 public class MdwUserDetailsService implements UserDetailsService {
 
@@ -105,7 +107,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 		//Si le login utilisé est admin
 		if(isAdmin(finalusername)){
-			return new MdwUserDetails(finalusername,Utils.ADMIN_USER, true, request.getRemoteAddr());
+			return new MdwUserDetails(finalusername,new String[]{Utils.ADMIN_USER}, true, request.getRemoteAddr());
 		}
 		
 		log.info("loadUserByUsername "+username);
@@ -153,13 +155,13 @@ public class MdwUserDetailsService implements UserDetailsService {
 	}
 
 
-	public String determineTypeUser(String username) {
+	public String[] determineTypeUser(String username) {
 		log.debug("   determineTypeUser "+username);
 
 		List<String> llogins=configController.getListeLoginsBloques();
 		if(llogins!=null && llogins.contains(username)){
 			log.debug("utilisateur "+username+" bloqué car il a été exclu de l'application");
-			return Utils.UNAUTHORIZED_USER;
+			return new String[]{Utils.UNAUTHORIZED_USER};
 
 		}else{
 			
@@ -185,13 +187,13 @@ public class MdwUserDetailsService implements UserDetailsService {
 							if(codblo != null && lcodesBloquant.contains(codblo)){
 								//étudiant non autorise a consulter ses notes
 								log.info("utilisateur "+username+" bloqué car il possède des blocages dans Apogée");
-								return Utils.UNAUTHORIZED_USER;
+								return new String[]{Utils.UNAUTHORIZED_USER};
 								
 							}
 						}
 					}
 				}
-				return Utils.STUDENT_USER;
+				return new String[]{Utils.STUDENT_USER,codetu};
 
 			} else {
 
@@ -271,7 +273,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 				if (useruportal || userldap) {
 					//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
 					log.debug("USER "+username+" ENSEIGNANT VIA UPORTAL");
-					return Utils.TEACHER_USER;
+					return new String[]{Utils.TEACHER_USER};
 
 				} else {
 					//va voir dans apogée
@@ -287,17 +289,17 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 							if (uti != null) {
 								log.debug("USER "+username+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
-								return Utils.TEACHER_USER;
+								return new String[]{Utils.TEACHER_USER};
 							} else {
 								log.debug("utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
-								return Utils.UNAUTHORIZED_USER;
+								return new String[]{Utils.UNAUTHORIZED_USER};
 							}
 						} catch (Exception ex) {
 							log.error("Probleme lors de la vérification de l'existence de l'utilisateur "+username+" dans la table Utilisateur de Apogee",ex);
 						}
 					}else{
 						log.info("Utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal -> UTILISATEUR NON AUTORISE !");
-						return Utils.UNAUTHORIZED_USER;
+						return new String[]{Utils.UNAUTHORIZED_USER};
 
 					}
 
@@ -305,7 +307,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 				}
 			}
 
-			return Utils.UNAUTHORIZED_USER;
+			return new String[]{Utils.UNAUTHORIZED_USER};
 		}
 	}
 

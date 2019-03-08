@@ -21,17 +21,9 @@ package fr.univlorraine.mondossierweb.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
 
 import fr.univlorraine.mondossierweb.utils.Utils;
 import lombok.Data;
@@ -39,12 +31,14 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("serial")
-@Configurable(preConstruction=true)
+//@Configurable(preConstruction=true)
 @Data
 @Slf4j
 public class MdwUserDetails implements UserDetails {
 
 	private String username;
+	
+	private String codetu;
 
 	private boolean admin;
 
@@ -59,37 +53,39 @@ public class MdwUserDetails implements UserDetails {
 	private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
 
-	public MdwUserDetails(String username, String droits, boolean canAccessToAdminView, String ip) {
+	public MdwUserDetails(String username, String[] profil, boolean canAccessToAdminView, String ip) {
 
-		log.info("Connexion-IP:"+ip+"-Login:"+username+"-Profil:"+droits+"-AdminView:"+canAccessToAdminView);
+		log.info("Connexion-IP:"+ip+"-Login:"+username+"-Profil:"+profil[0]+(profil.length==2?"-"+profil[1]:"")+"-AdminView:"+canAccessToAdminView);
 
 		this.username = username;
+		String droit = profil[0];
 
 		/* load Authorities */
-		authorities.add(new SimpleGrantedAuthority(droits));
+		authorities.add(new SimpleGrantedAuthority(droit));
 
 		//Si le user a le droit d'accéder à la vue admin
 		if(canAccessToAdminView){
 			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_ADMINVIEW_AUTORISE));
 		}
 
-		this.type = droits;
+		this.type = droit;
 
-		if(droits.equals(Utils.TEACHER_USER)){
+		if(droit.equals(Utils.TEACHER_USER)){
 			this.isEnseignant = true;
 		}
 
-		if(droits.equals(Utils.STUDENT_USER)){
+		if(droit.equals(Utils.STUDENT_USER)){
 			this.isEtudiant = true;
+			this.codetu = profil[1];
 		}
 
 		//Si admin ou teacher ou student , le user est autorisé a consulter un dossier étudiant
-		if(droits.equals(Utils.ADMIN_USER) || droits.equals(Utils.TEACHER_USER) || droits.equals(Utils.STUDENT_USER)){
+		if(droit.equals(Utils.ADMIN_USER) || droit.equals(Utils.TEACHER_USER) || droit.equals(Utils.STUDENT_USER)){
 			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE));
 		}
 
 		//Si admin
-		if(droits.equals(Utils.ADMIN_USER)){
+		if(droit.equals(Utils.ADMIN_USER)){
 			this.admin = true;
 			//on rajoute le droit teacher_user
 			this.isEnseignant = true;
