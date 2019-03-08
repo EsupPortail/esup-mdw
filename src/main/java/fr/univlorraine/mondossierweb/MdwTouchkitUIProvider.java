@@ -46,7 +46,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 	
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
-
+		/*
 		//Récupération du userAgent
 		if(event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
 			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
@@ -63,7 +63,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 				//On affiche la page proposant une redirection vers la version Desktop
 				return MdwFallbackUI.class;
 			}
-		}
+		}*/
 		//On va vers la version mobile
 		return MdwTouchkitUI.class;
 
@@ -81,9 +81,9 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		//Nom de la classe UI à utiliser
-		String uiBeanNameObj = "";
+		String uiBeanNameObj = "mdwTouchkitUI";
 		//Récupération du userAgent
-		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
+		/*String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 		// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
 		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
 				|| userAgent.contains("windows phone 9")) {
@@ -94,7 +94,8 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 			//On affiche la page proposant une redirection vers la version Desktop
 			LOG.debug("-uiBeanNameObj = mdwFallbackUI");
 			uiBeanNameObj = "mdwFallbackUI";
-		}
+		}*/
+
 
 		//Stored in VaadinSession to use it in
 		// the ApplicationScope later to initialize vaadin application scope beans

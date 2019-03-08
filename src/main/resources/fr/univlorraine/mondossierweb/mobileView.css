@@ -13,6 +13,10 @@ background: white !important;
 height: 35px !important;
 }
 
+.valo-ul .v-button-wrap {
+	font-size: larger;
+}
+
 .valo-ul .v-button-btn-reset .v-button-wrap {
 	color: #464646 !important;
   	text-shadow: none !important;
@@ -138,20 +142,6 @@ background-color: rgb(85,96,164) !important;
 }
 
 
-
-/*
-.valo-ul .v-slot-v-button-multiline{
-	width: 100% !important;
-}
-
-.valo-ul .v-button-multiline {
-height: 100% !important;
-width: 100% !important;
-    text-align: center !important;
-}
-*/
-
-
 .valo-ul .v-button .v-button-wrap .v-button-caption {
 line-height: normal !important;
 white-space: normal !important;
@@ -162,8 +152,6 @@ font-size: 15px !important;
 .valo-ul .v-disabled {
 opacity: 1.0 !important;
 }
-
-
 
 
 .valo-ul .v-panel-caption-v-colored-panel-caption {
@@ -191,11 +179,17 @@ font-weight: bold !important;
 
 .valo-ul .label-centre {
 	text-align: center !important;
+	margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: -3px;
 }
 
 .valo-ul .label-centre-bold {
 	text-align: center !important;
 	font-weight: bold !important;
+	margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: -3px;
 }
 
 .valo-ul .v-table-cell-wrapper {
@@ -216,10 +210,6 @@ vertical-align: middle !important;
 	overflow-y: auto !important;
 }
 
-
-.valo-ul .v-table-cell-wrapper > .v-widget {
-margin: 0px -15px 2px -10px !important;
-}
 
 .valo-ul .v-treetable [class*="cell-content"] {
  padding-left: 0px !important; 
@@ -243,11 +233,21 @@ overflow-x: hidden !important;
 	overflow-y: hidden !important;
 }
 
+.valo-ul .menu-mobile{
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.valo-ul .v-tabsheet-tabitemcell{
+	width: 100%;
+}
+
 
 .valo-ul .v-nav-button {
 	padding: 0 0px !important;
 	border: none !important;
-	color: white !important;
+	color: #00a3e8 !important;
+	font-weight: 400;
 	background-image: none !important;
 	background-color : transparent !important;
 	border-radius: 0 !important;
@@ -267,7 +267,22 @@ overflow-x: hidden !important;
 }
 
 .valo-ul .v-button-without-padding{
-	padding: 0 5px !important;
+min-width: 35px;
+padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 3px;
+}
+
+.valo-ul .v-menu-nav-button {
+	color : white !important;
+	border: none !important;
+	background-color: transparent !important;
+	background-image: none !important;
+}
+
+.valo-ul .v-popover-window-button {
+		min-width: 80px;
+    padding-top: 3px;
 }
 
 .valo-ul .v-popover-button:before {
@@ -275,7 +290,40 @@ content: none !important;
 
 }
 
+.valo-ul .v-tabsheet-tabs-menu-mobile {
+	width: 100%;
+}
 
+.valo-ul .v-tabsheet-tabcontainer-menu-mobile {
+	width: 100%;
+}
+
+.valo-ul .v-tabsheet-tabitemcell {
+    display: table-cell;
+    text-align: center;
+}
+.valo-ul .v-tabsheet-tabcontainer table, .v-tabsheet-tabcontainer tbody, .v-tabsheet-tabcontainer tr {
+    display: inline-flex;
+}
+
+.valo-ul .v-caption {
+	padding-left: 10px;
+    padding-right: 10px;
+}
+
+.valo-ul .v-tabsheet-tabitemcell .v-caption {
+	font-weight: 500;
+	padding-left: 10px;
+    padding-right: 10px;
+    margin: auto;
+    width: 100%;
+}
+
+.valo-ul .v-tabsheet-tabcontainer tbody, .v-tabsheet-tabcontainer tr {
+width:100%;	
+width: 100% !important;
+}
+	
 .valo-ul .v-popover-button .v-button-wrap {
 	background-image: none !important;
 	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0) !important;
@@ -301,6 +349,9 @@ text-align: center !important;
 
 .valo-ul .v-window-header {
  line-height: normal !important;
+ padding-left: 20px;
+    padding-top: 1px;
+ font-weight: 600;
 }
 
 
@@ -322,10 +373,6 @@ text-shadow: none !important;
 	display: flex;
 }	
 
-.valo-ul .v-touchkit-toolbar .v-button {
-	height: 100% !important;
-}	
-
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar .v-button-selected {
 	color: white !important;
   background: rgba(85, 96, 164, 1.0) !important;
@@ -345,16 +392,10 @@ text-shadow: none !important;
 }
 
 
-.valo-ul .v-icon + .v-captiontext, .valo-ul .v-icon + span {
-  margin-left: -5px !important;
-}
-
-
 
 .valo-ul .v-Notification {
 	background: rgb(32, 32, 35) !important;
-	    border-radius: 8px !important;
-	    width: 98% !important;
+	    border-radius: 0px !important;
 }
 
 .valo-ul .v-Notification h1 {

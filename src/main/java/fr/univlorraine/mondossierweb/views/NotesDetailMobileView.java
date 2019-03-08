@@ -61,12 +61,11 @@ import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 /**
  * Page du détail des notes sur mobile
  */
+@SuppressWarnings("serial")
 @Component @Scope("prototype")
 @SpringView(name = NotesDetailMobileView.NAME)
 @JavaScript("notesDetailMobileView.js")
 public class NotesDetailMobileView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = 2295120253787356472L;
 
 	private Logger LOG = LoggerFactory.getLogger(NotesDetailMobileView.class);
 
@@ -159,7 +158,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				returnButton = new Button();
 				returnButton.setIcon(FontAwesome.ARROW_LEFT);
 				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-				returnButton.setStyleName("v-nav-button");
+				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					MdwTouchkitUI.getCurrent().navigateToResumeNotes();
 				});
@@ -178,7 +177,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
 					significationButton = new Button();
 					significationButton.setIcon(FontAwesome.INFO_CIRCLE);
-					significationButton.setStyleName("v-nav-button");
+					significationButton.setStyleName("v-menu-nav-button");
 					significationButton.addClickListener(e->{
 						//afficher les significations
 						SignificationsMobileWindow w = new SignificationsMobileWindow(true);
@@ -205,7 +204,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				layout.setStyleName("v-scrollableelement");
 
 				/* Titre */
-				setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
+				//setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
 
 
 				List<ElementPedagogique> lelp = MdwTouchkitUI.getCurrent().getEtudiant().getElementsPedagogiques();

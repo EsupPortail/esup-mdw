@@ -64,9 +64,11 @@ public class MdwUIProvider extends SpringUIProvider  {
 			boolean isMobile =currentDevice.isMobile();
 			
 			// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-			if(isMobile && (userAgent.contains("webkit")
+			/*if(isMobile && (userAgent.contains("webkit")
 					|| userAgent.contains("windows phone 8")
-					|| userAgent.contains("windows phone 9"))){
+					|| userAgent.contains("windows phone 9"))){*/
+			// on teste que l'utilisateur est sur mobile
+			if(isMobile){
 				//On affiche la page proposant une redirection vers la version Mobile
 				LOG.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 				return MdwFallbackTouchkitUI.class;

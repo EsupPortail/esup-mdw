@@ -34,11 +34,6 @@ import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.addon.touchkit.annotations.OfflineModeEnabled;
-import com.vaadin.addon.touchkit.ui.NavigationManager;
-import com.vaadin.addon.touchkit.ui.TabBarView;
-import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeEvent;
-import com.vaadin.addon.touchkit.ui.TabBarView.SelectedTabChangeListener;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
@@ -52,10 +47,14 @@ import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UI;
 
@@ -78,6 +77,7 @@ import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
+import fr.univlorraine.mondossierweb.views.NavigationManagerView;
 import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
 import fr.univlorraine.mondossierweb.views.NotesMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
@@ -95,7 +95,7 @@ import lombok.Setter;
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
 @SuppressWarnings("serial")
-@OfflineModeEnabled(false)
+//@OfflineModeEnabled(false)
 public class MdwTouchkitUI extends GenericUI{
 
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
@@ -157,10 +157,12 @@ public class MdwTouchkitUI extends GenericUI{
 	private String dossierEtuFromView;
 
 	//le NavigationManager pour l'affichage des notes et du détail des notes
-	private NavigationManager noteNavigationManager;
+	//private NavigationManager noteNavigationManager;
+	private NavigationManagerView noteNavigationManager;
 
 	//La barre de menu affichée dans le dossier étudiant
-	private TabBarView menuEtudiant;
+	//private TabBarView menuEtudiant;
+	private TabSheet menuEtudiant;
 
 	//Onglet infoAnnuelles du dossier étudiant
 	private Tab tabInfoAnnuelles;
@@ -203,14 +205,20 @@ public class MdwTouchkitUI extends GenericUI{
 	protected void init(VaadinRequest request) {
 		LOG.debug("init(); MdwTouchkitUI");
 
+		if( !PropertyUtils.isWebSocketPushEnabled()){
+			getPushConfiguration().setTransport(Transport.LONG_POLLING);
+		} else{
+			getPushConfiguration().setTransport(Transport.WEBSOCKET_XHR);
+		}
+
 		VaadinSession.getCurrent().setErrorHandler(e -> {
-			
+
 			/* Gérer les erreurs quand l'application est en maintenance */
 			if(!applicationActive()){
 				afficherMessageMaintenance();
 				return;
 			}
-			
+
 			Throwable cause = e.getThrowable();
 			while (cause instanceof Throwable) {
 				/* Gère les accès non autorisés */
@@ -219,7 +227,7 @@ public class MdwTouchkitUI extends GenericUI{
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
-				
+
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
@@ -393,7 +401,7 @@ public class MdwTouchkitUI extends GenericUI{
 		setContent(contentLayout);
 		navigator.navigateTo(view);
 	}
-	
+
 	private void afficherMessageMaintenance(){
 		displayViewFullScreen(AccesBloqueView.NAME);
 	}
@@ -414,7 +422,8 @@ public class MdwTouchkitUI extends GenericUI{
 
 		Notification note = new Notification(text, "", Notification.TYPE_TRAY_NOTIFICATION, true);
 		note.setPosition(Position.MIDDLE_CENTER);
-		note.setDelayMsec(6000);
+		//note.setDelayMsec(6000);
+		note.setDelayMsec(600000000);
 		note.show(this.getPage());
 
 
@@ -525,12 +534,16 @@ public class MdwTouchkitUI extends GenericUI{
 		//Si le menuEtudiant n'a jamais été initialisé
 		if(menuEtudiant==null){
 			//On créé le menuEtudiant
-			menuEtudiant = new TabBarView();
+			menuEtudiant = new TabSheet();
+			menuEtudiant.setSizeFull();
+			menuEtudiant.setStyleName("menu-mobile");
+			//menuEtudiant.setTabCaptionsAsHtml(true);
 		}
 
 		//Création de l'onglet Informations
 		tabInfoAnnuelles = menuEtudiant.addTab(informationsAnnuellesMobileView, applicationContext.getMessage("mobileUI.infoannuelles.title", null, getLocale()), FontAwesome.INFO);
 		tabInfoAnnuelles.setId("tabInfoAnnuelles");
+		//tabInfoAnnuelles.setCaption("<div class=\"valotabcaption\">"+tabInfoAnnuelles.getCaption()+"</div>");
 
 		//Création de l'onglet Calendrier
 		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
@@ -541,10 +554,10 @@ public class MdwTouchkitUI extends GenericUI{
 		//Si le navigationManager des notes est null
 		if(noteNavigationManager==null){
 			//On créé le navigationManager
-			noteNavigationManager= new NavigationManager();
+			noteNavigationManager= new NavigationManagerView();
 		}
 		//le composant affiché dans le navigationManager est la vue des notes
-		noteNavigationManager.setCurrentComponent(notesMobileView);
+		noteNavigationManager.setFirstComponent(notesMobileView);
 		//le composant suivant à afficher dans le navigationManager est la vue du détail des notes
 		noteNavigationManager.setNextComponent(notesDetailMobileView);
 		//Création de l'onglet Résultats
@@ -552,20 +565,20 @@ public class MdwTouchkitUI extends GenericUI{
 		tabNotes.setId("tabNotes");
 
 		//Détection du retour sur la vue du détail des notes pour mettre à jour le JS
-		menuEtudiant.addListener(new SelectedTabChangeListener() {
+		menuEtudiant.addSelectedTabChangeListener(new SelectedTabChangeListener() {
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {
 				//test si on se rend sur la vue des notes
-				if(menuEtudiant.getSelelectedTab().equals(tabNotes)){
+				if(menuEtudiant.getSelectedTab().equals(noteNavigationManager)){
 					//test si on se rend sur le détail des notes
-					if(noteNavigationManager.getCurrentComponent().equals(notesDetailMobileView)){
+					if(noteNavigationManager.getCurrentView().equals(notesDetailMobileView)){
 						//On met à jour le JS (qui est normalement perdu, sans explication)
 						notesDetailMobileView.refreshJavascript();
 					}
 				}
 
 				//test si on se rend sur la vue calendrier
-				if(menuEtudiant.getSelelectedTab().equals(tabCalendrier)){
+				if(menuEtudiant.getSelectedTab().equals(calendrierMobileView)){
 					/* Message d'info */
 					if(applicationContext.getMessage(CalendrierMobileView.NAME+".message.info", null, getLocale()) != null){
 						Notification note = new Notification(applicationContext.getMessage(CalendrierMobileView.NAME+".message.info", null, getLocale()),"", Notification.TYPE_TRAY_NOTIFICATION, true);
@@ -656,7 +669,7 @@ public class MdwTouchkitUI extends GenericUI{
 			//On refresh la vue du détail des notes
 			notesDetailMobileView.refresh(etape, etudiant.getCod_etu());
 			//On navigue sur la vue du détail des notes
-			noteNavigationManager.navigateTo(notesDetailMobileView);
+			noteNavigationManager.navigateToNextView();
 		}
 
 

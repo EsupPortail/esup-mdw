@@ -107,7 +107,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				returnButton = new Button();
 				returnButton.setIcon(FontAwesome.ARROW_LEFT);
 				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-				returnButton.setStyleName("v-nav-button");
+				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
 							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
@@ -137,7 +137,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					//Bouton Search
 					Button searchButton = new Button();
 					searchButton.setIcon(FontAwesome.SEARCH);
-					searchButton.setStyleName("v-nav-button");
+					searchButton.setStyleName("v-menu-nav-button");
 					navbar.addComponent(searchButton);
 					navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
 					searchButton.addClickListener(e->{
@@ -167,7 +167,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				mailPanel.setStyleName("panel-without-bottom-line-separator");
 				HorizontalLayout mailLayout = new HorizontalLayout();
 				mailLayout.setSizeFull();
-				mailLayout.setHeight("25px");
+				mailLayout.setHeight("35px");
 				Label mailLabel = new Label();
 
 				mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";

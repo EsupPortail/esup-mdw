@@ -228,7 +228,7 @@ public class FiltreInscritsMobileWindow extends Window {
         bLayout.setSizeFull();
         Button closeButton = new Button(applicationContext.getMessage(NAME+".filtrerBtn", null, getLocale()));
         closeButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-        closeButton.addStyleName("v-popover-button");
+        closeButton.addStyleName("v-popover-window-button");
         demandeFiltrage=false;
         closeButton.addClickListener(e->{
         	//retourner vetSelectionnee et groupeSelectionne;

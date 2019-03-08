@@ -122,7 +122,7 @@ public class HelpMobileWindow extends Window {
 		// Bouton "Fermer"
 		btnFermer.setIcon(FontAwesome.CHECK);
 		btnFermer.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnFermer.addStyleName("v-popover-button");
+		btnFermer.addStyleName("v-popover-window-button");
 		btnFermer.addClickListener(e -> close());
 		buttonsLayout.addComponent(btnFermer);
 		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);

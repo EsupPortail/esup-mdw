@@ -118,7 +118,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 				returnButton = new Button();
 				returnButton.setIcon(FontAwesome.ARROW_LEFT);
 				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-				returnButton.setStyleName("v-nav-button");
+				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
 							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
@@ -146,7 +146,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
 				significationButton = new Button();
 				significationButton.setIcon(FontAwesome.INFO_CIRCLE);
-				significationButton.setStyleName("v-nav-button");
+				significationButton.setStyleName("v-menu-nav-button");
 				significationButton.addClickListener(e->{
 					//afficher les significations
 					SignificationsMobileWindow w = new SignificationsMobileWindow(false);

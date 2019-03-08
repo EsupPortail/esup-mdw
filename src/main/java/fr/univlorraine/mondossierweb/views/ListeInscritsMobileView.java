@@ -158,7 +158,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			//Bouton retour
 			returnButton = new Button();
 			returnButton.setIcon(FontAwesome.ARROW_LEFT);
-			returnButton.setStyleName("v-nav-button");
+			returnButton.setStyleName("v-menu-nav-button");
 			returnButton.addClickListener(e->{
 				if(MdwTouchkitUI.getCurrent().getTrombinoscopeFromView()!=null &&
 						MdwTouchkitUI.getCurrent().getTrombinoscopeFromView().equals(FavorisMobileView.NAME)){
@@ -191,7 +191,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Création du bouton pour ajouter l'objet aux favoris
 				Button btnAjoutFavori = new Button("+");
 				btnAjoutFavori.setIcon(FontAwesome.STAR_O);
-				btnAjoutFavori.setStyleName("v-nav-button");
+				btnAjoutFavori.setStyleName("v-menu-nav-button");
 				btnAjoutFavori.addClickListener(e->{
 
 					//creation du favori en base sur le clic du bouton
@@ -218,7 +218,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				if((w.getListeEtapes()!=null && w.getListeEtapes().size()>0) || (w.getListeGroupes()!=null && w.getListeGroupes().size()>0)){
 					filterButton = new Button();
 					filterButton.setIcon(FontAwesome.ELLIPSIS_V);
-					filterButton.setStyleName("v-nav-button");
+					filterButton.setStyleName("v-menu-nav-button");
 
 					filterButton.addClickListener(e->{
 						w.addCloseListener(f->{

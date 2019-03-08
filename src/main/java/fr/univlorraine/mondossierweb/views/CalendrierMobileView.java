@@ -109,7 +109,7 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 				returnButton = new Button();
 				returnButton.setIcon(FontAwesome.ARROW_LEFT);
 				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-				returnButton.setStyleName("v-nav-button");
+				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
 							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){

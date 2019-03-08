@@ -270,7 +270,7 @@ public class SignificationsMobileWindow extends Window {
         Button closeButton = new Button();
         //closeButton.setCaption(applicationContext.getMessage("significationsWindow.btnFermer", null, getLocale()));
         closeButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-        closeButton.addStyleName("v-popover-button");
+        closeButton.addStyleName("v-popover-window-button");
         closeButton.setIcon(FontAwesome.CHECK);
         closeButton.addClickListener(e->{
         	close();

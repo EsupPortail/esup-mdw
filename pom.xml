@@ -826,12 +826,12 @@
 	<dependencies>
 	
 		<!-- Vaadin dependencies -->
-		  <dependency>
+		<!--  <dependency>
 			<groupId>com.vaadin.addon</groupId>
 			<artifactId>vaadin-touchkit-agpl</artifactId>
 			<version>4.1.0</version>
 			<type>jar</type>
-		</dependency>
+		</dependency>-->  
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>

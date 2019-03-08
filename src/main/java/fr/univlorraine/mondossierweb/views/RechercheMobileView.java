@@ -153,7 +153,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			//Bouton retour
 			returnButton = new Button();
 			returnButton.setIcon(FontAwesome.ARROW_LEFT);
-			returnButton.setStyleName("v-nav-button");
+			returnButton.setStyleName("v-menu-nav-button");
 			returnButton.addClickListener(e->{
 				MdwTouchkitUI.getCurrent().backFromSearch();
 			});

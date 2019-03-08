@@ -86,6 +86,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	private Button infoButton;
+	
+	private Button searchButton;
 
 	private List<String> liste_types_inscrits;
 
@@ -96,6 +98,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	private BeanItemContainer<Favoris> bic;
 
 	private HorizontalLayout labelAucunFavoriLayout ;
+	
+	
 
 	/**
 	 * Initialise la vue
@@ -131,7 +135,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			//Bouton info
 			infoButton = new Button();
 			infoButton.setIcon(FontAwesome.INFO);
-			infoButton.setStyleName("v-nav-button");
+			infoButton.setStyleName("v-menu-nav-button");
 			infoButton.addClickListener(e->{
 				/**
 				 * NOUVELLE VERSION
@@ -160,9 +164,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			navbar.setComponentAlignment(labelFav, Alignment.MIDDLE_CENTER);
 
 			//Bouton Search
-			Button searchButton = new Button();
+			searchButton = new Button();
 			searchButton.setIcon(FontAwesome.SEARCH);
-			searchButton.setStyleName("v-nav-button");
+			searchButton.setStyleName("v-menu-nav-button");
 			navbar.addComponent(searchButton);
 			navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
 			searchButton.addClickListener(e->{

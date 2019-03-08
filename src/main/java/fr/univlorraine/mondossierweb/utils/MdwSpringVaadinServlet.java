@@ -44,8 +44,6 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
     protected void servletInitialized() throws ServletException {
         getService().addSessionInitListener(new SessionInitListener() {
 
-            private static final long serialVersionUID = -6307820453486668084L;
-
             @Override
             public void sessionInit(SessionInitEvent sessionInitEvent)
                     throws ServiceException {
