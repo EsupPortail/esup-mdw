@@ -97,6 +97,9 @@
 			<logger name="fr.univlorraine.mondossierweb" level="debug" />
 		</else>
 	</if>
+	
+	<logger name="fr.univlorraine.mondossierweb.security" level="info" />
+	
 
 	<root level="warn">
 		<appender-ref ref="consoleAppender" />

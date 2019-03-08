@@ -145,9 +145,8 @@ public class MdwUserDetailsService implements UserDetailsService {
 	}
 
 
-
 	public String determineTypeUser(String username) {
-		log.info("   determineTypeUser "+username);
+		log.debug("   determineTypeUser "+username);
 
 		List<String> llogins=configController.getListeLoginsBloques();
 		if(llogins!=null && llogins.contains(username)){
@@ -313,7 +312,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 	 */
 	public List<String> typeLdap(final String login) {
 		try {
-			log.info("     typeLdap searchForUser : "+login);
+			log.debug("     typeLdap searchForUser : "+login);
 			if(ldapUserSearch.searchForUser(login)!=null){
 				DirContextOperations dco = ldapUserSearch.searchForUser(login);
 				if(dco!=null){
