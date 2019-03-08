@@ -422,8 +422,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 		Notification note = new Notification(text, "", Notification.TYPE_TRAY_NOTIFICATION, true);
 		note.setPosition(Position.MIDDLE_CENTER);
-		//note.setDelayMsec(6000);
-		note.setDelayMsec(600000000);
+		note.setDelayMsec(6000);
 		note.show(this.getPage());
 
 
