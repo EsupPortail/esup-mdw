@@ -52,6 +52,23 @@
 			<pattern>${defaultPattern}</pattern>
 		</encoder>
 	</appender>
+	
+	<appender name="securityFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logsPath}/mondossierweb-security.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${logsPath}/mondossierweb-%d.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 1MB -->
+				<maxFileSize>1MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- deletes older files -->
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${defaultPattern}</pattern>
+		</encoder>
+	</appender>
 
 	<!-- Regroupe les mails d'erreur pour éviter le spam -->
 	<appender name="mailAppender" class="fr.univlorraine.tools.logback.GroupEventsSMTPAppender">
@@ -98,7 +115,11 @@
 		</else>
 	</if>
 	
-	<logger name="fr.univlorraine.mondossierweb.security" level="info" />
+	<logger name="fr.univlorraine.mondossierweb.security" level="info" additivity="false">
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="securityFileAppender" />
+		<appender-ref ref="mailAppender" />
+	</logger>
 	
 
 	<root level="warn">
