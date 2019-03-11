@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Viewport;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -96,6 +97,7 @@ import lombok.Setter;
 @StyleSheet("mobileView.css")
 @SuppressWarnings("serial")
 //@OfflineModeEnabled(false)
+@Viewport("user-scalable=no,initial-scale=1.0")
 public class MdwTouchkitUI extends GenericUI{
 
 	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
