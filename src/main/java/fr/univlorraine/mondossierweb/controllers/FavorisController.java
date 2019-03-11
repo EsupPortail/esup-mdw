@@ -36,11 +36,13 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.VersionEtapeService;
 import fr.univlorraine.mondossierweb.services.apogee.VersionEtapeServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Gestion des favoris
  */
 @Component
+@Slf4j
 public class FavorisController {
 
 
@@ -65,7 +67,11 @@ public class FavorisController {
 	private transient UserController userController;
 
 	public List<Favoris> getFavoris() {
-		return getFavorisFromLogin(userController.getCurrentUserName());
+		if(userController.isEnseignant()){
+			return getFavorisFromLogin(userController.getCurrentUserName());
+		}
+		log.error("Acces aux favoris par un utilisateur non autorisé "+userController.getCurrentUserName());
+		return null;
 	}
 	
 	public List<Favoris> getFavorisFromLogin(String login) {
