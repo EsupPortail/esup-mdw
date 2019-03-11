@@ -295,7 +295,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						}else{
 							libElpLabel.setStyleName("bold-label");
 						}
-						libVerticalLayout.addComponent(libElpLabel);
+						
 
 						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
 						if(compteurElp>1){
@@ -325,9 +325,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 								libLevelSpaceLayout.setHeight("8px");
 								levelMainLayout.addComponent(libLevelSpaceLayout);
 							}
-
+							//Ajout des indicateurs dans le layout
 							libVerticalLayout.addComponent(levelMainLayout);
 						}
+						//Ajout du libellé dans le layout
+						libVerticalLayout.addComponent(libElpLabel);
+						
 						libElpLayout.addComponent(libVerticalLayout);
 
 						HorizontalLayout noteLayout = new HorizontalLayout();

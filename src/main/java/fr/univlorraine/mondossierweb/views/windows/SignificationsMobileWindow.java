@@ -139,7 +139,7 @@ public class SignificationsMobileWindow extends Window {
 				Label libLevelLayout = new Label();
 				libLevelLayout.setSizeFull();
 				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-green-indicator");
+				libLevelLayout.setStyleName("layout-level-primary-indicator");
 				levelMainLayout1.addComponent(libLevelLayout);
 			}
 			//On pense avoir 7 level maxi 
@@ -168,7 +168,7 @@ public class SignificationsMobileWindow extends Window {
 				Label libLevelLayout = new Label();
 				libLevelLayout.setSizeFull();
 				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-green-indicator");
+				libLevelLayout.setStyleName("layout-level-primary-indicator");
 				levelMainLayout2.addComponent(libLevelLayout);
 			}
 			//On pense avoir 7 level maxi 
@@ -198,7 +198,7 @@ public class SignificationsMobileWindow extends Window {
 				Label libLevelLayout = new Label();
 				libLevelLayout.setSizeFull();
 				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-green-indicator");
+				libLevelLayout.setStyleName("layout-level-primary-indicator");
 				levelMainLayout3.addComponent(libLevelLayout);
 			}
 			//On pense avoir 7 level maxi 
@@ -229,7 +229,7 @@ public class SignificationsMobileWindow extends Window {
 				Label libLevelLayout = new Label();
 				libLevelLayout.setSizeFull();
 				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-green-indicator");
+				libLevelLayout.setStyleName("layout-level-primary-indicator");
 				levelMainLayout4.addComponent(libLevelLayout);
 			}
 			//On pense avoir 7 level maxi 

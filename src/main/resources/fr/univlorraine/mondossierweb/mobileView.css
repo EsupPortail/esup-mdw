@@ -124,12 +124,27 @@ width: 100% !important;
 }
 
 .valo-ul .layout-level-blue-indicator{
-	border-top: 4px solid #3057ED !important;
+	border-bottom: 4px solid #3057ed8a !important;
 	vertical-align: bottom !important;
+}
+.valo-ul .v-slot.v-slot-layout-level-blue-indicator {
+    display: inline-flex;
+}
+
+.valo-ul .v-slot-level-indicator-layout {
+	max-height : 8px;
 }
 
 .valo-ul .layout-level-green-indicator{
-	border-top: 4px solid #0DA50D !important;
+	border-bottom: 4px solid #0da50d73 !important;
+	vertical-align: bottom !important;
+}
+.valo-ul .v-slot.v-slot-layout-level-green-indicator {
+    display: inline-flex;
+}
+
+.valo-ul .layout-level-primary-indicator {
+	border-top: 4px solid rgb(85,96,164) !important;
 	vertical-align: bottom !important;
 }
 
@@ -296,6 +311,8 @@ content: none !important;
 
 .valo-ul .v-tabsheet-tabcontainer-menu-mobile {
 	width: 100%;
+	box-shadow : 0 2px 2px -10px rgba(0,0,0,.2), 0 3px 15px 0 rgb(85,96,164), 0 1px 18px 0 rgba(0,0,0,.12);
+	z-index: 10;
 }
 
 .valo-ul .v-tabsheet-tabitemcell {
