@@ -92,8 +92,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MdwTouchkitUI && (userController.isEnseignant() || userController.isEtudiant()) && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null){
-			//On vérifie qu'un étudiant consulte bien SON dossier
-			if(userController.isEnseignant() || MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(userController.getCodetu())){
 				removeAllComponents();
 
 				/* Style */
@@ -330,11 +328,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 				addComponent(globalLayout);
 				setExpandRatio(globalLayout, 1);
-			}else{
-				log.error("Erreur possible de session : isEnseignant:"+userController.isEnseignant()+" etudiantCodEtu:"+ MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu()+" userCodEtu:"+userController.getCodetu());
-				/* Erreur */
-				addComponent(new BasicErreurMessageLayout(applicationContext));
-			}
 		}
 	}
 

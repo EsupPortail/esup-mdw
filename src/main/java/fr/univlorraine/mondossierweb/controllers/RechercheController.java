@@ -116,8 +116,6 @@ public class RechercheController {
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
 				MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
-			}else{
-				log.error("Etudiant "+userController.getCurrentUserName()+"("+userController.getCodetu()+") tente acceder une composante ");
 			}
 		}
 
@@ -128,14 +126,12 @@ public class RechercheController {
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
 				MainUI.getCurrent().navigateToListeInscrits(parameterMap);	
-			}else{
-				log.error("Etudiant "+userController.getCurrentUserName()+"("+userController.getCodetu()+") tente acceder une lise des inscrits ");
 			}
 		}
 
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 			//Si l'utilisateur est enseignant ou si il s'agit bien de l'étudiant concerné
-			if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
+			//if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
 				parameterMap.replace("type",Utils.ETU);
 				MainUI.getCurrent().setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
@@ -145,9 +141,7 @@ public class RechercheController {
 				}else{
 					MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
 				}
-			}else{
-				log.error("Etudiant "+userController.getCurrentUserName()+"("+userController.getCodetu()+") tente acceder au dossier de etudiant : "+code);
-			}
+			//}
 		}
 	}
 
@@ -176,8 +170,6 @@ public class RechercheController {
 		}
 
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
-			//Si l'utilisateur est enseignant ou si il s'agit bien de l'étudiant concerné
-			if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
 				parameterMap.replace("type",Utils.ETU);
 
 				if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
@@ -193,9 +185,6 @@ public class RechercheController {
 				}else{
 					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
 				}
-			}else{
-				log.error("Etudiant "+userController.getCurrentUserName()+"("+userController.getCodetu()+") tente acceder au dossier de etudiant : "+code);
-			}
 		}
 	}
 

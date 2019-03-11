@@ -101,8 +101,6 @@ public class EtatCivilView extends VerticalLayout implements View {
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant())){
 			if( MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
-				//On vérifie qu'un étudiant consulte bien SON dossier
-				if(userController.isEnseignant() || MainUI.getCurrent().getEtudiant().getCod_etu().equals(userController.getCodetu())){
 					LOG.debug(userController.getCurrentUserName()+" init EtatCivilView");
 
 					/* Style */
@@ -251,11 +249,6 @@ public class EtatCivilView extends VerticalLayout implements View {
 					}
 					addComponent(globalLayout);
 
-				}else{
-					LOG.error("Erreur possible de session : isEnseignant:"+userController.isEnseignant()+" etudiantCodEtu:"+ MainUI.getCurrent().getEtudiant().getCod_etu()+" userCodEtu:"+userController.getCodetu());
-					/* Erreur */
-					addComponent(new BasicErreurMessageLayout(applicationContext));
-				}
 			}else{
 				/* Erreur */
 				addComponent(new BasicErreurMessageLayout(applicationContext));
