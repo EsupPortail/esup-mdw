@@ -281,7 +281,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 
 			//Si on peut proposer le certificat de scolarité
-			if(etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant())){
+			if(etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant(), false)){
 				//On affiche le bouton pour éditer le certificat de scolarité
 				Button bCertificatInscription=new Button();
 				//bCertificatInscription.setIcon(FontAwesome.FILE_TEXT);

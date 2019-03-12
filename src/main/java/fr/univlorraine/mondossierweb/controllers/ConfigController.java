@@ -72,6 +72,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("certificatScolaritePDF");
 	}
 	
+	public boolean isCertificatScolaritePdfMobile() {
+		return getBooleanValueForParameter("certificatScolaritePdfMobile");
+	}
+	
 	public boolean isAttestationAffiliationSSO(){
 		return getBooleanValueForParameter("attestationAffiliationSSO");
 	}
@@ -443,6 +447,8 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+	
 
 
 

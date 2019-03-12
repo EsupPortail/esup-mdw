@@ -52,7 +52,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
@@ -100,12 +102,19 @@ public class InscriptionController {
 	public com.vaadin.server.Resource exportPdf(Inscription inscription) {
 
 		// verifie les autorisations
-		if(!etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant())){
-			return null;
+		if(GenericUI.getCurrent() instanceof MainUI){
+			if(!etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant(),false)){
+				return null;
+			}
+		}
+		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
+			if(!etudiantController.proposerCertificat(inscription, MdwTouchkitUI.getCurrent().getEtudiant(),true)){
+				return null;
+			}
 		}
 
 		
-		String nomFichier = applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault())+"_" + inscription.getCod_etp() + "_" + inscription.getCod_anu().replace('/', '-') + "_" + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
+		String nomFichier = applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault())+"_" + inscription.getCod_etp() + "_" + inscription.getCod_anu().replace('/', '-') + "_" + GenericUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
 		
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
@@ -123,7 +132,7 @@ public class InscriptionController {
 						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
-					creerPdfCertificatScolarite(document,MainUI.getCurrent().getEtudiant(), inscription);
+					creerPdfCertificatScolarite(document,GenericUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();
 					baosPDF.close();
 					//Creation de l'export
@@ -265,7 +274,7 @@ public class InscriptionController {
 				document.add(pLieuNaissance);
 			}
 
-			String anneeEnCours = etudiantController.getAnneeUnivEnCoursToDisplay(MainUI.getCurrent());
+			String anneeEnCours = etudiantController.getAnneeUnivEnCoursToDisplay(GenericUI.getCurrent());
 			String inscritCertif = "";
 			if (inscription.getCod_anu().equals(anneeEnCours)) {
 				inscritCertif = applicationContext.getMessage("pdf.certificat.inscrit", null, Locale.getDefault());
