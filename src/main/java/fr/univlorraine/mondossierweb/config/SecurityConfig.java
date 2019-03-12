@@ -22,8 +22,6 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import net.sf.ehcache.CacheManager;
-
 import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
@@ -41,14 +39,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
-import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
+import net.sf.ehcache.CacheManager;
 
 
 
