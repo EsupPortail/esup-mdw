@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,6 +53,10 @@ public class UiController {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient LockController lockController;
+	@Resource
+	private transient ObjectFactory<ConfirmWindow> confirmWindowFactory;
+	@Resource
+	private transient ObjectFactory<InputWindow> inputWindowFactory;
 
 	/** Thread pool  */
 	private ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -112,7 +117,8 @@ public class UiController {
 	 * Permet la saisie et l'envoi d'un message à tous les clients connectés
 	 */
 	public void sendMessage() {
-		InputWindow inputWindow = new InputWindow(applicationContext.getMessage("admin.sendMessage.message", null, UI.getCurrent().getLocale()), applicationContext.getMessage("admin.sendMessage.title", null, UI.getCurrent().getLocale()));
+		InputWindow inputWindow = inputWindowFactory.getObject();
+		inputWindow.init(applicationContext.getMessage("admin.sendMessage.message", null, UI.getCurrent().getLocale()), applicationContext.getMessage("admin.sendMessage.title", null, UI.getCurrent().getLocale()));
 		inputWindow.addBtnOkListener(text -> {
 			if (text instanceof String && !text.isEmpty()) {
 				Notification notification = new Notification(applicationContext.getMessage("admin.sendMessage.notificationCaption", new Object[] {text}, UI.getCurrent().getLocale()), Type.TRAY_NOTIFICATION);
@@ -149,7 +155,8 @@ public class UiController {
 	 * @param user
 	 */
 	public void confirmKillUser(UserDetails user) {
-		ConfirmWindow confirmWindow = new ConfirmWindow(applicationContext.getMessage("admin.uiList.confirmKillUser", new Object[]{user.getUsername()}, UI.getCurrent().getLocale()));
+		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
+		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmKillUser", new Object[]{user.getUsername()}, UI.getCurrent().getLocale()));
 		confirmWindow.addBtnOuiListener(e -> killUser(user));
 		UI.getCurrent().addWindow(confirmWindow);
 	}
@@ -173,7 +180,8 @@ public class UiController {
 	 */
 	public void confirmKillSession(VaadinSession session) {
 		SecurityContext securityContext = (SecurityContext) session.getSession().getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-		ConfirmWindow confirmWindow = new ConfirmWindow(applicationContext.getMessage("admin.uiList.confirmKillSession", new Object[]{session.getSession().getId(), securityContext.getAuthentication().getName()}, UI.getCurrent().getLocale()));
+		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
+		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmKillSession", new Object[]{session.getSession().getId(), securityContext.getAuthentication().getName()}, UI.getCurrent().getLocale()));
 		confirmWindow.addBtnOuiListener(e -> killSession(session));
 		UI.getCurrent().addWindow(confirmWindow);
 	}
@@ -191,7 +199,8 @@ public class UiController {
 	 * @param ui
 	 */
 	public void confirmKillUI(UI ui) {
-		ConfirmWindow confirmWindow = new ConfirmWindow(applicationContext.getMessage("admin.uiList.confirmKillUI", null, UI.getCurrent().getLocale()));
+		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
+		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmKillUI", null, UI.getCurrent().getLocale()));
 		confirmWindow.addBtnOuiListener(e -> killUI(ui));
 		UI.getCurrent().addWindow(confirmWindow);
 	}
@@ -209,7 +218,8 @@ public class UiController {
 	 * @param obj
 	 */
 	public void confirmRemoveLock(Object lock) {
-		ConfirmWindow confirmWindow = new ConfirmWindow(applicationContext.getMessage("admin.uiList.confirmRemoveLock", new Object[]{lock}, UI.getCurrent().getLocale()));
+		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
+		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmRemoveLock", new Object[]{lock}, UI.getCurrent().getLocale()));
 		confirmWindow.addBtnOuiListener(e -> lockController.removeLock(lock));
 		UI.getCurrent().addWindow(confirmWindow);
 	}

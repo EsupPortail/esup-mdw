@@ -23,6 +23,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -77,6 +78,11 @@ public class AdminView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient ObjectFactory<SwapUtilisateurWindow> swapUtilisateurWindowFactory;
+	@Resource
+	private transient ObjectFactory<PreferencesApplicationWindow> preferencesApplicationWindowFactory;
+	
 
 
 
@@ -220,7 +226,8 @@ public class AdminView extends VerticalLayout implements View {
 		btnEdit.addClickListener(e -> {
 			if (confAppTable.getValue() instanceof PreferencesApplication) {
 				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
-				PreferencesApplicationWindow paw = new PreferencesApplicationWindow((PreferencesApplication) confAppTable.getValue());
+				PreferencesApplicationWindow paw = preferencesApplicationWindowFactory.getObject();
+				paw.init((PreferencesApplication) confAppTable.getValue());
 				paw.addCloseListener(f->init());
 				tabSelectedPosition=tabNumber;
 				MainUI.getCurrent().addWindow(paw);
@@ -251,8 +258,8 @@ public class AdminView extends VerticalLayout implements View {
 		btnEditSwap.setEnabled(false);
 		btnEditSwap.addClickListener(e -> {
 			if (confSwapTable.getValue() instanceof UtilisateurSwap) {
-				//configController.editConfApp((PreferencesApplication) confAppTable.getValue());
-				SwapUtilisateurWindow suw = new SwapUtilisateurWindow((UtilisateurSwap) confSwapTable.getValue(), false);
+				SwapUtilisateurWindow suw = swapUtilisateurWindowFactory.getObject();
+				suw.init((UtilisateurSwap) confSwapTable.getValue(), false);
 				suw.addCloseListener(f->init());
 				tabSelectedPosition=tabNumber;
 				MainUI.getCurrent().addWindow(suw);
@@ -264,8 +271,8 @@ public class AdminView extends VerticalLayout implements View {
 		btnAddSwap = new Button(applicationContext.getMessage(NAME+".btnAdd", null, getLocale()), FontAwesome.PLUS);
 		btnAddSwap.setEnabled(true);
 		btnAddSwap.addClickListener(e -> {
-
-			SwapUtilisateurWindow suw = new SwapUtilisateurWindow(new UtilisateurSwap(), true);
+			SwapUtilisateurWindow suw = swapUtilisateurWindowFactory.getObject();
+			suw.init(new UtilisateurSwap(), true);
 			suw.addCloseListener(f->init());
 			tabSelectedPosition=tabNumber;
 			MainUI.getCurrent().addWindow(suw);

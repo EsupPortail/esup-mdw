@@ -24,13 +24,12 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
 import fr.univlorraine.mondossierweb.repositories.apogee.DiplomeApogeeRepository;
 
 @Component
-@Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Repository
 public class DiplomeApogeeServiceImpl implements DiplomeApogeeService{
 

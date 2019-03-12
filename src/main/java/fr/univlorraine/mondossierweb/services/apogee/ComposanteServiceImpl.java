@@ -26,7 +26,6 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
@@ -35,7 +34,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.repositories.apogee.ComposanteApogeeRepository;
 
 @Component
-@Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Repository
 public class ComposanteServiceImpl implements ComposanteService{
 

@@ -25,7 +25,10 @@ import javax.annotation.Resource;
 
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
@@ -66,9 +69,10 @@ import fr.univlorraine.mondossierweb.utils.Utils;
  * Fenêtre d'édition des parametre de l'application
  * 
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PreferencesApplicationWindow extends Window {
-	private static final long serialVersionUID = 6446084804910076622L;
 
 	public static final String NAME = "preferencesApplicationWindow";
 
@@ -92,7 +96,7 @@ public class PreferencesApplicationWindow extends Window {
 	 * Crée une fenêtre d'édition des preferences applicative
 	 * @param préférence à éditer
 	 */
-	public PreferencesApplicationWindow(PreferencesApplication prefApp) {
+	public void init(PreferencesApplication prefApp) {
 		/* Style */
 		setModal(true);
 		setResizable(false);

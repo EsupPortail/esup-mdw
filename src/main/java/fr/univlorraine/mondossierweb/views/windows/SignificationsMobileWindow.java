@@ -22,14 +22,14 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -42,9 +42,10 @@ import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 /**
  * Fenêtre pour afficher les significations des codes de résultats en version mobile
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SignificationsMobileWindow extends Window {
-	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "significationsMobileWindow";
 	
@@ -56,7 +57,7 @@ public class SignificationsMobileWindow extends Window {
 	/**
 	 * Crée une fenêtre
 	 */
-	public SignificationsMobileWindow(boolean afficherSignificationIndicateurProfondeur){
+	public void init(boolean afficherSignificationIndicateurProfondeur){
 		
 		setWidth("95%");
 		setHeight("95%");

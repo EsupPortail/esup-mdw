@@ -20,10 +20,10 @@ package fr.univlorraine.mondossierweb.views.windows;
 
 import javax.annotation.Resource;
 
-import lombok.Getter;
-
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -35,14 +35,16 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
+
+import lombok.Getter;
 
 /**
  * Fenêtre d'aide
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class HelpWindow extends Window {
-	private static final long serialVersionUID = -1792808588462463042L;
 
 	/* Injections */
 	@Resource
@@ -67,16 +69,16 @@ public class HelpWindow extends Window {
 	/**
 	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
 	 */
-	public HelpWindow() {
-		this(null, null,false);
+	public void init() {
+		init(null, null,false);
 	}
 
 	/**
 	 * Crée une fenêtre de confirmation avec un titre par défaut
 	 * @param message
 	 */
-	public HelpWindow(String message) {
-		this(message, null,false);
+	public void init(String message) {
+		init(message, null,false);
 	}
 
 	/**
@@ -84,7 +86,7 @@ public class HelpWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public HelpWindow(String message, String titre,boolean displayCheckBox) {
+	public void init(String message, String titre,boolean displayCheckBox) {
 		/* Style */
 		setWidth(900, Unit.PIXELS);
 		setModal(true);

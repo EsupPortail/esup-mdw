@@ -19,12 +19,13 @@
 package fr.univlorraine.mondossierweb.views.windows;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.data.Item;
@@ -42,7 +43,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
@@ -53,9 +53,10 @@ import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBaseCollectionGroupe;
 /**
  * Fenêtre du détail des groupes
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DetailGroupesWindow extends Window {
-	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "groupesWindow";
 
@@ -90,8 +91,7 @@ public class DetailGroupesWindow extends Window {
 	/**
 	 * Crée une fenêtre
 	 */
-	public DetailGroupesWindow(List<ElpDeCollection> lg, String elpLib, String vetLib,String anneeUniv) {
-		super();
+	public void init(List<ElpDeCollection> lg, String elpLib, String vetLib,String anneeUniv) {
 		lgroupes = lg;
 		elpLibelle = elpLib;
 		int anneenplusun = Integer.parseInt(anneeUniv) + 1;

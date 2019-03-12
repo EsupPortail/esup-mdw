@@ -27,7 +27,6 @@ import lombok.Data;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
@@ -35,7 +34,7 @@ import fr.univlorraine.mondossierweb.utils.RequestUtils;
 
 
 @Component
-@Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Data
 public class AnnuMelLoginApogeeServiceImpl implements AnnuMelLoginApogeeService {
 
@@ -58,9 +57,7 @@ public class AnnuMelLoginApogeeServiceImpl implements AnnuMelLoginApogeeService 
 			}else{
 				return (String) entityManagerApogee.createNativeQuery("select MAIL FROM ANNU_MEL_LOGIN WHERE COD_ETU="+cod_etu).getSingleResult();
 			}
-		}catch(NoResultException e){
-			return null;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -92,9 +89,7 @@ public class AnnuMelLoginApogeeServiceImpl implements AnnuMelLoginApogeeService 
 				return (String) entityManagerApogee.createNativeQuery("select LOGIN FROM ANNU_MEL_LOGIN WHERE COD_ETU="+cod_etu).getSingleResult();
 				
 			}
-		}catch(NoResultException e){
-			return null;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}

@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -147,7 +148,8 @@ public class MainUI extends GenericUI {
 	@Resource
 	private transient ConfigController configController;
 
-
+	@Resource
+	private transient ObjectFactory<HelpBasicWindow> helpBasicWindowFactory;
 
 
 	@Resource
@@ -167,6 +169,10 @@ public class MainUI extends GenericUI {
 
 	@Resource
 	private FavorisView favorisView;
+	
+	@Resource
+	private transient ObjectFactory<HelpWindow> helpWindowFactory;
+
 
 	private LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
 
@@ -615,7 +621,8 @@ public class MainUI extends GenericUI {
 		//Si on doit afficher le message
 		if(displayForced || afficherMessage){
 			//Création de la pop-pup contenant le message
-			HelpWindow hbw = new HelpWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),displayCheckBox);
+			HelpWindow hbw = helpWindowFactory.getObject();
+			hbw.init(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),displayCheckBox);
 
 			//Sur la fermeture de la fenêtre
 			hbw.addCloseListener(g->{
@@ -845,7 +852,9 @@ public class MainUI extends GenericUI {
 			/* Aide */
 			Button helpBtn = new Button(applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()), FontAwesome.SUPPORT);
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(new HelpBasicWindow(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true));});
+			HelpBasicWindow hbw = helpBasicWindowFactory.getObject();
+			hbw.init(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
+			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(hbw);});
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */

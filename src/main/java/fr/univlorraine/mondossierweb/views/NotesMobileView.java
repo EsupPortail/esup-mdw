@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -79,6 +80,8 @@ public class NotesMobileView extends VerticalLayout implements View {
 	private transient ConfigController configController;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient ObjectFactory<SignificationsMobileWindow> significationsMobileWindowFactory;
 
 	private Button returnButton;
 
@@ -149,7 +152,8 @@ public class NotesMobileView extends VerticalLayout implements View {
 				significationButton.setStyleName("v-menu-nav-button");
 				significationButton.addClickListener(e->{
 					//afficher les significations
-					SignificationsMobileWindow w = new SignificationsMobileWindow(false);
+					SignificationsMobileWindow w = significationsMobileWindowFactory.getObject();
+					w.init(false);
 					UI.getCurrent().addWindow(w);
 				});
 				navbar.addComponent(significationButton);

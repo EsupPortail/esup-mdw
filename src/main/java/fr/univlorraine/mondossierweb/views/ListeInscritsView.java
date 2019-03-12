@@ -32,6 +32,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -126,6 +127,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient FavorisController favorisController;
+	
+	@Resource
+	private transient ObjectFactory<HelpBasicWindow> helpBasicWindowFactory;
+	
+	@Resource
+	private transient ObjectFactory<DetailGroupesWindow> detailGroupesWindowFactory;
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -410,7 +417,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							if(listeEtapes!=null && listeEtapes.getValue()!=null && !listeEtapes.getValue().equals(TOUTES_LES_ETAPES_LABEL)){
 								vet = listeEtapes.getItemCaption(listeEtapes.getValue());
 							}
-							DetailGroupesWindow dgw = new DetailGroupesWindow(lgroupes, panelFormInscrits.getCaption(), vet, (String)listeAnnees.getValue()); 
+							DetailGroupesWindow dgw = detailGroupesWindowFactory.getObject();
+							dgw.init(lgroupes, panelFormInscrits.getCaption(), vet, (String)listeAnnees.getValue()); 
 							UI.getCurrent().addWindow(dgw);
 						});
 						gpLayout.addComponent(btnDetailGpe);
@@ -517,7 +525,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							message=applicationContext.getMessage(NAME+".message.info.elpdescription", null, getLocale());
 						}
 
-						HelpBasicWindow hbw = new HelpBasicWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
+						HelpBasicWindow hbw = helpBasicWindowFactory.getObject();
+						hbw.init(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
 						UI.getCurrent().addWindow(hbw);
 					});
 					leftResumeLayout.addComponent(infoDescriptionButton);

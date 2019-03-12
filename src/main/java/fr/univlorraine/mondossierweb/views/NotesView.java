@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -69,7 +70,8 @@ import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 /**
  * Page des notes
  */
-@Component @Scope("prototype")
+@Component 
+@Scope("prototype")
 @SpringView(name = NotesView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class NotesView extends VerticalLayout implements View {
@@ -99,6 +101,11 @@ public class NotesView extends VerticalLayout implements View {
 	private transient NoteController noteController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient ObjectFactory<DetailNotesWindow> detailNotesWindowFactory;
+	@Resource
+	private transient ObjectFactory<HelpWindow> helpWindowFactory;
+
 
 
 	/**
@@ -473,7 +480,8 @@ public class NotesView extends VerticalLayout implements View {
 	private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
 		//Appel de la window contenant le détail des notes
 		b.addClickListener(e->{
-			DetailNotesWindow dnw = new DetailNotesWindow(etape); 
+			DetailNotesWindow dnw = detailNotesWindowFactory.getObject();
+			dnw.init(etape);
 			vueEnseignant = MainUI.getCurrent().isVueEnseignantNotesEtResultats();
 			dnw.addCloseListener(f->{
 				//Si la vue a changer, on repasse par l'init
@@ -503,7 +511,8 @@ public class NotesView extends VerticalLayout implements View {
 
 			if(afficherMessage){
 				String message =applicationContext.getMessage(NAME+".window.message.info", null, getLocale());
-				HelpWindow hbw = new HelpWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),!userController.isEtudiant());
+				HelpWindow hbw = helpWindowFactory.getObject();
+				hbw.init(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),!userController.isEtudiant());
 				hbw.addCloseListener(g->{
 					if(!userController.isEtudiant()){
 						boolean choix = hbw.getCheckBox().getValue();

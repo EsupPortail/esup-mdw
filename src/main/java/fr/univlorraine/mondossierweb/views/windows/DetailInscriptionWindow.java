@@ -23,7 +23,10 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.data.Item;
@@ -50,9 +53,10 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 /**
  * Fenêtre du détail de l'inscription
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DetailInscriptionWindow extends Window {
-	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "inscriptionWindow";
 
@@ -74,8 +78,7 @@ public class DetailInscriptionWindow extends Window {
 	/**
 	 * Crée une fenêtre
 	 */
-	public DetailInscriptionWindow(Etape et) {
-		super();
+	public void init(Etape et) {
 		etape = et;
 		init();
 	}

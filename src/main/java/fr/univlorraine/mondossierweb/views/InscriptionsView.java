@@ -21,12 +21,12 @@ package fr.univlorraine.mondossierweb.views;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.client.ui.layout.VLayoutSlot;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -40,7 +40,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -92,7 +91,8 @@ public class InscriptionsView extends VerticalLayout implements View {
 	private transient SsoController ssoController;
 	@Resource
 	private transient ConfigController configController;
-
+	@Resource
+	private transient ObjectFactory<DetailInscriptionWindow> detailInscriptionWindowFactory;
 
 
 	/**
@@ -271,7 +271,8 @@ public class InscriptionsView extends VerticalLayout implements View {
 				etape.setVersion(inscription.getCod_vrs_vet());
 				etape.setLibelle(inscription.getLib_etp());
 				bDetailInscription.addClickListener(e->{
-					DetailInscriptionWindow dnw = new DetailInscriptionWindow(etape); 
+					DetailInscriptionWindow dnw = detailInscriptionWindowFactory.getObject();
+					dnw.init(etape); 
 					UI.getCurrent().addWindow(dnw);
 				});
 				//ajout du bouton au layout

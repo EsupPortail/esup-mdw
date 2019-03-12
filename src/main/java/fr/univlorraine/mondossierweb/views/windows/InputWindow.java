@@ -24,10 +24,10 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import lombok.Getter;
-
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -41,12 +41,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import lombok.Getter;
+
 /**
  * Fenêtre de saisie
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InputWindow extends Window {
-	private static final long serialVersionUID = -1122823010557105316L;
 
 	/* Injections */
 	@Resource
@@ -80,16 +83,16 @@ public class InputWindow extends Window {
 	/**
 	 * Crée une fenêtre de saisie avec un message et un titre par défaut
 	 */
-	public InputWindow() {
-		this(null, null);
+	public void init() {
+		init(null, null);
 	}
 
 	/**
 	 * Crée une fenêtre de saisie avec un titre par défaut
 	 * @param message
 	 */
-	public InputWindow(String message) {
-		this(message, null);
+	public void init(String message) {
+		init(message, null);
 	}
 
 	/**
@@ -97,7 +100,7 @@ public class InputWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public InputWindow(String message, String titre) {
+	public void init(String message, String titre) {
 		/* Style */
 		setWidth(400, Unit.PIXELS);
 		setModal(true);

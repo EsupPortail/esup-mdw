@@ -22,22 +22,20 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import lombok.Getter;
-
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -48,13 +46,15 @@ import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import lombok.Getter;
 
 /**
  * Fenêtre pour filtrer les inscrits sur mobile
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FiltreInscritsMobileWindow extends Window {
-	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "filtreInscritsMobileWindow";
 
@@ -87,7 +87,7 @@ public class FiltreInscritsMobileWindow extends Window {
 	/**
 	 * Crée une fenêtre
 	 */
-	public FiltreInscritsMobileWindow(){
+	public void init(){
 		setWidth("95%");
         setModal(true);
 		setResizable(false);

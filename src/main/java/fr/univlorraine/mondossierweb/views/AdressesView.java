@@ -21,6 +21,7 @@ package fr.univlorraine.mondossierweb.views;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,6 +71,9 @@ public class AdressesView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient ObjectFactory<ModificationAdressesWindow> modificationAdressesWindowFactory;
+	
 
 
 	/**
@@ -209,7 +213,8 @@ public class AdressesView extends VerticalLayout implements View {
 				btnModifAdresses.setStyleName(ValoTheme.BUTTON_PRIMARY);
 				btnModifAdresses.setIcon(FontAwesome.EDIT);
 				btnModifAdresses.addClickListener(e->{
-					ModificationAdressesWindow maw = new ModificationAdressesWindow(MainUI.getCurrent().getEtudiant()); 
+					ModificationAdressesWindow maw = modificationAdressesWindowFactory.getObject();
+					maw.init(MainUI.getCurrent().getEtudiant()); 
 					maw.addCloseListener(f->{init();});
 					UI.getCurrent().addWindow(maw);
 				});

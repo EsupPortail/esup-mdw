@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -62,6 +63,8 @@ public class RechercheController {
 	private transient UserController userController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
 
 
 	public void accessToRechercheArborescente(String code, String type) {
@@ -214,7 +217,8 @@ public class RechercheController {
 
 		if(afficherMessage){
 			String message =applicationContext.getMessage("notesDetailMobileView.window.message.info", null, null);
-			HelpMobileWindow hbw = new HelpMobileWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null),!userController.isEtudiant());
+			HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+			hbw.init(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null),!userController.isEtudiant());
 			hbw.addCloseListener(g->{
 				if(!userController.isEtudiant()){
 					boolean choix = hbw.getCheckBox().getValue();

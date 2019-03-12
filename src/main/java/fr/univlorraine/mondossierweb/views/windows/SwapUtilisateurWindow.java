@@ -20,8 +20,10 @@ package fr.univlorraine.mondossierweb.views.windows;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
@@ -40,7 +42,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
 import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
 
 
@@ -49,10 +50,10 @@ import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
  * Fenêtre d'édition des parametre de l'application
  * 
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SwapUtilisateurWindow extends Window {
-
-	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "swapUtilisateurWindow";
 
@@ -60,6 +61,7 @@ public class SwapUtilisateurWindow extends Window {
 
 	@Resource
 	private transient ApplicationContext applicationContext;
+	
 	@Resource
 	private transient ConfigController configController;
 
@@ -72,7 +74,7 @@ public class SwapUtilisateurWindow extends Window {
 	 * Crée une fenêtre d'édition du swap utilisateur
 	 * @param swap utilisateur à éditer
 	 */
-	public SwapUtilisateurWindow(UtilisateurSwap swap, boolean ajout) {
+	public void init(UtilisateurSwap swap, boolean ajout) {
 		/* Style */
 		setModal(true);
 		setResizable(false);

@@ -23,9 +23,8 @@ import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+@SuppressWarnings("serial")
 public class LoadingIndicatorWindow extends Window {
-
-	private static final long serialVersionUID = 1931039365675290813L;
 
 	public LoadingIndicatorWindow() {
 		super();

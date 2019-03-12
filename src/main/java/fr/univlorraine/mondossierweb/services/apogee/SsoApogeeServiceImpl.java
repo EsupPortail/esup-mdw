@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -31,13 +32,12 @@ import org.eclipse.persistence.config.ResultType;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
 
 @Component
-@Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Repository
 public class SsoApogeeServiceImpl implements SsoApogeeService{
 
@@ -82,7 +82,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		}
 		try{
 			mutuelle = (String)entityManagerApogee.createNativeQuery(requeteSQL).getSingleResult();
-		}catch(EmptyResultDataAccessException ex){
+		}catch(NoResultException | EmptyResultDataAccessException ex){
 			mutuelle = null;
 		}
 
@@ -286,7 +286,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 			if(mdps!=null && mdps.size()>0 && mdps.get(0)!=null && StringUtils.hasText(mdps.get(0))){
 				return mdps;
 			}
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 
@@ -342,7 +342,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String date = (String) query.getSingleResult();
 			return date;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -369,7 +369,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String date = (String) query.getSingleResult();
 			return date;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -396,7 +396,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String date = (String) query.getSingleResult();
 			return date;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -423,7 +423,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String date = (String) query.getSingleResult();
 			return date;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -448,7 +448,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String date = (String) query.getSingleResult();
 			return date;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -473,7 +473,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String date = (String) query.getSingleResult();
 			return date;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}
@@ -505,7 +505,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			String montant = (String) query.getSingleResult();
 			return montant;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException | EmptyResultDataAccessException e){
 			return null;
 		}
 	}

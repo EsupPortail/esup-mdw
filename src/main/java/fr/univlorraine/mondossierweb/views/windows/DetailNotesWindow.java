@@ -23,8 +23,10 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.data.Item;
@@ -58,9 +60,10 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 /**
  * Fenêtre du détail des notes
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DetailNotesWindow extends Window {
-	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "notesWindow";
 
@@ -68,14 +71,19 @@ public class DetailNotesWindow extends Window {
 
 	@Resource
 	private transient ApplicationContext applicationContext;
+	
 	@Resource
 	private transient UserController userController;
+	
 	@Resource
 	private transient EtudiantController etudiantController;
+	
 	@Resource(name="${resultat.implementation}")
 	private transient ResultatController resultatController;
+	
 	@Resource
 	private transient NoteController noteController;
+	
 	@Resource
 	private transient ConfigController configController;
 
@@ -85,16 +93,8 @@ public class DetailNotesWindow extends Window {
 	
 	private Panel panelVue;
 
-	/**
-	 * Crée une fenêtre
-	 */
-	public DetailNotesWindow(Etape et) {
-		super();
+	public void init(Etape et) {
 		etape = et;
-		init();
-	}
-
-	private void init() {
 
 		//On vérifie le droit d'accéder à la vue
 		if((userController.isEnseignant() || userController.isEtudiant()) 
@@ -202,7 +202,7 @@ public class DetailNotesWindow extends Window {
 					changerVueButton.setCaption(applicationContext.getMessage(NAME+".button.vueEtudiant", null, getLocale()));
 				}
 				//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
-				changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init();});
+				changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init(etape);});
 
 				Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
 				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){

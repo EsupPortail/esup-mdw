@@ -21,7 +21,6 @@ package fr.univlorraine.mondossierweb.services.apogee;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -29,15 +28,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import lombok.Data;
-
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -48,11 +44,12 @@ import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import lombok.Data;
 
 
 
 @Component
-@Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Data
 public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
@@ -231,7 +228,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					" where cod_etp = '"+e.getCode()+"' "+
 					" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
 			return libelle;
-		}catch(EmptyResultDataAccessException ex){
+		}catch(NoResultException | EmptyResultDataAccessException ex){
 			LOG.info("Aucun lib_web_vet trouvé pour étape : "+e.getCode()+"/"+e.getVersion());
 		}
 		return null;
@@ -245,7 +242,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					" from etape "+
 					" where cod_etp = '"+codeEtp+"'").getSingleResult();
 			return libelle;
-		}catch(EmptyResultDataAccessException ex){
+		}catch(NoResultException | EmptyResultDataAccessException ex){
 			LOG.info("Aucun lic_etp trouvé pour étape : "+codeEtp);
 		}
 		return null;
@@ -306,7 +303,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 						"where nel.COD_NEL=elp.COD_NEL "+
 						"and elp.COD_ELP='"+codElp+"'", NatureElp.class).getSingleResult();
 				return nature.getLib_nel();
-			}catch(EmptyResultDataAccessException e){
+			}catch(NoResultException | EmptyResultDataAccessException e){
 				LOG.info("Aucune nature trouvee pour ELP : "+codElp);
 			}
 		}
@@ -340,7 +337,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				if(StringUtils.hasText(codPcsSalarie)){
 					return true;
 				}
-			}catch (EmptyResultDataAccessException nre){
+			}catch (NoResultException | EmptyResultDataAccessException nre){
 				return false;
 			}
 		}

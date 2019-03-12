@@ -22,29 +22,28 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
@@ -52,16 +51,16 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementDTO;
-import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
-import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO;
 import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO2;
+import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
 
 /**
  * Fenêtre de modification des adresses
  */
-@Configurable(preConstruction=true)
+@SuppressWarnings("serial")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ModificationAdressesWindow extends Window {
-	private static final long serialVersionUID = -1792808588462463042L;
 
 	public static final String NAME = "modificationAdressesWindow";
 
@@ -111,7 +110,7 @@ public class ModificationAdressesWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public ModificationAdressesWindow(Etudiant etudiant) {
+	public void init(Etudiant etudiant) {
 		/* Style */
 		//setWidth(900, Unit.PIXELS);
 		setModal(true);
