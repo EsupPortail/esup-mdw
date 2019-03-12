@@ -69,9 +69,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private MdwUserDetailsService mdwUserDetailsService;
 	
 	/* Passe le SecurityContext aux threads créées et à la session Vaadin. */
-	static {
+	/*static {
 		SecurityContextHolder.setStrategyName(VaadinSecurityContextHolderStrategy.class.getName());
-	}
+	}*/
 
 	
 	@Bean(name="authenticationManager")
