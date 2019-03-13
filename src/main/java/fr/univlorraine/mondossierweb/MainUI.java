@@ -35,6 +35,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
@@ -112,6 +113,7 @@ import lombok.Getter;
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
 @SuppressWarnings("serial")
+@Push(transport = Transport.WEBSOCKET_XHR)
 public class MainUI extends GenericUI {
 
 	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
@@ -240,13 +242,14 @@ public class MainUI extends GenericUI {
 
 		LOG.debug("init(); mainUI");
 
+		/*
 		if(PropertyUtils.isPushEnabled() ){
 			if( !PropertyUtils.isWebSocketPushEnabled()){
 				getPushConfiguration().setTransport(Transport.LONG_POLLING);
 			} else{
 				getPushConfiguration().setTransport(Transport.WEBSOCKET_XHR);
 			}
-		}
+		}*/
 
 
 		//Gestion des erreurs

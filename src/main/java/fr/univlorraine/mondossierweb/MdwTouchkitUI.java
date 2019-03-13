@@ -34,6 +34,7 @@ import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
@@ -97,6 +98,7 @@ import lombok.Setter;
 @StyleSheet("mobileView.css")
 @SuppressWarnings("serial")
 //@OfflineModeEnabled(false)
+@Push(transport = Transport.WEBSOCKET_XHR)
 @Viewport("user-scalable=no,initial-scale=1.0")
 public class MdwTouchkitUI extends GenericUI{
 
@@ -207,11 +209,12 @@ public class MdwTouchkitUI extends GenericUI{
 	protected void init(VaadinRequest request) {
 		LOG.debug("init(); MdwTouchkitUI");
 
+		/*
 		if( !PropertyUtils.isWebSocketPushEnabled()){
 			getPushConfiguration().setTransport(Transport.LONG_POLLING);
 		} else{
 			getPushConfiguration().setTransport(Transport.WEBSOCKET_XHR);
-		}
+		}*/
 
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 
