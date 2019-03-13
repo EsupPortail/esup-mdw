@@ -45,9 +45,10 @@ import com.vaadin.shared.communication.PushMode;
 import com.vaadin.spring.server.SpringVaadinServlet;
 
 import fr.univlorraine.mondossierweb.config.SpringConfig;
+import fr.univlorraine.mondossierweb.security.RecoverSecurityContextAtmosphereInterceptor;
 import fr.univlorraine.mondossierweb.utils.JMeterServlet;
 import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
-import fr.univlorraine.tools.atmosphere.RecoverSecurityContextAtmosphereInterceptor;
+
 import fr.univlorraine.tools.logback.UserMdcServletFilter;
 import fr.univlorraine.tools.vaadin.FrenchUnsupportedBrowserHandlerSpringVaadinServlet;
 
@@ -91,7 +92,7 @@ public class Initializer implements WebApplicationInitializer {
 			@Override
 			public void sessionCreated(HttpSessionEvent httpSessionEvent) {
 				// sans nouvelle requête, on garde la session active 4 minutes
-				httpSessionEvent.getSession().setMaxInactiveInterval(240);
+				httpSessionEvent.getSession().setMaxInactiveInterval(10);
 			}
 
 			@Override
@@ -135,14 +136,15 @@ public class Initializer implements WebApplicationInitializer {
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
-
+		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(2));
+		//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
 
 		/* Configure le Push */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
 
 		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 		springVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
+		
 		/* Active le support des requêtes asynchrones */
 		springVaadinServlet.setAsyncSupported(true);
 		/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
@@ -166,6 +168,7 @@ public class Initializer implements WebApplicationInitializer {
 			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
 			/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 			springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
+			//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
 			/* Active le support des requêtes asynchrones */
 			springTouchkitVaadinServlet.setAsyncSupported(true);
 			/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
