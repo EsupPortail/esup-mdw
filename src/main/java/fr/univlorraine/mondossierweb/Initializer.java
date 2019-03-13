@@ -92,7 +92,7 @@ public class Initializer implements WebApplicationInitializer {
 			@Override
 			public void sessionCreated(HttpSessionEvent httpSessionEvent) {
 				// sans nouvelle requête, on garde la session active 4 minutes
-				httpSessionEvent.getSession().setMaxInactiveInterval(10);
+				httpSessionEvent.getSession().setMaxInactiveInterval(240);
 			}
 
 			@Override
@@ -136,8 +136,8 @@ public class Initializer implements WebApplicationInitializer {
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(2));
-		//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
+		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
+		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
 
 		/* Configure le Push */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
@@ -162,7 +162,7 @@ public class Initializer implements WebApplicationInitializer {
 			/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 			springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 			springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
-
+			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
 
 			/* Configure le Push */
 			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
