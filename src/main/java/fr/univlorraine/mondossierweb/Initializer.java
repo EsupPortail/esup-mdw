@@ -42,15 +42,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;
-import com.vaadin.spring.server.SpringVaadinServlet;
 
 import fr.univlorraine.mondossierweb.config.SpringConfig;
 import fr.univlorraine.mondossierweb.security.RecoverSecurityContextAtmosphereInterceptor;
-import fr.univlorraine.mondossierweb.utils.JMeterServlet;
 import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
-
 import fr.univlorraine.tools.logback.UserMdcServletFilter;
-import fr.univlorraine.tools.vaadin.FrenchUnsupportedBrowserHandlerSpringVaadinServlet;
 
 /**
  * Initialisation de l'application web
@@ -157,8 +153,6 @@ public class Initializer implements WebApplicationInitializer {
 			ServletRegistration.Dynamic springTouchkitVaadinServlet = servletContext.addServlet("springTouchkitVaadin", MDWTouchkitServlet.class);
 			//springTouchkitVaadinServlet.setLoadOnStartup(1);
 			springTouchkitVaadinServlet.addMapping("/m/*");
-			/* Défini le bean UI */
-			//springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwTouchkitUIProvider");
 			/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 			springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 			springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
@@ -168,7 +162,7 @@ public class Initializer implements WebApplicationInitializer {
 			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
 			/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 			springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
-			//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
+
 			/* Active le support des requêtes asynchrones */
 			springTouchkitVaadinServlet.setAsyncSupported(true);
 			/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */

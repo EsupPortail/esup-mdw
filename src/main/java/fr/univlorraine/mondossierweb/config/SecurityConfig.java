@@ -22,6 +22,8 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import net.sf.ehcache.CacheManager;
+
 import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
@@ -45,7 +47,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
-import net.sf.ehcache.CacheManager;
+//import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
 
 
 
@@ -64,11 +66,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Resource
 	private MdwUserDetailsService mdwUserDetailsService;
-
+	
 	/* Passe le SecurityContext aux threads créées et à la session Vaadin. */
 	/*static {
 		SecurityContextHolder.setStrategyName(VaadinSecurityContextHolderStrategy.class.getName());
 	}*/
+
 	
 	@Bean(name="authenticationManager")
 	@Override

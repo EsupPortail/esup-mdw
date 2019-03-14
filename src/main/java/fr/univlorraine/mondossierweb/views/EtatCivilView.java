@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -101,7 +102,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant())){
 			if( MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
-					LOG.debug(userController.getCurrentUserName()+" init EtatCivilView");
+					LOG.debug(userController.getCurrentUserName()+" init EtatCivilView "+SecurityContextHolder.getContext().getAuthentication().getName());
 
 					/* Style */
 					setMargin(true);

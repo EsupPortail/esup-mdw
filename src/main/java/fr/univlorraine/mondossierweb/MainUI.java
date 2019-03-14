@@ -480,7 +480,7 @@ public class MainUI extends GenericUI {
 
 					//On renseigne l'étudiant dont on consulte le dossier
 					//Récupération du cod_etu
-					etudiant = new Etudiant(daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName()));
+					etudiant = new Etudiant(userController.getCodetu());
 					LOG.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
 					//Récupération de l'état-civil (et les adresses)
 					etudiantController.recupererEtatCivil();

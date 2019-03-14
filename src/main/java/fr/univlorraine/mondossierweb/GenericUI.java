@@ -34,7 +34,6 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
@@ -52,35 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GenericUI  extends UI {
 
-	//login de l'utilisateur
-	@Setter
-	@Getter
-	protected String username;
-
-	//'O' ou 'N' si l'utilisateur est un enseignant ou pas
-	@Setter
-	@Getter
-	protected String userIsEnseignant;
-
-	//'O' ou 'N' si l'utilisateur est un étudiant ou pas
-	@Setter
-	@Getter
-	protected String userIsEtudiant;
-
-
-	/*@Getter
-	@Setter
-	protected GoogleAnalyticsTracker googleAnalyticsTracker = new GoogleAnalyticsTracker(this);
- 
-	@Getter
-	@Setter
-	protected PiwikAnalyticsTracker piwikAnalyticsTracker = new PiwikAnalyticsTracker(this);*/
-
-	//Type (rôle) de l'utilisateur connecté
-	@Setter
-	@Getter
-	protected String typeUser;
-	
 	//Adresse IP du client
 	@Setter
 	protected String ipClient;
@@ -171,15 +141,14 @@ public class GenericUI  extends UI {
 	@Resource(name="${serveurphoto.implementation}")
 	private IPhoto photoProvider;
 
-
+	/*
 	@Setter
 	@Getter
 	@Resource(name="${codetuFromLogin.implementation}")
-	protected CodeEtudiantLoginConverterInterface daoCodeLoginEtudiant;
+	protected CodeEtudiantLoginConverterInterface daoCodeLoginEtudiant;*/
 
 	@Override
 	protected void init(VaadinRequest request) {
-		// TODO Auto-generated method stub
 		log.info("init Generic UI");
 	}
 

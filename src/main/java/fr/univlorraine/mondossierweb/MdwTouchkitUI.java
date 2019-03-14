@@ -364,9 +364,7 @@ public class MdwTouchkitUI extends GenericUI{
 					//On consultera les notes en vue etudiant
 					vueEnseignantNotesEtResultats=false;
 					//On récupère le codetu de l'étudiant
-					/*String codetu=userController.getCodetu();
-					etudiant = new Etudiant(userController.getCodetu());*/
-					String codetu=daoCodeLoginEtudiant.getCodEtuFromLogin(userController.getCurrentUserName());
+					String codetu=userController.getCodetu();
 					etudiant = new Etudiant(codetu);
 					try{
 						//On récupère l'état-civil et les adresses de l'étudiant
