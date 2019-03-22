@@ -44,7 +44,6 @@ import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;
 
 import fr.univlorraine.mondossierweb.config.SpringConfig;
-import fr.univlorraine.mondossierweb.security.RecoverSecurityContextAtmosphereInterceptor;
 import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
 import fr.univlorraine.tools.logback.UserMdcServletFilter;
 
@@ -143,8 +142,6 @@ public class Initializer implements WebApplicationInitializer {
 		
 		/* Active le support des requêtes asynchrones */
 		springVaadinServlet.setAsyncSupported(true);
-		/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
-		springVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
 
 
 
@@ -165,8 +162,7 @@ public class Initializer implements WebApplicationInitializer {
 
 			/* Active le support des requêtes asynchrones */
 			springTouchkitVaadinServlet.setAsyncSupported(true);
-			/* Ajoute l'interceptor Atmosphere permettant de restaurer le SecurityContext dans le SecurityContextHolder (cf. https://groups.google.com/forum/#!msg/atmosphere-framework/8yyOQALZEP8/ZCf4BHRgh_EJ) */
-			springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.ATMOSPHERE_INTERCEPTORS, RecoverSecurityContextAtmosphereInterceptor.class.getName());
+			
 		}
 
 

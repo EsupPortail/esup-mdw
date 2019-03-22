@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.elasticsearch.client.Client;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
