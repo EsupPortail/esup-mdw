@@ -18,12 +18,16 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import java.util.Locale;
+
 import javax.servlet.ServletException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
@@ -42,6 +46,29 @@ public class MDWTouchkitServlet extends SpringVaadinServlet {
     protected void servletInitialized() throws ServletException {
 		
 		super.servletInitialized();
+		
+
+		getService().setSystemMessagesProvider(smi -> {
+			WebApplicationContext webApplicationContext = WebApplicationContextUtils
+                    .getWebApplicationContext(getServletContext());
+			final Locale locale = smi.getLocale();
+			final CustomizedSystemMessages messages = new CustomizedSystemMessages();
+			messages.setSessionExpiredCaption(webApplicationContext.getMessage("vaadin.sessionExpired.caption", null, locale));
+			messages.setSessionExpiredMessage(webApplicationContext.getMessage("vaadin.sessionExpired.message", null, locale));
+			messages.setCommunicationErrorCaption(webApplicationContext.getMessage("vaadin.communicationError.caption", null, locale));
+			messages.setCommunicationErrorMessage(webApplicationContext.getMessage("vaadin.communicationError.message", null, locale));
+			messages.setAuthenticationErrorCaption(webApplicationContext.getMessage("vaadin.authenticationError.caption", null, locale));
+			messages.setAuthenticationErrorMessage(webApplicationContext.getMessage("vaadin.authenticationError.message", null, locale));
+			messages.setInternalErrorCaption(webApplicationContext.getMessage("vaadin.internalError.caption", null, locale));
+			messages.setInternalErrorMessage(webApplicationContext.getMessage("vaadin.internalError.message", null, locale));
+			messages.setCookiesDisabledCaption(webApplicationContext.getMessage("vaadin.cookiesDisabled.caption", null, locale));
+			messages.setCookiesDisabledMessage(webApplicationContext.getMessage("vaadin.cookiesDisabled.message", null, locale));
+			/* Don't show any SessionExpired messages, redirect immediately to the session expired URL */
+			messages.setSessionExpiredNotificationEnabled(true);
+			/* Don't show any CommunicationError message, reload the page instead */
+			messages.setCommunicationErrorNotificationEnabled(true);
+			return messages;
+		});
 		
         getService().addSessionInitListener(new SessionInitListener() {
 
