@@ -20,11 +20,8 @@ package fr.univlorraine.mondossierweb;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -45,9 +42,9 @@ public class MdwUIProvider extends SpringUIProvider  {
 	private boolean startServletMobile;
 
 	
-	public MdwUIProvider(WebApplicationContext webApplicationContext) {
-		super(webApplicationContext);
-		startServletMobile = Boolean.valueOf(webApplicationContext.getEnvironment().getProperty("startServletMobile"));
+	public MdwUIProvider(VaadinSession vaadinSession) {
+		super(vaadinSession);
+		startServletMobile = Boolean.valueOf(getWebApplicationContext().getEnvironment().getProperty("startServletMobile"));
 	}
 	
 	@Override

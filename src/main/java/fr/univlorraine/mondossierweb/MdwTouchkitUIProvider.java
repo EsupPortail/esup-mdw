@@ -20,8 +20,6 @@ package fr.univlorraine.mondossierweb;
 
 
 
-import org.springframework.web.context.WebApplicationContext;
-
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
@@ -39,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 	
-	public MdwTouchkitUIProvider(WebApplicationContext webApplicationContext) {
-		super(webApplicationContext);	
+	public MdwTouchkitUIProvider(VaadinSession vaadinSession) {
+		super(vaadinSession);	
 	}
 	
 	@Override

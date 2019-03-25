@@ -874,7 +874,8 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring</artifactId>
-			<version>1.0.0</version>
+			<!-- <version>1.0.0</version> -->
+			<version>1.0.2</version>
 		</dependency>
 	
 	

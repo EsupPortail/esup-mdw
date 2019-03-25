@@ -92,7 +92,7 @@ public class MDWTouchkitServlet extends SpringVaadinServlet {
                 }*/
 
                 // add Spring UI provider
-                session.addUIProvider(new MdwTouchkitUIProvider(WebApplicationContextUtils.getWebApplicationContext(getServletContext())));
+                session.addUIProvider(new MdwTouchkitUIProvider(session));
 
                 LOG.debug("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
             }

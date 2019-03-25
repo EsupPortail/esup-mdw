@@ -93,8 +93,7 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
                 }
 
                 // add Spring UI provider
-                SpringUIProvider uiProvider = new MdwUIProvider(
-                        webApplicationContext);
+                SpringUIProvider uiProvider = new MdwUIProvider(session);
                 session.addUIProvider(uiProvider);
             }
         });
