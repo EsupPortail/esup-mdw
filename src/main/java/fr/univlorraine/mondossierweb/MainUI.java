@@ -866,6 +866,7 @@ public class MainUI extends GenericUI {
 				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 				decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 				decoBtn.addClickListener(e -> {
+					userController.disconnectUser();
 					getUI().getPage().setLocation("logout");
 				});
 				mainMenu.addComponent(decoBtn);

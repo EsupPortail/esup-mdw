@@ -285,6 +285,7 @@ public class AdminView extends VerticalLayout implements View {
 		Button decoBtn = new Button("Se Déconnecter", FontAwesome.SIGN_OUT);
 		decoBtn.setEnabled(true);
 		decoBtn.addClickListener(e -> {
+			userController.disconnectUser();
 			getUI().getPage().setLocation("logout");
 		});
 		buttonsLayout.addComponent(decoBtn);

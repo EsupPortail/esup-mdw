@@ -206,6 +206,13 @@ public class UserController {
 				.anyMatch(propertyName::contains);
 	}
 
+	/** Nettoie la session */
+	public void disconnectUser() {
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+		SecurityContextHolder.setContext(context);
+		UI.getCurrent().getSession().getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+		UI.getCurrent().getSession().close();
+	}
 
 
 }

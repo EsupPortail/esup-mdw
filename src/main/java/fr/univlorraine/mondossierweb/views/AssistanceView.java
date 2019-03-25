@@ -129,6 +129,7 @@ public class AssistanceView extends VerticalLayout implements View {
 				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
 				decoBtn.addStyleName(ValoTheme.BUTTON_LINK);
 				decoBtn.addClickListener(e -> {
+					userController.disconnectUser();
 					getUI().getPage().setLocation("logout");
 				});
 				addComponent(decoBtn);
