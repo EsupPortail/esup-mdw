@@ -212,7 +212,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					@Override
 					public void handleAction(Object sender, Object target) {
 						if(target==champRecherche){
-							if(champRecherche.getChoices().getItemIds()!=null){
+							if(champRecherche!=null &&  champRecherche.getChoices()!=null && champRecherche.getChoices().getItemIds()!=null){
 								champRecherche.getChoicesPopup().setVisible(true);
 								Integer champSelectionne = champRecherche.getPreviousItem();
 								if(champSelectionne>0){
