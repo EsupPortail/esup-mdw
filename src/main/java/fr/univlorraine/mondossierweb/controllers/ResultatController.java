@@ -660,6 +660,7 @@ public class ResultatController {
 											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
 													&& (elp.getEcts()==null || elp.getEcts().equals(""))){
 												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
+												//String anneeECTS=reedto[i].getCodAnu();
 												// récupère l'ECTS acquis
 												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(),anneeECTS);
 												if(ectsAcquis!=null){

@@ -87,7 +87,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	private transient NoteController noteController;
 	@Resource
 	private transient ConfigController configController;
-	
+
 	@Resource
 	private transient ObjectFactory<SignificationsMobileWindow> significationsMobileWindowFactory;
 
@@ -116,12 +116,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	@SuppressWarnings("deprecation")
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
-	
+
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MdwTouchkitUI && (userController.isEnseignant() || userController.isEtudiant()) 
 				&& MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null
 				&& !(userController.isEtudiant() && MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes())){
-			
+
 			//On repassera dans la cration que si on n'a pas dejà créé la vue
 			if(codetu==null || !codetuToDisplay.equals(codetu)){
 				codetu=null;
@@ -151,7 +151,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					//On récupère les notes pour un étudiant
 					resultatController.renseigneDetailNotesEtResultats(etapeToDisplay);
 				}
-				
+
 				//NAVBAR
 				HorizontalLayout navbar=new HorizontalLayout();
 				navbar.setSizeFull();
@@ -241,16 +241,20 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					notesLayout.addComponent(libSessionLayout);
 
 					boolean blueLevel = false;
+					boolean arborescenceValide = true;
 
 					compteurElp = 0;
 					elpPere = "";
 
 					HorizontalLayout layoutPere=null;
 					int nbFils=0;
-					
+
+					LOG.info("Liste des ELP à afficher : ");
 					for(ElementPedagogique elp : lelp){
 
 						compteurElp++;
+						
+						LOG.info(compteurElp+"-(level="+elp.getLevel()+") - "+elp.getCode()+" - "+elp.getLibelle());
 
 						//Si on est sur un element de niveau 1, différent du premier element de la liste (qui est un rappel de l'etape)
 						if(elp.getLevel()==1 && compteurElp>1){
@@ -258,14 +262,17 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						}
 						HorizontalLayout libElpLayout = new HorizontalLayout();
 
+						//Le premier élément est ignoré car c'est un rappel de l'étape sélectionée
 						if(compteurElp>1){
 							if(elp.getLevel()==1){
-								
-								//Si le pere précédent n'avait aucun fils
+
+								//Si l'ELP de niveau 1 précédent n'avait aucun fils
 								if(layoutPere!=null && nbFils==0){
+									//C'est un élément de niveau 1 non cliquable
+									//Fond blanc et une ligne en border-bottom
 									layoutPere.setStyleName("layout-bottom-line-separator");
 								}
-								
+
 								layoutPere=libElpLayout;
 								nbFils=0;
 								//Sur un elp de niveau 1, il est sur fond sombre
@@ -278,11 +285,18 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 								libElpLayout.setId("layout_pere_"+elp.getCode());
 
 							}else{
-								nbFils++;
 								libElpLayout.addStyleName("layout-bottom-line-separator");
-								libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_"+elpPere);
-								//ajout dans la hashMap
-								layoutList.get(elpPere).add(libElpLayout);
+								if(!StringUtils.hasText(elpPere)){
+									// ANOMALIE , Arborescence non complete
+									// TODO On affichera toute la liste des ELP sans les indicateurs de niveau ni JS pour déplier
+									libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_");
+									arborescenceValide=false;
+								}else{
+									nbFils++;
+									libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_"+elpPere);
+									//ajout dans la hashMap
+									layoutList.get(elpPere).add(libElpLayout);
+								}
 
 							}
 						}else{
@@ -293,17 +307,17 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						libElpLayout.setHeight("100%");
 
 						VerticalLayout libVerticalLayout=new VerticalLayout();
-						
+
 						Label libElpLabel = new Label(elp.getLibelle());
 						if(elp.isEpreuve()){
 							libElpLabel.setStyleName("bold-italic-label");
 						}else{
 							libElpLabel.setStyleName("bold-label");
 						}
-						
+
 
 						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
-						if(compteurElp>1){
+						if(arborescenceValide && compteurElp>1){
 							HorizontalLayout levelMainLayout = new HorizontalLayout();
 							levelMainLayout.setSizeFull();
 							levelMainLayout.setSpacing(true);
@@ -335,7 +349,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						}
 						//Ajout du libellé dans le layout
 						libVerticalLayout.addComponent(libElpLabel);
-						
+
 						libElpLayout.addComponent(libVerticalLayout);
 
 						HorizontalLayout noteLayout = new HorizontalLayout();
@@ -392,10 +406,10 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						notesLayout.addComponent(libElpLayout);
 
 						//Au départ, on cache les éléments de niveau supérieur à 1
-						if(compteurElp>1 && elp.getLevel()>1){
+						if(arborescenceValide && compteurElp>1 && elp.getLevel()>1){
 							//libElpLayout.setVisible(false);
 							Page.getCurrent().getJavaScript().execute("document.getElementById('"+libElpLayout.getId()+"').style.display=\"none\";");
-							
+
 						}
 					}
 
@@ -405,20 +419,21 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					}
 
 					//Ajout du javascript
-					for(Entry<String, LinkedList<HorizontalLayout>> entry : layoutList.entrySet()) {
-						String pere = entry.getKey();
-						LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
-						// traitements
-						if(listeLayoutFils!=null && listeLayoutFils.size()>0){
-							String affichagejavascriptfils = "";
-							for(HorizontalLayout hl : listeLayoutFils){
-								affichagejavascriptfils += "if(document.getElementById('"+hl.getId()+"').style.display==\"none\"){document.getElementById('"+hl.getId()+"').style.display = \"block\";}else{document.getElementById('"+hl.getId()+"').style.display = \"none\";}";
+					if(arborescenceValide){
+						for(Entry<String, LinkedList<HorizontalLayout>> entry : layoutList.entrySet()) {
+							String pere = entry.getKey();
+							LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
+							// traitements
+							if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+								String affichagejavascriptfils = "";
+								for(HorizontalLayout hl : listeLayoutFils){
+									affichagejavascriptfils += "if(document.getElementById('"+hl.getId()+"').style.display==\"none\"){document.getElementById('"+hl.getId()+"').style.display = \"block\";}else{document.getElementById('"+hl.getId()+"').style.display = \"none\";}";
+								}
+								//sur le clic du layout pere, on affiche les fils
+								Page.getCurrent().getJavaScript().execute("document.getElementById('"+"layout_pere_"+pere+"').onclick=function(){ "+affichagejavascriptfils+"};");
 							}
-							//sur le clic du layout pere, on affiche les fils
-							Page.getCurrent().getJavaScript().execute("document.getElementById('"+"layout_pere_"+pere+"').onclick=function(){ "+affichagejavascriptfils+"};");
 						}
 					}
-
 
 					layout.addComponent(notesLayout);
 					layout.setExpandRatio(notesLayout, 1);
@@ -447,12 +462,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		
+
 	}
 
 
 	public void refreshJavascript() {
-		
+
 		//Ajout du javascript
 		for(Entry<String, LinkedList<HorizontalLayout>> entry : layoutList.entrySet()) {
 			String pere = entry.getKey();
