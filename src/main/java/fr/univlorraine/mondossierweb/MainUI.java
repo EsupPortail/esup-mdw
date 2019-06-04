@@ -124,8 +124,6 @@ public class MainUI extends GenericUI {
 	 */
 	private static final int TENTATIVES_RECO = 3;
 
-	private static final String TOO_MANY_SESSIONS_EXCEPTION = "TooManyActiveSessionsException";
-
 	/* Redirige java.util.logging vers SLF4j */
 	static {
 		SLF4JBridgeHandler.install();
@@ -277,11 +275,6 @@ public class MainUI extends GenericUI {
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
 					
-					/* Gérer les erreurs de surpopulation */
-					if (simpleName.equals(TOO_MANY_SESSIONS_EXCEPTION)) {
-						displayViewFullScreen(ErreurSessionsView.NAME);
-						return;
-					}
 					/* Gérer les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
