@@ -85,6 +85,7 @@ import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
 import fr.univlorraine.mondossierweb.views.AssistanceView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
+import fr.univlorraine.mondossierweb.views.ErreurSessionsView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.EtatCivilView;
 import fr.univlorraine.mondossierweb.views.FavorisView;
@@ -122,6 +123,8 @@ public class MainUI extends GenericUI {
 	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
 	 */
 	private static final int TENTATIVES_RECO = 3;
+
+	private static final String TOO_MANY_SESSIONS_EXCEPTION = "TooManyActiveSessionsException";
 
 	/* Redirige java.util.logging vers SLF4j */
 	static {
@@ -273,6 +276,12 @@ public class MainUI extends GenericUI {
 				
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
+					
+					/* Gérer les erreurs de surpopulation */
+					if (simpleName.equals(TOO_MANY_SESSIONS_EXCEPTION)) {
+						displayViewFullScreen(ErreurSessionsView.NAME);
+						return;
+					}
 					/* Gérer les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
