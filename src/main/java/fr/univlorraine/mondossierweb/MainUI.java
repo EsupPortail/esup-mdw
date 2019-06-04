@@ -85,7 +85,6 @@ import fr.univlorraine.mondossierweb.views.AdminView;
 import fr.univlorraine.mondossierweb.views.AdressesView;
 import fr.univlorraine.mondossierweb.views.AssistanceView;
 import fr.univlorraine.mondossierweb.views.CalendrierView;
-import fr.univlorraine.mondossierweb.views.ErreurSessionsView;
 import fr.univlorraine.mondossierweb.views.ErreurView;
 import fr.univlorraine.mondossierweb.views.EtatCivilView;
 import fr.univlorraine.mondossierweb.views.FavorisView;
