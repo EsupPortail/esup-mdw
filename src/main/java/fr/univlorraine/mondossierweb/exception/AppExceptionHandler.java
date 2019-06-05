@@ -70,11 +70,11 @@ public class AppExceptionHandler extends HttpServlet {
 		// Si c'est une erreur du au nombre de session max atteint
 		if(statusCode == 500 && throwable!=null && throwable.getClass() !=null &&
 				throwable.getClass().getName() !=null &&  throwable.getClass().getName().contains(TOO_MANY_SESSION_EXCEPTION)){
-			out.write("<h3>Le service demandé est momentanément indisponible, nous mettons tout en oeuvre pour rétablir son fonctionnement.</h3>");
+			out.write("<h4>Le service demandé est momentanément indisponible, nous mettons tout en oeuvre pour rétablir son fonctionnement.</h4>");
 		}else{
-			out.write("<h3>Une erreur est survenue</h3>");
+			out.write("<h4>Une erreur est survenue</h4>");
 		}
-		out.write("<h3>Merci de réessayer ultérieurement.<h3>");
+		out.write("<h4>Merci de réessayer ultérieurement.<h4>");
 		out.write("</div></div></body></html>");
 	}
 }
