@@ -66,7 +66,7 @@ public class AppExceptionHandler extends HttpServlet {
 		response.setContentType("text/html");
 
 		PrintWriter out = response.getWriter();
-		out.write("<html><head><title>Erreur</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head><body><div style=\"width: 100%; height: 100%; margin:auto;text-align: center;font-size: x-large;display: flex;\"><div style=\"margin: auto;\">");
+		out.write("<html><head><title>Erreur</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head><body><div style=\"background-color: rgba(85, 96, 164, 0.12); width: 100%; height: 100%; margin:auto;text-align: center;font-size: x-large;display: flex;\"><div style=\"margin: auto;\">");
 		// Si c'est une erreur du au nombre de session max atteint
 		if(statusCode == 500 && throwable!=null && throwable.getClass() !=null &&
 				throwable.getClass().getName() !=null &&  throwable.getClass().getName().contains(TOO_MANY_SESSION_EXCEPTION)){
