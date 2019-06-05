@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/AppExceptionHandler")
 public class AppExceptionHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String TOO_MANY_SESSION_EXCEPTION = "TooManyActiveSessionsException";
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -44,15 +45,36 @@ public class AppExceptionHandler extends HttpServlet {
 	private void processError(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
+		// Analyze the servlet exception
+		Throwable throwable = (Throwable) request
+				.getAttribute("javax.servlet.error.exception");
+		Integer statusCode = (Integer) request
+				.getAttribute("javax.servlet.error.status_code");
+		String servletName = (String) request
+				.getAttribute("javax.servlet.error.servlet_name");
+		if (servletName == null) {
+			servletName = "Unknown";
+		}
+		String requestUri = (String) request
+				.getAttribute("javax.servlet.error.request_uri");
+		if (requestUri == null) {
+			requestUri = "Unknown";
+		}
+		
+		
 		// Set response content type
 		response.setContentType("text/html");
 
 		PrintWriter out = response.getWriter();
-
-		out.write("<html><head><title>Erreur</title></head><body>");
-		out.write("<h3>Une erreur est survenue</h3>");
-		out.write("<strong>Merci de réessayer ultérieurement");
-		out.write("<br><br>");
-		out.write("</body></html>");
+		out.write("<html><head><title>Erreur</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head><body><div style=\"width: 100%; height: 100%; margin:auto;text-align: center;font-size: x-large;display: flex;\"><div style=\"margin: auto;\">");
+		// Si c'est une erreur du au nombre de session max atteint
+		if(statusCode == 500 && throwable!=null && throwable.getClass() !=null &&
+				throwable.getClass().getName() !=null &&  throwable.getClass().getName().contains(TOO_MANY_SESSION_EXCEPTION)){
+			out.write("<h3>Le service demandé est momentanément indisponible, nous mettons tout en oeuvre pour rétablir son fonctionnement.</h3>");
+		}else{
+			out.write("<h3>Une erreur est survenue</h3>");
+		}
+		out.write("<h3>Merci de réessayer ultérieurement.<h3>");
+		out.write("</div></div></body></html>");
 	}
 }
