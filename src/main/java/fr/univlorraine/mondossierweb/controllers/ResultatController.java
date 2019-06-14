@@ -576,6 +576,14 @@ public class ResultatController {
 					elp.setTemSemestre("N");
 					elp.setTemSemestre(reedto[i].getElp().getNatureElp().getTemSemestre());
 					elp.setEtatDelib("");
+					
+					
+					//Récupération des crédits ects de référence
+					String creditEctsElp = null;
+					//Si on a récupéré un crédit ECTS de référence
+					if(reedto[i].getElp().getNbrCrdElp()!=null && reedto[i].getElp().getNbrCrdElp().toString()!=null && !reedto[i].getElp().getNbrCrdElp().toString().equals("")){
+						creditEctsElp = reedto[i].getElp().getNbrCrdElp().toString();
+					}
 
 					//vrai si l'ELP est il dans un etat de delib qui nous convient en session1:
 					boolean elpEtatDelibS1OK=false;
@@ -656,17 +664,28 @@ public class ResultatController {
 												anneePrc = relpdto[j].getCodAnu();
 											}
 
-											//on recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
-											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
+											//Récupération des crédits ECTS avant la version 5.20.laa
+											//On recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
+											/*if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
 													&& (elp.getEcts()==null || elp.getEcts().equals(""))){
 												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
-												//String anneeECTS=reedto[i].getCodAnu();
 												// récupère l'ECTS acquis
 												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(),anneeECTS);
 												if(ectsAcquis!=null){
 													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
 												}else{
 													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
+												}
+											}*/
+											
+											// Récupération des crédits ECTS version 5.20.laa
+											// Si on a un crédit ECTS de référence et si crédit ECTS pas déjà renseigné via la session de juin.
+											if(creditEctsElp!=null && (elp.getEcts()==null || elp.getEcts().equals(""))){
+												//Si on a un crédit acquis 
+												if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
+													elp.setEcts(Utils.getEctsToDisplay(relpdto[j].getNbrCrdElp())+"/"+creditEctsElp);
+												}else{
+													elp.setEcts("0/"+creditEctsElp);
 												}
 											}
 
@@ -700,8 +719,10 @@ public class ResultatController {
 												elp.setAnnee(relpdto[j].getCodAnu());
 												anneePrc = relpdto[j].getCodAnu();
 											}
+											
+											//Récupération des crédits ECTS avant la version 5.20.laa
 											//on recupere les crédits ECTS 
-											if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
+											/*if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
 												// récupère l'ECTS acquis
 												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
 												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), anneeECTS);
@@ -710,7 +731,19 @@ public class ResultatController {
 												}else{
 													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
 												}
+											}*/
+											
+											// Récupération des crédits ECTS version 5.20.laa
+											// Si on a un crédit ECTS de référence
+											if(creditEctsElp!=null){
+												//Si on a un crédit acquis 
+												if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
+													elp.setEcts(Utils.getEctsToDisplay(relpdto[j].getNbrCrdElp())+"/"+creditEctsElp);
+												}else{
+													elp.setEcts("0/"+creditEctsElp);
+												}
 											}
+											
 											elp.setRes2(result);
 										}
 

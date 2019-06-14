@@ -2,5 +2,9 @@
 /configUrlServices.properties
 /configUrlServicespreprod.properties
 /configUrlServicesprod.properties
-/configUrlServicesEsbpreprod.properties
 /configUrlServicesdev.properties
+/configUrlServicestest.properties
+/configUrlServicesdev2.properties
+/configUrlServicestest2.properties
+/configUrlServicesprod2.properties
+/configUrlServicespreprod2.properties
