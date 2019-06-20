@@ -60,15 +60,15 @@ import gouv.education.apogee.commun.client.ws.pedagogiquemetier.PedagogiqueMetie
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExterneDTO;
 import gouv.education.apogee.commun.transverse.dto.administratif.CursusExternesEtTransfertsDTO;
 import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmAnuDTO2;
-import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmEtpDTO2;
+import gouv.education.apogee.commun.transverse.dto.administratif.InsAdmEtpDTO3;
 import gouv.education.apogee.commun.transverse.dto.etudiant.AdresseDTO2;
 import gouv.education.apogee.commun.transverse.dto.etudiant.AdresseMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CommuneMajDTO;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesDTO2;
 import gouv.education.apogee.commun.transverse.dto.etudiant.CoordonneesMajDTO;
-import gouv.education.apogee.commun.transverse.dto.etudiant.IdentifiantsEtudiantDTO;
+import gouv.education.apogee.commun.transverse.dto.etudiant.IdentifiantsEtudiantDTO2;
 import gouv.education.apogee.commun.transverse.dto.etudiant.IndBacDTO;
-import gouv.education.apogee.commun.transverse.dto.etudiant.InfoAdmEtuDTO;
+import gouv.education.apogee.commun.transverse.dto.etudiant.InfoAdmEtuDTO2;
 import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementCourtDTO;
 import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 
@@ -142,12 +142,13 @@ public class EtudiantController {
 			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
 		try {
 			//informations générales :
-			IdentifiantsEtudiantDTO idetu;
+			IdentifiantsEtudiantDTO2 idetu;
 
 			if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
-				idetu = monProxyEtu.recupererIdentifiantsEtudiant(codetu, null, null, null, null, null, null, null, null, "N");
+				//idetu = monProxyEtu.recupererIdentifiantsEtudiant_v2(codetu, null, null, null, null, null, null, null, null, "N");
+				idetu = monProxyEtu.recupererIdentifiantsEtudiant_v2(codetu, null, null, null, null, null, null, null, "N");
 			} else {
-				idetu = monProxyEtu.recupererIdentifiantsEtudiant(codetu, null, null, null, null, null, null, null, null, "O");
+				idetu = monProxyEtu.recupererIdentifiantsEtudiant_v2(codetu, null, null, null, null, null, null, null, "O");
 			}
 			if(idetu!=null && idetu.getCodInd()!=0 && StringUtils.hasText(idetu.getCodInd().toString())){
 				return true;
@@ -178,19 +179,21 @@ public class EtudiantController {
 			}
 			try {
 				//informations générales :
-				IdentifiantsEtudiantDTO idetu;
+				IdentifiantsEtudiantDTO2 idetu;
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
-					idetu = monProxyEtu.recupererIdentifiantsEtudiant(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, null, "N");
+					idetu = monProxyEtu.recupererIdentifiantsEtudiant_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "N");
 				} else {
-					idetu = monProxyEtu.recupererIdentifiantsEtudiant(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, null, "O");
+					idetu = monProxyEtu.recupererIdentifiantsEtudiant_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "O");
 				}
 
 				GenericUI.getCurrent().getEtudiant().setCod_ind(idetu.getCodInd().toString());
 
 				//Gestion des codine null
-				if(idetu.getNumeroINE() != null && idetu.getCleINE() != null ){
-					GenericUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE() + idetu.getCleINE());
+				//if(idetu.getNumeroINE() != null && idetu.getCleINE() != null ){
+				if(idetu.getNumeroINE() != null ){
+					//GenericUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE() + idetu.getCleINE());
+					GenericUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE());
 				}else{
 					GenericUI.getCurrent().getEtudiant().setCod_nne("");
 				}
@@ -209,8 +212,8 @@ public class EtudiantController {
 
 
 
-				InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
-
+				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
+				InfoAdmEtuDTO2 iaetu = monProxyEtu.recupererInfosAdmEtu_v2(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 				//Utilisant du nom patronymique
 				GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
@@ -237,7 +240,7 @@ public class EtudiantController {
 				}
 				//la date de naissance:
 				if (iaetu.getDateNaissance() != null) {
-					Date d = iaetu.getDateNaissance();
+					Date d = iaetu.getDateNaissance().getTime();
 					GenericUI.getCurrent().getEtudiant().setDatenaissance(Utils.formatDateToString(d));
 				} else {
 					GenericUI.getCurrent().getEtudiant().setDatenaissance("");
@@ -579,12 +582,12 @@ public class EtudiantController {
 
 			//cursus au sein de l'université:
 
-			InsAdmEtpDTO2[] insdtotab = monProxyAdministratif.recupererIAEtapes_v2(GenericUI.getCurrent().getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
+			InsAdmEtpDTO3[] insdtotab = monProxyAdministratif.recupererIAEtapes_v3(GenericUI.getCurrent().getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
 
 			if(insdtotab!=null){
 				for (int i = 0; i < insdtotab.length; i++) {
 					Inscription insc = new Inscription();
-					InsAdmEtpDTO2 insdto = insdtotab[i];
+					InsAdmEtpDTO3 insdto = insdtotab[i];
 
 					//on test si l'inscription n'est pas annulée:
 					if (insdto.getEtatIae()!=null && insdto.getEtatIae().getCodeEtatIAE()!=null && insdto.getEtatIae().getCodeEtatIAE().equals("E")){
@@ -669,7 +672,7 @@ public class EtudiantController {
 
 
 			//première inscription universitaire : 
-			InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
+			InfoAdmEtuDTO2 iaetu = monProxyEtu.recupererInfosAdmEtu_v2(GenericUI.getCurrent().getEtudiant().getCod_etu());
 			if (iaetu != null) {
 				GenericUI.getCurrent().getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
 				GenericUI.getCurrent().getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
