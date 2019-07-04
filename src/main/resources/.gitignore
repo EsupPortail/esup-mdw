@@ -1,11 +1,6 @@
 /apogeeRequest.xml
 /configUrlServices.properties
-/configUrlServicespreprod.properties
-/configUrlServicesprod.properties
-/configUrlServicesdev.properties
-/configUrlServicestest.properties
-/configUrlServicesdev2.properties
-/configUrlServicestest2.properties
-/configUrlServicesprod2.properties
-/configUrlServicespreprod2.properties
-/configUrlServicesprod3.properties
+/configUrlServicesdev*.properties
+/configUrlServicestest*.properties
+/configUrlServicespreprod*.properties
+/configUrlServicesprod*.properties
