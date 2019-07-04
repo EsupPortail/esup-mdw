@@ -239,7 +239,7 @@ public class ModificationAdressesWindow extends Window {
 		fieldVilleEtranger1.setValue(etudiant.getAdresseAnnuelle().getAdresseetranger());
 		fieldVilleEtranger1.setNullRepresentation("");
 		fieldVilleEtranger1.setWidth("326px");
-		fieldVilleEtranger1.setMaxLength(5);
+		fieldVilleEtranger1.setMaxLength(32);
 		fieldVilleEtranger1.setRequired(true);
 		formAdresseAnnuelleLayout.addComponent(fieldVilleEtranger1);
 
@@ -380,7 +380,7 @@ public class ModificationAdressesWindow extends Window {
 		fieldVilleEtranger2.setValue(etudiant.getAdresseFixe().getAdresseetranger());
 		fieldVilleEtranger2.setNullRepresentation("");
 		fieldVilleEtranger2.setWidth("326px");
-		fieldVilleEtranger2.setMaxLength(5);
+		fieldVilleEtranger2.setMaxLength(32);
 		fieldVilleEtranger2.setRequired(true);
 		formAdresseFixeLayout.addComponent(fieldVilleEtranger2);
 
