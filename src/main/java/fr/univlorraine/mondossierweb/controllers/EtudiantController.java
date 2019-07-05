@@ -139,7 +139,7 @@ public class EtudiantController {
 	public boolean isEtudiantExiste(String codetu){
 
 		if(monProxyEtu==null)
-			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 		try {
 			//informations générales :
 			IdentifiantsEtudiantDTO2 idetu;
@@ -172,10 +172,10 @@ public class EtudiantController {
 
 		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
 			if(monProxyEtu==null){
-				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			}
 			if(monProxyAdministratif==null){
-				monProxyAdministratif = (AdministratifMetierServiceInterface)  WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+				monProxyAdministratif = (AdministratifMetierServiceInterface)  WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			}
 			try {
 				//informations générales :
@@ -438,7 +438,7 @@ public class EtudiantController {
 
 		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
 			if(monProxyAdministratif==null){
-				monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+				monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			}
 			try{
 				String[] annees =  monProxyAdministratif.recupererAnneesIa(GenericUI.getCurrent().getEtudiant().getCod_etu(), null);
@@ -933,10 +933,10 @@ public class EtudiantController {
 			boolean succes = false;
 			//On insere dans Apogée
 			if(monProxyEtu==null){
-				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			}
 			if(monProxyAdministratif==null){
-				monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+				monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			}
 			try {
 				//recup de l'ancienne et modif dessus:

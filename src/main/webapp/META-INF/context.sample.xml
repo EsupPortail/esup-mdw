@@ -89,6 +89,11 @@
 	<!-- dn vers l'ou du ldap contenant les étudiants -->
 	<Parameter name="ldap.ou.student" value="ou=people" />
 	
+	<!-- username de l'utilisateur des WebServices Apogée à utiliser pour MDW. Ne pas renseigner si les connecteurs sont accessibles en anonyme -->
+	<Parameter name="apoWsUsername" value=""/>
+	<!-- password de l'utilisateur des WebServices Apogée à utiliser pour MDW. Ne pas renseigner si les connecteurs sont accessibles en anonyme  -->
+	<Parameter name="apoWsPassword" value=""/>
+	
 	
 	<!-- Source des résultats lors de l'appel aux Web Services Apogée pour récupérer les notes et résultats -->
 	<Parameter name="sourceResultats" value="Apogee" />

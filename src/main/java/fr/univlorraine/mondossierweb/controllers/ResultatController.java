@@ -89,7 +89,7 @@ public class ResultatController {
 	 */
 	public void recupererNotesEtResultats(Etudiant e) {
 		if(monProxyPedagogique==null){
-			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 		}
 
 		try {
@@ -178,7 +178,7 @@ public class ResultatController {
 	public void recupererNotesEtResultatsEnseignant(Etudiant e) {
 
 		if(monProxyPedagogique==null){
-			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+			monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 		}
 
 		if(e!=null && StringUtils.hasText(e.getCod_etu())){
@@ -1140,7 +1140,7 @@ public class ResultatController {
 		try {
 
 			if(monProxyPedagogique==null)
-				monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+				monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 
 			e.getElementsPedagogiques().clear();
 
@@ -1212,7 +1212,7 @@ public class ResultatController {
 		try {
 
 			if(monProxyPedagogique==null){
-				monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME);
+				monProxyPedagogique = (PedagogiqueMetierServiceInterface) WSUtils.getService(WSUtils.PEDAGOGIQUE_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			}
 			e.getElementsPedagogiques().clear();
 

@@ -261,4 +261,19 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value)) throw new NullPointerException("etatcivil.nom.affichage cannot be null !");
 		return value;
 	}
+	
+	
+	/** Retourne le username de l'utilisateur des WebServices Apogée à utiliser pour MDW   */
+	public static String getApoWsUsername(){
+		String value = System.getProperty("context.apoWsUsername");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+	
+	/** Retourne le password de l'utilisateur des WebServices Apogée à utiliser pour MDW   */
+	public static String getApoWsPassword(){
+		String value = System.getProperty("context.apoWsPassword");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
 }

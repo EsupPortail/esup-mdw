@@ -20,6 +20,7 @@ package fr.univlorraine.mondossierweb.controllers;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import gouv.education.apogee.commun.client.utils.WSUtils;
 import gouv.education.apogee.commun.client.ws.administratifmetier.AdministratifMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.etudiantmetier.EtudiantMetierServiceInterface;
@@ -90,7 +91,7 @@ public class AdresseController {
 	public TypeHebergementDTO[] getTypesHebergement(){
 		if(listeTypeHebergement==null || listeTypeHebergement.length==0){
 			if(monProxyEtu==null)
-				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+				monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			try {
 				listeTypeHebergement=monProxyEtu.recupererTypeHebergement(null, null, null);
 			} catch (RemoteException | WebBaseException e) {
@@ -103,7 +104,7 @@ public class AdresseController {
 	public PaysDTO[] getPays(){
 		if(listePays == null || listePays.length == 0){
 			if(monProxyGeo==null)
-				monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME);
+				monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 			try {
 				listePays = monProxyGeo.recupererPays(null, "O");
 			} catch (RemoteException | WebBaseException e) {
@@ -269,9 +270,9 @@ public class AdresseController {
 	private boolean majAdressesApogee(Adresse adresseAnnuelle,Adresse adresseFixe, String cod_etu) {
 		boolean ok = false;
 		if(monProxyEtu==null)
-			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME);
+			monProxyEtu = (EtudiantMetierServiceInterface) WSUtils.getService(WSUtils.ETUDIANT_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 		if(monProxyAdministratif==null)
-			monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME);
+			monProxyAdministratif = (AdministratifMetierServiceInterface) WSUtils.getService(WSUtils.ADMINISTRATIF_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 
 		try {
 			//recup de l'ancienne et modif dessus:
@@ -353,7 +354,7 @@ public class AdresseController {
 	private String getCodeInseeVille(final String codepostal, final String nom) {
 
 		if(monProxyGeo==null)
-			monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME);
+			monProxyGeo = (GeographieMetierServiceInterface) WSUtils.getService(WSUtils.GEOGRAPHIE_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 
 
 		try {

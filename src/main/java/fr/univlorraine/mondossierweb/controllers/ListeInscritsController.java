@@ -516,7 +516,7 @@ public class ListeInscritsController {
 		List<ElpDeCollection> listeElp = new LinkedList<ElpDeCollection>();
 
 		if(monProxyOffreDeFormation==null){
-			monProxyOffreDeFormation = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME);
+			monProxyOffreDeFormation = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 		}
 
 		try{
