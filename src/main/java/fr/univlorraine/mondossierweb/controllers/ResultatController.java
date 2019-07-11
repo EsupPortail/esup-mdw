@@ -324,6 +324,7 @@ public class ResultatController {
 								Resultat r = new Resultat();
 								ResultatVdiDTO res = tabres[j];
 
+								r.setCodeSession(Integer.parseInt(res.getSession().getCodSes()));
 								r.setSession(res.getSession().getLibSes());
 								if(res.getNatureResultat() != null && res.getNatureResultat().getCodAdm() != null && res.getNatureResultat().getCodAdm().equals("0")){
 									//on est en Admissibilité à l'étape.Pas en admission.
@@ -412,6 +413,7 @@ public class ResultatController {
 										et.setDeliberationTerminee(true);
 									}
 
+									r.setCodeSession(Integer.parseInt(ret.getSession().getCodSes()));
 									r.setSession(ret.getSession().getLibSes());
 									if(ret.getNatureResultat() != null && ret.getNatureResultat().getCodAdm()!= null && ret.getNatureResultat().getCodAdm().equals("0")){
 										//on est en Admissibilité à l'étape.Pas en admission.
@@ -576,8 +578,8 @@ public class ResultatController {
 					elp.setTemSemestre("N");
 					elp.setTemSemestre(reedto[i].getElp().getNatureElp().getTemSemestre());
 					elp.setEtatDelib("");
-					
-					
+
+
 					//Récupération des crédits ects de référence
 					String creditEctsElp = null;
 					//Si on a récupéré un crédit ECTS de référence
@@ -677,7 +679,7 @@ public class ResultatController {
 													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
 												}
 											}*/
-											
+
 											// Récupération des crédits ECTS version 5.20.laa
 											// Si on a un crédit ECTS de référence et si crédit ECTS pas déjà renseigné via la session de juin.
 											if(creditEctsElp!=null && (elp.getEcts()==null || elp.getEcts().equals(""))){
@@ -719,7 +721,7 @@ public class ResultatController {
 												elp.setAnnee(relpdto[j].getCodAnu());
 												anneePrc = relpdto[j].getCodAnu();
 											}
-											
+
 											//Récupération des crédits ECTS avant la version 5.20.laa
 											//on recupere les crédits ECTS 
 											/*if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
@@ -732,7 +734,7 @@ public class ResultatController {
 													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
 												}
 											}*/
-											
+
 											// Récupération des crédits ECTS version 5.20.laa
 											// Si on a un crédit ECTS de référence
 											if(creditEctsElp!=null){
@@ -743,7 +745,7 @@ public class ResultatController {
 													elp.setEcts("0/"+creditEctsElp);
 												}
 											}
-											
+
 											elp.setRes2(result);
 										}
 
@@ -1062,21 +1064,45 @@ public class ResultatController {
 			ep.setLibelle(et.getLibelle());
 			e.setDeliberationTerminee(et.isDeliberationTerminee());
 			if (et.getResultats().size() > 0) {
-				if (et.getResultats().get(0).getNote() != null){
+				for(Resultat r : et.getResultats()){
+					if(r!=null){
+						//Si c'est un résultat de session 1 ou de session unique
+						if(r.getCodeSession()<2){
+							if (r.getNote() != null){
+								ep.setNote1(r.getNote().toString());
+								ep.setBareme1(r.getBareme());
+							}
+							if (r.getAdmission() != null)
+								ep.setRes1(r.getAdmission());
+						}else{
+							//C'est un résultat de session 2
+							if (r.getNote() != null){
+								ep.setNote2(r.getNote().toString());
+								ep.setBareme2(r.getBareme());
+							}
+							if (r.getAdmission() != null)
+								ep.setRes2(r.getAdmission());
+						}
+					}
+
+				}
+
+				/* ANCIEN CODE : avant d'ajouter codeSession à Resultat.java*/
+				/*if (et.getResultats().get(0).getNote() != null){
 					ep.setNote1(et.getResultats().get(0).getNote().toString());
 					ep.setBareme1(et.getResultats().get(0).getBareme());
 				}
 				if (et.getResultats().get(0).getAdmission() != null)
 					ep.setRes1(et.getResultats().get(0).getAdmission());
 
-			}
+				}
 			if (et.getResultats().size() > 1) {
 				if (et.getResultats().get(1).getNote() != null){
 					ep.setNote2(et.getResultats().get(1).getNote().toString());
 					ep.setBareme2(et.getResultats().get(1).getBareme());
 				}
 				if (et.getResultats().get(1).getAdmission() != null)
-					ep.setRes2(et.getResultats().get(1).getAdmission());
+					ep.setRes2(et.getResultats().get(1).getAdmission());*/
 			}
 			e.getElementsPedagogiques().add(0, ep);
 

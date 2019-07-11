@@ -38,6 +38,10 @@ public class Resultat implements Serializable{
 		 */
 		private String session;
 		/**
+		 * le code de la session
+		 */
+		private int codeSession;
+		/**
 		 * la note.
 		 */
 		private String note;
