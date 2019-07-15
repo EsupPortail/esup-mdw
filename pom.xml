@@ -242,23 +242,23 @@
 
 	<build>
 		<resources>
-		<resource>
-<!-- Filtre le fichier app.properties -->
-<directory>src/main/resources</directory>
-<filtering>true</filtering>
-<includes>
-<include>app.properties</include>
-</includes>
-</resource>
 			<resource>
-<directory>src/main/resources</directory>
-<excludes>
-<exclude>assembly/</exclude>
-<exclude>repository/</exclude>
-<exclude>**/*.scss</exclude>
-<exclude>**/*sample.*</exclude>
-</excludes>
-</resource>
+				<!-- Filtre le fichier app.properties -->
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>app.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>assembly/</exclude>
+					<exclude>repository/</exclude>
+					<exclude>**/*.scss</exclude>
+					<exclude>**/*sample.*</exclude>
+				</excludes>
+			</resource>
 		</resources>
 
 		<plugins>
@@ -535,7 +535,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css</packagingExcludes>
+					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css</packagingExcludes>
 					<webResources>
             			<resource>
               			<!-- this is relative to the pom.xml directory -->

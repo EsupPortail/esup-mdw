@@ -33,6 +33,8 @@
         <exclude>**/assembly/**</exclude>
         <exclude>**/.settings/**</exclude>
         <exclude>**/configUrlServices.properties</exclude>
+        <exclude>**/configUrlServicesp*.properties</exclude>
+        <exclude>**/configUrlServicest*.properties</exclude>
         <exclude>**/apogeeRequest.xml</exclude>
         <exclude>**/*messages.properties</exclude>
         <exclude>**/*messages*_*.properties</exclude>
