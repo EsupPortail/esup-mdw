@@ -150,14 +150,14 @@ public class PropertyUtils {
 	}
 
 	
-	/** Retourne vrai on doit utiliser les webSockets pour le push */
-	public static boolean isWebSocketPushEnabled(){
+
+	/*public static boolean isWebSocketPushEnabled(){
 		if(StringUtils.hasText(System.getProperty("context.webSocketPush"))
 				&& System.getProperty("context.webSocketPush").equals("true")){
 			return true;
 		}
 		return false;
-	}
+	}*/
 	
 	/** Retourne la clé apogée pour décrypter les blob de la base apogée */
 	public static String getClefApogeeDecryptBlob(){

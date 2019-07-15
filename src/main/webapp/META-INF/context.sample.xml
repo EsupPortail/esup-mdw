@@ -103,8 +103,7 @@
 	
 	<!-- Active/Desactive le push -->
 	<Parameter name="enablePush" value="true" />
-	<!-- Active/Desactive les webSockets pour le push -->
-	<Parameter name="webSocketPush" value="false" />
+
 	<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans. Push obligatoire -->
 	<Parameter name="showLoadingIndicator" value="true" />
 	

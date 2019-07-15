@@ -242,16 +242,6 @@ public class MainUI extends GenericUI {
 
 		LOG.debug("init(); mainUI");
 
-		/*
-		if(PropertyUtils.isPushEnabled() ){
-			if( !PropertyUtils.isWebSocketPushEnabled()){
-				getPushConfiguration().setTransport(Transport.LONG_POLLING);
-			} else{
-				getPushConfiguration().setTransport(Transport.WEBSOCKET_XHR);
-			}
-		}*/
-
-
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 			

@@ -49,6 +49,7 @@ import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
@@ -208,13 +209,6 @@ public class MdwTouchkitUI extends GenericUI{
 	@Override
 	protected void init(VaadinRequest request) {
 		LOG.debug("init(); MdwTouchkitUI");
-
-		/*
-		if( !PropertyUtils.isWebSocketPushEnabled()){
-			getPushConfiguration().setTransport(Transport.LONG_POLLING);
-		} else{
-			getPushConfiguration().setTransport(Transport.WEBSOCKET_XHR);
-		}*/
 
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 
