@@ -171,7 +171,7 @@ public class MainUI extends GenericUI {
 
 	@Resource
 	private FavorisView favorisView;
-	
+
 	@Resource
 	private transient ObjectFactory<HelpWindow> helpWindowFactory;
 
@@ -244,15 +244,15 @@ public class MainUI extends GenericUI {
 
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
-			
+
 			/* Gérer les erreurs quand l'application est en maintenance */
 			if(!applicationActive()){
 				displayViewFullScreen(AccesBloqueView.NAME);
 				return;
 			}
-			
+
 			Throwable cause = e.getThrowable();
-			
+
 			while (cause instanceof Throwable) {
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
@@ -260,10 +260,10 @@ public class MainUI extends GenericUI {
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
-				
+
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
-					
+
 					/* Gérer les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
@@ -280,7 +280,7 @@ public class MainUI extends GenericUI {
 			//DefaultErrorHandler.doDefault(e);
 		});
 
-		
+
 		// Affiche le nom de l'application dans l'onglet du navigateur 
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
@@ -288,7 +288,7 @@ public class MainUI extends GenericUI {
 		//car le fragment ne correspond pas à une vue existante)
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
 			public void uriFragmentChanged(UriFragmentChangedEvent source) {
-				
+
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
 						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
@@ -490,7 +490,7 @@ public class MainUI extends GenericUI {
 
 				boolean navigationComplete=false;
 				String fragment = Page.getCurrent().getUriFragment();
-				
+
 				if (fragment != null && !fragment.isEmpty()) {
 					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est géré dans le listener du navigator
 					if(fragment.contains("adminView") && userController.userCanAccessAdminView()){
@@ -502,7 +502,7 @@ public class MainUI extends GenericUI {
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigationComplete=true;
 					}
-					
+
 					/*if(fragment.contains("accesNotesEtudiant") && userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigator.navigateTo(NotesView.NAME);
@@ -819,7 +819,7 @@ public class MainUI extends GenericUI {
 					addItemMenu("Informations annuelles", InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
 				}
 			}
-			
+
 			/* Adresses */
 			if(userController.isEtudiant() || configController.isAffAdresseEnseignants()){
 				addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
@@ -1019,7 +1019,14 @@ public class MainUI extends GenericUI {
 	}
 
 	public void stopBusyIndicator() {
+		try {
+			//Ajout d'un sleep pour palier au cas ou le busy indicator n'a pas encore été affiché.
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		loadingIndicatorWindow.close();
+
 	}
 
 
