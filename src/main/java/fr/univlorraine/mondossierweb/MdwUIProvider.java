@@ -52,7 +52,7 @@ public class MdwUIProvider extends SpringUIProvider  {
 
 		//Récupération du userAgent
 		if(startServletMobile && event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
-			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
+			//String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 
 			/* Device Detection */
 			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
@@ -93,9 +93,10 @@ public class MdwUIProvider extends SpringUIProvider  {
 		boolean isMobile =currentDevice.isMobile();
 		
 		// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-		if(startServletMobile && isMobile && (userAgent.contains("webkit")
+		/*if(startServletMobile && isMobile && (userAgent.contains("webkit")
 				|| userAgent.contains("windows phone 8")
-				|| userAgent.contains("windows phone 9"))){
+				|| userAgent.contains("windows phone 9"))){*/
+		if(isMobile) {
 			//On affiche la page proposant une redirection vers la version Mobile
 			log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 			uiBeanNameObj = "mdwFallbackTouchkitUI";
