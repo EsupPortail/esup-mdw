@@ -57,7 +57,7 @@
 		<file>${logsPath}/mondossierweb-security.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- rollover daily -->
-			<fileNamePattern>${logsPath}/mondossierweb-%d.%i.log</fileNamePattern>
+			<fileNamePattern>${logsPath}/mondossierweb-security-%d.%i.log</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<!-- or whenever the file size reaches 1MB -->
 				<maxFileSize>1MB</maxFileSize>
