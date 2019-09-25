@@ -56,6 +56,9 @@
 	<!-- URL du CAS -->
 	<Parameter name="cas.url" value="https://auth.univ.fr" />
 
+	<!--  Duree max des sessions inactives en secondes -->
+	<Parameter name="param.session.maxinactiveinterval" value="240" />
+	
 	<!-- Configuration du LDAP -->
 	<!-- Url du ldap. Si plusieurs urls, les séparer par des points virgule -->
 	<Parameter name="ldap.url" value="ldap://ldap.univ.fr:389/dc=univ,dc=fr" />

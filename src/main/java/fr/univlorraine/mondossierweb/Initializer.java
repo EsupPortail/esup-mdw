@@ -86,8 +86,8 @@ public class Initializer implements WebApplicationInitializer {
 		servletContext.addListener(new HttpSessionListener() {
 			@Override
 			public void sessionCreated(HttpSessionEvent httpSessionEvent) {
-				// sans nouvelle requête, on garde la session active 4 minutes
-				httpSessionEvent.getSession().setMaxInactiveInterval(240);
+				// sans nouvelle requête, on garde la session active X minutes
+				httpSessionEvent.getSession().setMaxInactiveInterval(Integer.parseInt(System.getProperty("context.param.session.maxinactiveinterval")));
 			}
 
 			@Override
