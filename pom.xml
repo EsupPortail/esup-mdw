@@ -934,10 +934,11 @@
 			<artifactId>apo-webservicesclient</artifactId>
 			<!-- <version>5.00.lca</version> --> 
 			<!-- <version>5.00.lcb</version> -->
-			<!--  <version>5.20.la</version> -->
-			<!-- <version>5.20.laa</version>  -->
+			<!-- <version>5.20.la</version> -->
+			<!-- <version>5.20.laa</version> -->
 			<!-- <version>5.20.lba</version> -->
-			<version>5.20.lca</version>
+			<!-- <version>5.20.lca</version> -->
+			<version>5.20.lcb</version>
 		</dependency> 
 		
 		<!-- PhotoServer UL -->
