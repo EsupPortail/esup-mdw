@@ -290,6 +290,18 @@ public class ConfigController {
 	public String getTemoinEtatIaeNotesEtudiant() {
 		return getValeurForParameter("temoinEtatIaeNotesEtudiant");
 	}
+	
+	private String getCertificatScolaritePdfPositionSignature() {
+		return getValeurForParameter("certificatScolaritePdfPositionSignature");
+	}
+	
+	public float getCertificatScolaritePdfPositionSignatureX() {
+		return Float.parseFloat(getCertificatScolaritePdfPositionSignature().split("-")[0]);
+	}
+	
+	public float getCertificatScolaritePdfPositionSignatureY() {
+		return Float.parseFloat(getCertificatScolaritePdfPositionSignature().split("-")[1]);
+	}
 
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");

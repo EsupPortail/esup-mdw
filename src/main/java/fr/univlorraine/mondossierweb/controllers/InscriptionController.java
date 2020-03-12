@@ -323,7 +323,8 @@ public class InscriptionController {
 				float scaleRatio = 100 / imageSignature.getHeight(); 
 				float newWidth=scaleRatio * imageSignature.getWidth();
 				imageSignature.scaleAbsolute(newWidth, 100);
-				imageSignature.setAbsolutePosition(350, 210);
+				// Maj 1.3.2
+				imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
 				document.add(imageSignature);
 
 			}
