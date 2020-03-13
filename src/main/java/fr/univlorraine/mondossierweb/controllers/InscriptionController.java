@@ -325,6 +325,7 @@ public class InscriptionController {
 				imageSignature.scaleAbsolute(newWidth, 100);
 				// Maj 1.3.2
 				imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
+				//imageSignature.setAbsolutePosition(350, 150);
 				document.add(imageSignature);
 
 			}
