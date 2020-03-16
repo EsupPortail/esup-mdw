@@ -151,11 +151,13 @@
 	</logger>
 
 	<!-- Ne mail pas les erreurs atmosphere -->
-	<logger name="org.atmosphere" level="error" additivity="false" >
+	<!--  <logger name="org.atmosphere" level="error" additivity="false" >
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
-	</logger>
+	</logger>-->
 	
+	<!-- Ignore les logs atmosphere -->
+	<logger name="org.atmosphere" level="off" />
 	
 
 
