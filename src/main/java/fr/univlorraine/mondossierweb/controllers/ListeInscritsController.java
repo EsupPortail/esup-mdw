@@ -65,6 +65,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.ui.ComboBox;
 
+import fr.univlorraine.apowsclient.utils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
@@ -144,10 +145,7 @@ public class ListeInscritsController {
 	/**
 	 * proxy pour faire appel aux infos sur l'étudiant WS .
 	 */
-	private OffreFormationMetierServiceInterface monProxyOffreDeFormation;
-
-
-
+	private final OffreFormationMetierServiceInterface offreDeFormationService = ServiceProvider.getOffreFormationService();
 
 
 
@@ -515,12 +513,12 @@ public class ListeInscritsController {
 		//appel WS Offre de foramtion 'recupererGroupe'
 		List<ElpDeCollection> listeElp = new LinkedList<ElpDeCollection>();
 
-		if(monProxyOffreDeFormation==null){
-			monProxyOffreDeFormation = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
+		if(offreDeFormationService==null){
+			offreDeFormationService = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
 		}
 
 		try{
-			RecupererGroupeDTO3 recupererGroupeDTO = monProxyOffreDeFormation.recupererGroupe_v3(annee, null, null, null, codElp, null);
+			RecupererGroupeDTO3 recupererGroupeDTO = offreDeFormationService.recupererGroupeV3(annee, null, null, null, codElp, null);
 
 			if (recupererGroupeDTO != null){
 				//On parcourt les ELP

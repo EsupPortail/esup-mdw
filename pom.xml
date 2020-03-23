@@ -47,6 +47,8 @@
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 		<maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
 		<tomcat.version>7.0.94</tomcat.version>  <!-- (JDK11) -->
+		<!-- WS Apogee UL -->
+		<apo.ws.version>5.20.lcb.2</apo.ws.version>
 	</properties>
 
 	<distributionManagement>
@@ -1167,19 +1169,30 @@
 			<version>1.4.7</version>
 		</dependency>
 
-		<!-- WS apogee -->
-		<dependency>
+		<!-- WS apogee AMUE -->
+		<!--  <dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservicesclient</artifactId>
-			<!-- <version>5.00.lca</version> --> 
-			<!-- <version>5.00.lcb</version> -->
-			<!-- <version>5.20.la</version> -->
-			<!-- <version>5.20.laa</version> -->
-			<!-- <version>5.20.lba</version> -->
-			<!-- <version>5.20.lca</version> -->
-			<!-- <version>5.20.lcb</version> -->
 			<version>5.20.lcc</version>
-		</dependency> 
+		</dependency> -->
+		
+		 <!-- WS apogee Lib UL -->
+        <dependency> 
+			<groupId>fr.univlorraine</groupId> 
+			<artifactId>apo-ws-client</artifactId> 
+			<version>${apo.ws.version}</version> 
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-parent</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 		
 		<!-- PhotoServer UL -->
 		<dependency>

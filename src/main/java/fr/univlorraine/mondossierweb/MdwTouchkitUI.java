@@ -49,7 +49,6 @@ import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
-import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
@@ -88,7 +87,6 @@ import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
-import gouv.education.apogee.commun.transverse.exception.WebBaseException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -386,9 +384,6 @@ public class MdwTouchkitUI extends GenericUI{
 							//On affiche le dossier
 							navigateToDossierEtudiant();
 						}
-					} catch (WebBaseException ex) {
-						LOG.error("Probleme avec le WS lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);
-						navigator.navigateTo(ErreurView.NAME);
 					} catch (Exception ex) {
 						LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
 						navigator.navigateTo(ErreurView.NAME);
