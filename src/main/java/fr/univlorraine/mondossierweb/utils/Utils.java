@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -198,8 +199,8 @@ public class Utils {
 	/** formatage d'une Localdate pour ne garder que jour, mois , annee*/
 	public static String formatLocalDateTimeToString(LocalDateTime d){
 		if(d!=null){
-			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			return dateFormat.format(d);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			return d.format(formatter);
 		}else{
 			return null;
 		}

@@ -65,6 +65,14 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.ui.ComboBox;
 
+import fr.univlorraine.apowsclient.offreFormation.CollectionDTO4;
+import fr.univlorraine.apowsclient.offreFormation.ElementPedagogiDTO3;
+import fr.univlorraine.apowsclient.offreFormation.GroupeDTO3;
+import fr.univlorraine.apowsclient.offreFormation.OffreFormationMetierServiceInterface;
+import fr.univlorraine.apowsclient.offreFormation.RecupererGroupeDTO3;
+import fr.univlorraine.apowsclient.offreFormation.TableauCollection4;
+import fr.univlorraine.apowsclient.offreFormation.TableauElementPedagogi3;
+import fr.univlorraine.apowsclient.offreFormation.TableauGroupe3;
 import fr.univlorraine.apowsclient.utils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
@@ -80,12 +88,7 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.utils.WSUtils;
-import gouv.education.apogee.commun.client.ws.offreformationmetier.OffreFormationMetierServiceInterface;
-import gouv.education.apogee.commun.transverse.dto.scolarite.CollectionDTO4;
-import gouv.education.apogee.commun.transverse.dto.scolarite.ElementPedagogiDTO3;
-import gouv.education.apogee.commun.transverse.dto.scolarite.GroupeDTO3;
-import gouv.education.apogee.commun.transverse.dto.scolarite.RecupererGroupeDTO3;
+
 
 /**
  * Gestion de l'affichage de la liste des inscrits
@@ -187,7 +190,7 @@ public class ListeInscritsController {
 				if(annees.size()==0){
 					annees.add(etudiantController.getAnneeUnivEnCours(ui));
 				}
-				
+
 				//On stocke laliste des année dans l'ui
 				ui.setListeAnneeInscrits(annees);
 
@@ -513,64 +516,73 @@ public class ListeInscritsController {
 		//appel WS Offre de foramtion 'recupererGroupe'
 		List<ElpDeCollection> listeElp = new LinkedList<ElpDeCollection>();
 
-		if(offreDeFormationService==null){
+		/*if(offreDeFormationService==null){
 			offreDeFormationService = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
-		}
+		}*/
 
 		try{
 			RecupererGroupeDTO3 recupererGroupeDTO = offreDeFormationService.recupererGroupeV3(annee, null, null, null, codElp, null);
 
 			if (recupererGroupeDTO != null){
-				//On parcourt les ELP
-				for(ElementPedagogiDTO3 elp : recupererGroupeDTO.getListElementPedagogi()){
-					ElpDeCollection el = new ElpDeCollection(elp.getCodElp(), elp.getLibElp());
+				TableauElementPedagogi3 tep = recupererGroupeDTO.getListElementPedagogi();
+						if(tep!=null && tep.getElementPedagogi()!=null && !tep.getElementPedagogi().isEmpty()) {
+							//On parcourt les ELP
+							for(ElementPedagogiDTO3 elp : tep.getElementPedagogi()){
+								ElpDeCollection el = new ElpDeCollection(elp.getCodElp(), elp.getLibElp());
 
-					List<CollectionDeGroupes> listeCollection = new LinkedList<CollectionDeGroupes>();
+								List<CollectionDeGroupes> listeCollection = new LinkedList<CollectionDeGroupes>();
 
-					//On parcourt les collections de l'ELP
-					for( CollectionDTO4 cd2: elp.getListCollection()){
-						CollectionDeGroupes collection = new CollectionDeGroupes(cd2.getCodExtCol());
+								//On parcourt les collections de l'ELP
+								TableauCollection4 tcol = elp.getListCollection();
+								if(tcol!=null && tcol.getCollection()!=null && !tcol.getCollection().isEmpty()) {
+									for( CollectionDTO4 cd2: tcol.getCollection()){
+										CollectionDeGroupes collection = new CollectionDeGroupes(cd2.getCodExtCol());
 
-						List<Groupe> listegroupe = new LinkedList<Groupe>();
+										List<Groupe> listegroupe = new LinkedList<Groupe>();
 
-						//On parcourt les groupes de la collection
-						for(GroupeDTO3 gd2 : cd2.getListGroupe()){
-							//On récupère les infos sur le groupe
-							Groupe groupe = new Groupe(gd2.getCodExtGpe());
-							groupe.setLibGroupe(gd2.getLibGpe());
+										//On parcourt les groupes de la collection
+										TableauGroupe3 tgr = cd2.getListGroupe();
+										if(tgr !=null && tgr.getGroupe()!=null && !tgr.getGroupe().isEmpty()) {
+											for(GroupeDTO3 gd2 : tgr.getGroupe()){
+												//On récupère les infos sur le groupe
+												Groupe groupe = new Groupe(gd2.getCodExtGpe());
+												groupe.setLibGroupe(gd2.getLibGpe());
 
-							//on récupère le codeGpe
-							groupe.setCleGroupe(""+gd2.getCodGpe());
+												//on récupère le codeGpe
+												groupe.setCleGroupe(""+gd2.getCodGpe());
 
 
-							if(gd2.getCapaciteGpe() != null){
-								if(gd2.getCapaciteGpe().getCapMaxGpe() != null){
-									groupe.setCapMaxGpe(gd2.getCapaciteGpe().getCapMaxGpe());
-								}else{
-									groupe.setCapMaxGpe(0);
+												if(gd2.getCapaciteGpe() != null){
+													if(gd2.getCapaciteGpe().getCapMaxGpe() != null){
+														groupe.setCapMaxGpe(gd2.getCapaciteGpe().getCapMaxGpe());
+													}else{
+														groupe.setCapMaxGpe(0);
+													}
+													if(gd2.getCapaciteGpe().getCapIntGpe()!=null){
+														groupe.setCapIntGpe(gd2.getCapaciteGpe().getCapIntGpe());
+													}else{
+														groupe.setCapIntGpe(0);
+													}
+												}else {
+													groupe.setCapMaxGpe(0);
+													groupe.setCapIntGpe(0);
+												}
+												//On ajoute le groupe à la liste de la collection
+												listegroupe.add(groupe);
+											}
+										}
+										//on insere la liste créé dans la collection
+										collection.setListeGroupes(listegroupe);
+										//On ajoute la collection a la liste
+										listeCollection.add(collection);
+									}
 								}
-								if(gd2.getCapaciteGpe().getCapIntGpe()!=null){
-									groupe.setCapIntGpe(gd2.getCapaciteGpe().getCapIntGpe());
-								}else{
-									groupe.setCapIntGpe(0);
-								}
-							}else {
-								groupe.setCapMaxGpe(0);
-								groupe.setCapIntGpe(0);
+								//On insere la liste créé dans l'ELP
+								el.setListeCollection(listeCollection);
+								//On ajoute l'ELP a la liste
+								listeElp.add(el);
 							}
-							//On ajoute le groupe à la liste de la collection
-							listegroupe.add(groupe);
 						}
-						//on insere la liste créé dans la collection
-						collection.setListeGroupes(listegroupe);
-						//On ajoute la collection a la liste
-						listeCollection.add(collection);
-					}
-					//On insere la liste créé dans l'ELP
-					el.setListeCollection(listeCollection);
-					//On ajoute l'ELP a la liste
-					listeElp.add(el);
-				}
 
 			}
 
@@ -741,7 +753,7 @@ public class ListeInscritsController {
 			rang_cellule++;
 
 		}
-		
+
 		//info sur les groupes
 		if (!isTraiteEtape) {
 			HSSFCell cellLib14 = row.createCell((short) rang_cellule);
@@ -815,7 +827,7 @@ public class ListeInscritsController {
 					cellLibInscrit12.setCellValue(inscrit.getRess());
 					rang_cellule_inscrit++;
 				}
-				
+
 				//ajout info sur les groupes si il y a lieu
 				if (!isTraiteEtape) {
 					HSSFCell cellLibGroupes = rowInscrit.createCell((short) rang_cellule_inscrit);
