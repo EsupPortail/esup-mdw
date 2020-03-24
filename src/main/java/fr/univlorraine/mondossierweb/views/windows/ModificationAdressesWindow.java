@@ -127,12 +127,12 @@ public class ModificationAdressesWindow extends Window {
 
 		/* Titre */
 		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-		
+
 		/* Layout pour afficher les erreurs */
 		VerticalLayout erreursLayout = new VerticalLayout();
 		layout.addComponent(erreursLayout);
 		erreursLayout.setVisible(false);
-		
+
 		HorizontalLayout panelslayout = new HorizontalLayout();
 		panelslayout.setMargin(true);
 		panelslayout.setSpacing(true);
@@ -544,7 +544,7 @@ public class ModificationAdressesWindow extends Window {
 
 	private void updateListeVillesAnnuelle(String text) {
 		List<CommuneDTO2> villes1 = adresseController.getVilles(text);
-		if(villes1!=null && villes1.size()>0){
+		if(villes1!=null && !villes1.isEmpty()){
 			codePostalVillesAnnu = text;
 			if(lville1!=null){
 				lville1.removeAllItems();
@@ -585,7 +585,7 @@ public class ModificationAdressesWindow extends Window {
 
 	private void updateListeVillesFixe(String text) {
 		List<CommuneDTO2> villes2 = adresseController.getVilles(text);
-		if(villes2!=null && villes2.size()>0){
+		if(villes2!=null && !villes2.isEmpty()){
 			codePostalVillesFixe = text;
 			if(lville2!=null){
 				lville2.removeAllItems();
@@ -611,7 +611,7 @@ public class ModificationAdressesWindow extends Window {
 		lville1.setVisible(lpays1.getValue().equals(COD_PAY_FRANCE));
 		fieldVilleEtranger1.setVisible(!lpays1.getValue().equals(COD_PAY_FRANCE));
 		labelChoixHebergement.setVisible(false);
-		
+
 
 	}
 

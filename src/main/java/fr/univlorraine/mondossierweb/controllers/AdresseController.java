@@ -110,10 +110,10 @@ public class AdresseController {
 		try{
 			if (Pattern.matches("^[0-9]{5}", codePostal)) { 
 				List<CommuneDTO2> lcdto =geographieService.recupererCommuneV2(codePostal,  "O", "O","O");
-				if(lcdto!=null){
+				if(lcdto!=null && !lcdto.isEmpty()){
 					for (CommuneDTO2 commune : lcdto) {
 						// Si TEM_EN_SVE_CBD = O
-						if(commune!=null && commune.getTemSevCommuneBureauDis()!=null && commune.getTemSevCommuneBureauDis().equals("O")){
+						if(commune!=null && commune.getTemSevBureauDis()!=null && commune.getTemSevBureauDis().equals("O")){
 							boolean insere = false;
 							int j = 0;
 							while (!insere && j < lvilles.size()) {
@@ -343,7 +343,7 @@ public class AdresseController {
 			if(lcdto!=null && !lcdto.isEmpty()) {
 				for (CommuneDTO2 c : lcdto) {
 					// Si TEM_EN_SVE_CBD = O
-					if(c!=null && c.getTemSevCommuneBureauDis()!=null && c.getTemSevCommuneBureauDis().equals("O")){
+					if(c!=null && c.getTemSevBureauDis()!=null && c.getTemSevBureauDis().equals("O")){
 						if (c.getLibCommune().equals(nom)){
 							return c.getCodeCommune();
 						}
