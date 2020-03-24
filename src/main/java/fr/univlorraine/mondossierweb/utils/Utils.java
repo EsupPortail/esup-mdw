@@ -22,6 +22,9 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -192,6 +195,17 @@ public class Utils {
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
 		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
 
+	
+	/** formatage d'une Localdate pour ne garder que jour, mois , annee*/
+	public static String formatLocalDateTimeToString(LocalDateTime d){
+		if(d!=null){
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			return d.format(formatter);
+		}else{
+			return null;
+		}
+	}
+	
 	/** formatage d'une date pour ne garder que jour, mois , annee*/
 	public static String formatDateToString(Date d){
 		if(d!=null){

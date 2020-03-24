@@ -45,14 +45,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import fr.univlorraine.apowsclient.etudiant.TypeHebergementDTO;
+import fr.univlorraine.apowsclient.geographie.CommuneDTO2;
+import fr.univlorraine.apowsclient.geographie.PaysDTO;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import gouv.education.apogee.commun.transverse.dto.etudiant.TypeHebergementDTO;
-import gouv.education.apogee.commun.transverse.dto.geographie.CommuneDTO2;
-import gouv.education.apogee.commun.transverse.dto.geographie.PaysDTO;
+
 
 /**
  * Fenêtre de modification des adresses
@@ -146,7 +147,7 @@ public class ModificationAdressesWindow extends Window {
 
 		//TypeHebergement
 		String captionHebergement = applicationContext.getMessage(NAME+".typehebergement", null, getLocale());
-		TypeHebergementDTO[] hebergements = adresseController.getTypesHebergement();
+		List<TypeHebergementDTO> hebergements = adresseController.getTypesHebergement();
 		lhebergement = new NativeSelect();
 		lhebergement.setCaption(captionHebergement);
 		lhebergement.setNullSelectionAllowed(false);
@@ -207,7 +208,7 @@ public class ModificationAdressesWindow extends Window {
 
 		//Liste des Pays
 		String captionPays= applicationContext.getMessage(NAME+".pays1", null, getLocale());
-		PaysDTO[] pays = adresseController.getPays();
+		List<PaysDTO> pays = adresseController.getPays();
 		lpays1 = new NativeSelect();
 		lpays1.setCaption(captionPays);
 		lpays1.setNullSelectionAllowed(false);
