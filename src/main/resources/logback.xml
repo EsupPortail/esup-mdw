@@ -148,12 +148,10 @@
 	<logger name="com.vaadin.server.communication.PushHandler" level="off" />
 	<logger name="com.vaadin.server.communication.PushAtmosphereHandler" level="off" />
 	
-	<!-- <logger name="org.apache.catalina.core.ContainerBase" level="warn" additivity="false" >
+	<logger name="org.apache.catalina.core.ContainerBase" level="warn" additivity="false" >
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
-	</logger>-->
-	<logger name="org.apache.catalina.core.ContainerBase" level="off" />
-	<logger name="org.apache.catalina.session.StandardManager" level="off" />
+	</logger>
 
 	<!-- Ne mail pas les erreurs atmosphere -->
 	<!--  <logger name="org.atmosphere" level="error" additivity="false" >
