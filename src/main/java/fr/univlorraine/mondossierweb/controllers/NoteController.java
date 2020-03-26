@@ -349,6 +349,11 @@ public class NoteController {
 
 			if (etudiant.getNom() != null) {
 				Paragraph p0 = new Paragraph(etudiant.getNom(), normal);
+				// Si on doit utiliser les données d'état-civil
+				if (etudiant.isTemPrUsage() && configController.isCertScolUsageEtatCivil()) {
+					//On utilise les données d'état-civil
+					p0 = new Paragraph(etudiant.getPrenomEtatCiv() + " " +etudiant.getNomAffichage(), normal);
+				}
 				p0.setIndentationLeft(5);
 				if(!formatPortrait)
 					p0.setIndentationLeft(10);
@@ -924,6 +929,11 @@ public class NoteController {
 
 			if (etudiant.getNom() != null) {
 				Paragraph p0 = new Paragraph(etudiant.getNom(), normal);
+				// Si on doit utiliser les données d'état-civil
+				if (etudiant.isTemPrUsage() && configController.isCertScolUsageEtatCivil()) {
+					//On utilise les données d'état-civil
+					p0 = new Paragraph(etudiant.getPrenomEtatCiv() + " " +etudiant.getNomAffichage(), normal);
+				}
 				p0.setIndentationLeft(5);
 				if(!formatPortrait)
 					p0.setIndentationLeft(10);

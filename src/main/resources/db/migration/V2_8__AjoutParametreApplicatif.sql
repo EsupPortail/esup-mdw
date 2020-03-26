@@ -13,7 +13,7 @@
 -- --------------------------------------------------------
 
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`, `CAT_ID`, `VALEUR`) VALUES
-('certScolUsageEtatCivil', 'Utiliser cod_sex_eta_civ, lib_pr_eta_civ, lib_nom_pat_ind si Tem_Pr_Usage=''O'' à la place des données d''usage: true pour l''activer, false sinon','BOOLEAN',4, 'false');
+('certScolUsageEtatCivil', 'Utiliser cod_sex_eta_civ et lib_pr_eta_civ si Tem_Pr_Usage=''O'' à la place des données d''usage: true pour l''activer, false sinon','BOOLEAN',4, 'false');
 
 
 

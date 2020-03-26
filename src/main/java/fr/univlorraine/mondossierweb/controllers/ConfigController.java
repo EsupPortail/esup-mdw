@@ -192,6 +192,14 @@ public class ConfigController {
 		return getBooleanValueForParameter("certScolRegimeIns");
 	}
 	
+	public boolean isQuittanceDroitsPayesUsageEtatCivil() {
+		return getBooleanValueForParameter("quittanceDroitsPayesUsageEtatCivil");
+	}
+	
+	public boolean isNotesPDFUsageEtatCivil() {
+		return getBooleanValueForParameter("notesPDFUsageEtatCivil");
+	}
+	
 	public boolean isCertScolUsageEtatCivil() {
 		return getBooleanValueForParameter("certScolUsageEtatCivil");
 	}
@@ -464,12 +472,8 @@ public class ConfigController {
 
 	}
 
+
+
 	
-
-	
-
-
-
-
 
 }
