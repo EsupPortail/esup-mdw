@@ -34,6 +34,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
+
 import fr.univlorraine.apowsclient.administratif.AdministratifMetierServiceInterface;
 import fr.univlorraine.apowsclient.administratif.CursusExterneDTO;
 import fr.univlorraine.apowsclient.administratif.CursusExternesEtTransfertsDTO;
@@ -502,7 +504,11 @@ public class EtudiantController {
 					LOG.info("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}
 			} catch (Exception ex) {
-				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				if(ex instanceof ServerSOAPFaultException && ex.getMessage()!=null && ex.getMessage().contains("data.nullretrieve")) {
+					LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				} else {
+					LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}
 			}
 
 		}
