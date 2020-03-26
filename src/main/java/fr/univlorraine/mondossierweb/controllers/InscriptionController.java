@@ -113,10 +113,10 @@ public class InscriptionController {
 			}
 		}
 
-		
+
 		String nomFichier = applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault())+"_" + inscription.getCod_etp() + "_" + inscription.getCod_anu().replace('/', '-') + "_" + GenericUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
-		
+
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 			private static final long serialVersionUID = 1L;
 
@@ -145,7 +145,7 @@ public class InscriptionController {
 					LOG.error("Erreur à la génération du certificat : IOException ",e);
 					return null;
 				}
-				
+
 			}
 		};
 
@@ -239,20 +239,37 @@ public class InscriptionController {
 			pCertifie.setAlignment(Element.ALIGN_LEFT);
 			document.add(pCertifie);
 
-			if (etudiant.getNom() != null) {
-				String civ = multipleApogeeService.getCodCivFromCodInd(etudiant.getCod_ind());
+
+			// Si on doit utiliser les données d'état-civil
+			if (etudiant.isTemPrUsage() && configController.isCertScolUsageEtatCivil()) {
+				//On utilise les données d'état-civil
 				String civCertif = "";
-				if (civ != null) {
-					if (civ.equals("1")) {
+				if (etudiant.getSexEtatCiv() != null) {
+					if (etudiant.getSexEtatCiv().equals("M")) {
 						civCertif = applicationContext.getMessage("pdf.certificat.civ1", null, Locale.getDefault());
-					} else if (civ.equals("2")) {
+					} else if (etudiant.getSexEtatCiv().equals("F")) {
+						civCertif = applicationContext.getMessage("pdf.certificat.civ2", null, Locale.getDefault());
+					}
+				}
+				Paragraph pNom = new Paragraph(civCertif + " " + etudiant.getPrenomEtatCiv() + " " + etudiant.getNomAffichage(), normalBig);
+				pNom.setIndentationLeft(15);
+				document.add(pNom);
+
+			} else {
+				// Si on ne doit pas utiliser les données d'état-civil
+				String civCertif = "";
+				if (etudiant.getCodCiv() != null) {
+					if (etudiant.getCodCiv().equals("1")) {
+						civCertif = applicationContext.getMessage("pdf.certificat.civ1", null, Locale.getDefault());
+					} else if (etudiant.getCodCiv().equals("2")) {
 						civCertif = applicationContext.getMessage("pdf.certificat.civ2", null, Locale.getDefault());
 					}
 				}
 				Paragraph pNom = new Paragraph(civCertif + " " + etudiant.getNom(), normalBig);
 				pNom.setIndentationLeft(15);
 				document.add(pNom);
-			}
+			} 
+
 			if (etudiant.getCod_nne() != null) {
 				Paragraph pNNE = new Paragraph("\n"+applicationContext.getMessage("pdf.certificat.id", null, Locale.getDefault())+" : " + etudiant.getCod_nne().toLowerCase(), normal);
 				pNNE.setAlignment(Element.ALIGN_LEFT);
@@ -303,7 +320,7 @@ public class InscriptionController {
 			document.add(new Paragraph(" "));
 
 			String nomSignataire = StringUtils.hasText(configController.getCertScolDescSignataire())? configController.getCertScolDescSignataire() : signataire.getNom_sig();
-			
+
 			float[] widthsSignataire = {2f, 1.3f};
 			PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
 			tableSignataire.setWidthPercentage(100f);
@@ -311,9 +328,9 @@ public class InscriptionController {
 			tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.certificat.fait1", null, Locale.getDefault())+" " + configController.getCertScolLieuEdition() + applicationContext.getMessage("pdf.certificat.fait2", null, Locale.getDefault())+" " + date, normal));
 			tableSignataire.addCell(makeCellSignataire("", normal));
 			tableSignataire.addCell(makeCellSignataire(nomSignataire, normal));
-			
+
 			document.add(tableSignataire);
-			
+
 			//ajout signature
 			if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){ //MODIF 09/10/2012
 				//tableSignataire.addCell(makeCellSignataire("", normal));
@@ -330,7 +347,7 @@ public class InscriptionController {
 
 			}
 
-			
+
 
 			// Ajout tampon
 			if (configController.getCertScolTampon() != null && !configController.getCertScolTampon().equals("")) {

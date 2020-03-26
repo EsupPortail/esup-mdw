@@ -173,6 +173,33 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" where i.cod_ind ="+cod_ind).getSingleResult();
 		return codCiv;
 	}
+	
+	@Override
+	public boolean getTemPrUsageFromCodInd(String cod_ind) {
+		@SuppressWarnings("unchecked")
+		String tem = (String) entityManagerApogee.createNativeQuery("select i.tem_pr_usage "+
+				" from apogee.individu i  "+
+				" where i.cod_ind ="+cod_ind).getSingleResult();
+		return (tem!=null && tem.equals("O"));
+	}
+
+	@Override
+	public String getCodSexEtaCivFromCodInd(String cod_ind) {
+		@SuppressWarnings("unchecked")
+		String codSexEtaCiv = (String)entityManagerApogee.createNativeQuery("select i.cod_sex_eta_civ "+
+				" from apogee.individu i  "+
+				" where i.cod_ind ="+cod_ind).getSingleResult();
+		return codSexEtaCiv;
+	}
+
+	@Override
+	public String getLibPrEtaCivFromCodInd(String cod_ind) {
+		@SuppressWarnings("unchecked")
+		String libPrEtaCiv = (String)entityManagerApogee.createNativeQuery("select i.lib_pr_eta_civ "+
+				" from apogee.individu i  "+
+				" where i.cod_ind ="+cod_ind).getSingleResult();
+		return libPrEtaCiv;
+	}
 
 	@Override
 	public List<Inscrit> getInscritsEtapeJuinSep(Etape e) {
@@ -418,6 +445,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" and iaa.cod_ind="+cod_ind ).getSingleResult();
 		return etaEdtCrt;
 	}
+
 
 
 

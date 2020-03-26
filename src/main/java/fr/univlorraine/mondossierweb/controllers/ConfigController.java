@@ -191,6 +191,10 @@ public class ConfigController {
 	public boolean isCertScolRegimeIns(){
 		return getBooleanValueForParameter("certScolRegimeIns");
 	}
+	
+	public boolean isCertScolUsageEtatCivil() {
+		return getBooleanValueForParameter("certScolUsageEtatCivil");
+	}
 
 	public boolean isPdfNotesActive() {
 		return getBooleanValueForParameter("notesPDF");
@@ -459,6 +463,8 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+	
 
 	
 

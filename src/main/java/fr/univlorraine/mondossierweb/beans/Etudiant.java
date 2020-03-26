@@ -55,6 +55,26 @@ public class Etudiant {
 	 */
 	private String nom;
 	/**
+	 * code civilité
+	 */
+	private String codCiv;
+	/**
+	 * nom à afficher
+	 */
+	private String nomAffichage;
+	/**
+	 * Sexe de l'état-civil
+	 */
+	private String sexEtatCiv;
+	/**
+	 * Prénom de l'état-civil
+	 */
+	private String prenomEtatCiv;
+	/**
+	 * Temoin d'utilisation du prénom d'usage
+	 */
+	private boolean temPrUsage;
+	/**
 	 * url de la photo
 	 */
 	private String photo;

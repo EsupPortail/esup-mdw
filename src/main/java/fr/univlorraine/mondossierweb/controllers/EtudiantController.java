@@ -169,8 +169,9 @@ public class EtudiantController {
 				} else {
 					idetu = etudiantService.recupererIdentifiantsEtudiantV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "O");
 				}
-
-				GenericUI.getCurrent().getEtudiant().setCod_ind(idetu.getCodInd().toString());
+				
+				String codInd = idetu.getCodInd().toString();
+				GenericUI.getCurrent().getEtudiant().setCod_ind(codInd);
 
 				//Gestion des codine null
 				//if(idetu.getNumeroINE() != null && idetu.getCleINE() != null ){
@@ -198,21 +199,25 @@ public class EtudiantController {
 				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
+				GenericUI.getCurrent().getEtudiant().setCodCiv(multipleApogeeService.getCodCivFromCodInd(codInd));
+				GenericUI.getCurrent().getEtudiant().setSexEtatCiv(multipleApogeeService.getCodSexEtaCivFromCodInd(codInd));
+				GenericUI.getCurrent().getEtudiant().setPrenomEtatCiv(multipleApogeeService.getLibPrEtaCivFromCodInd(codInd));
+				GenericUI.getCurrent().getEtudiant().setTemPrUsage(multipleApogeeService.getTemPrUsageFromCodInd(codInd));
+				
 				//Utilisant du nom patronymique
-				GenericUI.getCurrent().getEtudiant().setNom( iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique());
+				GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomPatronymique());
 
 				//Si afichage utilisant le nom usuel
 				if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_BASIQUE)
 						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
-					GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomUsuel());
-
+					GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomUsuel());
 				}else if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_STANDARD)
 						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("") && !iaetu.getNomUsuel().equals(iaetu.getNomPatronymique())){
 					//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
-					GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
-
+					GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
 				}
-
+				
+				GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+GenericUI.getCurrent().getEtudiant().getNomAffichage());
 
 				//informations sur la naissance :
 				//la nationalité:
