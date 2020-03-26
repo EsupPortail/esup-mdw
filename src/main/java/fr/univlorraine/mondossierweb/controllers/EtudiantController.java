@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 
 import fr.univlorraine.apowsclient.administratif.AdministratifMetierServiceInterface;
@@ -503,14 +504,15 @@ public class EtudiantController {
 				}else{
 					LOG.info("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}
+			} catch (ServerSOAPFaultException ssx) {
+				//Erreur côté WebService (ex : data.nullretrieve)
+				LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
+			} catch (ClientTransportException cte) {
+				//Erreur Bad Gateway
+				LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
 			} catch (Exception ex) {
-				if(ex instanceof ServerSOAPFaultException && ex.getMessage()!=null && ex.getMessage().contains("data.nullretrieve")) {
-					LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
-				} else {
-					LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
-				}
+				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}
-
 		}
 	}
 
