@@ -286,6 +286,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 										if (!userldap) {
 											//on cherche le groupe	
 											if (lmemberof.contains(groupe)) {
+												log.info("Utilisateur "+username+" autorisé via groupe LDAP : "+ groupe);
 												userldap = true;
 											} 
 										}
