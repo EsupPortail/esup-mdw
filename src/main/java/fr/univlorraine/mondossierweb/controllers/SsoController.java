@@ -703,6 +703,13 @@ public class SsoController {
 			//Nom Prénom
 			if (etudiant.getNom() != null) {
 				Paragraph pNom = new Paragraph("\n\n"+etudiant.getNom(), normalBigger);
+				
+				// Si on doit utiliser les données d'état-civil
+				if (etudiant.isTemPrUsage() && configController.isAffiliationSsoUsageEtatCivil()) {
+					//On utilise les données d'état-civil
+					pNom = new Paragraph("\n\n"+etudiant.getPrenomEtatCiv()+ " " + etudiant.getNomAffichage(), normalBigger);
+				}
+				
 				pNom.setAlignment(Element.ALIGN_LEFT);
 				document.add(pNom);
 			}

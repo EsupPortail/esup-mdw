@@ -192,6 +192,11 @@ public class ConfigController {
 		return getBooleanValueForParameter("certScolRegimeIns");
 	}
 	
+	public boolean isAffiliationSsoUsageEtatCivil() {
+		return getBooleanValueForParameter("attestationAffiliationSSOUsageEtatCivil");
+	}
+
+	
 	public boolean isQuittanceDroitsPayesUsageEtatCivil() {
 		return getBooleanValueForParameter("quittanceDroitsPayesUsageEtatCivil");
 	}
@@ -471,6 +476,7 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
 
 
 
