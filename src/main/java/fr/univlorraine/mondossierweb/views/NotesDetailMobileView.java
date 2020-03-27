@@ -229,12 +229,19 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 					HorizontalLayout sessionLayout = new HorizontalLayout();
 					sessionLayout.setSizeFull();
-					Label session1 = new Label("Session1");
+					Label session1 = new Label(applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale()));
+					if(noteController.renommerSession1(lelp) ) {
+						session1.setValue(applicationContext.getMessage(NAME+".table.elp.notesession1bis", null, getLocale()));
+					}
 					session1.setStyleName("label-bold-with-bottom");
 					sessionLayout.addComponent(session1);
-					Label session2 = new Label("Session2");
-					session2.setStyleName("label-bold-with-bottom");
-					sessionLayout.addComponent(session2);
+					
+					boolean afficherSession2 = noteController.afficherSession2(lelp);
+					if(afficherSession2) {
+						Label session2 = new Label(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()));
+						session2.setStyleName("label-bold-with-bottom");
+						sessionLayout.addComponent(session2);
+					}
 
 					libSessionLayout.addComponent(sessionLayout);
 
@@ -253,7 +260,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					for(ElementPedagogique elp : lelp){
 
 						compteurElp++;
-						
+
 						LOG.info(compteurElp+"-(level="+elp.getLevel()+") - "+elp.getCode()+" - "+elp.getLibelle());
 
 						//Si on est sur un element de niveau 1, différent du premier element de la liste (qui est un rappel de l'etape)
@@ -378,29 +385,30 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						}
 						noteLayout.addComponent(vlsession1);
 
-						VerticalLayout vlsession2 = new VerticalLayout();
-						Label note2 = new Label(elp.getNote2());
-						if(StringUtils.hasText(elp.getNote2())){
-							if(elp.isEpreuve()){
-								note2.setStyleName("bold-italic-label");
-							}else{
-								note2.setStyleName("bold-label");
-							}
-						}
-						vlsession2.addComponent(note2);
-						if(StringUtils.hasText(elp.getRes2())){
-							Label adm2 = new Label(elp.getRes2());
-							if(StringUtils.hasText(elp.getRes2())){
+						if(afficherSession2) {
+							VerticalLayout vlsession2 = new VerticalLayout();
+							Label note2 = new Label(elp.getNote2());
+							if(StringUtils.hasText(elp.getNote2())){
 								if(elp.isEpreuve()){
-									adm2.setStyleName("bold-italic-label");
+									note2.setStyleName("bold-italic-label");
 								}else{
-									adm2.setStyleName("bold-label");
+									note2.setStyleName("bold-label");
 								}
 							}
-							vlsession2.addComponent(adm2);
+							vlsession2.addComponent(note2);
+							if(StringUtils.hasText(elp.getRes2())){
+								Label adm2 = new Label(elp.getRes2());
+								if(StringUtils.hasText(elp.getRes2())){
+									if(elp.isEpreuve()){
+										adm2.setStyleName("bold-italic-label");
+									}else{
+										adm2.setStyleName("bold-label");
+									}
+								}
+								vlsession2.addComponent(adm2);
+							}
+							noteLayout.addComponent(vlsession2);
 						}
-						noteLayout.addComponent(vlsession2);
-
 						libElpLayout.addComponent(noteLayout);
 
 						notesLayout.addComponent(libElpLayout);

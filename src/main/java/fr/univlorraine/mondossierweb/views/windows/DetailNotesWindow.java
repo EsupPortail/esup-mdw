@@ -238,11 +238,18 @@ public class DetailNotesWindow extends Window {
 				}
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
-				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale()), new Session1ColumnGenerator());
+				detailNotesTable.addGeneratedColumn(noteController.renommerSession1(lelp) ? 
+						applicationContext.getMessage(NAME+".table.elp.notesession1bis", null, getLocale()):
+						applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale())
+						, new Session1ColumnGenerator());
+
 				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.resultatsession1", null, getLocale()), new ResultatSession1ColumnGenerator());
-				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
-				detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
-				detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
+				
+				if(noteController.afficherSession2(lelp)) {
+					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
+					detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
+					detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
+				}
 				if(configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()){
 					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.rang", null, getLocale()), new RangColumnGenerator());
 				}

@@ -156,6 +156,14 @@ public class ConfigController {
 		return getBooleanValueForParameter("affECTSEtudiant");
 	}
 	
+	public boolean isMasqueSession2Vide() {
+		return getBooleanValueForParameter("masqueSession2Vide");
+	}
+	
+	public boolean isRenommeSession1Unique() {
+		return getBooleanValueForParameter("renommeSession1Unique");
+	}
+	
 	public boolean isMasqueECTSEtudiant() {
 		return getBooleanValueForParameter("masqueECTSEtudiant");
 	}

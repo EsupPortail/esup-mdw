@@ -1006,52 +1006,59 @@ public class NoteController {
 
 			PdfPTable table2; 
 
-
 			boolean afficherRangElpEpr = resultatController.isAfficherRangElpEpr();
 			boolean affRangEtudiant = configController.isAffRangEtudiant();
 			boolean affECTSEtudiant =configController.isAffECTSEtudiant();
+			boolean renommerSession1 = renommerSession1(etudiant.getElementsPedagogiques());
+			boolean afficherSession2 = afficherSession2(etudiant.getElementsPedagogiques());
 
-
-
-			if((!affRangEtudiant && !afficherRangElpEpr)&& !affECTSEtudiant){
-				//NI isAffRangEtudiant  NI isAffECTSEtudiant
-				table2= new PdfPTable(6);
-				table2.setWidthPercentage(98);
+			//taille des colonnes du tableau
+			int [] tabWidth = {33,90,22,15,30,22};
+			int nbColonne = 6 + (affRangEtudiant || afficherRangElpEpr ? 1 : 0) + (affECTSEtudiant ? 1 : 0);
+			switch(nbColonne) {
+			case 7 : 	//isAffRangEtudiant  OU isAffECTSEtudiant
 				if(formatPortrait){
-					int [] tabWidthPortrait = {33,90,22,15,30,22};
-					table2.setWidths(tabWidthPortrait);
-				}else{
-					int [] tabWidth = {35,110,25,25,25,25};
-					table2.setWidths(tabWidth);
+					tabWidth = new int[]{33,90,22,15,30,22,30};
+				} else {
+					tabWidth = new int[]{33,110,22,22,22,22,15};
 				}
-			}else{
-				if(((affRangEtudiant || afficherRangElpEpr) && !affECTSEtudiant) ||
-						((!affRangEtudiant&& !afficherRangElpEpr) && affECTSEtudiant)){
-					//isAffRangEtudiant  OU isAffECTSEtudiant
-					table2= new PdfPTable(7);
-					table2.setWidthPercentage(98);
-					if(formatPortrait){
-						int [] tabWidthPortrait = {33,90,22,15,30,22,30};
-						table2.setWidths(tabWidthPortrait);
-					}else{
-						int [] tabWidth = {33,110,22,22,22,22,15};
-						table2.setWidths(tabWidth);
-					}
-				}else{
-					//isAffRangEtudiant  ET isAffECTSEtudiant
-					table2= new PdfPTable(8);
-					table2.setWidthPercentage(98);
-
-					if(formatPortrait){
-						int [] tabWidthPortrait = {33,90,22,15,30,22,30,22};
-						table2.setWidths(tabWidthPortrait);
-					}else{
-						int [] tabWidth = {33,110,22,22,22,22,15,15};
-						table2.setWidths(tabWidth);
-					}
+				break;
+			case 8 : //isAffRangEtudiant  ET isAffECTSEtudiant
+				if(formatPortrait){
+					tabWidth = new int[]{33,90,22,15,30,22,30,22};
+				} else {
+					tabWidth = new int[]{33,110,22,22,22,22,15,15};
 				}
+				break;
+			default : //NI isAffRangEtudiant  NI isAffECTSEtudiant
+				if(formatPortrait){
+					tabWidth = new int[]{33,90,22,15,30,22};
+				} else {
+					tabWidth = new int[]{35,110,25,25,25,25};
+				}
+				break;
 			}
-
+			
+			table2= new PdfPTable(afficherSession2 ? tabWidth.length : (tabWidth.length - 2));
+			table2.setWidthPercentage(98);
+			//Si on n'affiche pas la session2
+			if(!afficherSession2) {
+				int[] tabWidth2 = new int[tabWidth.length - 2];
+				for(int i=0; i<tabWidth.length ; i++) {
+					//Si on est avant la colonne Session2
+					if(i<4) {
+						tabWidth2[i] = tabWidth[i];
+					} else {
+						//On zappe les colonnes 4 et 5 correspondant à Session2 et Résultat2
+						if(i>5) {
+							tabWidth2[i-2] = tabWidth[i];
+						}
+					}
+				}
+				table2.setWidths(tabWidth2);
+			} else {
+				table2.setWidths(tabWidth);
+			}
 
 			//Paragraph p1 = new Paragraph(applicationContext.getMessage("pdf.year", null, Locale.getDefault()),normalbig);
 			Paragraph p2 = new Paragraph(applicationContext.getMessage("pdf.code", null, Locale.getDefault()),normalbig);
@@ -1059,9 +1066,10 @@ public class NoteController {
 			Paragraph parRang = new Paragraph(applicationContext.getMessage("pdf.rank", null, Locale.getDefault()),normalbig);
 			Paragraph parEcts = new Paragraph(applicationContext.getMessage("pdf.ects", null, Locale.getDefault()),normalbig);
 
-			PdfPCell ct4 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.session", null, Locale.getDefault()) + " 1", normalbig));
+			PdfPCell ct4 = new PdfPCell(new Paragraph(applicationContext.getMessage( renommerSession1 ? "pdf.session1bis" : "pdf.session1", null, Locale.getDefault()), normalbig));
 			PdfPCell ct5 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.resultat", null, Locale.getDefault()), normalbig));
-			PdfPCell ct6 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.session", null, Locale.getDefault()) + " 2", normalbig));
+
+			PdfPCell ct6 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.session2", null, Locale.getDefault()), normalbig));
 			PdfPCell ct7 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.resultat", null, Locale.getDefault()), normalbig));
 
 			//PdfPCell ct1 = new PdfPCell(p1);
@@ -1093,8 +1101,10 @@ public class NoteController {
 				}
 				table2.addCell(ct4);
 				table2.addCell(ct5);
-				table2.addCell(ct6);
-				table2.addCell(ct7);
+				if(afficherSession2) {
+					table2.addCell(ct6);
+					table2.addCell(ct7);
+				}
 			} else {
 
 				//table2.addCell(ct1);
@@ -1102,8 +1112,10 @@ public class NoteController {
 				table2.addCell(ct3);
 				table2.addCell(ct4);
 				table2.addCell(ct5);
-				table2.addCell(ct6);
-				table2.addCell(ct7);
+				if(afficherSession2) {
+					table2.addCell(ct6);
+					table2.addCell(ct7);
+				}
 				if((affRangEtudiant|| afficherRangElpEpr)){
 					table2.addCell(cellRang);
 				}
@@ -1142,16 +1154,17 @@ public class NoteController {
 					celltext6.setBorder(Rectangle.NO_BORDER);
 					table2.addCell(celltext6);
 
+					if(afficherSession2) {
+						Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
+						PdfPCell celltext7 = new PdfPCell(pa7);
+						celltext7.setBorder(Rectangle.NO_BORDER);
+						table2.addCell(celltext7);
 
-					Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
-					PdfPCell celltext7 = new PdfPCell(pa7);
-					celltext7.setBorder(Rectangle.NO_BORDER);
-					table2.addCell(celltext7);
-
-					Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
-					PdfPCell celltext8 = new PdfPCell(pa8);
-					celltext8.setBorder(Rectangle.NO_BORDER);
-					table2.addCell(celltext8);
+						Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
+						PdfPCell celltext8 = new PdfPCell(pa8);
+						celltext8.setBorder(Rectangle.NO_BORDER);
+						table2.addCell(celltext8);
+					}
 				}
 
 				if((affRangEtudiant || afficherRangElpEpr)){
@@ -1179,15 +1192,17 @@ public class NoteController {
 					celltext6.setBorder(Rectangle.NO_BORDER);
 					table2.addCell(celltext6);
 
-					Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
-					PdfPCell celltext7 = new PdfPCell(pa7);
-					celltext7.setBorder(Rectangle.NO_BORDER);
-					table2.addCell(celltext7);
+					if(afficherSession2) {
+						Paragraph pa7 = new Paragraph(getNote2(etudiant.getElementsPedagogiques().get(i)), normal);
+						PdfPCell celltext7 = new PdfPCell(pa7);
+						celltext7.setBorder(Rectangle.NO_BORDER);
+						table2.addCell(celltext7);
 
-					Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
-					PdfPCell celltext8 = new PdfPCell(pa8);
-					celltext8.setBorder(Rectangle.NO_BORDER);
-					table2.addCell(celltext8);
+						Paragraph pa8 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getRes2(), normal);
+						PdfPCell celltext8 = new PdfPCell(pa8);
+						celltext8.setBorder(Rectangle.NO_BORDER);
+						table2.addCell(celltext8);
+					}
 				}
 
 			}
@@ -1278,7 +1293,7 @@ public class NoteController {
 		return cell;
 	}
 
-	
+
 	private String getCodeSignataire(Etape et,Etudiant etudiant){
 
 		String codSign=null;
@@ -1288,7 +1303,7 @@ public class NoteController {
 		if(sourceResultat == null || sourceResultat.equals("")){
 			sourceResultat="Apogee";
 		}
-		
+
 
 		//Si on doit se baser sur l'extraction Apogée
 		if(resultatController.utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
@@ -1360,5 +1375,35 @@ public class NoteController {
 					coordonneex, coordonneey,
 					writer.getPageNumber() % 2 == 1 ? 45 : -45);
 		}
+	}
+
+	public boolean renommerSession1(List<ElementPedagogique> lelp) {
+		if (!configController.isRenommeSession1Unique()) {
+			return false;
+		}
+		if(lelp == null || lelp.isEmpty()) {
+			return configController.isRenommeSession1Unique();
+		}
+		for(ElementPedagogique elp : lelp) {
+			if(elp!=null && StringUtils.hasText(elp.getNote2())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean afficherSession2(List<ElementPedagogique> lelp) {
+		if (!configController.isMasqueSession2Vide()) {
+			return true;
+		}
+		if(lelp == null || lelp.isEmpty()) {
+			return !configController.isMasqueSession2Vide();
+		}
+		for(ElementPedagogique elp : lelp) {
+			if(elp!=null && StringUtils.hasText(elp.getNote2())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
