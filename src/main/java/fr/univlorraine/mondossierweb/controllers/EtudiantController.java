@@ -63,6 +63,7 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
+import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
@@ -198,12 +199,14 @@ public class EtudiantController {
 
 				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
-
-				GenericUI.getCurrent().getEtudiant().setCodCiv(multipleApogeeService.getCodCivFromCodInd(codInd));
-				GenericUI.getCurrent().getEtudiant().setSexEtatCiv(multipleApogeeService.getCodSexEtaCivFromCodInd(codInd));
-				GenericUI.getCurrent().getEtudiant().setPrenomEtatCiv(multipleApogeeService.getLibPrEtaCivFromCodInd(codInd));
-				GenericUI.getCurrent().getEtudiant().setTemPrUsage(multipleApogeeService.getTemPrUsageFromCodInd(codInd));
 				
+				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
+				LOG.info("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
+				GenericUI.getCurrent().getEtudiant().setCodCiv(iuec.getCodCiv());
+				GenericUI.getCurrent().getEtudiant().setSexEtatCiv(iuec.getCodSexEtatCiv());
+				GenericUI.getCurrent().getEtudiant().setPrenomEtatCiv(iuec.getLibPrEtaCiv());
+				GenericUI.getCurrent().getEtudiant().setTemPrUsage(iuec.isTemPrUsage());
+
 				//Utilisant du nom patronymique
 				GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomPatronymique());
 

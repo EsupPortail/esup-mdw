@@ -20,10 +20,12 @@ package fr.univlorraine.mondossierweb.services.apogee;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 
@@ -45,13 +47,15 @@ public interface MultipleApogeeService {
 	
 	public abstract Signataire getSignataire(String codeSignataire, String cleApogee);
 	
-	public abstract String getCodCivFromCodInd(String cod_ind);
+	public abstract InfoUsageEtatCivil getInfoUsageEtatCivilFromCodInd(String cod_ind);
 	
-	public abstract boolean getTemPrUsageFromCodInd(String cod_ind);
+	/*public abstract String getCodCivFromCodInd(String cod_ind);
+	 
+	 public abstract boolean getTemPrUsageFromCodInd(String cod_ind);
 	
 	public abstract String getCodSexEtaCivFromCodInd(String cod_ind);
 	
-	public abstract String getLibPrEtaCivFromCodInd(String cod_ind);
+	public abstract String getLibPrEtaCivFromCodInd(String cod_ind);*/
 
 	public abstract List<Inscrit> getInscritsEtapeJuinSep(Etape e);
 

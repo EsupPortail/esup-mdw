@@ -21,6 +21,7 @@ package fr.univlorraine.mondossierweb.services.apogee;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -39,6 +40,7 @@ import org.springframework.util.StringUtils;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
@@ -165,6 +167,20 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return signataire;
 	}
 
+	
+	
+	@Override
+	public InfoUsageEtatCivil getInfoUsageEtatCivilFromCodInd(String cod_ind) {
+		@SuppressWarnings("unchecked")
+		InfoUsageEtatCivil info = (InfoUsageEtatCivil) entityManagerApogee.createNativeQuery("select i.cod_ind codInd, i.cod_civ codCiv,DECODE(i.tem_pr_usage,'O',1,0) temPrUsage, "+
+				" i.cod_sex_eta_civ codSexEtatCiv, "+
+				" i.lib_pr_eta_civ libPrEtaCiv "+
+				" from apogee.individu i  "+
+				" where i.cod_ind ="+cod_ind, InfoUsageEtatCivil.class ).getSingleResult();
+		return info;
+	}
+
+/*
 	@Override
 	public String getCodCivFromCodInd(String cod_ind) {
 		@SuppressWarnings("unchecked")
@@ -199,7 +215,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" from apogee.individu i  "+
 				" where i.cod_ind ="+cod_ind).getSingleResult();
 		return libPrEtaCiv;
-	}
+	}*/
 
 	@Override
 	public List<Inscrit> getInscritsEtapeJuinSep(Etape e) {
@@ -445,7 +461,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" and iaa.cod_ind="+cod_ind ).getSingleResult();
 		return etaEdtCrt;
 	}
-
 
 
 
