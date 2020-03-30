@@ -396,6 +396,14 @@ public class EtudiantController {
 				//On appel recupererAdresses pour récupérer le mail perso et le tel portable de l'étudiant
 				recupererAdresses();
 
+			} catch (ServerSOAPFaultException ssx) {
+				//Erreur côté WebService (ex : data.nullretrieve)
+				LOG.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
+				GenericUI.getCurrent().setEtudiant(null);
+			} catch (ClientTransportException cte) {
+				//Erreur Bad Gateway
+				LOG.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
+				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
 				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				//On met l'étudiant à null pour remonter le problème
