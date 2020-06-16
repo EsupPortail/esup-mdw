@@ -1052,6 +1052,7 @@ public class ResultatController {
 			ElementPedagogique ep = new ElementPedagogique();
 			ep.setAnnee(et.getAnnee());
 			ep.setCode(et.getCode());
+			ep.setRang(et.getRang());
 			ep.setLevel(1);
 			ep.setLibelle(et.getLibelle());
 			e.setDeliberationTerminee(et.isDeliberationTerminee());
