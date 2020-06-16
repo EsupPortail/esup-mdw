@@ -36,6 +36,7 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import fr.univlorraine.mondossierweb.entities.apogee.VObjSeApogee;
+import fr.univlorraine.mondossierweb.entities.converters.BooleanToStringConverter;
 import fr.univlorraine.mondossierweb.repositories.apogee.ComposanteApogeeRepository;
 
 
@@ -70,7 +71,7 @@ public class JpaConfigApogee {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactoryApogee() {
 		LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		localContainerEntityManagerFactoryBean.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
-		localContainerEntityManagerFactoryBean.setPackagesToScan(VObjSeApogee.class.getPackage().getName());
+		localContainerEntityManagerFactoryBean.setPackagesToScan(VObjSeApogee.class.getPackage().getName(), BooleanToStringConverter.class.getPackage().getName());
 		localContainerEntityManagerFactoryBean.setDataSource(dataSourceApogee());
 		localContainerEntityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
 

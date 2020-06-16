@@ -316,8 +316,9 @@ public class MdwUserDetailsService implements UserDetailsService {
 						//on regarde si il est dans la table utilisateur 
 						try {
 							Utilisateur uti = utilisateurService.findUtilisateur(username.toUpperCase());
-
-							if (uti != null) {
+							
+							// Si l'utilisateur a été trouvé et qu'il est en service (si on doit tester le témoin En_SERVICE)
+							if (uti != null && (uti.isTemEnService() || !PropertyUtils.isCheckTesUtilisateurApogee())) {
 								log.debug("USER "+username+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
 								return new String[]{Utils.TEACHER_USER};
 							} else {

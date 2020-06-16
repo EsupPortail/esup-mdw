@@ -75,6 +75,9 @@
 
 	<!-- Utilisation de la table Utilisateur d'Apogee pour l'acces à MDW pour les enseignants. Mettre false pour ne pas utiliser cette fonctionnalite -->
 	<Parameter name="loginApogee" value="true" />
+	<!-- Vérification du temoin en service si loginApogee = true  -->
+	<Parameter name="checkTesUtilisateurApogee" value="false" />
+	
 	<!-- le nom de l'attribut contenant les groupes ldap pour une authentification via les groupes ldap. Laisser vide pour ne pas utiliser -->
 	<Parameter name="attributGroupeLdap" value=""/>
 	<!-- La liste des groupes ldap autorisant l'acces à mondossierWeb en tant qu'enseignant séparés par un point virgule. Laisser vide pour ne pas utiliser -->

@@ -122,6 +122,16 @@ public class PropertyUtils {
 		return false;
 	}
 	
+	
+	/** Retourne vrai si on doit tester le témoin EN SERVICE de la table utilisateur d'apogée pour gérer les accès à l'appli */
+	public static boolean isCheckTesUtilisateurApogee(){
+		if(StringUtils.hasText(System.getProperty("context.checkTesUtilisateurApogee"))
+				&& System.getProperty("context.checkTesUtilisateurApogee").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
 	/** Retourne vrai on doit activer l'encryption sur les pdf générés */
 	public static boolean isEnablePdfSecurity(){
 		if(StringUtils.hasText(System.getProperty("context.EnablePdfSecurity"))
