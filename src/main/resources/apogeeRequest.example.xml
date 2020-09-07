@@ -180,7 +180,10 @@ OR EXISTS
 (SELECT 1 FROM iaa_iae_dim iid 
 WHERE iid.cod_ind = iaa.cod_ind AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = iaa.cod_drt_mut AND iid.cod_typ_iad = 'E'))</entry>
 
-<entry key="codPcsSalarie">select COD_PCS_ETUDIANT from ins_adm_anu 
-where cod_ind=#COD_IND# and cod_anu='#COD_ANU#' and COD_PCS_ETUDIANT not in ('81', '82','99','A','84')</entry>
+<entry key="codPcsSalarie">select iaa.COD_PCS_ETUDIANT from ins_adm_anu iaa, CAT_SOC_PFL csp 
+where csp.COD_PCS = iaa.COD_PCS_ETUDIANT and csp.TEM_SAI_QTR='O' 
+and iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU#</entry>
+
+<entry key="temBoursierIaa">select iaa.TEM_BRS_IAA from ins_adm_anu iaa where iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU# and iaa.TEM_BRS_IAA = 'O'</entry>
 
 </properties>

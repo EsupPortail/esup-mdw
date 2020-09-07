@@ -146,6 +146,11 @@ public class RequestUtils {
 	}
 
 
+	public String getTemBoursierIaa() {
+		return properties.getProperty("temBoursierIaa");
+	}
+
+
 	
 
 }

@@ -128,7 +128,7 @@ public class Utils {
 
 	public static final String ES_TYPE ="TYP_OBJ";
 
-	public static final String COD_SOC_BOURSIER ="BO";
+	//public static final String COD_SOC_BOURSIER ="BO";
 	
 	public static final String ETAT_IAE_EN_COURS ="E";
 	

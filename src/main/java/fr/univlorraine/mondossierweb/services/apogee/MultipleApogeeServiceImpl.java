@@ -365,8 +365,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				requeteSQL = requestUtils.getCodPcsSalarie().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
 
 			}else{
-				requeteSQL = "select COD_PCS_ETUDIANT from ins_adm_anu where cod_ind='"+codInd+"' and cod_anu="+codAnu+" and COD_PCS_ETUDIANT not in ('81', '82','99','A','84')";
-			
+				//requeteSQL = "select COD_PCS_ETUDIANT from ins_adm_anu where cod_ind='"+codInd+"' and cod_anu="+codAnu+" and COD_PCS_ETUDIANT not in ('81', '82','99','A','84')";
+				requeteSQL = "select iaa.COD_PCS_ETUDIANT from ins_adm_anu iaa, CAT_SOC_PFL csp where csp.COD_PCS = iaa.COD_PCS_ETUDIANT and csp.TEM_SAI_QTR='O' and iaa.cod_ind="+codInd+" and iaa.cod_anu="+codAnu;
 			}
 			
 			try{
@@ -378,6 +378,38 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				String codPcsSalarie = (String) query.getSingleResult();
 
 				if(StringUtils.hasText(codPcsSalarie)){
+					return true;
+				}
+			}catch (NoResultException | EmptyResultDataAccessException nre){
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean isBoursier(String codInd, String codAnu) {
+		if(StringUtils.hasText(codInd) && StringUtils.hasText(codAnu)){
+			
+			String requeteSQL="";
+			
+			//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+			if(StringUtils.hasText(requestUtils.getTemBoursierIaa())){
+				//On utilise la requête indiquée dans le fichier XML
+				requeteSQL = requestUtils.getTemBoursierIaa().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
+			}else{
+				requeteSQL = "select iaa.TEM_BRS_IAA from ins_adm_anu iaa where iaa.cod_ind="+codInd+" and iaa.cod_anu="+codAnu+" and iaa.TEM_BRS_IAA = 'O'";
+			}
+			
+			try{
+				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+
+				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+
+				@SuppressWarnings("unchecked")
+				String temBrsIaa = (String) query.getSingleResult();
+
+				if(StringUtils.hasText(temBrsIaa)){
 					return true;
 				}
 			}catch (NoResultException | EmptyResultDataAccessException nre){
@@ -403,19 +435,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return 0;
 	}
 
-	@Override
-	public boolean isBoursier(String cod_ind, String cod_anu) {
-		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
-			@SuppressWarnings("unchecked")
-			BigDecimal nbInsAdmBoursier = (BigDecimal)entityManagerApogee.createNativeQuery("select count(*) from ins_adm_anu iaa "+
-					"where iaa.COD_ANU = "+cod_anu+" "+
-					"and iaa.cod_soc = '"+Utils.COD_SOC_BOURSIER+"' "+
-					"and iaa.ETA_IAA = 'E' "+
-					"and iaa.cod_ind = "+cod_ind).getSingleResult();
-			return nbInsAdmBoursier.intValue() > 0;
-		}
-		return false;
-	}
 
 	@Override
 	public List<String> getListeCodeBlocage(String cod_etu) {
