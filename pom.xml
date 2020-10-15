@@ -51,7 +51,8 @@
 		<!--  <apo.ws.version>5.20.lcb.2</apo.ws.version>-->
 		<!--  VERSION DE PROD <apo.ws.version>5.30.1</apo.ws.version> --> 
 		<!-- <apo.ws.version>5.40.la.2</apo.ws.version>  -->
-		<apo.ws.version>6.00.la.1</apo.ws.version>
+		<!-- <apo.ws.version>6.00.la.1</apo.ws.version>  -->
+		<apo.ws.version>6.00.50.1</apo.ws.version>
 	</properties>
 
 	<distributionManagement>
