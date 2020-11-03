@@ -626,10 +626,20 @@ public class EtudiantController {
 						int annee2 = annee + 1;
 						insc.setCod_anu(annee + "/" + annee2);
 
-						if (cext.getEtablissement() != null && cext.getTypeAutreDiplome() != null) {
+						// 03/11/2020 On prend en compte TypeDiplomeExt si TypeAutreDiplome null
+						if (cext.getEtablissement() != null && 
+							(cext.getTypeAutreDiplome() != null || cext.getTypeDiplomeExt()!=null)) {
 							insc.setLib_etb(cext.getEtablissement().getLibEtb());
-							// 24/04/2012 utilisation du libTypeDiplome a la place du CodeTypeDiplome
-							insc.setCod_dac(cext.getTypeAutreDiplome().getLibTypeDiplome());
+							// Si TypeDiplomeExt valué
+							if (cext.getTypeDiplomeExt()!=null) {
+								// On renseigne COD_DAC avec TypeDiplomeExt
+								insc.setCod_dac(cext.getTypeDiplomeExt().getLibTypDiplomeExt());
+							}
+							// Si TypeAutreDiplome valué
+							if (cext.getTypeAutreDiplome()!=null) {
+								// On écrase COD_DAC avec TypeAutreDiplome
+								insc.setCod_dac(cext.getTypeAutreDiplome().getLibTypeDiplome());
+							}
 							insc.setLib_cmt_dac(cext.getCommentaire());
 							if (cext.getTemObtentionDip() != null && cext.getTemObtentionDip().equals("N") ) {
 								insc.setRes("AJOURNE");
