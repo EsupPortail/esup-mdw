@@ -647,7 +647,7 @@ public class EtudiantController {
 								insc.setRes("OBTENU");
 							}
 
-							GenericUI.getCurrent().getEtudiant().getLinscdac().add(0, insc);
+							GenericUI.getCurrent().getEtudiant().getLinscdac().add(insc);
 						}
 					}
 				}
