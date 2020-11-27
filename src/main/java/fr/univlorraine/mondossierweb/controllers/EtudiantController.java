@@ -371,9 +371,11 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
 				}
 
-				//On recupere les numeros d'anonymat
-				GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
-
+				if(configController.isAffNumerosAnonymat()) {
+					//On recupere les numeros d'anonymat
+					GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
+				}
+				
 				//On vérifie si l'étudiant est interdit de consultation de ses notes
 				List<String> lcodesBloquant = configController.getListeCodesBlocageAffichageNotes();
 				//Si on a paramétré des codes bloquant

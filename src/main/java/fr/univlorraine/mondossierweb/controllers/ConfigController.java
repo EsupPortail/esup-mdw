@@ -171,6 +171,10 @@ public class ConfigController {
 	public boolean isModificationAdressesAutorisee() {
 		return getBooleanValueForParameter("modificationAdresses");
 	}
+	
+	public boolean isAffNumerosAnonymat() {
+		return getBooleanValueForParameter("affNumerosAnonymat");
+	}
 
 	public boolean isModificationCoordonneesPersoAutorisee() {
 		return getBooleanValueForParameter("modificationCoordonneesContactPerso");
