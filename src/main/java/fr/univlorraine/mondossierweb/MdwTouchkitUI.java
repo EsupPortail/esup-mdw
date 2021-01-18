@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -218,6 +219,14 @@ public class MdwTouchkitUI extends GenericUI{
 
 			Throwable cause = e.getThrowable();
 			while (cause instanceof Throwable) {
+				/* Gère les erreurs de fragment dans les urls */
+				if (cause instanceof URISyntaxException) {
+						LOG.info("Erreur de fragment ");
+						// Retour à la racine
+						Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
+						return;
+				}
+				
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
@@ -252,6 +261,8 @@ public class MdwTouchkitUI extends GenericUI{
 		/* Affiche le nom de l'application dans l'onglet du navigateur */
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
+		reloadIfUriFragmentError(getPage().getUriFragment());
+		
 		/* Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 				car le fragment ne correspond pas à une vue existante) */
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
@@ -267,6 +278,9 @@ public class MdwTouchkitUI extends GenericUI{
 				if(!applicationActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
 					afficherMessageMaintenance();
 				}
+				
+				reloadIfUriFragmentError(source.getUriFragment());
+				
 			}
 		});
 
@@ -706,6 +720,14 @@ public class MdwTouchkitUI extends GenericUI{
 		analyticsTracker.trackNavigator(navigator);
 	}
 
+	private void reloadIfUriFragmentError(String uriFragment) {
+		if(uriFragment != null && uriFragment.contains("#")) {
+			LOG.warn("fragment erroné :"+uriFragment);
+			// Retour à la racine
+			Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
+		}
+	}
+	
 	/**
 	 * Configure la reconnexion en cas de déconnexion.
 	 */

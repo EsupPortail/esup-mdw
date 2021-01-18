@@ -109,7 +109,7 @@ public class Initializer implements WebApplicationInitializer {
 		/* Filtre Spring Security */
 		FilterRegistration.Dynamic springSecurityFilterChain = servletContext.addFilter("springSecurityFilterChain", DelegatingFilterProxy.class);
 		springSecurityFilterChain.addMappingForUrlPatterns(null, false, "/*");
-
+		
 		/* Filtre passant l'utilisateur courant à Logback */
 		FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
 		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");
@@ -118,7 +118,9 @@ public class Initializer implements WebApplicationInitializer {
 		FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
 		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");
 
-
+		/* Filtre qui gère les erreurs de fragment */
+		/*FilterRegistration.Dynamic fragmentErrorFilter = servletContext.addFilter("fragmentErrorFilter", FragmentErrorFilter.class);
+		fragmentErrorFilter.addMappingForUrlPatterns(null, false, "/*");*/
 
 		/* Servlet Spring-Vaadin */
 		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);

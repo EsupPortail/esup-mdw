@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,6 +255,13 @@ public class MainUI extends GenericUI {
 			Throwable cause = e.getThrowable();
 
 			while (cause instanceof Throwable) {
+				/* Gère les erreurs de fragment dans les urls */
+				if (cause instanceof URISyntaxException) {
+						LOG.info("Erreur de fragment ");
+						// Retour à la racine
+						Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
+						return;
+				}
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
@@ -284,6 +292,8 @@ public class MainUI extends GenericUI {
 		// Affiche le nom de l'application dans l'onglet du navigateur 
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
+		reloadIfUriFragmentError(Page.getCurrent().getUriFragment());
+
 		//Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 		//car le fragment ne correspond pas à une vue existante)
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
@@ -291,20 +301,24 @@ public class MainUI extends GenericUI {
 
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
-						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
-						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
+					!source.getUriFragment().contains(AccesBloqueView.NAME) &&
+					!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
 
 					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
 
+					reloadIfUriFragmentError(source.getUriFragment());
+
 					if(source.getUriFragment().contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) 
-							&& userController.isEnseignant()){
+						&& userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
 
 					}
 
 				}
 			}
+
+
 		});
 
 		//Paramétrage du comportement en cas de perte de connexion
@@ -407,6 +421,7 @@ public class MainUI extends GenericUI {
 
 		//mainVerticalLayout est le contenu principal de la page
 		setContent(mainVerticalLayout);
+
 
 		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
@@ -1032,7 +1047,7 @@ public class MainUI extends GenericUI {
 
 	private boolean applicationActive(){
 		return configController.isApplicationActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-				|| (!userController.isEnseignant() && !userController.isEtudiant()) || (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+			|| (!userController.isEnseignant() && !userController.isEtudiant()) || (userController.isEnseignant() && configController.isPartieEnseignantActive()));
 	}
 
 	/**
@@ -1047,6 +1062,14 @@ public class MainUI extends GenericUI {
 			analyticsTracker = new LogAnalyticsTracker();
 		}
 		analyticsTracker.trackNavigator(navigator);
+	}
+
+	private void reloadIfUriFragmentError(String uriFragment) {
+		if(uriFragment != null && uriFragment.contains("#")) {
+			LOG.warn("fragment erroné :"+uriFragment);
+			// Retour à la racine
+			Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
+		}
 	}
 
 	/**
