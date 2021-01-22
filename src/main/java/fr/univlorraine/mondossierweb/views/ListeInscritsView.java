@@ -79,6 +79,7 @@ import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
+import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
@@ -95,9 +96,9 @@ import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 @Component @Scope("prototype")
 @SpringView(name = ListeInscritsView.NAME)
 public class ListeInscritsView extends VerticalLayout implements View {
-	
+
 	private static final long serialVersionUID = -2056224835347802529L;
-	
+
 	private Logger LOG = LoggerFactory.getLogger(ListeInscritsView.class);
 
 	public static final String NAME = "listeInscritsView";
@@ -127,10 +128,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient FavorisController favorisController;
-	
+
 	@Resource
 	private transient ObjectFactory<HelpBasicWindow> helpBasicWindowFactory;
-	
+
 	@Resource
 	private transient ObjectFactory<DetailGroupesWindow> detailGroupesWindowFactory;
 
@@ -826,7 +827,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
 					setExpandRatio(infoLayout, 1);
-					
+
 					//refresh de la liste à afficher au départ
 					resfreshListeToDisplay();
 
@@ -850,7 +851,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private void resfreshListeToDisplay() {
 		filtrerInscrits(getEtapeSelectionnee(),getGroupeSelectionne());
 	}
-	
+
 	//récupère l'étape sélectionnée
 	private String getEtapeSelectionnee() {
 		String etapeSelectionnee = ((listeEtapes!=null && listeEtapes.getValue()!=null)?(String)listeEtapes.getValue():null);
@@ -859,7 +860,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		}
 		return etapeSelectionnee;
 	}
-	
+
 	//récupère le groupe sélectionné
 	private String getGroupeSelectionne() {
 		String grpSelectionne = ((listeGroupes!=null && listeGroupes.getValue()!=null)?(String)listeGroupes.getValue():null);
@@ -888,14 +889,14 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		middleResumeLayout.setVisible(false);
 
 	}
-	private void majCheckbox() {
+	/*private void majCheckbox() {
 		if(typeIsElp()){
 			collapseEtp.setValue(!inscritstable.isColumnCollapsed("etape"));
 		}
 		collapseResultatsS1.setValue(!inscritstable.isColumnCollapsed("notes1"));
 		collapseResultatsS2.setValue(!inscritstable.isColumnCollapsed("notes2"));
 
-	}
+	}*/
 	private void displayTrombinoscope() {
 		List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
 
@@ -983,7 +984,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		 * irrelevant in this use case.
 		 */
 		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
+			Object columnId) {
 
 			Item item = source.getItem(itemId);
 
@@ -1015,7 +1016,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		 * irrelevant in this use case.
 		 */
 		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
+			Object columnId) {
 
 			Item item = source.getItem(itemId);
 
@@ -1048,7 +1049,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		 * irrelevant in this use case.
 		 */
 		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
+			Object columnId) {
 
 			Item item = source.getItem(itemId);
 
@@ -1081,7 +1082,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		 * irrelevant in this use case.
 		 */
 		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
+			Object columnId) {
 
 			Item item = source.getItem(itemId);
 
@@ -1110,7 +1111,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		 * irrelevant in this use case.
 		 */
 		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
+			Object columnId) {
 
 			Item item = source.getItem(itemId);
 
@@ -1118,11 +1119,22 @@ public class ListeInscritsView extends VerticalLayout implements View {
 			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
 			if(bins!=null){
 				Inscrit i = (Inscrit) bins.getBean();
-				Label etapeLabel = new Label();
-				if(StringUtils.hasText(i.getLib_etp())){
-					etapeLabel.setValue(i.getLib_etp());
-				}
-				return etapeLabel;
+					VerticalLayout vets = new VerticalLayout();
+					//On parcourt la liste des vets
+					for(Vet ve : i.getListe_vet()) {
+						// Pour chaque vet, on créé un label
+						Label etapeLabel = new Label();
+						if(StringUtils.hasText(ve.getLib_etp())){
+							etapeLabel.setValue(ve.getLib_etp());
+							if(vets.getComponentCount()>0) {
+								// Ajout d'un espacement entre les vets
+								etapeLabel.addStyleName("additional-vet-label");
+							}
+						}
+						//Ajout du label au vertical layout
+						vets.addComponent(etapeLabel);						
+					}
+					return vets;
 			}
 			return null;
 		}

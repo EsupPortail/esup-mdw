@@ -18,11 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import lombok.Data;
 
@@ -33,10 +34,12 @@ import lombok.Data;
 @Entity
 @Data
 public class Inscrit {
+	
+	@Id
+	private int rownum;
 	/**
 	 * le code individu.
 	 */
-	@Id
 	@Column(name="COD_IND")
 	private String cod_ind;
 	/**
@@ -109,6 +112,8 @@ public class Inscrit {
 	 */
 	@Column(name="lib_etp")
 	private String lib_etp;
+	
+	private List<Vet> liste_vet;
 	/**
 	 * code_etp + / + vers_vet
 	 */
@@ -170,5 +175,29 @@ public class Inscrit {
 		return nom;
 	}
 	
+	public void ajoutVet(String code, String version, String libelle) {
+		Vet vet = new Vet(code, version, libelle);
+		liste_vet.add(vet);
+	}
+	
+	@Data
+	public class Vet {
+		private String cod_etp;
+		private String cod_vrs_vet;
+		private String lib_etp;
+		
+		public Vet() {
+			super();
+		}
+		
+		public Vet(String cod_etp, String cod_vrs_vet, String lib_etp) {
+			super();
+			this.cod_etp = cod_etp;
+			this.cod_vrs_vet = cod_vrs_vet;
+			this.lib_etp = lib_etp;
+		}
+		
+		
+	}
 	
 }

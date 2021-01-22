@@ -42,6 +42,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -82,6 +83,7 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
+import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
@@ -233,6 +235,8 @@ public class ListeInscritsController {
 
 			//Récupération de la liste des inscrits
 			listeInscrits = (List<Inscrit>) multipleApogeeService.getInscritsEtapeJuinSep(e);
+			
+			listeInscrits = aggregateVET(listeInscrits);
 
 			//Maj des mails/photo et des groupes en fonction de la liste d'inscrits en paramètre
 			finaliserListeInscrits(listeInscrits, null,annee, ui);
@@ -321,6 +325,8 @@ public class ListeInscritsController {
 		//Récupération de tous les inscrit à l'ELP quelque soit l'étape d'appartenance choisie dans la vue ListeInscritView
 		listeInscrits = (List<Inscrit>) elementPedagogiqueService.getInscritsFromElp(code, e.getAnnee());
 
+		listeInscrits = aggregateVET(listeInscrits);
+
 		//On créé une liste de VET vide pour crééer la liste des étapes d'appartenance
 		List<VersionEtape> letape = null;
 
@@ -331,21 +337,33 @@ public class ListeInscritsController {
 
 			//Pour chaque inscrit
 			for(Inscrit i : listeInscrits){
-				//Test si l'étape est renseignée pour l'inscrit
-				if(StringUtils.hasText(i.getCod_etp()) && StringUtils.hasText(i.getCod_vrs_vet()) && StringUtils.hasText(i.getLib_etp())){
-					//Récupération de la VET
-					VersionEtape vet = new VersionEtape();
-					VersionEtapePK vetpk = new VersionEtapePK();
-					vetpk.setCod_etp(i.getCod_etp());
-					vetpk.setCod_vrs_vet(i.getCod_vrs_vet());
-					vet.setId(vetpk);
-					vet.setLib_web_vet(i.getLib_etp());
-					//Si la liste de VET de contient pas la VET de l'étudiant
-					if(!letape.contains(vet)){
-						//On ajoute la vet à la liste des étapes d'appartenance
-						letape.add(vet);
+				if(i.getListe_vet() != null) {
+					for(Vet v : i.getListe_vet()) {
+						//Récupération de la VET
+						VersionEtape vet = getVersionEtape(v.getCod_etp(), v.getCod_vrs_vet(), v.getLib_etp());
+						
+						LOG.info("--" + i.getCod_etu() + " => " + vet.getId().getCod_etp() + " / "+ vet.getId().getCod_vrs_vet()+ " : " +vet.getLib_web_vet());
+						//Si la liste de VET de contient pas la VET de l'étudiant
+						if(!letape.contains(vet)){
+							//On ajoute la vet à la liste des étapes d'appartenance
+							letape.add(vet);
+						}
 					}
-				}
+				}/*else {
+					//Test si l'étape est renseignée pour l'inscrit
+					if(StringUtils.hasText(i.getCod_etp()) && StringUtils.hasText(i.getCod_vrs_vet()) && StringUtils.hasText(i.getLib_etp())){
+						//Récupération de la VET
+						VersionEtape vet = getVersionEtape(i.getCod_etp(), i.getCod_vrs_vet(), i.getLib_etp());
+						
+						LOG.info("-" + i.getCod_etu() + " => " + vet.getId().getCod_etp() + " / "+ vet.getId().getCod_vrs_vet()+ " : " +vet.getLib_web_vet());
+						//Si la liste de VET de contient pas la VET de l'étudiant
+						if(!letape.contains(vet)){
+							//On ajoute la vet à la liste des étapes d'appartenance
+							letape.add(vet);
+						}
+					}
+				}*/
+
 			}
 		}
 		//On stocket la liste des étapes d'appartenance au niveau de l'ui
@@ -367,6 +385,54 @@ public class ListeInscritsController {
 		finaliserListeInscrits(listeInscrits,listeGroupes,e.getAnnee(),ui);
 
 	}
+
+	private VersionEtape getVersionEtape(String code, String version, String libelle) {
+		VersionEtape vet = new VersionEtape();
+		VersionEtapePK vetpk = new VersionEtapePK();
+		vetpk.setCod_etp(code);
+		vetpk.setCod_vrs_vet(version);
+		vet.setId(vetpk);
+		vet.setLib_web_vet(libelle);
+		return vet;
+	}
+
+
+	/**
+	 * 
+	 * @param listeInscrits
+	 * @return liste sans doublon avec aggregation des vets
+	 */
+	private List<Inscrit> aggregateVET(List<Inscrit> listeInscrits) {
+		List<Inscrit> liste=null;
+		// Si la list d'origine contient des inscrits
+		if(listeInscrits!=null) {
+			liste = new LinkedList<Inscrit> ();
+			// On parcourt la liste d'origine
+			for(Inscrit inscrit : listeInscrits) {
+				boolean insere = false;
+				// On parcourt la liste en cours de création
+				for(Inscrit i : liste) {
+					// Si l'étudiant est déjà dans la liste
+					if(i!=null && i.getCod_etu()!=null && i.getCod_etu().equals(inscrit.getCod_etu())){
+						//Ajout de la vet de l'étudiant en cours de traitement
+						i.ajoutVet(inscrit.getCod_etp(), inscrit.getCod_vrs_vet(), inscrit.getLib_etp());
+						insere = true;
+					}
+				}
+				// l'étudiant n'était pas dans la liste
+				if(!insere) {
+					// création de la liste 
+					inscrit.setListe_vet(new LinkedList<Vet> ());
+					//ajout de la vet déjà assignée à l'étudiant
+					inscrit.ajoutVet(inscrit.getCod_etp(), inscrit.getCod_vrs_vet(), inscrit.getLib_etp());
+					//Ajout de l'étudiant dans la liste
+					liste.add(inscrit);
+				}
+			}
+		}
+		return liste;
+	}
+
 
 	/**
 	 * initialise les attributs de MainUI utilisés dans a vue listeInscritsView
@@ -525,64 +591,64 @@ public class ListeInscritsController {
 
 			if (recupererGroupeDTO != null){
 				TableauElementPedagogi3 tep = recupererGroupeDTO.getListElementPedagogi();
-						if(tep!=null && tep.getElementPedagogi()!=null && !tep.getElementPedagogi().isEmpty()) {
-							//On parcourt les ELP
-							for(ElementPedagogiDTO3 elp : tep.getElementPedagogi()){
-								ElpDeCollection el = new ElpDeCollection(elp.getCodElp(), elp.getLibElp());
+				if(tep!=null && tep.getElementPedagogi()!=null && !tep.getElementPedagogi().isEmpty()) {
+					//On parcourt les ELP
+					for(ElementPedagogiDTO3 elp : tep.getElementPedagogi()){
+						ElpDeCollection el = new ElpDeCollection(elp.getCodElp(), elp.getLibElp());
 
-								List<CollectionDeGroupes> listeCollection = new LinkedList<CollectionDeGroupes>();
+						List<CollectionDeGroupes> listeCollection = new LinkedList<CollectionDeGroupes>();
 
-								//On parcourt les collections de l'ELP
-								TableauCollection4 tcol = elp.getListCollection();
-								if(tcol!=null && tcol.getCollection()!=null && !tcol.getCollection().isEmpty()) {
-									for( CollectionDTO4 cd2: tcol.getCollection()){
-										CollectionDeGroupes collection = new CollectionDeGroupes(cd2.getCodExtCol());
+						//On parcourt les collections de l'ELP
+						TableauCollection4 tcol = elp.getListCollection();
+						if(tcol!=null && tcol.getCollection()!=null && !tcol.getCollection().isEmpty()) {
+							for( CollectionDTO4 cd2: tcol.getCollection()){
+								CollectionDeGroupes collection = new CollectionDeGroupes(cd2.getCodExtCol());
 
-										List<Groupe> listegroupe = new LinkedList<Groupe>();
+								List<Groupe> listegroupe = new LinkedList<Groupe>();
 
-										//On parcourt les groupes de la collection
-										TableauGroupe3 tgr = cd2.getListGroupe();
-										if(tgr !=null && tgr.getGroupe()!=null && !tgr.getGroupe().isEmpty()) {
-											for(GroupeDTO3 gd2 : tgr.getGroupe()){
-												//On récupère les infos sur le groupe
-												Groupe groupe = new Groupe(gd2.getCodExtGpe());
-												groupe.setLibGroupe(gd2.getLibGpe());
+								//On parcourt les groupes de la collection
+								TableauGroupe3 tgr = cd2.getListGroupe();
+								if(tgr !=null && tgr.getGroupe()!=null && !tgr.getGroupe().isEmpty()) {
+									for(GroupeDTO3 gd2 : tgr.getGroupe()){
+										//On récupère les infos sur le groupe
+										Groupe groupe = new Groupe(gd2.getCodExtGpe());
+										groupe.setLibGroupe(gd2.getLibGpe());
 
-												//on récupère le codeGpe
-												groupe.setCleGroupe(""+gd2.getCodGpe());
+										//on récupère le codeGpe
+										groupe.setCleGroupe(""+gd2.getCodGpe());
 
 
-												if(gd2.getCapaciteGpe() != null){
-													if(gd2.getCapaciteGpe().getCapMaxGpe() != null){
-														groupe.setCapMaxGpe(gd2.getCapaciteGpe().getCapMaxGpe());
-													}else{
-														groupe.setCapMaxGpe(0);
-													}
-													if(gd2.getCapaciteGpe().getCapIntGpe()!=null){
-														groupe.setCapIntGpe(gd2.getCapaciteGpe().getCapIntGpe());
-													}else{
-														groupe.setCapIntGpe(0);
-													}
-												}else {
-													groupe.setCapMaxGpe(0);
-													groupe.setCapIntGpe(0);
-												}
-												//On ajoute le groupe à la liste de la collection
-												listegroupe.add(groupe);
+										if(gd2.getCapaciteGpe() != null){
+											if(gd2.getCapaciteGpe().getCapMaxGpe() != null){
+												groupe.setCapMaxGpe(gd2.getCapaciteGpe().getCapMaxGpe());
+											}else{
+												groupe.setCapMaxGpe(0);
 											}
+											if(gd2.getCapaciteGpe().getCapIntGpe()!=null){
+												groupe.setCapIntGpe(gd2.getCapaciteGpe().getCapIntGpe());
+											}else{
+												groupe.setCapIntGpe(0);
+											}
+										}else {
+											groupe.setCapMaxGpe(0);
+											groupe.setCapIntGpe(0);
 										}
-										//on insere la liste créé dans la collection
-										collection.setListeGroupes(listegroupe);
-										//On ajoute la collection a la liste
-										listeCollection.add(collection);
+										//On ajoute le groupe à la liste de la collection
+										listegroupe.add(groupe);
 									}
 								}
-								//On insere la liste créé dans l'ELP
-								el.setListeCollection(listeCollection);
-								//On ajoute l'ELP a la liste
-								listeElp.add(el);
+								//on insere la liste créé dans la collection
+								collection.setListeGroupes(listegroupe);
+								//On ajoute la collection a la liste
+								listeCollection.add(collection);
 							}
 						}
+						//On insere la liste créé dans l'ELP
+						el.setListeCollection(listeCollection);
+						//On ajoute l'ELP a la liste
+						listeElp.add(el);
+					}
+				}
 
 			}
 
@@ -645,9 +711,9 @@ public class ListeInscritsController {
 			sheet.setColumnWidth((short) 9, (short) (3000));
 
 		} else {
-			sheet.setColumnWidth((short) 5, (short) (2000));
+			sheet.setColumnWidth((short) 5, (short) (3000));
 			sheet.setColumnWidth((short) 6, (short) (3000));
-			sheet.setColumnWidth((short) 7, (short) (8000));
+			sheet.setColumnWidth((short) 7, (short) (18000));
 			sheet.setColumnWidth((short) 8, (short) (2000));
 			sheet.setColumnWidth((short) 9, (short) (3000));
 			sheet.setColumnWidth((short) 10, (short) (2000));
@@ -766,65 +832,91 @@ public class ListeInscritsController {
 		for (Inscrit inscrit : listeInscrits) {
 			if(listeCodInd.contains(inscrit.getCod_ind())){
 				HSSFRow rowInscrit  = sheet.createRow((short) nbrow);
+				
+				CellStyle alignTopStyle = wb.createCellStyle();
+				alignTopStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
 
 				int rang_cellule_inscrit = 0;
 				HSSFCell cellLibInscrit1 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit1.setCellValue(inscrit.getCod_etu());
+				cellLibInscrit1.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
 				HSSFCell cellLibInscrit2 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit2.setCellValue(inscrit.getNom());
+				cellLibInscrit2.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
 				HSSFCell cellLibInscrit3 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit3.setCellValue(inscrit.getPrenom());
+				cellLibInscrit3.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
 				HSSFCell cellLibInscrit31 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit31.setCellValue(inscrit.getDate_nai_ind());
+				cellLibInscrit31.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
 				HSSFCell cellLibInscrit4 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit4.setCellValue(inscrit.getEmail());
+				cellLibInscrit4.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
 				if (isTraiteEtape) {
 					HSSFCell cellLibInscrit5 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit5.setCellValue(inscrit.getIae());
+					cellLibInscrit5.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 				if (!isTraiteEtape) {
-					//if (isEtape) {
+					String codes = "";
+					String versions = "";
+					String libelles = "";
+					for(Vet v : inscrit.getListe_vet()) {
+						codes += (codes.equals("") ? "" :"\n") + v.getCod_etp();
+						versions += (versions.equals("") ? "" :"\n") + v.getCod_vrs_vet();
+						libelles += (libelles.equals("") ? "" : "\n") + v.getLib_etp();
+					}
+					CellStyle breakLineStyle = wb.createCellStyle();
+					breakLineStyle.setWrapText(true);
+					breakLineStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+					
 					HSSFCell cellLibInscrit6 = rowInscrit.createCell((short) rang_cellule_inscrit);
-					cellLibInscrit6.setCellValue(inscrit.getCod_etp());
+					cellLibInscrit6.setCellValue(codes);
+					cellLibInscrit6.setCellStyle(breakLineStyle);
 					rang_cellule_inscrit++;
 
 					HSSFCell cellLibInscrit7 = rowInscrit.createCell((short) rang_cellule_inscrit);
-					cellLibInscrit7.setCellValue(inscrit.getCod_vrs_vet());
+					cellLibInscrit7.setCellValue(versions);
+					cellLibInscrit7.setCellStyle(breakLineStyle);
 					rang_cellule_inscrit++;
 
 					HSSFCell cellLibInscrit8 = rowInscrit.createCell((short) rang_cellule_inscrit);
-					cellLibInscrit8.setCellValue(inscrit.getLib_etp());
+					cellLibInscrit8.setCellValue(libelles);
+					cellLibInscrit8.setCellStyle(breakLineStyle);
 					rang_cellule_inscrit++;
-					//}
 				}
 				if (isSession1) {
 					HSSFCell cellLibInscrit9 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit9.setCellValue(inscrit.getNotej());
+					cellLibInscrit9.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
 					HSSFCell cellLibInscrit10 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit10.setCellValue(inscrit.getResj());
+					cellLibInscrit10.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 
 				if (isSession2) {
 					HSSFCell cellLibInscrit11 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit11.setCellValue(inscrit.getNotes());
+					cellLibInscrit11.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
 					HSSFCell cellLibInscrit12 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit12.setCellValue(inscrit.getRess());
+					cellLibInscrit12.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 
@@ -840,6 +932,7 @@ public class ListeInscritsController {
 						grpXls += listeGroupes.getItemCaption(codegroupe);
 					}
 					cellLibGroupes.setCellValue(grpXls);
+					cellLibGroupes.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 				nbrow++;
