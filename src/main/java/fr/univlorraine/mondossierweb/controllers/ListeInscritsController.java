@@ -342,7 +342,6 @@ public class ListeInscritsController {
 						//Récupération de la VET
 						VersionEtape vet = getVersionEtape(v.getCod_etp(), v.getCod_vrs_vet(), v.getLib_etp());
 						
-						LOG.info("--" + i.getCod_etu() + " => " + vet.getId().getCod_etp() + " / "+ vet.getId().getCod_vrs_vet()+ " : " +vet.getLib_web_vet());
 						//Si la liste de VET de contient pas la VET de l'étudiant
 						if(!letape.contains(vet)){
 							//On ajoute la vet à la liste des étapes d'appartenance
@@ -449,17 +448,6 @@ public class ListeInscritsController {
 	}
 
 	/**
-	 * renseigne les logins de chaque inscrit.
-	 *
-	 */
-	/*	private void setLoginInscrits( List<Inscrit> listeInscrits) {
-		for (Inscrit i : listeInscrits) {
-			if(i.getCod_etu()!=null)
-			i.setLogin(service.getLoginFromCodEtu(i.getCod_etu()));
-		}
-	}*/
-
-	/**
 	 * Finalise une liste d'inscrits pour affichage dans la vue listeInscritsView
 	 * @param listeInscrits
 	 */
@@ -471,14 +459,6 @@ public class ListeInscritsController {
 			setMailInscrits(listeInscrits);
 			setUrlPhotos(listeInscrits);
 		}
-
-		//on vérifie que les photo sont récupérées pour savoir si on peut afficher le lien vers le trombinoscope:
-		/*if(listeInscrits != null && listeInscrits.size() > 0) {
-			listeInscrits.get(0).setUrlphoto(photo.getUrlPhoto(listeInscrits.get(0).getCod_ind(), listeInscrits.get(0).getCod_etu()));
-			if (listeInscrits.get(0).getUrlphoto() != null && !listeInscrits.get(0).getUrlphoto().equals("")) {
-				photosValides = true;
-			}
-		}*/
 
 
 		//On parcourt les groupes, on recup les inscrit puis 
@@ -573,10 +553,6 @@ public class ListeInscritsController {
 	public List<ElpDeCollection> recupererGroupes(String annee, String codElp) {
 		//appel WS Offre de foramtion 'recupererGroupe'
 		List<ElpDeCollection> listeElp = new LinkedList<ElpDeCollection>();
-
-		/*if(offreDeFormationService==null){
-			offreDeFormationService = (OffreFormationMetierServiceInterface) WSUtils.getService(WSUtils.OFFREFORMATION_SERVICE_NAME, PropertyUtils.getApoWsUsername(),PropertyUtils.getApoWsPassword());
-		}*/
 
 		try{
 			RecupererGroupeDTO3 recupererGroupeDTO = offreDeFormationService.recupererGroupeV3(annee, null, null, null, codElp, null);
@@ -1086,11 +1062,7 @@ public class ListeInscritsController {
 
 			String tabNom[] = new String[NB_INSCRITS_LIGNE_TROMBI_PDF];
 			String tabNum[] = new String[NB_INSCRITS_LIGNE_TROMBI_PDF];
-			//insertion de listeInscrits dans listeInscritstrombi si le trombinoscope n'est pas decoupé
-			/*	if (listeInscritsTrombi == null || listeInscritsTrombi.size() == 0) {
-				ArrayList<Inscrit> listeInscritsbis = (ArrayList<Inscrit>) listeInscrits.clone();
-				listeInscritsTrombi.add(listeInscritsbis);
-			}*/
+
 			//nombre d'etudiants insérer a la suite dans le pdf:
 			int nbEtudiantInsere = 0;
 			for (Inscrit inscrit : listeInscrits) {
