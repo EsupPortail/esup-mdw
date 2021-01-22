@@ -349,20 +349,7 @@ public class ListeInscritsController {
 							letape.add(vet);
 						}
 					}
-				}/*else {
-					//Test si l'étape est renseignée pour l'inscrit
-					if(StringUtils.hasText(i.getCod_etp()) && StringUtils.hasText(i.getCod_vrs_vet()) && StringUtils.hasText(i.getLib_etp())){
-						//Récupération de la VET
-						VersionEtape vet = getVersionEtape(i.getCod_etp(), i.getCod_vrs_vet(), i.getLib_etp());
-						
-						LOG.info("-" + i.getCod_etu() + " => " + vet.getId().getCod_etp() + " / "+ vet.getId().getCod_vrs_vet()+ " : " +vet.getLib_web_vet());
-						//Si la liste de VET de contient pas la VET de l'étudiant
-						if(!letape.contains(vet)){
-							//On ajoute la vet à la liste des étapes d'appartenance
-							letape.add(vet);
-						}
-					}
-				}*/
+				}
 
 			}
 		}
@@ -698,7 +685,6 @@ public class ListeInscritsController {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("page1");
 
-
 		boolean isSession1=true;
 		boolean isSession2=true;
 
@@ -707,7 +693,7 @@ public class ListeInscritsController {
 		sheet.setColumnWidth((short) 1, (short) (6000));
 		sheet.setColumnWidth((short) 2, (short) (5120));
 		sheet.setColumnWidth((short) 3, (short) (4000));
-		sheet.setColumnWidth((short) 4, (short) (8000));
+		sheet.setColumnWidth((short) 4, (short) (12000));
 		if (isTraiteEtape) {
 			sheet.setColumnWidth((short) 5 , (short) (1200));
 			sheet.setColumnWidth((short) 6, (short) (2000));
@@ -723,7 +709,7 @@ public class ListeInscritsController {
 			sheet.setColumnWidth((short) 9, (short) (3000));
 			sheet.setColumnWidth((short) 10, (short) (2000));
 			sheet.setColumnWidth((short) 11, (short) (3000));
-			sheet.setColumnWidth((short) 12, (short) (8000));
+			sheet.setColumnWidth((short) 12, (short) (15000));
 		}
 
 		// Creation des lignes
@@ -840,6 +826,7 @@ public class ListeInscritsController {
 				
 				CellStyle alignTopStyle = wb.createCellStyle();
 				alignTopStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+				alignTopStyle.setWrapText(true);
 
 				int rang_cellule_inscrit = 0;
 				HSSFCell cellLibInscrit1 = rowInscrit.createCell((short) rang_cellule_inscrit);
@@ -882,23 +869,20 @@ public class ListeInscritsController {
 						versions += (versions.equals("") ? "" :"\n") + v.getCod_vrs_vet();
 						libelles += (libelles.equals("") ? "" : "\n") + v.getLib_etp();
 					}
-					CellStyle breakLineStyle = wb.createCellStyle();
-					breakLineStyle.setWrapText(true);
-					breakLineStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
 					
 					HSSFCell cellLibInscrit6 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit6.setCellValue(codes);
-					cellLibInscrit6.setCellStyle(breakLineStyle);
+					cellLibInscrit6.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
 					HSSFCell cellLibInscrit7 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit7.setCellValue(versions);
-					cellLibInscrit7.setCellStyle(breakLineStyle);
+					cellLibInscrit7.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
 					HSSFCell cellLibInscrit8 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit8.setCellValue(libelles);
-					cellLibInscrit8.setCellStyle(breakLineStyle);
+					cellLibInscrit8.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 				if (isSession1) {
