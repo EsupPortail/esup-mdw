@@ -23,6 +23,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -55,6 +56,7 @@ import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
+import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 
 
 /**
@@ -82,7 +84,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private transient FavorisController favorisController;
 	@Resource
 	private transient ConfigController configController;
-
+	@Resource
+	private transient ObjectFactory<FiltreInscritsMobileWindow> filtreInscritsMobileWindowFactory;
 
 
 	private String typeFavori;
@@ -213,7 +216,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			//Bouton Filtre
 			//On a la possibilité de filtrer le trombinoscope que si on est positionné sur un ELP
 			if(typeIsElp()){
-				FiltreInscritsMobileWindow w = new FiltreInscritsMobileWindow();
+				FiltreInscritsMobileWindow w = filtreInscritsMobileWindowFactory.getObject();
+				w.init();
 				//Si on a des éléments à afficher dans la popup filtre
 				if((w.getListeEtapes()!=null && w.getListeEtapes().size()>0) || (w.getListeGroupes()!=null && w.getListeGroupes().size()>0)){
 					filterButton = new Button();
