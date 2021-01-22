@@ -140,6 +140,8 @@ public class Utils {
 
 	public static final String SEPARATEUR_CODE_GROUPE = ";";
 	
+	public static final String SEPARATEUR_VETS = ";";
+	
 	public static final String FRAGMENT_ACCES_DOSSIER_ETUDIANT = "accesDossierEtudiant";
 
 	public static final String SHOW_MESSAGE_NOTES_PREFERENCE= "SHOW_MESSAGE_NOTES";
@@ -194,6 +196,8 @@ public class Utils {
 	//liste des vues enseignants dont l'accès est à protéger
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
 		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
+
+
 
 	
 	/** formatage d'une Localdate pour ne garder que jour, mois , annee*/

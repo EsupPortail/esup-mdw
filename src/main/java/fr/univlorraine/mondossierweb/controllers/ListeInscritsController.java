@@ -546,8 +546,13 @@ public class ListeInscritsController {
 	 */
 	private void setIdEtpInscrits(List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
-			if(i.getCod_etp()!=null && i.getCod_vrs_vet()!=null)
-				i.setId_etp(i.getCod_etp()+"/"+i.getCod_vrs_vet());
+			i.setId_etp("");
+			// parcourir les vets
+			for(Vet vet : i.getListe_vet()) {
+				if(vet.getCod_etp()!=null && vet.getCod_vrs_vet()!=null) {
+					i.setId_etp(i.getId_etp() + Utils.SEPARATEUR_VETS + vet.getCod_etp()+"/"+vet.getCod_vrs_vet());
+				}
+			}
 		}
 	}
 
