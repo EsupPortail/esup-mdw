@@ -587,8 +587,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnExportExcel.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 					btnExportExcel.addStyleName("button-icon");
 					btnExportExcel.setDescription(applicationContext.getMessage(NAME + ".excel.link", null, getLocale()));
-					String nomFichierXls = applicationContext.getMessage("excel.listeinscrits.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".xls";
-					nomFichierXls = nomFichierXls.replaceAll(" ","_");
+					String nomFichierExcel = applicationContext.getMessage("excel.listeinscrits.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".xlsx";
+					nomFichierExcel = nomFichierExcel.replaceAll(" ","_");
 
 					StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
 
@@ -602,7 +602,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							//création du trombi en pdf
 							return listeInscritsController.getXlsStream(linscrits, listecodind,listeGroupes,libObj,  annee, typeFavori);
 						}
-					}, nomFichierXls);
+					}, nomFichierExcel);
 					resourceXls.setMIMEType("application/force-download;charset=UTF-8");
 					resourceXls.setCacheTime(0);
 					//On ajoute le FD sur le bouton d'export

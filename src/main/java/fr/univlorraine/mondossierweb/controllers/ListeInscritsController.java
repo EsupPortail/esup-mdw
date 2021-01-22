@@ -35,18 +35,17 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -642,7 +641,7 @@ public class ListeInscritsController {
 		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-			HSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)));
+			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)));
 			wb.write(baos);
 			byte[] bytes = baos.toByteArray();
 			return new ByteArrayInputStream(bytes);
@@ -660,10 +659,10 @@ public class ListeInscritsController {
 	 * @return le fichier excel de la liste des inscrits.
 	 */
 	@SuppressWarnings("deprecation")
-	public HSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape) {
+	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape) {
 		//	creation du fichier excel
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet("page1");
+		XSSFWorkbook wb = new XSSFWorkbook();
+		XSSFSheet sheet = wb.createSheet("page1");
 
 		boolean isSession1=true;
 		boolean isSession2=true;
@@ -693,15 +692,15 @@ public class ListeInscritsController {
 		}
 
 		// Creation des lignes
-		HSSFRow row = sheet.createRow((short) 0);
+		XSSFRow row = sheet.createRow((short) 0);
 
 		//CREATION DES STYLES:
 		//STYLE1:
-		HSSFCellStyle headerStyle = wb.createCellStyle();
+		XSSFCellStyle headerStyle = wb.createCellStyle();
 		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
 		headerStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
 		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		HSSFFont font = wb.createFont();
+		XSSFFont font = wb.createFont();
 		font.setColor(IndexedColors.WHITE.getIndex());
 		//font.setBoldweight((short) 10);
 		font.setBold(true);
@@ -719,60 +718,60 @@ public class ListeInscritsController {
 
 
 		int rang_cellule = 0;
-		HSSFCell cellLib1 = row.createCell((short) rang_cellule);
+		XSSFCell cellLib1 = row.createCell((short) rang_cellule);
 		cellLib1.setCellStyle(headerStyle);
 		cellLib1.setCellValue(applicationContext.getMessage("xls.folder", null, Locale.getDefault()).toUpperCase() );
 		rang_cellule++;
 
-		HSSFCell cellLib2 = row.createCell((short) rang_cellule);
+		XSSFCell cellLib2 = row.createCell((short) rang_cellule);
 		cellLib2.setCellStyle(headerStyle);
 		cellLib2.setCellValue(applicationContext.getMessage("xls.nom", null, Locale.getDefault()).toUpperCase() );
 		rang_cellule++;
 
-		HSSFCell cellLib3 = row.createCell((short) rang_cellule);
+		XSSFCell cellLib3 = row.createCell((short) rang_cellule);
 		cellLib3.setCellStyle(headerStyle);
 		cellLib3.setCellValue(applicationContext.getMessage("xls.prenom", null, Locale.getDefault()).toUpperCase() );
 		rang_cellule++;
 
-		HSSFCell cellLib4 = row.createCell((short) rang_cellule);
+		XSSFCell cellLib4 = row.createCell((short) rang_cellule);
 		cellLib4.setCellStyle(headerStyle);
 		cellLib4.setCellValue(applicationContext.getMessage("xls.naissance", null, Locale.getDefault()).toUpperCase() );
 		rang_cellule++;
 
-		HSSFCell cellLib5 = row.createCell((short) rang_cellule);
+		XSSFCell cellLib5 = row.createCell((short) rang_cellule);
 		cellLib5.setCellStyle(headerStyle);
 		cellLib5.setCellValue(applicationContext.getMessage("xls.messagerie", null, Locale.getDefault()).toUpperCase() );
 		rang_cellule++;
 
 		if (isTraiteEtape) {
-			HSSFCell cellLib6 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib6 = row.createCell((short) rang_cellule);
 			cellLib6.setCellStyle(headerStyle);
 			cellLib6.setCellValue(applicationContext.getMessage("xls.iae", null, Locale.getDefault()).toUpperCase()+"?" );
 			rang_cellule++;
 		}
 		if (!isTraiteEtape) {
-			HSSFCell cellLib7 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib7 = row.createCell((short) rang_cellule);
 			cellLib7.setCellStyle(headerStyle);
 			cellLib7.setCellValue(applicationContext.getMessage("xls.code", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
 
-			HSSFCell cellLib8 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib8 = row.createCell((short) rang_cellule);
 			cellLib8.setCellStyle(headerStyle);
 			cellLib8.setCellValue(applicationContext.getMessage("xls.version", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
 
-			HSSFCell cellLib9 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib9 = row.createCell((short) rang_cellule);
 			cellLib9.setCellStyle(headerStyle);
 			cellLib9.setCellValue(applicationContext.getMessage("xls.etape", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
 		}
 		if (isSession1) {
-			HSSFCell cellLib10 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib10 = row.createCell((short) rang_cellule);
 			cellLib10.setCellStyle(headerStyle);
 			cellLib10.setCellValue(applicationContext.getMessage("xls.note1", null, Locale.getDefault()).toUpperCase());
 			rang_cellule++;
 
-			HSSFCell cellLib11 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib11 = row.createCell((short) rang_cellule);
 			cellLib11.setCellStyle(headerStyle);
 			cellLib11.setCellValue(applicationContext.getMessage("xls.result1", null, Locale.getDefault()).toUpperCase());
 			rang_cellule++;
@@ -780,12 +779,12 @@ public class ListeInscritsController {
 		}
 
 		if (isSession2) {
-			HSSFCell cellLib12 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib12 = row.createCell((short) rang_cellule);
 			cellLib12.setCellStyle(headerStyle);
 			cellLib12.setCellValue(applicationContext.getMessage("xls.note2", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
 
-			HSSFCell cellLib13 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib13 = row.createCell((short) rang_cellule);
 			cellLib13.setCellStyle(headerStyle);
 			cellLib13.setCellValue(applicationContext.getMessage("xls.result2", null, Locale.getDefault()).toUpperCase());
 			rang_cellule++;
@@ -794,7 +793,7 @@ public class ListeInscritsController {
 
 		//info sur les groupes
 		if (!isTraiteEtape) {
-			HSSFCell cellLib14 = row.createCell((short) rang_cellule);
+			XSSFCell cellLib14 = row.createCell((short) rang_cellule);
 			cellLib14.setCellStyle(headerStyle);
 			cellLib14.setCellValue(applicationContext.getMessage("xls.groupes", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
@@ -803,40 +802,40 @@ public class ListeInscritsController {
 		int nbrow = 1;
 		for (Inscrit inscrit : listeInscrits) {
 			if(listeCodInd.contains(inscrit.getCod_ind())){
-				HSSFRow rowInscrit  = sheet.createRow((short) nbrow);
+				XSSFRow rowInscrit  = sheet.createRow((short) nbrow);
 				
 				CellStyle alignTopStyle = wb.createCellStyle();
 				alignTopStyle.setVerticalAlignment(VerticalAlignment.TOP);
 				alignTopStyle.setWrapText(true);
 
 				int rang_cellule_inscrit = 0;
-				HSSFCell cellLibInscrit1 = rowInscrit.createCell((short) rang_cellule_inscrit);
+				XSSFCell cellLibInscrit1 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit1.setCellValue(inscrit.getCod_etu());
 				cellLibInscrit1.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
-				HSSFCell cellLibInscrit2 = rowInscrit.createCell((short) rang_cellule_inscrit);
+				XSSFCell cellLibInscrit2 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit2.setCellValue(inscrit.getNom());
 				cellLibInscrit2.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
-				HSSFCell cellLibInscrit3 = rowInscrit.createCell((short) rang_cellule_inscrit);
+				XSSFCell cellLibInscrit3 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit3.setCellValue(inscrit.getPrenom());
 				cellLibInscrit3.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
-				HSSFCell cellLibInscrit31 = rowInscrit.createCell((short) rang_cellule_inscrit);
+				XSSFCell cellLibInscrit31 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit31.setCellValue(inscrit.getDate_nai_ind());
 				cellLibInscrit31.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
-				HSSFCell cellLibInscrit4 = rowInscrit.createCell((short) rang_cellule_inscrit);
+				XSSFCell cellLibInscrit4 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit4.setCellValue(inscrit.getEmail());
 				cellLibInscrit4.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
 				if (isTraiteEtape) {
-					HSSFCell cellLibInscrit5 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit5 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit5.setCellValue(inscrit.getIae());
 					cellLibInscrit5.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
@@ -851,40 +850,40 @@ public class ListeInscritsController {
 						libelles += (libelles.equals("") ? "" : "\n") + v.getLib_etp();
 					}
 					
-					HSSFCell cellLibInscrit6 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit6 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit6.setCellValue(codes);
 					cellLibInscrit6.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
-					HSSFCell cellLibInscrit7 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit7 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit7.setCellValue(versions);
 					cellLibInscrit7.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
-					HSSFCell cellLibInscrit8 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit8 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit8.setCellValue(libelles);
 					cellLibInscrit8.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 				if (isSession1) {
-					HSSFCell cellLibInscrit9 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit9 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit9.setCellValue(inscrit.getNotej());
 					cellLibInscrit9.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
-					HSSFCell cellLibInscrit10 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit10 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit10.setCellValue(inscrit.getResj());
 					cellLibInscrit10.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 
 				if (isSession2) {
-					HSSFCell cellLibInscrit11 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit11 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit11.setCellValue(inscrit.getNotes());
 					cellLibInscrit11.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 
-					HSSFCell cellLibInscrit12 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibInscrit12 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit12.setCellValue(inscrit.getRess());
 					cellLibInscrit12.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
@@ -892,7 +891,7 @@ public class ListeInscritsController {
 
 				//ajout info sur les groupes si il y a lieu
 				if (!isTraiteEtape) {
-					HSSFCell cellLibGroupes = rowInscrit.createCell((short) rang_cellule_inscrit);
+					XSSFCell cellLibGroupes = rowInscrit.createCell((short) rang_cellule_inscrit);
 					String grpXls="";
 					List<String> lcodegroup = Utils.splitStringFromSemiColon(inscrit.getCodes_groupes());
 					for(String codegroupe : lcodegroup){
@@ -905,6 +904,7 @@ public class ListeInscritsController {
 					cellLibGroupes.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
+				//rowInscrit.setHeight((short) 230);
 				nbrow++;
 			}
 		}
