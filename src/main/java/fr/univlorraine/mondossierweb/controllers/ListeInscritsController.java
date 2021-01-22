@@ -42,7 +42,11 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -694,22 +698,23 @@ public class ListeInscritsController {
 		//CREATION DES STYLES:
 		//STYLE1:
 		HSSFCellStyle headerStyle = wb.createCellStyle();
-		headerStyle.setFillBackgroundColor(HSSFColor.BLUE.index);
-		headerStyle.setFillForegroundColor(HSSFColor.BLUE.index);
-		headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
+		headerStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
+		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		HSSFFont font = wb.createFont();
-		font.setColor(HSSFColor.WHITE.index);
-		font.setBoldweight((short) 10);
+		font.setColor(IndexedColors.WHITE.getIndex());
+		//font.setBoldweight((short) 10);
+		font.setBold(true);
 		headerStyle.setFont(font);
 		//bordure style1
-		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
-		headerStyle.setBottomBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-		headerStyle.setLeftBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-		headerStyle.setRightBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-		headerStyle.setTopBorderColor(HSSFColor.BLACK.index);
+		headerStyle.setBorderBottom(BorderStyle.MEDIUM);
+		headerStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+		headerStyle.setBorderLeft(BorderStyle.MEDIUM);
+		headerStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		headerStyle.setBorderRight(BorderStyle.MEDIUM);
+		headerStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		headerStyle.setBorderTop(BorderStyle.MEDIUM);
+		headerStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
 
 
 
@@ -801,7 +806,7 @@ public class ListeInscritsController {
 				HSSFRow rowInscrit  = sheet.createRow((short) nbrow);
 				
 				CellStyle alignTopStyle = wb.createCellStyle();
-				alignTopStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+				alignTopStyle.setVerticalAlignment(VerticalAlignment.TOP);
 				alignTopStyle.setWrapText(true);
 
 				int rang_cellule_inscrit = 0;
