@@ -151,6 +151,14 @@ public class RequestUtils {
 	}
 
 
+	public String getInscritsFromElp() {
+		return properties.getProperty("inscritsFromElp");
+	}
+
+
+	public String getCodIndInscritsFromGroupe() {
+		return properties.getProperty("codIndInscritsFromGroupe");
+	}
 	
 
 }

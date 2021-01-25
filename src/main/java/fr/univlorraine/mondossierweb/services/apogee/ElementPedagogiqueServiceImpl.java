@@ -29,10 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApogeeRepository;
+import fr.univlorraine.mondossierweb.utils.RequestUtils;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
@@ -40,12 +42,15 @@ import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApoge
 public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 
 	private Logger LOG = LoggerFactory.getLogger(ElementPedagogiqueServiceImpl.class);
-	
+
 	@Resource
 	private ElementPedagogiqueApogeeRepository elpRepository;
 
 	@PersistenceContext (unitName="entityManagerFactoryApogee")
 	private transient EntityManager entityManagerApogee;
+
+	@Resource
+	private RequestUtils requestUtils;
 
 
 	@Override
@@ -59,9 +64,18 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 
 
 	@Override
-	public List<Inscrit> getInscritsFromElp(String code, String annee) {
+	public List<Inscrit> getInscritsFromElp(String codElp, String codAnu) {
 		@SuppressWarnings("unchecked")
-		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select rownum, i.cod_ind,i.cod_etu, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, i.lib_pr1_ind, "+
+		String requeteSQL="";
+
+		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+		if(StringUtils.hasText(requestUtils.getInscritsFromElp())){
+			//On utilise la requête indiquée dans le fichier XML
+			LOG.info("getInscritsFromElp => Utilisation de la requête du fichier apogeeRequest.xml");
+			requeteSQL = requestUtils.getInscritsFromElp().replaceAll("#COD_ELP#", codElp).replaceAll("#COD_ANU#", codAnu);
+		}else{
+			LOG.info("getInscritsFromElp => Utilisation de la requête intégrée à MDW");
+			requeteSQL = "select rownum, i.cod_ind,i.cod_etu, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, i.lib_pr1_ind, "+
 				" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,  "+
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_elp),null,rj.not_sub_elp,to_char(rj.not_elp)),' ')) notej,  "+
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj, "+
@@ -87,8 +101,8 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 				" and avc2.COD_VRS_OBJ_AOA=0 "+
 				" and avc2.ETA_ANO_OBJ_AOA='V' ), "+
 				" apogee.etape e, version_etape ve "+
-				" where ice.cod_elp = '"+code+"' "+
-				" and ice.cod_anu = "+annee +" "+
+				" where ice.cod_elp = '"+codElp+"' "+
+				" and ice.cod_anu = "+codAnu +" "+
 				" and ice.tem_prc_ice = 'N'  "+
 				" and i.cod_ind = ice.cod_ind  "+
 				" and rj.cod_ind = ice.cod_ind  "+
@@ -98,38 +112,35 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 				" and ve.cod_etp = e.cod_etp "+
 				" and ve.cod_vrs_vet = ice.cod_vrs_vet "+
 				" and i.cod_etu is not null "+
-				" order by NOM,i.lib_pr1_ind,i.date_nai_ind", Inscrit.class).getResultList();
+				" order by NOM,i.lib_pr1_ind,i.date_nai_ind";
+		}
+		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery(requeteSQL, Inscrit.class).getResultList();
 		return linscrits;
 	}
 
 
 	@Override
-	public List<BigDecimal> getCodIndInscritsFromGroupe(String code, String annee) {
+	public List<BigDecimal> getCodIndInscritsFromGroupe(String codGpe, String codAnnu) {
 		@SuppressWarnings("unchecked")
-		List<BigDecimal> lCodindInscrits = (List<BigDecimal>)entityManagerApogee.createNativeQuery("select distinct ind.cod_ind "+
-    "from IND_AFFECTE_GPE ind, GROUPE g "+
-    "where ind.COD_GPE = g.cod_gpe  "+
-    "and g.COD_GPE = "+code+ " "+
-    "and ind.COD_ANU= "+annee+ " ").getResultList();
-    		
+
+		String requeteSQL="";
+
+		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+		if(StringUtils.hasText(requestUtils.getCodIndInscritsFromGroupe())){
+			//On utilise la requête indiquée dans le fichier XML
+			LOG.info("getCodIndInscritsFromGroupe => Utilisation de la requête du fichier apogeeRequest.xml");
+			requeteSQL = requestUtils.getCodIndInscritsFromGroupe().replaceAll("#COD_GPE#", codGpe).replaceAll("#COD_ANU#", codAnnu);
+		}else{
+			LOG.info("getCodIndInscritsFromGroupe => Utilisation de la requête intégrée à MDW");
+			requeteSQL = "select distinct ind.cod_ind "+
+				"from IND_AFFECTE_GPE ind, GROUPE g "+
+				"where ind.COD_GPE = g.cod_gpe  "+
+				"and g.COD_GPE = "+codGpe+ " "+
+				"and ind.COD_ANU= "+codAnnu+ " ";
+		}
+		List<BigDecimal> lCodindInscrits = (List<BigDecimal>)entityManagerApogee.createNativeQuery(requeteSQL).getResultList();
+
 		return lCodindInscrits;
 	}
-
-
-	/*@Override
-	public BigDecimal getDureeConservation(String code) {
-		return (BigDecimal) entityManagerApogee.createNativeQuery("select DUR_CON_ELP from ELEMENT_PEDAGOGI where COD_ELP='"+code+"'").getSingleResult();
-	}*/
-
-	@Override
-	public BigDecimal getCreditAcquisElp(String cod_ind, String cod_elp, String annee) {
-		BigDecimal creditAcquis = (BigDecimal)entityManagerApogee.createNativeQuery("select APOGEE.PKB_CRD.CREDIT_ACQUIS_ELP("+cod_ind+",'"+cod_elp+"',"+annee+") from dual").getSingleResult();
-		LOG.info("getCreditAcquisElp : "+ cod_ind+", "+cod_elp+" , "+annee +" => "+creditAcquis);
-		return creditAcquis;
-	}
-
-
-
-
 
 }

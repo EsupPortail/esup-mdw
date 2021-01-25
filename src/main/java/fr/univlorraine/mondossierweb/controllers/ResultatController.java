@@ -658,19 +658,6 @@ public class ResultatController {
 												anneePrc = rpd.getCodAnu();
 											}
 
-											//Récupération des crédits ECTS avant la version 5.20.laa
-											//On recupere les crédits ECTS si valué et si pas déjà renseigné via la session de juin.
-											/*if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")
-													&& (elp.getEcts()==null || elp.getEcts().equals(""))){
-												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
-												// récupère l'ECTS acquis
-												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(),anneeECTS);
-												if(ectsAcquis!=null){
-													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
-												}else{
-													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
-												}
-											}*/
 
 											// Récupération des crédits ECTS version 5.20.laa
 											// Si on a un crédit ECTS de référence et si crédit ECTS pas déjà renseigné via la session de juin.
@@ -713,19 +700,6 @@ public class ResultatController {
 												elp.setAnnee(rpd.getCodAnu());
 												anneePrc = rpd.getCodAnu();
 											}
-
-											//Récupération des crédits ECTS avant la version 5.20.laa
-											//on recupere les crédits ECTS 
-											/*if(relpdto[j].getNbrCrdElp()!= null && relpdto[j].getNbrCrdElp().toString()!=null && !relpdto[j].getNbrCrdElp().toString().equals("")){
-												// récupère l'ECTS acquis
-												String anneeECTS=relpdto[j].getCodAnu()!=null?relpdto[j].getCodAnu():reedto[i].getCodAnu();
-												BigDecimal ectsAcquis = elementPedagogiqueService.getCreditAcquisElp(e.getCod_ind(), elp.getCode(), anneeECTS);
-												if(ectsAcquis!=null){
-													elp.setEcts(Utils.getEctsToDisplay(ectsAcquis)+"/"+relpdto[j].getNbrCrdElp().toString());
-												}else{
-													elp.setEcts("0/"+relpdto[j].getNbrCrdElp().toString());
-												}
-											}*/
 
 											// Récupération des crédits ECTS version 5.20.laa
 											// Si on a un crédit ECTS de référence
