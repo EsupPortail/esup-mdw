@@ -49,6 +49,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
@@ -84,6 +85,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private transient FavorisController favorisController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient ListeInscritsController listeInscritsController;
 	@Resource
 	private transient ObjectFactory<FiltreInscritsMobileWindow> filtreInscritsMobileWindowFactory;
 
@@ -410,6 +413,9 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 					// Si on a une url renseignée vers la photo de l'étudiant
 					if(inscrit.getUrlphoto()!=null){
+						
+						// On met à jour l'url de la photo, des fois que le ticket ait expiré entre temps
+						listeInscritsController.setUrlPhoto(inscrit);
 
 						// Image contenant la photo de l'étudiant
 						Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));
