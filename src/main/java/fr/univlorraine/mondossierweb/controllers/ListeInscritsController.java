@@ -543,7 +543,7 @@ public class ListeInscritsController {
 	 */
 	public void setUrlPhotos(List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
-			setUrlPhoto(i);
+			i.setUrlphoto(getUrlPhoto(i));
 		}
 	}
 	
@@ -551,8 +551,8 @@ public class ListeInscritsController {
 	 * renseigne l'url photo d'un inscrit
 	 * @param listeInscrits
 	 */
-	public void setUrlPhoto(Inscrit i) {
-			i.setUrlphoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
+	public String getUrlPhoto(Inscrit i) {
+		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 
 

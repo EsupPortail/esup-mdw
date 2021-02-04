@@ -415,7 +415,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					if(inscrit.getUrlphoto()!=null){
 						
 						// On met à jour l'url de la photo, des fois que le ticket ait expiré entre temps
-						listeInscritsController.setUrlPhoto(inscrit);
+						inscrit.setUrlphoto(listeInscritsController.getUrlPhoto(inscrit));
 
 						// Image contenant la photo de l'étudiant
 						Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));

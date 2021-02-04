@@ -32,6 +32,7 @@ import com.vaadin.server.WebBrowser;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univnancy2.PhotoClient.beans.Category;
 import fr.univnancy2.PhotoClient.beans.PhotoClient;
 import fr.univnancy2.PhotoClient.beans.TicketClient;
@@ -167,7 +168,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 
-		/*	utilisateurEnseignant = userController.isEnseignant();
+			/*	utilisateurEnseignant = userController.isEnseignant();
 			String loginUser = userController.getCurrentUserName();*/
 
 			if (!isUtilisateurEnseignant) {
@@ -185,14 +186,11 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 		String hostadress = "";
 		try {
-			hostadress = InetAddress.getLocalHost().getHostAddress();
+			hostadress = getLocalHostAdress();
 
 			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
-					hostadress, "ID", "NONE", loginUser);
+				hostadress, "ID", "NONE", loginUser);
 
-
-		} catch (UnknownHostException e1) {
-			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer loginUser:"+loginUser+" hostadress : "+hostadress,e1);
 		} catch (PhotoClientException e) {
 			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer loginUser:"+loginUser+" hostadress : "+hostadress,e);
 			tc = null;
@@ -200,14 +198,22 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 		}
 		forserver = true;
 	}
+
+	/** Retourne l'IP du serveur */
+	private String getLocalHostAdress() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e1) {
+			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer hostadress ",e1);
+		}
+		return null;
+	}
+
 	/**
 	 * initialise un ticket pour la photo d'un étudiant.
 	 * @param cod_etu
 	 */
 	public void init(final String cod_etu, String loginUser) {
-
-
-
 
 		String remoteadress = getRemoteAdresse();
 		// Param�tres du client photos
@@ -219,18 +225,18 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 		}
 		// Demande d'un ticket au serveur de photos
-		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
-			try {
-				tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
-						remoteadress, "ID", cod_etu, loginUser);
+		//if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
+		try {
+			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
+				remoteadress, "ID", cod_etu, loginUser);
 
 
-			} catch (PhotoClientException e) {
-				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
-				tc = null;
+		} catch (PhotoClientException e) {
+			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
+			tc = null;
 
-			}
 		}
+		//}
 		forserver = false;
 
 	}
@@ -251,19 +257,19 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 			photoClient.setApplicationCode(getCodeapp());
 		}
 		// Demande d'un ticket au serveur de photos
-		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
-			try {
+		//if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
+		try {
 
-				tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
-						remoteadress, "ID", "NONE", loginUser);
+			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
+				remoteadress, "ID", "NONE", loginUser);
 
 
-			} catch (PhotoClientException e) {
-				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
-				tc = null;
+		} catch (PhotoClientException e) {
+			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
+			tc = null;
 
-			}
 		}
+		//}
 		forserver = false;
 
 	}
@@ -272,6 +278,12 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	 * @return l'adresse ip de l'utilisateur
 	 */
 	public String getRemoteAdresse() {
+
+		// Si on effectue des dev en local, l'IP client est celle de la machine
+		if(PropertyUtils.isLocalDevModeEnabled()) {
+			return  getLocalHostAdress();
+		}
+
 		WebBrowser browser;
 
 		String ip =  GenericUI.getCurrent().getIpClient();
