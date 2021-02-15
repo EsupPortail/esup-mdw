@@ -138,9 +138,9 @@ public class DetailInscriptionWindow extends Window {
 				detailInscriptionTable.setColumnCollapsingAllowed(true);
 				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
 				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
-				if(configController.isAffECTSEtudiant()){
+				if(configController.isAffECTSIPEtudiant()){
 					detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
-					if(configController.isMasqueECTSEtudiant()){
+					if(configController.isMasqueECTSIPEtudiant()){
 						detailInscriptionTable.setColumnCollapsed(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), true);
 					}
 				}

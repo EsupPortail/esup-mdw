@@ -156,6 +156,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("affECTSEtudiant");
 	}
 	
+	public boolean isAffECTSIPEtudiant() {
+		return getBooleanValueForParameter("affECTSIPEtudiant");
+	}
+	
 	public boolean isMasqueSession2Vide() {
 		return getBooleanValueForParameter("masqueSession2Vide");
 	}
@@ -166,6 +170,10 @@ public class ConfigController {
 	
 	public boolean isMasqueECTSEtudiant() {
 		return getBooleanValueForParameter("masqueECTSEtudiant");
+	}
+	
+	public boolean isMasqueECTSIPEtudiant() {
+		return getBooleanValueForParameter("masqueECTSIPEtudiant");
 	}
 
 	public boolean isModificationAdressesAutorisee() {
