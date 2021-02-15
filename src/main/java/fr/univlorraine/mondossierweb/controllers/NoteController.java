@@ -268,10 +268,12 @@ public class NoteController {
 			header = FontFactory.getFont("Arial", 11, Font.BOLD);
 		}
 
-		Color headerColor = new Color(153, 153, 255);
+		String[] color = configController.getHeaderColorPdf();
+		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
+		/*Color headerColor = new Color(153, 153, 255);
 		if(formatPortrait){
 			headerColor = new Color(142, 142, 142);
-		}
+		}*/
 
 
 
@@ -791,11 +793,12 @@ public class NoteController {
 			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
 			header = FontFactory.getFont("Arial", 11, Font.BOLD);
 		}
-
-		Color headerColor = new Color(153, 153, 255);
-		if(formatPortrait){
+		
+		String[] color = configController.getHeaderColorPdf();
+		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
+		/*if(formatPortrait){
 			headerColor = new Color(142, 142, 142);
-		}
+		}*/
 
 		//pieds de pages:
 		Date d = new Date();
@@ -961,6 +964,13 @@ public class NoteController {
 					if(!formatPortrait)
 						p03.setIndentationLeft(10);
 					document.add(p03);
+				}
+				if (configController.isAffichageDateNaissancePdfNotesPaysage() && etudiant.getDatenaissance() != null) {
+					Paragraph p04 = new Paragraph(applicationContext.getMessage("pdf.datenaissance", null, Locale.getDefault()) + " : " + etudiant.getDatenaissance(), normal);
+					p04.setIndentationLeft(5);
+					if(!formatPortrait)
+						p04.setIndentationLeft(10);
+					document.add(p04);
 				}
 
 				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);

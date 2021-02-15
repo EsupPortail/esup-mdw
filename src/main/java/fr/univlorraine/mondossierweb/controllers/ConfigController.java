@@ -272,6 +272,9 @@ public class ConfigController {
 	public boolean isAffResAdmissibilite() {
 	     return getBooleanValueForParameter("affResultatsAdmissibilite");
     }
+	public boolean isAffichageDateNaissancePdfNotesPaysage() {
+		return getBooleanValueForParameter("affDateNaissancePdfNotesPaysage");
+	}
 
 	public List<String> getListeCertScolProfilDesactive(){
 		return getListValeurForParameter("certScolProfilDesactive");
@@ -405,6 +408,11 @@ public class ConfigController {
 	public String getNotesPDFLieuEdition() {
 		return getValeurForParameter("notesPDFLieuEdition");
 	}
+	
+	public String[] getHeaderColorPdf() {
+		String color = getValeurForParameter("headerColorPdf");
+		return color.split(",");
+	}
 
 
 
@@ -496,6 +504,8 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+	
 
 
 
