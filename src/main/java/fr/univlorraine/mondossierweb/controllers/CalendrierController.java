@@ -165,7 +165,7 @@ public class CalendrierController {
 
 		//pieds de pages:
 		Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String date = dateFormat.format(d);
 		//alignement des libellés du pied de page:
 		String partie1 = applicationContext.getMessage("pdf.calendrier.title", null, Locale.getDefault());

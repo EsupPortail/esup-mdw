@@ -278,7 +278,7 @@ public class NoteController {
 
 		//pieds de pages:
 		Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String date = dateFormat.format(d);
 		//alignement des libellé du pied de page:
 		String partie1 = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()); 
@@ -799,7 +799,7 @@ public class NoteController {
 
 		//pieds de pages:
 		Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String date = dateFormat.format(d);
 
 		//alignement des libellés du pied de page:

@@ -996,7 +996,7 @@ public class ListeInscritsController {
 		//pieds de pages:
 		String part="";
 		Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String date = dateFormat.format(d);
 		//alignement des libellés du pied de page:
 		String partie1 = libelle+" "+annee;

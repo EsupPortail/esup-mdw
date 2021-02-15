@@ -362,8 +362,6 @@ public class SsoController {
 		Font header = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
 		Font lightheader = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.NORMAL);
 
-		//DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
 		document.open();
 		try {
 
@@ -654,8 +652,6 @@ public class SsoController {
 		Font normalBigger = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
 		Font lightheader = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.NORMAL);
-
-		//DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
 		document.open();
 		try {
