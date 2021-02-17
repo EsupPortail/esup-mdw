@@ -324,7 +324,11 @@ public class AdresseController {
 
 			ok = true;
 		} catch (Exception ex) {
-			LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
+			if(ex!=null && ex.getMessage()!=null && ex.getMessage().contains("technical.parameter.nonpresentinput")) {
+				LOG.warn("Non present input lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
+			}else {
+				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
+			}
 		}
 		return ok;
 	}
