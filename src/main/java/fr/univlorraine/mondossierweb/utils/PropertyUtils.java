@@ -294,6 +294,13 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value)) return null;
 		return value;
 	}
+	
+	/** Retourne si oui ou non on affiche le sql des requêtes directes sur Apogée   */
+	public static boolean getShowSqlApogee(){
+		String value = System.getProperty("context.apoShowSql");
+		if(!StringUtils.hasText(value) || !value.equals("true")) return false;
+		return true;
+	}
 
 
 }

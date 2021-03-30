@@ -159,7 +159,5 @@
 		<appender-ref ref="fileAppender" />
 	</logger>-->
 	<logger name="org.atmosphere" level="off" />
-	
-
 
 </configuration>
