@@ -529,6 +529,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 					"AND iid.cod_ind = sqr.cod_ind "+
 					"AND iid.num_occ_sqr = sqr.num_occ_sqr "+
 					"AND iid.cod_drt = drt.cod_drt "+
+					"AND drt.COD_CAT_EXO_EXT = iid.COD_CAT_EXO_EXT "+
 					"AND nrg.cod_nrg = drt.cod_nrg "+
 					"GROUP BY nrg.lic_nrg ";
 		}
