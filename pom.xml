@@ -94,7 +94,7 @@
 		<!-- Univ Lorraine repositories -->
 		<repository>
 			<id>ul-public-releases</id>
-			<url>http://maven.univ-lorraine.fr/content/repositories/public-releases</url>
+			<url>https://maven.univ-lorraine.fr/content/repositories/public-releases</url>
 		</repository>
 		
 		
