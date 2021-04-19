@@ -103,7 +103,7 @@
 	<!-- Recupération des requêtes SQL directes sur Apogée dans les logs -->
 	<Parameter name="apoShowSql" value="false"/>
 	
-	<!-- Source des résultats lors de l'appel aux Web Services Apogée pour récupérer les notes et résultats -->
+	<!-- Source des résultats lors de l'appel aux Web Services Apogée pour récupérer les notes et résultats. Apogee ou Apogee-extraction -->
 	<Parameter name="sourceResultats" value="Apogee" />
 	
 	<!-- Mode production : Desactive le mode debug -->
