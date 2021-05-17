@@ -36,6 +36,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<vaadin.version>7.7.17</vaadin.version>
+		<!--<vaadin.version>7.7.24</vaadin.version>-->
 		<springframework.version>4.3.22.RELEASE</springframework.version>
 		<spring.data.jpa.version>1.11.22.RELEASE</spring.data.jpa.version>
 		<spring.security.version>4.2.11.RELEASE</spring.security.version> 
@@ -1184,15 +1185,27 @@
 			<version>1.4.7</version>
 		</dependency>
 
-		<!-- WS apogee AMUE -->
+		<!-- WS Apogee AMUE -->
 		<!--  <dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservicesclient</artifactId>
 			<version>5.20.lcc</version>
 		</dependency> -->
+		<!-- WS Apogee Lib AMUE 2021 -->
+		<dependency>
+			<groupId>gouv.education.apogee</groupId>
+			<artifactId>apo-webservices-client</artifactId>
+			<version>6.20.30</version>
+		</dependency>
+		<!-- Utils UL Lib AMUE 2021 -->
+		 <dependency>
+            <groupId>fr.univlorraine</groupId>
+            <artifactId>apo-ws-utils</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 		
-		 <!-- WS apogee Lib UL -->
-        <dependency> 
+		 <!-- WS Apogee Lib UL -->
+       	<!-- <dependency> 
 			<groupId>fr.univlorraine</groupId> 
 			<artifactId>apo-ws-client</artifactId> 
 			<version>${apo.ws.version}</version> 
@@ -1206,7 +1219,7 @@
 					<artifactId>spring-boot-starter</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 		
 		
 		<!-- PhotoServer UL -->

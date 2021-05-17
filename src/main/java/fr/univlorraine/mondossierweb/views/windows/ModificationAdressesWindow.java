@@ -45,14 +45,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.apowsclient.etudiant.TypeHebergementDTO;
-import fr.univlorraine.apowsclient.geographie.CommuneDTO2;
-import fr.univlorraine.apowsclient.geographie.PaysDTO;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.AdresseController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
 
 
 /**

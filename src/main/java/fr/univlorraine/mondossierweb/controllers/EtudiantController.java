@@ -19,7 +19,6 @@
 package fr.univlorraine.mondossierweb.controllers;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -37,25 +36,7 @@ import org.springframework.util.StringUtils;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 
-import fr.univlorraine.apowsclient.administratif.AdministratifMetierServiceInterface;
-import fr.univlorraine.apowsclient.administratif.CursusExterneDTO;
-import fr.univlorraine.apowsclient.administratif.CursusExternesEtTransfertsDTO;
-import fr.univlorraine.apowsclient.administratif.InsAdmAnuDTO2;
-import fr.univlorraine.apowsclient.administratif.InsAdmEtpDTO3;
-import fr.univlorraine.apowsclient.administratif.TableauCursusExterneDto;
-import fr.univlorraine.apowsclient.etudiant.AdresseDTO2;
-import fr.univlorraine.apowsclient.etudiant.AdresseMajDTO;
-import fr.univlorraine.apowsclient.etudiant.CommuneMajDTO;
-import fr.univlorraine.apowsclient.etudiant.CoordonneesDTO2;
-import fr.univlorraine.apowsclient.etudiant.CoordonneesMajDTO;
-import fr.univlorraine.apowsclient.etudiant.EtudiantMetierServiceInterface;
-import fr.univlorraine.apowsclient.etudiant.IdentifiantsEtudiantDTO2;
-import fr.univlorraine.apowsclient.etudiant.IndBacDTO;
-import fr.univlorraine.apowsclient.etudiant.InfoAdmEtuDTO2;
-import fr.univlorraine.apowsclient.etudiant.TableauIndBacDTO2;
-import fr.univlorraine.apowsclient.etudiant.TypeHebergementCourtDTO;
-import fr.univlorraine.apowsclient.pedagogique.PedagogiqueMetierServiceInterface;
-import fr.univlorraine.apowsclient.utils.ServiceProvider;
+import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
@@ -75,6 +56,23 @@ import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.CursusExterneDTO;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.CursusExternesEtTransfertsDTO;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.InsAdmAnuDTO2;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.InsAdmEtpDTO3;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.TableauCursusExterneDto;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CommuneMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IdentifiantsEtudiantDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IndBacDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.InfoAdmEtuDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TableauIndBacDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementCourtDTO;
 
 
 /**
@@ -119,12 +117,12 @@ public class EtudiantController {
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
 	 */
-	private final EtudiantMetierServiceInterface etudiantService = ServiceProvider.getEtudiantService();
+	private final EtudiantMetierServiceInterface etudiantService = ServiceProvider.getService(EtudiantMetierServiceInterface.class);
 
 	/**
 	 * proxy pour faire appel aux infos administratives du WS .
 	 */
-	private final AdministratifMetierServiceInterface administratifService = ServiceProvider.getAdministratifService();
+	private final AdministratifMetierServiceInterface administratifService = ServiceProvider.getService(AdministratifMetierServiceInterface.class);
 
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
@@ -330,7 +328,7 @@ public class EtudiantController {
 					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				} 
 
-				TableauIndBacDTO2 bacvo = iaetu.getListeBacs();
+				TableauIndBacDTO bacvo = iaetu.getListeBacs();
 				//Si on a récupéré des bacs
 				if (bacvo != null && bacvo.getItem()!=null && !bacvo.getItem().isEmpty()) {
 					for (IndBacDTO bac : bacvo.getItem()) {

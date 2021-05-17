@@ -4,3 +4,4 @@
 /configUrlServicestest*.properties
 /configUrlServicespreprod*.properties
 /configUrlServicesprod*.properties
+/repository/gouv/education/apogee/apo-webservices-client/**/apo-webservices-client-*.jar

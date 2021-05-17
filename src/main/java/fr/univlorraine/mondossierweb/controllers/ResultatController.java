@@ -32,22 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.apowsclient.pedagogique.ContratPedagogiqueResultatElpEprDTO5;
-import fr.univlorraine.apowsclient.pedagogique.ContratPedagogiqueResultatVdiVetDTO2;
-import fr.univlorraine.apowsclient.pedagogique.EpreuveElpDTO2;
-import fr.univlorraine.apowsclient.pedagogique.EtapeResVdiVetDTO2;
-import fr.univlorraine.apowsclient.pedagogique.PedagogiqueMetierServiceInterface;
-import fr.univlorraine.apowsclient.pedagogique.ResultatElpDTO3;
-import fr.univlorraine.apowsclient.pedagogique.ResultatEprDTO;
-import fr.univlorraine.apowsclient.pedagogique.ResultatVdiDTO;
-import fr.univlorraine.apowsclient.pedagogique.ResultatVetDTO;
-import fr.univlorraine.apowsclient.pedagogique.TableauEpreuveElpDto24;
-import fr.univlorraine.apowsclient.pedagogique.TableauEtapeResVdiVetDto2;
-import fr.univlorraine.apowsclient.pedagogique.TableauResultatElpDto33;
-import fr.univlorraine.apowsclient.pedagogique.TableauResultatEprDto2;
-import fr.univlorraine.apowsclient.pedagogique.TableauResultatVdiDto;
-import fr.univlorraine.apowsclient.pedagogique.TableauResultatVetDto;
-import fr.univlorraine.apowsclient.utils.ServiceProvider;
+import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.CacheIP;
 import fr.univlorraine.mondossierweb.beans.CacheResultatsElpEpr;
@@ -60,6 +45,21 @@ import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatElpEprDTO5;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatVdiVetDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.EpreuveElpDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.EtapeResVdiVetDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.PedagogiqueMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatElpDTO3;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatEprDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVdiDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVetDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEpreuveElpDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEtapeResVdiVetDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatElpDto3;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatEprDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVdiDto;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVetDto;
 
 
 /**
@@ -86,7 +86,7 @@ public class ResultatController {
 	/**
 	 * proxy pour faire appel aux infos sur les résultats du WS .
 	 */
-	private final PedagogiqueMetierServiceInterface pedagogiqueService = ServiceProvider.getPedagogiqueService();
+	private final PedagogiqueMetierServiceInterface pedagogiqueService = ServiceProvider.getService(PedagogiqueMetierServiceInterface.class);
 
 	/**
 	 * va chercher et renseigne les notes de
@@ -595,7 +595,7 @@ public class ResultatController {
 						String anneePrc = null;
 
 						//On s'occupe des résultats :
-						TableauResultatElpDto33 relpdto = cpree.getResultatsElp();
+						TableauResultatElpDto3 relpdto = cpree.getResultatsElp();
 						if (relpdto != null && relpdto.getItem() != null && !relpdto.getItem().isEmpty()) {
 							//on parcourt les résultats pour l'ELP:
 							for (ResultatElpDTO3 rpd : relpdto.getItem() ) {
@@ -791,7 +791,7 @@ public class ResultatController {
 					}
 
 					//les epreuves de l'élément (si il y en a )
-					TableauEpreuveElpDto24 epelpdto = cpree.getEpreuvesElp();
+					TableauEpreuveElpDto2 epelpdto = cpree.getEpreuvesElp();
 
 					if (epelpdto != null && epelpdto.getItem() != null && !epelpdto.getItem().isEmpty()) {
 

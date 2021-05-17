@@ -69,15 +69,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.ui.ComboBox;
 
-import fr.univlorraine.apowsclient.offreFormation.CollectionDTO4;
-import fr.univlorraine.apowsclient.offreFormation.ElementPedagogiDTO3;
-import fr.univlorraine.apowsclient.offreFormation.GroupeDTO3;
-import fr.univlorraine.apowsclient.offreFormation.OffreFormationMetierServiceInterface;
-import fr.univlorraine.apowsclient.offreFormation.RecupererGroupeDTO3;
-import fr.univlorraine.apowsclient.offreFormation.TableauCollection4;
-import fr.univlorraine.apowsclient.offreFormation.TableauElementPedagogi3;
-import fr.univlorraine.apowsclient.offreFormation.TableauGroupe3;
-import fr.univlorraine.apowsclient.utils.ServiceProvider;
+import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
@@ -93,6 +85,14 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.CollectionDTO4;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.ElementPedagogiDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.GroupeDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.OffreFormationMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.RecupererGroupeDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauCollection4;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauElementPedagogi3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauGroupe3;
 
 
 /**
@@ -153,7 +153,7 @@ public class ListeInscritsController {
 	/**
 	 * proxy pour faire appel aux infos sur l'étudiant WS .
 	 */
-	private final OffreFormationMetierServiceInterface offreDeFormationService = ServiceProvider.getOffreFormationService();
+	private final OffreFormationMetierServiceInterface offreDeFormationService = ServiceProvider.getService(OffreFormationMetierServiceInterface.class);
 
 
 

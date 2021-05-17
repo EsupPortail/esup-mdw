@@ -32,19 +32,19 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.apowsclient.administratif.AdministratifMetierServiceInterface;
-import fr.univlorraine.apowsclient.etudiant.AdresseMajDTO;
-import fr.univlorraine.apowsclient.etudiant.CommuneMajDTO;
-import fr.univlorraine.apowsclient.etudiant.CoordonneesDTO2;
-import fr.univlorraine.apowsclient.etudiant.CoordonneesMajDTO;
-import fr.univlorraine.apowsclient.etudiant.EtudiantMetierServiceInterface;
-import fr.univlorraine.apowsclient.etudiant.TypeHebergementDTO;
-import fr.univlorraine.apowsclient.geographie.CommuneDTO2;
-import fr.univlorraine.apowsclient.geographie.GeographieMetierServiceInterface;
-import fr.univlorraine.apowsclient.geographie.PaysDTO;
-import fr.univlorraine.apowsclient.utils.ServiceProvider;
+import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CommuneMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.GeographieMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
 
 /**
  * Gestion des adresses
@@ -68,15 +68,15 @@ public class AdresseController {
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
 	 */
-	private final EtudiantMetierServiceInterface etudiantService = ServiceProvider.getEtudiantService();
+	private final EtudiantMetierServiceInterface etudiantService = ServiceProvider.getService(EtudiantMetierServiceInterface.class);
 
 	/** proxy pour faire appel aux infos géographique du WS  */
-	private final GeographieMetierServiceInterface geographieService = ServiceProvider.getGeographieService();
+	private final GeographieMetierServiceInterface geographieService = ServiceProvider.getService(GeographieMetierServiceInterface.class);
 
 	/**
 	 * proxy pour faire appel aux infos administratives du WS .
 	 */
-	protected AdministratifMetierServiceInterface administratifService = ServiceProvider.getAdministratifService();
+	protected AdministratifMetierServiceInterface administratifService = ServiceProvider.getService(AdministratifMetierServiceInterface.class);
 
 	List<TypeHebergementDTO> listeTypeHebergement;
 
