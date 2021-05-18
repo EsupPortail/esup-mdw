@@ -198,7 +198,7 @@ public class InscriptionController {
 		try {
 
 
-			Signataire signataire = multipleApogeeService.getSignataire(configController.getCertScolCodeSignataire(), PropertyUtils.getClefApogeeDecryptBlob());
+			Signataire signataire = multipleApogeeService.getSignataireCes(configController.getCertScolCodeSignataire(), PropertyUtils.getClefApogeeDecryptBlob());
 
 			// Ajout Bordeaux1
 			if (configController.isCertScolUtiliseLogo()){

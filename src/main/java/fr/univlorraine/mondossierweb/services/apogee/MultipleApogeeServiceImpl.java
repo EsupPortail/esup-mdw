@@ -156,10 +156,22 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	}
 
 	@Override
-	public Signataire getSignataire(String codeSignataire, String cleApogee) {
+	public Signataire getSignataireCes(String codeSignataire, String cleApogee) {
 		@SuppressWarnings("unchecked")
 		Signataire signataire = (Signataire)entityManagerApogee.createNativeQuery("select sig.COD_SIG, sig.NOM_SIG, sig.QUA_SIG, "+
 				"PKB_CRY1.decryptLob(decode(std.TEM_CES_STD,'T',std.IMG_TAM_STD,std.IMG_SIG_STD), "+
+				" UTL_RAW.cast_to_raw('"+cleApogee+"')) as IMG_SIG_STD "+
+				" from APOGEE.SIGNATAIRE sig, APOGEE.SIGN_TAMP_DIGITALISE std "+
+				" where sig.COD_SIG = std.COD_SIG (+) "+
+				" and sig.COD_SIG = '"+codeSignataire+"'", Signataire.class).getSingleResult();
+		return signataire;
+	}
+	
+	@Override
+	public Signataire getSignataireRvn(String codeSignataire, String cleApogee) {
+		@SuppressWarnings("unchecked")
+		Signataire signataire = (Signataire)entityManagerApogee.createNativeQuery("select sig.COD_SIG, sig.NOM_SIG, sig.QUA_SIG, "+
+				"PKB_CRY1.decryptLob(decode(std.TEM_RVN_STD,'T',std.IMG_TAM_STD,std.IMG_SIG_STD), "+
 				" UTL_RAW.cast_to_raw('"+cleApogee+"')) as IMG_SIG_STD "+
 				" from APOGEE.SIGNATAIRE sig, APOGEE.SIGN_TAMP_DIGITALISE std "+
 				" where sig.COD_SIG = std.COD_SIG (+) "+

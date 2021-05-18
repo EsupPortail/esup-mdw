@@ -45,7 +45,9 @@ public interface MultipleApogeeService {
 	
 	public abstract List<String> getDernieresAnneesUniversitaires();
 	
-	public abstract Signataire getSignataire(String codeSignataire, String cleApogee);
+	public abstract Signataire getSignataireCes(String codeSignataire, String cleApogee);
+	
+	public abstract Signataire getSignataireRvn(String codeSignataire, String cleApogee);
 	
 	public abstract InfoUsageEtatCivil getInfoUsageEtatCivilFromCodInd(String cod_ind);
 	
