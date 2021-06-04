@@ -56,7 +56,7 @@
 		<!-- <apo.ws.version>6.00.50.1</apo.ws.version>-->
 		<!-- <apo.ws.version>6.00.50.5</apo.ws.version>-->
 		<!-- <apo.ws.version>6.00.51.4</apo.ws.version> -->
-		<apo.ws.version>6.10.02.1</apo.ws.version>
+		<!-- <apo.ws.version>6.10.02.1</apo.ws.version> -->
 	</properties>
 
 	<distributionManagement>
