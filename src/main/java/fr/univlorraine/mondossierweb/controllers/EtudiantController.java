@@ -168,7 +168,7 @@ public class EtudiantController {
 				} else {
 					idetu = etudiantService.recupererIdentifiantsEtudiantV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "O");
 				}
-				
+
 				String codInd = idetu.getCodInd().toString();
 				GenericUI.getCurrent().getEtudiant().setCod_ind(codInd);
 
@@ -197,7 +197,7 @@ public class EtudiantController {
 
 				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
-				
+
 				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
 				LOG.info("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
 				GenericUI.getCurrent().getEtudiant().setCodCiv(iuec.getCodCiv());
@@ -210,14 +210,14 @@ public class EtudiantController {
 
 				//Si afichage utilisant le nom usuel
 				if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_BASIQUE)
-						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
+					&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
 					GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomUsuel());
 				}else if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_STANDARD)
-						&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("") && !iaetu.getNomUsuel().equals(iaetu.getNomPatronymique())){
+					&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("") && !iaetu.getNomUsuel().equals(iaetu.getNomPatronymique())){
 					//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
 					GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
 				}
-				
+
 				GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+GenericUI.getCurrent().getEtudiant().getNomAffichage());
 
 				//informations sur la naissance :
@@ -373,7 +373,7 @@ public class EtudiantController {
 					//On recupere les numeros d'anonymat
 					GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
 				}
-				
+
 				//On vérifie si l'étudiant est interdit de consultation de ses notes
 				List<String> lcodesBloquant = configController.getListeCodesBlocageAffichageNotes();
 				//Si on a paramétré des codes bloquant
@@ -779,6 +779,13 @@ public class EtudiantController {
 		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
+		//interdit l'édition de la quittance pour les étudiants dont le dossier n'est pas validé
+		if(!configController.isQuittanceDossierNonValide()){
+			//Si le dossier d'inscription non valide
+			if(!multipleApogeeService.isDossierInscriptionValide(etu.getCod_ind(), codAnuIns)){
+				return false;
+			}
+		}
 		//interdit l'edition de quittance si l'inscription n'est pas payée
 		if(!ins.isEstEnRegle()){
 			return false;
@@ -805,7 +812,9 @@ public class EtudiantController {
 		if ( !configController.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
 			return false;
 		}
+		
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
+		
 		// si on autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
 		if ((mobile || !configController.isCertificatScolariteTouteAnnee()) && !codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
@@ -828,6 +837,13 @@ public class EtudiantController {
 		if(userController.isEtudiant() && !configController.isCertificatScolaritePiecesNonValidees()){
 			//Si il reste des PJ non valides
 			if(multipleApogeeService.getNbPJnonValides(etu.getCod_ind(), codAnuIns)>0){
+				return false;
+			}
+		}
+		//interdit l'édition de certificat pour les étudiants dont le dossier n'est pas validé
+		if(!configController.isCertificatScolariteDossierNonValide()){
+			//Si le dossier d'inscription non valide
+			if(!multipleApogeeService.isDossierInscriptionValide(etu.getCod_ind(), codAnuIns)){
 				return false;
 			}
 		}

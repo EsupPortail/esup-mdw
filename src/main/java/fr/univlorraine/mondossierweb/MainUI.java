@@ -257,10 +257,10 @@ public class MainUI extends GenericUI {
 			while (cause instanceof Throwable) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
-						LOG.info("Erreur de fragment ");
-						// Retour à la racine
-						Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
-						return;
+					LOG.info("Erreur de fragment ");
+					// Retour à la racine
+					Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
+					return;
 				}
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
@@ -735,6 +735,7 @@ public class MainUI extends GenericUI {
 	 * Ajout de l'onglet principal "dossier" contenant le dossier de l'étudiant
 	 */
 	private void addTabDossierEtudiant() {
+		LOG.info("Création du l'onglet du dossier de l'étudiant");
 		//Ajout de l'onglet "Dossier"
 		tabDossierEtu = tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
 		tabSheetGlobal.setTabPosition(tabDossierEtu, rangTabDossierEtudiant);
@@ -1004,13 +1005,12 @@ public class MainUI extends GenericUI {
 
 		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
 
-
-
 		//Si l'onglet a été closed
 		if(tabDossierEtu==null || tabSheetGlobal.getTabPosition(tabDossierEtu)<0){
 			//On recréé l'onglet
 			addTabDossierEtudiant();
 		}
+
 		//Si le menu a déjà été initialisé
 		if(mainMenu!=null){
 			//On supprime le contenu du menu 
@@ -1022,11 +1022,12 @@ public class MainUI extends GenericUI {
 		//On rend visible l'onglet "Dossier" dans le tabSheet principal
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(true);
 
+		//par défaut on affiche la vue état-civil
+		navigator.navigateTo(EtatCivilView.NAME);
+
 		//On se rend sur l'onglet "Dossier" dans le tabSheet principal
 		tabSheetGlobal.setSelectedTab(rangTabDossierEtudiant);
 
-		//par défaut on affiche la vue état-civil
-		navigator.navigateTo(EtatCivilView.NAME);
 	}
 
 	public void startBusyIndicator() {

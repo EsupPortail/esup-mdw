@@ -238,10 +238,15 @@ public class SsoController {
 
 		// Récupérer la date de cotisation
 		affiliation.setDat_cotisation(ssoApogeeService.getDateCotisation(codAnu, e.getCod_ind()));
+		
 		// date d'effet
 		affiliation.setDat_effet(r.get("DAT_AFL_SSO"));
 
 		e.setAffilition_sso(affiliation);
+		
+		if(affiliation.getDat_cotisation() == null) {
+			return false;
+		}
 		
 		return true;
 

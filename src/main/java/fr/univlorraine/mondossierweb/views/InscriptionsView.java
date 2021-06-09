@@ -21,6 +21,8 @@ package fr.univlorraine.mondossierweb.views;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -67,6 +69,8 @@ import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class InscriptionsView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
+	
+	private Logger LOG = LoggerFactory.getLogger(InscriptionsView.class);
 
 	public static final String NAME = "inscriptionsView";
 
@@ -107,9 +111,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 			setMargin(true);
 			setSpacing(true);
 
-
-
-
 			/* Titre */
 			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 			title.addStyleName(ValoTheme.LABEL_H1);
@@ -149,7 +150,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 				inscriptionsTable.setSelectable(false);
 				inscriptionsTable.setImmediate(true);
 				inscriptionsTable.setStyleName("noscrollabletable");
-				inscriptionsTable.setPageLength(inscriptionsTable.getItemIds().size() );
+				inscriptionsTable.setPageLength(inscriptionsTable.getItemIds().size());
 				panelInscription.setContent(inscriptionsTable);
 				globalLayout.addComponent(panelInscription);
 
@@ -281,6 +282,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 
 			//Si on peut proposer le certificat de scolarité
+			LOG.info("LibelleInscriptionColumnGenerator - test si on propose le certificat");
 			if(etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant(), false)){
 				//On affiche le bouton pour éditer le certificat de scolarité
 				Button bCertificatInscription=new Button();

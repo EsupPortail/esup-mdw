@@ -94,6 +94,10 @@ public class ConfigController {
 	public boolean isCertificatScolaritePiecesNonValidees() {
 		return getBooleanValueForParameter("certificatScolaritePJinvalide");
 	}
+	
+	public boolean isCertificatScolariteDossierNonValide() {
+		return getBooleanValueForParameter("certificatScolariteDossierNonValide");
+	}
 
 	public boolean isApplicationActive() {
 		return getBooleanValueForParameter("applicationActive");
@@ -137,6 +141,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("afficherBoutonAttestSsoNouvelleLigne");
 	}
 	
+	public boolean isQuittanceDossierNonValide() {
+		return getBooleanValueForParameter("quittanceDossierNonValide");
+	}
+
 	public boolean isQuittanceDroitsPayes(){
 		return getBooleanValueForParameter("quittanceDroitsPayes");
 	}
