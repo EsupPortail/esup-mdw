@@ -282,7 +282,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 
 			//Si on peut proposer le certificat de scolarité
-			LOG.info("LibelleInscriptionColumnGenerator - test si on propose le certificat");
 			if(etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant(), false)){
 				//On affiche le bouton pour éditer le certificat de scolarité
 				Button bCertificatInscription=new Button();
