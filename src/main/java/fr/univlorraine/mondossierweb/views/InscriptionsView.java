@@ -254,7 +254,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 			Label lib_label = new Label(inscription.getLib_etp());
 			libelleLayout.addComponent(lib_label);
 			libelleLayout.setComponentAlignment(lib_label, Alignment.MIDDLE_CENTER);
-			libelleLayout.setHeight("1.5em");
+			libelleLayout.setHeight("2em");
 
 			VerticalLayout twoLinesLayout = new VerticalLayout();
 			twoLinesLayout.addComponent(libelleLayout);
@@ -379,6 +379,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 
 			//Si le secondLineLayout contient des éléments
 			if(!secondLineEmpty){
+				secondLineLayout.setHeight("2em");
 				//ajout du secondLineLayout au layout retourné
 				twoLinesLayout.addComponent(secondLineLayout);
 			}
