@@ -254,6 +254,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 			Label lib_label = new Label(inscription.getLib_etp());
 			libelleLayout.addComponent(lib_label);
 			libelleLayout.setComponentAlignment(lib_label, Alignment.MIDDLE_CENTER);
+			libelleLayout.setHeight("1.5em");
 
 			VerticalLayout twoLinesLayout = new VerticalLayout();
 			twoLinesLayout.addComponent(libelleLayout);
