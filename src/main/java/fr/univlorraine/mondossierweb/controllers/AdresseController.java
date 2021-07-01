@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import fr.univlorraine.apowsutils.ServiceProvider;
+import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
@@ -324,8 +325,8 @@ public class AdresseController {
 
 			ok = true;
 		} catch (Exception ex) {
-			if(ex!=null && ex.getMessage()!=null && ex.getMessage().contains("technical.parameter.nonpresentinput")) {
-				LOG.warn("Non present input lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
+			if(ex != null && ex.getMessage() != null && (ex.getMessage().contains("technical.data.nullretrieve") || ex.getMessage().contains("technical.parameter.nonpresentinput"))) {
+				LOG.warn("Probleme " + ex.getMessage() + " lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu);
 			}else {
 				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
 			}

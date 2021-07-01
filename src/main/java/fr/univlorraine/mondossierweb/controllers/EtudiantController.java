@@ -526,8 +526,12 @@ public class EtudiantController {
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
 				LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
-			} catch (Exception ex) {
-				LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+			}  catch (Exception ex) {
+				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
+					LOG.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+				}else {
+					LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}
 			}
 		}
 	}
@@ -812,9 +816,9 @@ public class EtudiantController {
 		if ( !configController.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
 			return false;
 		}
-		
+
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
-		
+
 		// si on autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
 		if ((mobile || !configController.isCertificatScolariteTouteAnnee()) && !codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
@@ -987,7 +991,11 @@ public class EtudiantController {
 
 				succes = true;
 			} catch (Exception ex) {
-				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + codetu,ex);
+				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
+					LOG.warn("Probleme " + ex.getMessage() + " lors de la maj des contacts de l'etudiant dont codetu est : " + codetu);
+				}else {
+					LOG.error("Probleme avec le WS lors de la maj des contacts de l'etudiant dont codetu est : " + codetu,ex);
+				}
 			}
 
 			if (!succes) {
