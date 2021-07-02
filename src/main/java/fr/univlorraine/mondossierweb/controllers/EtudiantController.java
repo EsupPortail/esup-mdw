@@ -630,10 +630,13 @@ public class EtudiantController {
 						int annee2 = annee + 1;
 						insc.setCod_anu(annee + "/" + annee2);
 
-						// 03/11/2020 On prend en compte TypeDiplomeExt si TypeAutreDiplome null
-						if (cext.getEtablissement() != null && 
-							(cext.getTypeAutreDiplome() != null || cext.getTypeDiplomeExt()!=null)) {
-							insc.setLib_etb(cext.getEtablissement().getLibEtb());
+						// 02/07/2021 On prend en compte les établissements null
+						if (cext.getEtablissement() != null || cext.getTypeAutreDiplome() != null || cext.getTypeDiplomeExt()!=null) {
+							if (cext.getEtablissement()!=null) {
+								insc.setLib_etb(cext.getEtablissement().getLibEtb());
+							} else {
+								insc.setLib_etb(applicationContext.getMessage("cursusexterne.etablissement.inconnu", null, Locale.getDefault()));
+							}
 							// Si TypeDiplomeExt valué
 							if (cext.getTypeDiplomeExt()!=null) {
 								// On renseigne COD_DAC avec TypeDiplomeExt
@@ -645,11 +648,17 @@ public class EtudiantController {
 								insc.setCod_dac(cext.getTypeAutreDiplome().getLibTypeDiplome());
 							}
 							insc.setLib_cmt_dac(cext.getCommentaire());
+							// par défaut, on indique le diplôme obtenu
+							insc.setRes(applicationContext.getMessage("cursusexterne.diplome.obtenu", null, Locale.getDefault()));
 							if (cext.getTemObtentionDip() != null && cext.getTemObtentionDip().equals("N") ) {
-								insc.setRes("AJOURNE");
-							} else {
-								insc.setRes("OBTENU");
-							}
+								if(cext.getTemObtentionNiveau() != null && cext.getTemObtentionNiveau().equals("O")) {
+									// diplome non obtenu mais niveau obtenu
+									insc.setRes(applicationContext.getMessage("cursusexterne.diplome.nonobtenu", null, Locale.getDefault()));
+								}else {
+									// diplome et niveau non obtenu
+									insc.setRes(applicationContext.getMessage("cursusexterne.diplome.ajourne", null, Locale.getDefault()));
+								}
+							} 
 
 							GenericUI.getCurrent().getEtudiant().getLinscdac().add(insc);
 						}
