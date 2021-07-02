@@ -289,7 +289,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 				//bCertificatInscription.setIcon(FontAwesome.FILE_TEXT);
 				bCertificatInscription.setIcon(FontAwesome.FILE_PDF_O);
 				bCertificatInscription.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-				bCertificatInscription.addStyleName("red-button-icon");
 				bCertificatInscription.setDescription(applicationContext.getMessage(NAME + ".certificatScolarite.link", null, getLocale()));
 				if(PropertyUtils.isPushEnabled()){
 					MyFileDownloader fd = new MyFileDownloader(inscriptionController.exportPdf(inscription));
@@ -306,11 +305,13 @@ public class InscriptionsView extends VerticalLayout implements View {
 				}else{
 					//on adapte le style du bouton
 					bCertificatInscription.setStyleName(ValoTheme.BUTTON_TINY);
-					bCertificatInscription.addStyleName("red-button-icon");
 					bCertificatInscription.setCaption(applicationContext.getMessage(NAME + ".certificatScolarite.btn.link", null, getLocale()));
 					//ajout du bouton au layout secondLine
 					secondLineLayout.addComponent(bCertificatInscription);
 					secondLineEmpty=false;
+				}
+				if(configController.isAffBtnCertificatCouleur()) {
+					bCertificatInscription.addStyleName("red-button-icon");
 				}
 			}		
 			
@@ -352,7 +353,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 				Button bQuittanceSso=new Button();
 				bQuittanceSso.setIcon(FontAwesome.FILE_PDF_O);
 				bQuittanceSso.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-				bQuittanceSso.addStyleName("green-button-icon");
 				bQuittanceSso.setDescription(applicationContext.getMessage(NAME + ".quittance.link", null, getLocale()));
 				if(PropertyUtils.isPushEnabled()){
 					MyFileDownloader fd = new MyFileDownloader(ssoController.exportQuittancePdf(MainUI.getCurrent().getEtudiant(),inscription));
@@ -369,11 +369,13 @@ public class InscriptionsView extends VerticalLayout implements View {
 				}else{
 					//on adapte le style du bouton
 					bQuittanceSso.setStyleName(ValoTheme.BUTTON_TINY);
-					bQuittanceSso.addStyleName("green-button-icon");
 					bQuittanceSso.setCaption(applicationContext.getMessage(NAME + ".quittance.btn.link", null, getLocale()));
 					//ajout du bouton au layout secondLine
 					secondLineLayout.addComponent(bQuittanceSso);
 					secondLineEmpty=false;
+				}
+				if(configController.isAffBtnQuittanceCouleur()) {
+					bQuittanceSso.addStyleName("green-button-icon");
 				}
 			}
 

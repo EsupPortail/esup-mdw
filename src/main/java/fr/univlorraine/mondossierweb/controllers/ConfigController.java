@@ -137,6 +137,14 @@ public class ConfigController {
 		return getBooleanValueForParameter("afficherBoutonCertifNouvelleLigne");
 	}
 	
+	public boolean isAffBtnCertificatCouleur() {
+		return getBooleanValueForParameter("afficherBoutonCertifCouleur");
+	}
+	
+	public boolean isAffBtnQuittanceCouleur() {
+		return getBooleanValueForParameter("afficherBoutonQuittanceCouleur");
+	}
+	
 	public boolean isAffBtnAttestSsoNouvelleLigne(){
 		return getBooleanValueForParameter("afficherBoutonAttestSsoNouvelleLigne");
 	}
@@ -512,6 +520,8 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+
 
 	
 
