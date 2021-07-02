@@ -405,7 +405,11 @@ public class EtudiantController {
 				LOG.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
-				LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
+					LOG.warn("Probleme " + ex.getMessage() + " lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+				}else {
+					LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				}
 				//On met l'étudiant à null pour remonter le problème
 				GenericUI.getCurrent().setEtudiant(null);
 			}
