@@ -571,6 +571,7 @@
               				<directory>${basedir}</directory>
               				 <includes>
                 				<include>LICENSE-2.0.txt</include>
+                				<include>LICENSE-VAADIN.txt</include>
               					</includes>
             			</resource>
           			</webResources>
