@@ -979,18 +979,18 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 			<version>${vaadin.version}</version>
-			<exclusions>
+			<!--  <exclusions>
               <exclusion>
     				<groupId>org.jsoup</groupId>
     				<artifactId>jsoup</artifactId>
               </exclusion>
-            </exclusions>
+            </exclusions>-->
 		</dependency>
-		<dependency>
+		<!--  <dependency>
     		<groupId>org.jsoup</groupId>
     		<artifactId>jsoup</artifactId>
     		<version>1.8.1</version>
-		</dependency>
+		</dependency>-->
 		<!-- <dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiled</artifactId>
