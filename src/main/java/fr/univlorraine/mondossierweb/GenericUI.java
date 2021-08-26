@@ -113,6 +113,11 @@ public class GenericUI  extends UI {
 	@Setter
 	@Getter
 	private String anneeUnivEnCours;
+	
+	//derniere annee ouverte aux résulats
+	@Setter
+	@Getter
+	private String anneeUnivOuverteRes;
 
 	//code de l'obj dont on affiche la liste des inscrits
 	@Setter

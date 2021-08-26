@@ -415,6 +415,9 @@ public class ConfigController {
 	public int getNotesNombreAnneesExtractionApogee() {
 		return  Integer.parseInt(getValeurForParameter("notesNombreAnneesExtractionApogee"));
 	}
+	public boolean isNotesAnneeOuverteResExtractionApogee() {
+		return getBooleanValueForParameter("notesAnneeOuverteResExtractionApogee");
+	}
 	public boolean isAffichagePdfNotesFormatPortrait() {
 		return getBooleanValueForParameter("notesPDFFormatPortrait");
 	}
@@ -520,6 +523,7 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
 
 
 

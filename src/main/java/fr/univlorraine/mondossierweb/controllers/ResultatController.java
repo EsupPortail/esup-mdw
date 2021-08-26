@@ -1255,7 +1255,15 @@ public class ResultatController {
 		int anneeEnCours = new Integer(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
 		int anneeDemandee = new Integer(annee);
 
-		//Si l'extraction Apogée couvre l'année demandée
+		// Si l'application est paramétrée pour utiliser les extractions sur la dernière année ouverte au résultats
+		if(configController.isNotesAnneeOuverteResExtractionApogee()) {
+			int anneeRes = new Integer(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
+			// Si l'année en question est la dernière ouverte aux résultats
+			if(anneeDemandee == anneeRes) {
+				return true;
+			}
+		}
+		// Si l'extraction Apogée couvre l'année demandée
 		if (anneeDemandee>=(anneeEnCours - (configController.getNotesNombreAnneesExtractionApogee() - 1 ))) {
 			//On peut se baser sur l'extraction apogée
 			return true;

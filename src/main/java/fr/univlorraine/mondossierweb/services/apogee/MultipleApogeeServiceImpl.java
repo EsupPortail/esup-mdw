@@ -69,6 +69,11 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return (String) entityManagerApogee.createNativeQuery("select cod_anu from annee_uni where eta_anu_iae = 'O'").getSingleResult();
 
 	}
+	
+	@Override
+	public String getDerniereAnneeOuverteResultats() {
+		return (String) entityManagerApogee.createNativeQuery("select max(cod_anu) from annee_uni where eta_anu_res = 'O'").getSingleResult();
+	}
 
 	@Override
 	public String getLibEtablissementDef() {
@@ -511,6 +516,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		}
 		return false;
 	}
+
+
 
 
 

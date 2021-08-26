@@ -722,6 +722,15 @@ public class EtudiantController {
 		}
 	}
 
+	public String getAnneeUnivRes(GenericUI ui) {
+		if(ui!=null){
+			if(ui.getAnneeUnivOuverteRes()==null){
+				ui.setAnneeUnivOuverteRes(multipleApogeeService.getDerniereAnneeOuverteResultats());
+			}
+			return ui.getAnneeUnivOuverteRes();
+		}
+		return multipleApogeeService.getDerniereAnneeOuverteResultats();
+	}
 
 	public String getAnneeUnivEnCours(GenericUI ui) {
 		if(ui!=null){
