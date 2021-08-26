@@ -319,7 +319,7 @@ public class InscriptionController {
 
 			document.add(new Paragraph(" "));
 
-			String nomSignataire = StringUtils.hasText(configController.getCertScolDescSignataire())? configController.getCertScolDescSignataire() : signataire.getNom_sig();
+			String nomSignataire = StringUtils.hasText(configController.getCertScolDescSignataire())? configController.getCertScolDescSignataire() : signataire.getQua_sig() + " " + signataire.getNom_sig();
 
 			float[] widthsSignataire = {2f, 1.3f};
 			PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
