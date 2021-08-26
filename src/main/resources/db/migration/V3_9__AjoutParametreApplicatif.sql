@@ -14,7 +14,7 @@
 
 
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`,`CAT_ID`, `VALEUR`) VALUES
-('notesAnneeOuverteResExtractionApogee','true pour utiliser l''extraction pour la derniere année ouverte aux résultats (et uniquement celle-ci) si sourceResultats=Apogee-extraction', 'BOOLEAN', 2, 'false');
+('notesAnneePivotExtractionApogee','Pour utiliser les extractions à partir d''une année précise, indiquer la premiere année utilisant les extractions (si sourceResultats=Apogee-extraction)', 'STRING', 2, '');
 
 
 

@@ -149,7 +149,7 @@ public class ResultatController {
 						}
 					}
 				}
-				
+
 				setNotesEtResultats(e, cpdtoAl);
 
 			} else {
@@ -237,7 +237,7 @@ public class ResultatController {
 				} else {
 
 					List<ContratPedagogiqueResultatVdiVetDTO2> cpdto = pedagogiqueService.recupererContratPedagogiqueResultatVdiVetV2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous", temoinEtatIae);
-					
+
 					setNotesEtResultats(e, cpdto);
 				}
 
@@ -262,8 +262,8 @@ public class ResultatController {
 		}
 		//Si l'année du premier item de la liste "etapes" est non null
 		if(ct.getEtapes()!=null && ct.getEtapes().getItem()!=null 
-				&& !ct.getEtapes().getItem().isEmpty() && ct.getEtapes().getItem().get(0) != null 
-					&& ct.getEtapes().getItem().get(0).getCodAnu() != null){
+			&& !ct.getEtapes().getItem().isEmpty() && ct.getEtapes().getItem().get(0) != null 
+			&& ct.getEtapes().getItem().get(0).getCodAnu() != null){
 			//On retourne l'année du premier item de la liste "etapes"
 			return ct.getEtapes().getItem().get(0).getCodAnu();
 		}
@@ -311,7 +311,7 @@ public class ResultatController {
 						d.setAnnee(rdto.getAnnee() + "/" + annee2);
 						//information sur les résultats obtenus au diplome:
 						TableauResultatVdiDto tabres = rdto.getResultatVdi();
-						
+
 
 						if (tabres != null && tabres.getItem() != null && !tabres.getItem().isEmpty()) {
 
@@ -398,7 +398,7 @@ public class ResultatController {
 							TableauResultatVetDto tabresetape = etape.getResultatVet();
 							if (tabresetape != null && tabresetape.getItem() != null && !tabresetape.getItem().isEmpty()) {
 								for (ResultatVetDTO ret : tabresetape.getItem()) {
-									
+
 									Resultat r = new Resultat();
 									if(!ret.getEtatDelib().getCodEtaAvc().equals("T")) {
 										et.setDeliberationTerminee(false);
@@ -599,7 +599,7 @@ public class ResultatController {
 						if (relpdto != null && relpdto.getItem() != null && !relpdto.getItem().isEmpty()) {
 							//on parcourt les résultats pour l'ELP:
 							for (ResultatElpDTO3 rpd : relpdto.getItem() ) {
-								
+
 								if(rpd != null && rpd.getEtatDelib() != null && rpd.getEtatDelib().getCodEtaAvc()!= null)
 									elp.setEtatDelib(rpd.getEtatDelib().getCodEtaAvc());
 
@@ -647,13 +647,13 @@ public class ResultatController {
 
 											//ajout du rang si pas déjà renseigné via la session de juin.
 											if(rpd.getNbrRngEtuElp() != null && !rpd.getNbrRngEtuElp().equals("")
-													&& (elp.getRang()==null || elp.getRang().equals(""))){
+												&& (elp.getRang()==null || elp.getRang().equals(""))){
 												elp.setRang(rpd.getNbrRngEtuElp()+"/"+rpd.getNbrRngEtuElpTot());
 											}
 
 											//on récupère l'année car si année!=null c'est un PRC  si pas déjà renseigné via la session de juin.
 											if(rpd.getCodAnu()!=null && !rpd.getCodAnu().equals("")
-													&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
+												&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
 												elp.setAnnee(rpd.getCodAnu());
 												anneePrc = rpd.getCodAnu();
 											}
@@ -796,7 +796,7 @@ public class ResultatController {
 					if (epelpdto != null && epelpdto.getItem() != null && !epelpdto.getItem().isEmpty()) {
 
 						for (EpreuveElpDTO2 epreuve : epelpdto.getItem()) {
-							
+
 							boolean EprNotee = false;  //vrai si l'épreuve est notée
 							boolean EprResult = false;  //vrai si l'épreuve a un résultat
 							boolean confAffResultatsEpreuve = configController.isAffResultatsEpreuves(); //le paramètre d'affichage des resultats aux épreuves
@@ -1092,7 +1092,7 @@ public class ResultatController {
 	 */
 	private boolean elpAvecResultats(ContratPedagogiqueResultatElpEprDTO5 elp) {
 		return elp!=null && elp.getResultatsElp()!=null 
-				&& elp.getResultatsElp().getItem()!=null && !elp.getResultatsElp().getItem().isEmpty();
+			&& elp.getResultatsElp().getItem()!=null && !elp.getResultatsElp().getItem().isEmpty();
 	}
 
 	/**
@@ -1254,12 +1254,22 @@ public class ResultatController {
 
 		int anneeEnCours = new Integer(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
 		int anneeDemandee = new Integer(annee);
-
+		
 		// Si l'application est paramétrée pour utiliser les extractions sur la dernière année ouverte au résultats
 		if(configController.isNotesAnneeOuverteResExtractionApogee()) {
 			int anneeRes = new Integer(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
 			// Si l'année en question est la dernière ouverte aux résultats
 			if(anneeDemandee == anneeRes) {
+				return true;
+			}
+		}
+		
+		String anneePivot = configController.getNotesAnneePivotExtractionApogee();
+		// Si l'application est paramétrée pour utiliser une année pivot pour l'utilsation des extractions
+		if(StringUtils.hasText(anneePivot)) {
+			int premiereAnneePivot = Integer.parseInt(anneePivot);
+			// Si l'année en question est supérieure ou égale à la premiere année utilisant l'extraction
+			if(anneeDemandee >= premiereAnneePivot) {
 				return true;
 			}
 		}
@@ -1407,8 +1417,8 @@ public class ResultatController {
 			if(!enCache){
 				//test si on a les infos:
 				if(cip.getEtape().getAnnee().equals(etape.getAnnee())
-						&& cip.getEtape().getCode().equals(etape.getCode())
-						&& cip.getEtape().getVersion().equals(etape.getVersion())){
+					&& cip.getEtape().getCode().equals(etape.getCode())
+					&& cip.getEtape().getVersion().equals(etape.getVersion())){
 					enCache=true;
 				}else{
 					//on a pas trouvé, on incrémente le rang pour se placer sur le rang suivant
@@ -1440,9 +1450,9 @@ public class ResultatController {
 			if(!enCache){
 				//si on a déjà les infos:
 				if(cree.getEtape().getAnnee().equals(etape.getAnnee())
-						&& cree.getEtape().getCode().equals(etape.getCode())
-						&& cree.getEtape().getVersion().equals(etape.getVersion())
-						&& cree.isVueEtudiant() == vueEtudiant){
+					&& cree.getEtape().getCode().equals(etape.getCode())
+					&& cree.getEtape().getVersion().equals(etape.getVersion())
+					&& cree.isVueEtudiant() == vueEtudiant){
 					enCache=true;
 				}else{
 					//on a pas trouvé, on incrémente le rang pour se placer sur le rang suivant

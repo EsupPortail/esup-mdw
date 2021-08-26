@@ -415,6 +415,9 @@ public class ConfigController {
 	public int getNotesNombreAnneesExtractionApogee() {
 		return  Integer.parseInt(getValeurForParameter("notesNombreAnneesExtractionApogee"));
 	}
+	public String getNotesAnneePivotExtractionApogee() {
+		return  getValeurForParameter("notesAnneePivotExtractionApogee");
+	}
 	public boolean isNotesAnneeOuverteResExtractionApogee() {
 		return getBooleanValueForParameter("notesAnneeOuverteResExtractionApogee");
 	}
