@@ -347,6 +347,19 @@ public class ConfigController {
 		return getValeurForParameter("temoinEtatIaeNotesEtudiant");
 	}
 	
+	
+	public float getQuittancePdfPositionSignatureX() {
+		return Float.parseFloat(getQuittancePdfPositionSignature().split("-")[0]);
+	}
+	
+	public float getQuittancePdfPositionSignatureY() {
+		return Float.parseFloat(getQuittancePdfPositionSignature().split("-")[1]);
+	}
+	
+	private String getQuittancePdfPositionSignature() {
+		return getValeurForParameter("quittancePdfPositionSignature");
+	}
+	
 	private String getCertificatScolaritePdfPositionSignature() {
 		return getValeurForParameter("certificatScolaritePdfPositionSignature");
 	}
@@ -376,15 +389,30 @@ public class ConfigController {
 		return getValeurForParameter("temoinFictif");
 	}
 
+	public boolean isQuittancePdfSignature() {
+		return getBooleanValueForParameter("quittancePdfSignature");
+	}
+
+	public String getQuittanceCodeSignataire() {
+		return getValeurForParameter("quittanceCodeSignataire");
+	}
+
+	public boolean isQuittanceSignatureTampon() {
+		return getBooleanValueForParameter("quittanceSignatureTampon");
+	}
+	
 	public String getCertScolCodeSignataire() {
 		return getValeurForParameter("certScolCodeSignataire");
+	}
+	
+	public String getQuittanceDescSignataire() {
+		return getValeurForParameter("quittanceDescSignataire");
 	}
 	
 	public String getCertScolDescSignataire() {
 		return getValeurForParameter("certScolDescSignataire");
 	}
 	
-
 	public String getLogoUniversitePdf() {
 		return getValeurForParameter("logoUniversitePdf");
 	}
@@ -526,6 +554,11 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+	
+
+
+
 
 
 

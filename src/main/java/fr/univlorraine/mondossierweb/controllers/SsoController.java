@@ -23,6 +23,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +49,7 @@ import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -60,6 +64,7 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.beans.LibCmpEtape;
 import fr.univlorraine.mondossierweb.beans.QuittanceDroitsUniversitaires;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
@@ -629,6 +634,45 @@ public class SsoController {
 
 				}
 				document.add(table2);
+				
+				
+				// Si on doit ajouter la signature sur la quittance
+				if(configController.isQuittancePdfSignature()) {
+					document.add(new Paragraph(" "));
+					Signataire signataire = multipleApogeeService.getSignataireQuittance(configController.getQuittanceCodeSignataire(), PropertyUtils.getClefApogeeDecryptBlob(), configController.isQuittanceSignatureTampon());
+					
+					String nomSignataire = StringUtils.hasText(configController.getQuittanceDescSignataire())? configController.getQuittanceDescSignataire() : signataire.getQua_sig() + " " + signataire.getNom_sig();
+
+					//date
+					Date d = new Date();
+					DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+					String date = dateFormat.format(d);
+					
+					float[] widthsSignataire = {2f, 1.3f};
+					PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
+					tableSignataire.setWidthPercentage(100f);
+					tableSignataire.addCell(makeCellSignataire("", normal));
+					tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.quittance.fait1", null, Locale.getDefault())+" " + configController.getCertScolLieuEdition() + applicationContext.getMessage("pdf.quittance.fait2", null, Locale.getDefault())+" " + date, normal));
+					tableSignataire.addCell(makeCellSignataire("", normal));
+					tableSignataire.addCell(makeCellSignataire(nomSignataire, normal));
+
+					document.add(tableSignataire);
+
+					//ajout signature
+					if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){ 
+						LOG.debug(signataire.getImg_sig_std().toString());
+						Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
+
+						float scaleRatio = 100 / imageSignature.getHeight(); 
+						float newWidth=scaleRatio * imageSignature.getWidth();
+						imageSignature.scaleAbsolute(newWidth, 100);
+						imageSignature.setAbsolutePosition(configController.getQuittancePdfPositionSignatureX(), configController.getQuittancePdfPositionSignatureY());
+						document.add(imageSignature);
+
+					} else {
+						LOG.warn("Signature de "+configController.getQuittanceCodeSignataire()+" vide ou non récupérée pour la génération de la quittance");
+					}
+				}
 
 
 			}
@@ -797,6 +841,17 @@ public class SsoController {
 		document.close();
 	}
 
+	private PdfPCell makeCell(String str, Font font) {
+		PdfPCell cell = new PdfPCell();
+		cell.setBorder(0);
+		cell.setPhrase(new Phrase(str, font));
+		return cell;
+	}
+	private PdfPCell makeCellSignataire(String str, Font font) {
+		PdfPCell cell = makeCell(str, font);
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		return cell;
+	}
 
 	/**
 	 * configure le document pdf.

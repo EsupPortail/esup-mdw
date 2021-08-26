@@ -49,6 +49,8 @@ public interface MultipleApogeeService {
 	
 	public abstract Signataire getSignataireCes(String codeSignataire, String cleApogee);
 	
+	public abstract Signataire getSignataireQuittance(String codeSignataire, String cleApogee, boolean avecTampon);
+	
 	public abstract Signataire getSignataireRvn(String codeSignataire, String cleApogee);
 	
 	public abstract InfoUsageEtatCivil getInfoUsageEtatCivilFromCodInd(String cod_ind);
