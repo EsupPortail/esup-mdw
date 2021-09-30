@@ -55,6 +55,33 @@ public class BacEtatCivil {
 	 * le code du département.
 	 */
 	private String cod_dep;
-	
+	/**
+	 * option1
+	 */
+	private String LicOpt1Bac;
+	/**
+	 * option2
+	 */
+	private String LicOpt2Bac;
+	/**
+	 * option3
+	 */
+	private String LicOpt3Bac;
+	/**
+	 * option4
+	 */
+	private String LicOpt4Bac;
+	/**
+	 * spe de 1er
+	 */
+	private String LicSpeBacPre;
+	/**
+	 * 1er spe du bac
+	 */
+	private String LicSpe1Bac;
+	/**
+	 * 2em spe du bac
+	 */
+	private String LicSpe2Bac;
 
 }

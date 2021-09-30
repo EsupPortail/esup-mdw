@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.6.3</version>
+	<version>1.6.4</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -1196,7 +1196,8 @@
 		<dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservices-client</artifactId>
-			<version>6.20.31</version>
+			<!--  <version>6.20.31</version>    -->
+			<version>6.20.50</version> 
 		</dependency>
 		<!-- Utils UL Lib AMUE 2021 -->
 		 <dependency>

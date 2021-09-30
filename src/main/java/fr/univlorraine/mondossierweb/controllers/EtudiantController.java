@@ -19,6 +19,7 @@
 package fr.univlorraine.mondossierweb.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -69,10 +70,13 @@ import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesDTO2;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesMajDTO;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.EtudiantMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.IdentifiantsEtudiantDTO2;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.IndBacDTO;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.InfoAdmEtuDTO2;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.TableauIndBacDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IndBacDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.InfoAdmEtuDTO4;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TableauIndBacDTO2;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementCourtDTO;
+import gouv.education.apogee.commun.client.ws.ScolariteMetier.ScolariteMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.ScolariteMetier.SpecialiteBacDTO2;
+import gouv.education.apogee.commun.client.ws.ScolariteMetier.WebBaseException_Exception;
 
 
 /**
@@ -113,6 +117,9 @@ public class EtudiantController {
 	private transient EmailConverterInterface emailConverter;
 
 
+	private HashMap<String, String> listeOptBac;
+	
+	private HashMap<String, String> listeSpeBac;
 
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
@@ -124,6 +131,12 @@ public class EtudiantController {
 	 */
 	private final AdministratifMetierServiceInterface administratifService = ServiceProvider.getService(AdministratifMetierServiceInterface.class);
 
+	/**
+	 * proxy pour faire appel aux infos administratives du WS .
+	 */
+	private final ScolariteMetierServiceInterface scolariteService = ServiceProvider.getService(ScolariteMetierServiceInterface.class);
+
+	
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
 
@@ -196,7 +209,8 @@ public class EtudiantController {
 
 
 				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
-				InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
+				//InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
+				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
 				LOG.info("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
@@ -328,10 +342,10 @@ public class EtudiantController {
 					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				} 
 
-				TableauIndBacDTO bacvo = iaetu.getListeBacs();
+				TableauIndBacDTO2 bacvo = iaetu.getListeBacs();
 				//Si on a récupéré des bacs
 				if (bacvo != null && bacvo.getItem()!=null && !bacvo.getItem().isEmpty()) {
-					for (IndBacDTO bac : bacvo.getItem()) {
+					for (IndBacDTO2 bac : bacvo.getItem()) {
 						if (bac != null) {
 							BacEtatCivil bec = new BacEtatCivil();
 
@@ -359,6 +373,13 @@ public class EtudiantController {
 							} else {
 								bec.setCod_etb("");
 							}
+							bec.setLicOpt1Bac(getOptionBac(bac.getCodOpt1Bac()));
+							bec.setLicOpt2Bac(getOptionBac(bac.getCodOpt2Bac()));
+							bec.setLicOpt3Bac(getOptionBac(bac.getCodOpt3Bac()));
+							bec.setLicOpt4Bac(getOptionBac(bac.getCodOpt4Bac()));
+							bec.setLicSpeBacPre(getSpecialiteBac(bac.getCodSpeBacPre()));
+							bec.setLicSpe1Bac(getSpecialiteBac(bac.getCodSpe1Bac()));
+							bec.setLicSpe2Bac(getSpecialiteBac(bac.getCodSpe2Bac()));
 							GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
 						}
 					}
@@ -417,6 +438,71 @@ public class EtudiantController {
 
 	}
 
+	
+	private String getSpecialiteBac(String codSpe) {
+		LOG.info("Recuperation lib SPE BAC from code : "+codSpe);
+		if(codSpe!=null) {
+			if(listeSpeBac ==null || listeSpeBac.isEmpty()) {
+				recuperSpeBacApogee();
+			}
+			if(listeSpeBac!=null && !listeSpeBac.isEmpty()) {
+				return listeSpeBac.get(codSpe);
+			}
+		}
+		return null;
+	}
+	
+	private void recuperSpeBacApogee() {
+		try {
+			LOG.info("Recuperation SPE BAC");
+			List<SpecialiteBacDTO2>  liste = scolariteService.recupererSpeBacWS(null, null);
+			if(liste!=null && !liste.isEmpty()) {
+				LOG.info(liste.size()+" SPE BAC");
+				listeSpeBac = new HashMap<String, String> ();
+				for(SpecialiteBacDTO2 spe : liste) {
+					listeSpeBac.put(spe.getCodSpeBac(), spe.getLibSpeBac());
+				}
+			} else {
+				LOG.warn("Aucune SPE BAC récupérée dans Apogée");
+			}
+		} catch (WebBaseException_Exception e) {
+			LOG.warn("Erreur a la recupération des SPECIALITE BAC",e);
+		}
+		
+	}
+
+	private String getOptionBac(String codOpt) {
+		LOG.info("Recuperation lib OPT BAC from code : "+codOpt);
+		if(codOpt!=null) {
+			if(listeOptBac ==null || listeOptBac.isEmpty()) {
+				recuperOptBacApogee();
+			}
+			if(listeOptBac!=null && !listeOptBac.isEmpty()) {
+				return listeOptBac.get(codOpt);
+			}
+		}
+		return null;
+	}
+
+
+	private void recuperOptBacApogee() {
+		try {
+			LOG.info("Recuperation Options BAC");
+			List<SpecialiteBacDTO2>  liste = scolariteService.recupererOptBacWS(null, null);
+			if(liste!=null && !liste.isEmpty()) {
+				LOG.info(liste.size()+" Options BAC");
+				listeOptBac = new HashMap<String, String> ();
+				for(SpecialiteBacDTO2 opt : liste) {
+					listeOptBac.put(opt.getCodSpeBac(), opt.getLibSpeBac());
+				}
+			} else {
+				LOG.warn("Aucune Option BAC récupérée dans Apogée : "+liste);
+			}
+		} catch (WebBaseException_Exception e) {
+			LOG.warn("Erreur a la recupération des OPTIONS BAC",e);
+		}
+		
+	}
 
 	public void recupererAdresses() {
 
@@ -672,7 +758,8 @@ public class EtudiantController {
 
 
 			//première inscription universitaire : 
-			InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
+			//InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
+			InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
 			if (iaetu != null) {
 				GenericUI.getCurrent().getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
 				GenericUI.getCurrent().getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
