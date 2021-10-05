@@ -440,7 +440,7 @@ public class EtudiantController {
 
 	
 	private String getSpecialiteBac(String codSpe) {
-		LOG.info("Recuperation lib SPE BAC from code : "+codSpe);
+		LOG.debug("Recuperation lib SPE BAC from code : "+codSpe);
 		if(codSpe!=null) {
 			if(listeSpeBac ==null || listeSpeBac.isEmpty()) {
 				recuperSpeBacApogee();
@@ -454,10 +454,10 @@ public class EtudiantController {
 	
 	private void recuperSpeBacApogee() {
 		try {
-			LOG.info("Recuperation SPE BAC");
+			LOG.debug("Recuperation SPE BAC");
 			List<SpecialiteBacDTO2>  liste = scolariteService.recupererSpeBacWS(null, null);
 			if(liste!=null && !liste.isEmpty()) {
-				LOG.info(liste.size()+" SPE BAC");
+				LOG.debug(liste.size()+" SPE BAC");
 				listeSpeBac = new HashMap<String, String> ();
 				for(SpecialiteBacDTO2 spe : liste) {
 					listeSpeBac.put(spe.getCodSpeBac(), spe.getLibSpeBac());
@@ -472,7 +472,7 @@ public class EtudiantController {
 	}
 
 	private String getOptionBac(String codOpt) {
-		LOG.info("Recuperation lib OPT BAC from code : "+codOpt);
+		LOG.debug("Recuperation lib OPT BAC from code : "+codOpt);
 		if(codOpt!=null) {
 			if(listeOptBac ==null || listeOptBac.isEmpty()) {
 				recuperOptBacApogee();
@@ -487,10 +487,10 @@ public class EtudiantController {
 
 	private void recuperOptBacApogee() {
 		try {
-			LOG.info("Recuperation Options BAC");
+			LOG.debug("Recuperation Options BAC");
 			List<SpecialiteBacDTO2>  liste = scolariteService.recupererOptBacWS(null, null);
 			if(liste!=null && !liste.isEmpty()) {
-				LOG.info(liste.size()+" Options BAC");
+				LOG.debug(liste.size()+" Options BAC");
 				listeOptBac = new HashMap<String, String> ();
 				for(SpecialiteBacDTO2 opt : liste) {
 					listeOptBac.put(opt.getCodSpeBac(), opt.getLibSpeBac());

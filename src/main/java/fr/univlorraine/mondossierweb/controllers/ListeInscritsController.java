@@ -1102,7 +1102,14 @@ public class ListeInscritsController {
 
 					//String foto = photo.getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu());
 					String foto = GenericUI.getCurrent().getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
-					Image photo = Image.getInstance(foto);
+					Image photo = null;
+					if(foto == null || !foto.startsWith("data:image")) {
+						photo = Image.getInstance(foto);
+					} else {
+						String base64Image = foto.split(",")[1];
+						byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+						photo = Image.getInstance(imageBytes);
+					}
 					photo.scaleAbsolute(85, 107);
 
 

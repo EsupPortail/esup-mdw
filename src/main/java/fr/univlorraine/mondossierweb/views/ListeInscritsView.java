@@ -921,6 +921,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					Image fotoEtudiant = new Image(null, new ExternalResource(inscrit.getUrlphoto()));
 					fotoEtudiant.setWidth("120px");
 					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
+					fotoEtudiant.addStyleName("photo-mdw");
 					fotoEtudiant.addClickListener(e->{
 						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,null);
 					});

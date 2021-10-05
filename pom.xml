@@ -1203,7 +1203,8 @@
 		 <dependency>
             <groupId>fr.univlorraine</groupId>
             <artifactId>apo-ws-utils</artifactId>
-            <version>1.0.0</version>
+           	 <version>1.0.0</version> 
+           	<!-- <version>1.0.1</version> --> 
         </dependency>
 		
 		 <!-- WS Apogee Lib UL -->
@@ -1448,6 +1449,39 @@
         	<artifactId>flyway-core</artifactId>
         	<version>3.2.1</version>
     	</dependency>   
+    	
+    	<!-- JWT -->
+    	<!--  <dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>-->
+		<!-- JWT -->
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.18.1</version>
+		</dependency>
+
+
+		<!-- jackson -->
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.6.7</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.6.7</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.6.7</version>
+    </dependency>
 
 	</dependencies>
 
