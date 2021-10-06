@@ -22,6 +22,7 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
+import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -33,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.auth0.jwt.JWT;
@@ -59,6 +61,8 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	
 	private String tokenUrl;
 	
+	private String avatarUrl;
+	
 	private String clientIdHeader;
 	
 	private String  apiKeyHeader;
@@ -68,6 +72,8 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	private String clientId;
 
 	private String clientSecret;
+	
+	private String displayNameHeader;
 
 
 	public String getPhotoUrl() {
@@ -75,6 +81,13 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			photoUrl=System.getProperty("context.param.photoserver.urlphoto");
 		}
 		return photoUrl;
+	}
+	
+	public String getAvatarUrl() {
+		if(avatarUrl==null){
+			avatarUrl=System.getProperty("context.param.photoserver.urlavatar");
+		}
+		return avatarUrl;
 	}
 	
 	public String getTokenUrl() {
@@ -104,7 +117,14 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return loginHeader;
 	}
-
+	
+	public String getDisplayNameHeader() {
+		if(displayNameHeader==null){
+			displayNameHeader=System.getProperty("context.param.photoserver.displaynameheader");
+		}
+		return displayNameHeader;
+	}
+	
 	public String getClientId() {
 		if(clientId==null){
 			clientId=System.getProperty("context.param.photoserver.clientid");
@@ -121,19 +141,27 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	@Override
 	public String getUrlPhoto(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
-		checkTokenForUser(loginUser);
-
-		// Récupération de la photo
-		return getPhoto(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
+		return getBase64(cod_etu, loginUser);
 	}
 
 
 	@Override
 	public String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
+		return getBase64(cod_etu, loginUser);
+	}
+
+	
+	private String getBase64(String cod_etu,String loginUser) {
+		
 		checkTokenForUser(loginUser);
 
 		// Récupération de la photo
-		return getPhoto(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
+		String photo = getPhoto(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
+		if(photo == null) {
+			String name="";
+			photo =  getAvatar(userTokenJWT, name);
+		}
+		return photo;
 	}
 
 	private void checkTokenForUser(String loginUser) {
@@ -184,7 +212,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	private String getPhoto(String token, String login) {
 		String url = getPhotoUrl() + "/" + login;
-
+		
 		// Headers
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add("Authorization", "Bearer "+token);
@@ -205,10 +233,42 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
 				return "data:image/png;base64, "+ response.getBody();
 			} else {
-				LOG.warn("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
+				LOG.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
 		} catch (Exception e) {
-			LOG.error("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login,e);
+			LOG.error("Une erreur est survenue lors de la récupération de la photo de "+login,e);
+		}
+		return null;
+	}
+	
+	private String getAvatar(String token, String displayName) {
+		String url = getAvatarUrl();
+
+		// Headers
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.add("Authorization", "Bearer "+token);
+		requestHeaders.add(getDisplayNameHeader(), displayName);
+		
+		//Body
+		LinkedMultiValueMap<String, Object>  params = new LinkedMultiValueMap<>();
+
+		// Request
+		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
+
+		LOG.debug("GET AVATAR : "+url+" request : "+request);
+		
+		// Http Call 
+		RestTemplate rt = new RestTemplate();
+		try {
+			ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, request, String.class);
+			// Si appel OK
+			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
+				return "data:image/png;base64, "+ response.getBody();
+			} else {
+				LOG.warn("Une erreur est survenue lors de la récupération de l'avatar Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
+			}
+		} catch (Exception e) {
+			LOG.error("Une erreur est survenue lors de la récupération de la photo de l'avatar ",e);
 		}
 		return null;
 	}
