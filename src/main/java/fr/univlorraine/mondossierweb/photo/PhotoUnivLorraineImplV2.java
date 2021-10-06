@@ -211,6 +211,10 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 
 	private String getPhoto(String token, String login) {
+		if(login == null) {
+			LOG.warn("Récupération de la photo pour login null");
+			return null;
+		}
 		String url = getPhotoUrl() + "/" + login;
 		
 		// Headers
@@ -235,7 +239,9 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
-		} catch (Exception e) {
+		} catch(HttpClientErrorException he) { 
+			LOG.warn("Récupération de la photo de "+login+" non autorisée Erreur HTTP "+he.getStatusCode()+". Il est probable que l'étudiant ne soit plus présent dans le ldap");
+		}catch (Exception e) {
 			LOG.error("Une erreur est survenue lors de la récupération de la photo de "+login,e);
 		}
 		return null;
