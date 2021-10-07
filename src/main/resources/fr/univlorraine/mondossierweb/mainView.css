@@ -299,3 +299,7 @@ display: inline-block;
 	/*border: 2px solid #6E6E6E;*/
 	border-radius: 15px;
 } 
+
+.loadingIndicatorWindow {
+	border-radius: 5px !important;
+}

@@ -235,7 +235,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, request, String.class);
 			// Si appel OK
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
-				return "data:image/png;base64, "+ response.getBody();
+				return "data:image/jpg;base64, "+ response.getBody();
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
