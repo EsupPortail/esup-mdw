@@ -157,6 +157,8 @@ public class Utils {
 	public static final String PARAM_TYP_LIST = "LIST";
 	
 	public static final String PARAM_TYP_STRING = "STRING";
+	
+	public static final String DATA_IMAGE = "data:image";
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;

@@ -543,7 +543,10 @@ public class ListeInscritsController {
 	 */
 	public void setUrlPhotos(List<Inscrit> listeInscrits) {
 		for (Inscrit i : listeInscrits) {
-			i.setUrlphoto(getUrlPhoto(i));
+			// Si la photo est null ou qu'elle n'est pas stockée directement dans la chaine de caracteres
+			if(i.getUrlphoto() == null || !i.getUrlphoto().startsWith(Utils.DATA_IMAGE)) {
+				i.setUrlphoto(getUrlPhoto(i));
+			}
 		}
 	}
 	
@@ -552,6 +555,11 @@ public class ListeInscritsController {
 	 * @param listeInscrits
 	 */
 	public String getUrlPhoto(Inscrit i) {
+		// Si la photo est valuée et stockée directement dans la chaine de caracteres
+		if(i.getUrlphoto() != null && i.getUrlphoto().startsWith(Utils.DATA_IMAGE)) {
+			// on ne recalcule pas la photo
+			return i.getUrlphoto();
+		}
 		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 
@@ -1103,7 +1111,7 @@ public class ListeInscritsController {
 					//String foto = photo.getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu());
 					String foto = GenericUI.getCurrent().getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 					Image photo = null;
-					if(foto == null || !foto.startsWith("data:image")) {
+					if(foto == null || !foto.startsWith(Utils.DATA_IMAGE)) {
 						photo = Image.getInstance(foto);
 					} else {
 						String base64Image = foto.split(",")[1];

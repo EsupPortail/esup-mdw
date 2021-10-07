@@ -41,6 +41,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterface;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 
 @Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)
@@ -235,7 +236,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, request, String.class);
 			// Si appel OK
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
-				return "data:image/jpg;base64, "+ response.getBody();
+				return Utils.DATA_IMAGE + "/jpg;base64, "+ response.getBody();
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
@@ -269,7 +270,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, request, String.class);
 			// Si appel OK
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
-				return "data:image/png;base64, "+ response.getBody();
+				return Utils.DATA_IMAGE + "/png;base64, "+ response.getBody();
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération de l'avatar Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
