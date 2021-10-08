@@ -18,9 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
+import java.security.Key;
 import java.util.Date;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -48,8 +52,10 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 @Component(value="photoUnivLorraineImplV2")
 public class PhotoUnivLorraineImplV2 implements IPhoto {
 
+	private static final String UTF_8 = "UTF-8";
+
 	private Logger LOG = LoggerFactory.getLogger(PhotoUnivLorraineImplV2.class);
-	
+
 	@Resource(name="${loginFromCodetu.implementation}")
 	private LoginCodeEtudiantConverterInterface loginCodeEtudiantConverter;
 
@@ -57,15 +63,15 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	 * le token JWT du user
 	 */
 	private String userTokenJWT;
-	
+
 	private String photoUrl;
-	
+
 	private String tokenUrl;
-	
+
 	private String avatarUrl;
-	
+
 	private String clientIdHeader;
-	
+
 	private String  apiKeyHeader;
 
 	private String  loginHeader;
@@ -73,8 +79,16 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	private String clientId;
 
 	private String clientSecret;
-	
+
 	private String displayNameHeader;
+
+	private String cypherAlgo;
+
+	private String keyAlgo;
+
+	private byte[] cypherKey;
+
+	private Cipher cypher;
 
 
 	public String getPhotoUrl() {
@@ -83,14 +97,14 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return photoUrl;
 	}
-	
+
 	public String getAvatarUrl() {
 		if(avatarUrl==null){
 			avatarUrl=System.getProperty("context.param.photoserver.urlavatar");
 		}
 		return avatarUrl;
 	}
-	
+
 	public String getTokenUrl() {
 		if(tokenUrl==null){
 			tokenUrl=System.getProperty("context.param.photoserver.urltoken");
@@ -104,28 +118,28 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return clientIdHeader;
 	}
-	
+
 	public String getApiKeyHeader() {
 		if(apiKeyHeader==null){
 			apiKeyHeader=System.getProperty("context.param.photoserver.apikeyheader");
 		}
 		return apiKeyHeader;
 	}
-	
+
 	public String getLoginHeader() {
 		if(loginHeader==null){
 			loginHeader=System.getProperty("context.param.photoserver.loginheader");
 		}
 		return loginHeader;
 	}
-	
+
 	public String getDisplayNameHeader() {
 		if(displayNameHeader==null){
 			displayNameHeader=System.getProperty("context.param.photoserver.displaynameheader");
 		}
 		return displayNameHeader;
 	}
-	
+
 	public String getClientId() {
 		if(clientId==null){
 			clientId=System.getProperty("context.param.photoserver.clientid");
@@ -139,6 +153,28 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return clientSecret;
 	}
+	
+	private String getCypherAlgo() {
+		if(cypherAlgo==null){
+			cypherAlgo=System.getProperty("context.param.photoserver.cypheralgo");
+		}
+		return cypherAlgo;
+	}
+
+	private String getKeyAlgo() {
+		if(keyAlgo==null){
+			keyAlgo=System.getProperty("context.param.photoserver.cypherkeyalgo");
+		}
+		return keyAlgo;
+	}
+
+	private byte[] getCypherKey() {
+		if(cypherKey==null){
+			String key=System.getProperty("context.param.photoserver.cypherkey");
+			cypherKey = key.getBytes();
+		}
+		return cypherKey;
+	}
 
 	@Override
 	public String getUrlPhoto(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
@@ -148,12 +184,24 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	@Override
 	public String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
-		return getBase64(cod_etu, loginUser);
+		//return getBase64(cod_etu, loginUser);
+		return getUrl(cod_etu, loginUser);
 	}
 
-	
+	private String getUrl(String cod_etu,String loginUser) {
+		checkTokenForUser(loginUser);
+
+		// Récupération de l'url de la photo
+		return getPhotoUrl(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
+
+	}
+
+	private String getPhotoUrl(String token, String login) {
+		return getPhotoUrl() + "/" + encrypt(login) + "?token=" + token;
+	}
+
 	private String getBase64(String cod_etu,String loginUser) {
-		
+
 		checkTokenForUser(loginUser);
 
 		// Récupération de la photo
@@ -191,7 +239,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
 
 		LOG.debug("GET TOKEN : "+url+" request : "+request);
-		
+
 		// Http Call 
 		RestTemplate rt = new RestTemplate();
 		try {
@@ -208,7 +256,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		return null;
 	}
 
-	
+
 
 
 	private String getPhoto(String token, String login) {
@@ -217,11 +265,11 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			return null;
 		}
 		String url = getPhotoUrl() + "/" + login;
-		
+
 		// Headers
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add("Authorization", "Bearer "+token);
-		
+
 		//Body
 		LinkedMultiValueMap<String, Object>  params = new LinkedMultiValueMap<>();
 
@@ -229,7 +277,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
 
 		LOG.debug("GET PHOTO : "+url+" request : "+request);
-		
+
 		// Http Call 
 		RestTemplate rt = new RestTemplate();
 		try {
@@ -247,7 +295,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return null;
 	}
-	
+
 	private String getAvatar(String token, String displayName) {
 		String url = getAvatarUrl();
 
@@ -255,7 +303,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add("Authorization", "Bearer "+token);
 		requestHeaders.add(getDisplayNameHeader(), displayName);
-		
+
 		//Body
 		LinkedMultiValueMap<String, Object>  params = new LinkedMultiValueMap<>();
 
@@ -263,7 +311,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
 
 		LOG.debug("GET AVATAR : "+url+" request : "+request);
-		
+
 		// Http Call 
 		RestTemplate rt = new RestTemplate();
 		try {
@@ -280,7 +328,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		return null;
 	}
 
-	
+
 
 	@Override
 	public boolean isOperationnel() {
@@ -296,5 +344,22 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		LOG.debug("token null");
 		return true;
 	}
+
 	
+	private String encrypt(String chaine) {
+		try {
+			if(cypher==null) {
+				Key key = new SecretKeySpec(getCypherKey(), getKeyAlgo());
+				final Cipher c = Cipher.getInstance(getCypherAlgo());
+				c.init(Cipher.ENCRYPT_MODE, key);
+			}
+			return new String(Base64.encode(cypher.doFinal(chaine.getBytes(UTF_8))), UTF_8);
+		} catch (Exception e) {
+			LOG.error("Erreur lors du cryptage de la chaine "+chaine,e);
+			return null;
+		}
+	}
+
+	
+
 }
