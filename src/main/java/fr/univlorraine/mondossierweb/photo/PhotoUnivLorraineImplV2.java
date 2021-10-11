@@ -207,7 +207,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		return getPhotoUrl() + "/" + encrypt(login) + "?token=" + token;
 	}
 
-	@Synchronized
+	//@Synchronized
 	private String getBase64(String cod_etu,String loginUser) {
 
 		checkTokenForUser(loginUser);
