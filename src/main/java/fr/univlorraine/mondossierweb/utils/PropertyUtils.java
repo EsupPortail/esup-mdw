@@ -302,5 +302,14 @@ public class PropertyUtils {
 		return true;
 	}
 
-
+	
+	/** Retourne vrai si on rappelle MDW depuis le navigateur client pour récupérer chaque photo */
+	public static boolean isAsyncPhoto(){
+		if(StringUtils.hasText(System.getProperty("context.param.photo.async"))
+			&& System.getProperty("context.param.photo.async").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
 }

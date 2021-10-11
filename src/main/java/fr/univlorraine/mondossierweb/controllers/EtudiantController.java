@@ -194,10 +194,13 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setCod_nne("");
 				}
 
-				//Pour ne renseigner la photo que si elle n'est pas renseignée.
-				//GenericUI.getCurrent().getEtudiant().setPhoto(photo.getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu()));
-				GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
-
+				//Si les photos doivent être récupérées de manière asynchrone depuis le navigateur client
+				if(PropertyUtils.isAsyncPhoto()) {
+					GenericUI.getCurrent().getEtudiant().setPhoto("/link/accesPhoto/"+GenericUI.getCurrent().getEtudiant().getCod_etu());
+				} else {
+					GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
+				}
+				
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
 					// on passe par emailConverter pour récupérer l'e-mail.
 					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail(GenericUI.getCurrent().getEtudiant().getCod_etu()));

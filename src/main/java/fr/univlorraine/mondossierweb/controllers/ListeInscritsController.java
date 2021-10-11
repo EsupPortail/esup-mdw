@@ -560,6 +560,11 @@ public class ListeInscritsController {
 			// on ne recalcule pas la photo
 			return i.getUrlphoto();
 		}
+		
+		//Si les photos doivent être récupérées de manière asynchrone depuis le navigateur client
+		if(PropertyUtils.isAsyncPhoto()) {
+			return "/link/accesPhoto/"+i.getCod_etu();
+		}
 		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 

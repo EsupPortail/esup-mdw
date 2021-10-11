@@ -19,6 +19,7 @@
 package fr.univlorraine.mondossierweb.photo;
 
 import java.security.Key;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -46,6 +47,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterface;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import lombok.Synchronized;
 
 
 @Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)
@@ -63,6 +65,11 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	 * le token JWT du user
 	 */
 	private String userTokenJWT;
+	
+	/**
+	 * Date d'expiration du token
+	 */
+	private Date userTokenJWTExpirationDate;
 
 	private String photoUrl;
 
@@ -184,22 +191,23 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	@Override
 	public String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
-		//return getBase64(cod_etu, loginUser);
-		return getUrl(cod_etu, loginUser);
+		return getBase64(cod_etu, loginUser);
+		//return getUrl(cod_etu, loginUser);
 	}
 
 	private String getUrl(String cod_etu,String loginUser) {
 		checkTokenForUser(loginUser);
 
 		// Récupération de l'url de la photo
-		return getPhotoUrl(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
+		return getEncryptedPhotoUrl(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
 
 	}
 
-	private String getPhotoUrl(String token, String login) {
+	private String getEncryptedPhotoUrl(String token, String login) {
 		return getPhotoUrl() + "/" + encrypt(login) + "?token=" + token;
 	}
 
+	@Synchronized
 	private String getBase64(String cod_etu,String loginUser) {
 
 		checkTokenForUser(loginUser);
@@ -207,16 +215,18 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		// Récupération de la photo
 		String photo = getPhoto(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
 		if(photo == null) {
-			String name="";
-			photo =  getAvatar(userTokenJWT, name);
+			LOG.warn("Photo null, récupération de l'avatar pour "+cod_etu);
+			photo =  getAvatar(userTokenJWT, "");
 		}
 		return photo;
 	}
 
+	@Synchronized
 	private void checkTokenForUser(String loginUser) {
 		// Si le token du user est null ou expiré
-		if(userTokenJWT==null || isTokenExpired(userTokenJWT)) {
+		if(userTokenJWT==null || isTokenExpired()) {
 			userTokenJWT = getToken(loginUser);
+			userTokenJWTExpirationDate = getExpirationDate(userTokenJWT);
 		}
 	}
 
@@ -335,14 +345,29 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		return true;
 	}
 
-	private Boolean isTokenExpired(String token) {
-		DecodedJWT decodedToken  = JWT.decode(token);
+	private Boolean isTokenExpired() {
+		/*DecodedJWT decodedToken  = JWT.decode(token);
 		if (decodedToken != null) {
 			LOG.debug("token expires at : "+decodedToken.getExpiresAt());
 			return decodedToken.getExpiresAt().before(new Date());
 		}
 		LOG.debug("token null");
-		return true;
+		return true;*/
+		return userTokenJWTExpirationDate.before(new Date());
+	}
+	
+	private Date getExpirationDate(String token) {
+		DecodedJWT decodedToken  = JWT.decode(token);
+		if (decodedToken != null) {
+			LOG.debug("token expires at : "+decodedToken.getExpiresAt());
+			Calendar c = Calendar.getInstance();
+	        c.setTime(decodedToken.getExpiresAt());
+	        // On prend 30 secondes de marge sur la fin du token
+	        c.add(Calendar.SECOND, -30);
+			return c.getTime();
+		}
+		LOG.debug("token null");
+		return null;
 	}
 
 	
