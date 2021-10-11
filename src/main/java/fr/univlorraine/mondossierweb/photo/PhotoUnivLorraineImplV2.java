@@ -279,6 +279,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		// Headers
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add("Authorization", "Bearer "+token);
+		//requestHeaders.add("response-type", "image");
 
 		//Body
 		LinkedMultiValueMap<String, Object>  params = new LinkedMultiValueMap<>();
@@ -295,6 +296,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			// Si appel OK
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
 				return Utils.DATA_IMAGE + "/jpg;base64, "+ response.getBody();
+				//return Utils.DATA_IMAGE + "/jpg, "+ response.getBody();
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
