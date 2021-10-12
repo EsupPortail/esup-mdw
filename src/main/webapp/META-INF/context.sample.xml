@@ -192,10 +192,7 @@
 	<Parameter name="serveurphoto.implementation" value="photoEmptyImpl" />
 	<!-- photoUnivLorraineImpl : implémentation pour université de Lorraine
 	<Parameter name="serveurphoto.implementation" value="photoUnivLorraineImpl" /> -->
-	
-	<!-- Parametre optionnel pour récupérer les photos via un appel dédié au back-end depuis le navigateur client.
-	Permet de forcer le parallélisme lors de l'affichage du trombinoscope si l'implémentation de IPhoto renvoit directement les photos (au lieu d'url)  -->
-	<Parameter name="param.photo.async" value="false"/>
+
 	
 	<!-- Config Photoserver UL 
 	<Parameter name="param.photoserver.ressourceurl"

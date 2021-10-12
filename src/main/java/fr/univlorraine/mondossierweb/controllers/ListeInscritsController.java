@@ -23,11 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -86,7 +83,6 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
-import fr.univlorraine.mondossierweb.utils.CypherUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.CollectionDTO4;
@@ -154,8 +150,7 @@ public class ListeInscritsController {
 	private transient UserController userController;
 	@Resource
 	private transient ConfigController configController;
-	@Resource
-	private transient CypherUtils cypherUtils;
+
 	/**
 	 * proxy pour faire appel aux infos sur l'étudiant WS .
 	 */
@@ -567,14 +562,6 @@ public class ListeInscritsController {
 			return i.getUrlphoto();
 		}
 		
-		//Si les photos doivent être récupérées de manière "asynchrone" depuis le navigateur client
-		if(PropertyUtils.isAsyncPhoto()) {
-			try {
-				return "/link/accesPhoto/"+URLEncoder.encode(cypherUtils.encrypt(i.getCod_etu()), StandardCharsets.UTF_8.toString());
-			} catch (UnsupportedEncodingException e) {
-				LOG.warn("Erreur à la génération de l'URL de la photo pour "+i.getCod_etu(),e);
-			}
-		}
 		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 
