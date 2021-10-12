@@ -24,20 +24,25 @@ import java.util.Base64;
 
 import javax.annotation.Resource;
 
+import org.glassfish.gmbal.ParameterNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.env.Environment;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
+import fr.univlorraine.mondossierweb.utils.CypherUtils;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -65,35 +70,47 @@ public class PhotoDossierEtudiant {
 	@Resource(name="${serveurphoto.implementation}")
 	private IPhoto photoProvider;
 
+	@Resource
+	private transient CypherUtils cypherUtils;
+
 	/**
 	 * retourne la photo
 	 */
 	@RequestMapping(value="/{codEtu}", method=RequestMethod.GET)
-	public ResponseEntity<byte[]>  getPhoto(@PathVariable String codEtu) {
-		// Controle d'acces
-		if( userController.isEnseignant() ||  userController.getCodetu().equals(codEtu)) {
-
-			// Récupération de la photo
-			String photo = photoProvider.getUrlPhoto(null, codEtu, userController.isEnseignant(),userController.getCurrentUserName());
-
-			LOG.debug("photo "+codEtu+" : "+photo);
+	public ResponseEntity<byte[]>  getPhoto(@PathVariable("codEtu") String codEtu) {
+		
+		//Si les photos doivent être récupérées de manière "asynchrone" depuis le navigateur client
+		if(PropertyUtils.isAsyncPhoto()) {
 			
-			if(photo == null) {
-				return null;
-			}
-			
-			String type = photo.startsWith(Utils.DATA_IMAGE) ? photo.split(",")[0] : null;
-			String value = type != null ? photo.split(",")[1] : photo;
+			LOG.debug("GET photo from CODETU : "+codEtu);
 
-			// Si la photo est en base64
-			if(type != null && type.endsWith("base64")) {
-				return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(Base64.getMimeDecoder().decode(value));
-			} else {
-				return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(value.getBytes());
+			codEtu = cypherUtils.decrypt(codEtu);
+			// Controle d'acces
+			if( userController.isEnseignant() ||  userController.getCodetu().equals(codEtu)) {
+
+				// Récupération de la photo
+				String photo = photoProvider.getUrlPhoto(null, codEtu, userController.isEnseignant(),userController.getCurrentUserName());
+
+				LOG.debug("photo "+codEtu+" : "+photo);
+
+				if(photo == null) {
+					return null;
+				}
+
+				String type = photo.startsWith(Utils.DATA_IMAGE) ? photo.split(",")[0] : null;
+				String value = type != null ? photo.split(",")[1] : photo;
+
+				// Si la photo est en base64
+				if(type != null && type.endsWith("base64")) {
+					return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(Base64.getMimeDecoder().decode(value));
+				} else {
+					return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(value.getBytes());
+				}
 			}
+			LOG.warn("Acces non autorisé sur la photo de "+codEtu+ " par "+userController.getCurrentUserName());
 		}
-		LOG.warn("Acces non autorisé sur la photo de "+codEtu+ " par "+userController.getCurrentUserName());
 		return null;
 	}
+
 }
 

@@ -26,7 +26,7 @@ import javax.annotation.Resource;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.flywaydb.core.internal.util.StringUtils;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -36,7 +36,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -185,9 +184,9 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	@Override
 	public String getUrlPhoto(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
-		return getBase64(cod_etu, loginUser);
+		//return getBase64(cod_etu, loginUser);
+		return getUrl(cod_etu, loginUser);
 	}
-
 
 	@Override
 	public String getUrlPhotoTrombinoscopePdf(String cod_ind, String cod_etu, boolean isUtilisateurEnseignant, String loginUser) {
@@ -200,11 +199,10 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 		// Récupération de l'url de la photo
 		return getEncryptedPhotoUrl(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
-
 	}
 
 	private String getEncryptedPhotoUrl(String token, String login) {
-		return getPhotoUrl() + "/" + encrypt(login) + "?token=" + token;
+		return getPhotoUrl() + "/" + encrypt(login) + "?access_token=" + token + "&response-type=image";
 	}
 
 	//@Synchronized
@@ -374,13 +372,15 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	
 	private String encrypt(String chaine) {
+
 		try {
 			if(cypher==null) {
 				Key key = new SecretKeySpec(getCypherKey(), getKeyAlgo());
-				final Cipher c = Cipher.getInstance(getCypherAlgo());
-				c.init(Cipher.ENCRYPT_MODE, key);
+				cypher = Cipher.getInstance(getCypherAlgo());
+				cypher.init(Cipher.ENCRYPT_MODE, key);
 			}
-			return new String(Base64.encode(cypher.doFinal(chaine.getBytes(UTF_8))), UTF_8);
+			//return new String(Base64.encode(cypher.doFinal(chaine.getBytes(UTF_8))), UTF_8);
+			return Hex.encodeHexString(cypher.doFinal(chaine.getBytes(UTF_8)));
 		} catch (Exception e) {
 			LOG.error("Erreur lors du cryptage de la chaine "+chaine,e);
 			return null;

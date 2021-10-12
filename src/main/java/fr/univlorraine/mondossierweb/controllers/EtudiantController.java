@@ -18,6 +18,8 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,6 +57,7 @@ import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
+import fr.univlorraine.mondossierweb.utils.CypherUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
@@ -115,6 +118,9 @@ public class EtudiantController {
 
 	@Resource(name="${emailConverter.implementation}")
 	private transient EmailConverterInterface emailConverter;
+	
+	@Resource
+	private transient CypherUtils cypherUtils;
 
 
 	private HashMap<String, String> listeOptBac;
@@ -194,9 +200,9 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setCod_nne("");
 				}
 
-				//Si les photos doivent être récupérées de manière asynchrone depuis le navigateur client
+				//Si les photos doivent être récupérées de manière "asynchrone" depuis le navigateur client
 				if(PropertyUtils.isAsyncPhoto()) {
-					GenericUI.getCurrent().getEtudiant().setPhoto("/link/accesPhoto/"+GenericUI.getCurrent().getEtudiant().getCod_etu());
+					GenericUI.getCurrent().getEtudiant().setPhoto("/link/accesPhoto/"+URLEncoder.encode(cypherUtils.encrypt(GenericUI.getCurrent().getEtudiant().getCod_etu()), StandardCharsets.UTF_8.toString()));
 				} else {
 					GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 				}
