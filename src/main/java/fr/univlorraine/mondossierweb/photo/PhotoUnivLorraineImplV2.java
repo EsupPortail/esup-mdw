@@ -27,6 +27,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
+import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -66,9 +67,19 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	private String userTokenJWT;
 	
 	/**
+	 * le token JWT du back-end
+	 */
+	private String pdfTokenJWT;
+	
+	/**
 	 * Date d'expiration du token
 	 */
 	private Date userTokenJWTExpirationDate;
+	
+	/**
+	 * Date d'expiration du token du back-end
+	 */
+	private Date pdfTokenJWTExpirationDate;
 
 	private String photoUrl;
 
@@ -77,6 +88,10 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	private String avatarUrl;
 
 	private String clientIdHeader;
+	
+	private String tokenDurationHeader;
+	
+	private Integer urlPhotoTokenDuration;
 
 	private String  apiKeyHeader;
 
@@ -123,6 +138,25 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			clientIdHeader=System.getProperty("context.param.photoserver.clientidheader");
 		}
 		return clientIdHeader;
+	}
+	
+	public String getTokenDurationHeader() {
+		if(tokenDurationHeader==null){
+			tokenDurationHeader=System.getProperty("context.param.photoserver.tokendurationheader");
+		}
+		return tokenDurationHeader;
+	}
+	
+	private Integer getUrlPhotoTokenDuration() {
+		if(urlPhotoTokenDuration == null){
+			String duration = System.getProperty("context.param.photoserver.urlphototokenduration");
+			if(StringUtils.hasText(duration)) {
+				urlPhotoTokenDuration=Integer.parseInt(duration);
+			} else {
+				urlPhotoTokenDuration=0;
+			}
+		}
+		return urlPhotoTokenDuration;
 	}
 
 	public String getApiKeyHeader() {
@@ -211,13 +245,13 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	//@Synchronized
 	private String getBase64(String cod_etu,String loginUser) {
 
-		checkTokenForUser(loginUser);
+		checkPdfTokenForUser(loginUser);
 
 		// Récupération de la photo
-		String photo = getPhoto(userTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
+		String photo = getPhoto(pdfTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
 		if(photo == null) {
 			LOG.warn("Photo null, récupération de l'avatar pour "+cod_etu);
-			photo =  getAvatar(userTokenJWT, "");
+			photo =  getAvatar(pdfTokenJWT, "");
 		}
 		return photo;
 	}
@@ -225,14 +259,23 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	@Synchronized
 	private void checkTokenForUser(String loginUser) {
 		// Si le token du user est null ou expiré
-		if(userTokenJWT==null || isTokenExpired()) {
-			userTokenJWT = getToken(loginUser);
+		if(userTokenJWT==null || isExpired(userTokenJWTExpirationDate)) {
+			userTokenJWT = getToken(loginUser, getUrlPhotoTokenDuration());
 			userTokenJWTExpirationDate = getExpirationDate(userTokenJWT);
 		}
 	}
 
+	@Synchronized
+	private void checkPdfTokenForUser(String loginUser) {
+		// Si le token du user est null ou expiré
+		if(pdfTokenJWT==null || isExpired(pdfTokenJWTExpirationDate)) {
+			pdfTokenJWT = getToken(loginUser, 0);
+			pdfTokenJWTExpirationDate = getExpirationDate(pdfTokenJWT);
+		}
+	}
 
-	private String getToken(String login) {
+
+	private String getToken(String login, int secondes) {
 		String url = getTokenUrl();
 
 		// Headers
@@ -241,6 +284,9 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		requestHeaders.add(getApiKeyHeader(), getClientSecret());
 		if(login != null) {
 			requestHeaders.add(getLoginHeader(), login);
+		}
+		if(secondes > 0) {
+			requestHeaders.add(getTokenDurationHeader(), String.valueOf(secondes));
 		}
 
 		//Body
@@ -348,7 +394,8 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		return true;
 	}
 
-	private Boolean isTokenExpired() {
+	
+	private Boolean isExpired(Date dateExpiration) {
 		/*DecodedJWT decodedToken  = JWT.decode(token);
 		if (decodedToken != null) {
 			LOG.debug("token expires at : "+decodedToken.getExpiresAt());
@@ -356,7 +403,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		LOG.debug("token null");
 		return true;*/
-		return userTokenJWTExpirationDate.before(new Date());
+		return dateExpiration.before(new Date());
 	}
 	
 	private Date getExpirationDate(String token) {
@@ -365,8 +412,8 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			LOG.debug("token expires at : "+decodedToken.getExpiresAt());
 			Calendar c = Calendar.getInstance();
 	        c.setTime(decodedToken.getExpiresAt());
-	        // On prend 30 secondes de marge sur la fin du token
-	        c.add(Calendar.SECOND, -30);
+	        // On prend 10 secondes de marge sur la fin du token
+	        c.add(Calendar.SECOND, -10);
 			return c.getTime();
 		}
 		LOG.debug("token null");
