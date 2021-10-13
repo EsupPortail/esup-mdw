@@ -202,6 +202,9 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	}
 
 	private String getEncryptedPhotoUrl(String token, String login) {
+		if(login == null) {
+			return getAvatarUrl() + "?access_token=" + token + "&response-type=image";
+		}
 		return getPhotoUrl() + "/" + encrypt(login) + "?access_token=" + token + "&response-type=image";
 	}
 
@@ -372,7 +375,6 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	
 	private String encrypt(String chaine) {
-
 		try {
 			if(cypher==null) {
 				Key key = new SecretKeySpec(getCypherKey(), getKeyAlgo());
