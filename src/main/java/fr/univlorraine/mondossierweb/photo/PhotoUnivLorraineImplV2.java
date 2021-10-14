@@ -321,7 +321,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			LOG.warn("Récupération de la photo pour login null");
 			return null;
 		}
-		String url = getPhotoUrl() + "/" + login;
+		String url = getPhotoUrl() + "/" + encrypt(login);
 
 		// Headers
 		HttpHeaders requestHeaders = new HttpHeaders();
