@@ -65,17 +65,17 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	 * le token JWT du user
 	 */
 	private String userTokenJWT;
-	
+
 	/**
 	 * le token JWT du back-end
 	 */
 	private String pdfTokenJWT;
-	
+
 	/**
 	 * Date d'expiration du token
 	 */
 	private Date userTokenJWTExpirationDate;
-	
+
 	/**
 	 * Date d'expiration du token du back-end
 	 */
@@ -88,9 +88,9 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	private String avatarUrl;
 
 	private String clientIdHeader;
-	
+
 	private String tokenDurationHeader;
-	
+
 	private Integer urlPhotoTokenDuration;
 
 	private String  apiKeyHeader;
@@ -139,14 +139,14 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return clientIdHeader;
 	}
-	
+
 	public String getTokenDurationHeader() {
 		if(tokenDurationHeader==null){
 			tokenDurationHeader=System.getProperty("context.param.photoserver.tokendurationheader");
 		}
 		return tokenDurationHeader;
 	}
-	
+
 	private Integer getUrlPhotoTokenDuration() {
 		if(urlPhotoTokenDuration == null){
 			String duration = System.getProperty("context.param.photoserver.urlphototokenduration");
@@ -193,7 +193,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		return clientSecret;
 	}
-	
+
 	private String getCypherAlgo() {
 		if(cypherAlgo==null){
 			cypherAlgo=System.getProperty("context.param.photoserver.cypheralgo");
@@ -394,7 +394,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		return true;
 	}
 
-	
+
 	private Boolean isExpired(Date dateExpiration) {
 		/*DecodedJWT decodedToken  = JWT.decode(token);
 		if (decodedToken != null) {
@@ -403,24 +403,29 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 		LOG.debug("token null");
 		return true;*/
-		return dateExpiration.before(new Date());
+		if(dateExpiration != null) {
+			return dateExpiration.before(new Date());
+		}
+		return true;
 	}
-	
+
 	private Date getExpirationDate(String token) {
-		DecodedJWT decodedToken  = JWT.decode(token);
-		if (decodedToken != null) {
-			LOG.debug("token expires at : "+decodedToken.getExpiresAt());
-			Calendar c = Calendar.getInstance();
-	        c.setTime(decodedToken.getExpiresAt());
-	        // On prend 10 secondes de marge sur la fin du token
-	        c.add(Calendar.SECOND, -10);
-			return c.getTime();
+		if(token !=null) {
+			DecodedJWT decodedToken  = JWT.decode(token);
+			if (decodedToken != null) {
+				LOG.debug("token expires at : "+decodedToken.getExpiresAt());
+				Calendar c = Calendar.getInstance();
+				c.setTime(decodedToken.getExpiresAt());
+				// On prend 10 secondes de marge sur la fin du token
+				c.add(Calendar.SECOND, -10);
+				return c.getTime();
+			}
 		}
 		LOG.debug("token null");
 		return null;
 	}
 
-	
+
 	private String encrypt(String chaine) {
 		try {
 			if(cypher==null) {
@@ -436,6 +441,6 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		}
 	}
 
-	
+
 
 }
