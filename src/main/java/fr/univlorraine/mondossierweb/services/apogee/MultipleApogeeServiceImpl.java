@@ -431,7 +431,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				//On utilise la requête indiquée dans le fichier XML
 				requeteSQL = requestUtils.getTemBoursierIaa().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
 			}else{
-				requeteSQL = "select iaa.TEM_BRS_IAA from ins_adm_anu iaa where iaa.cod_ind="+codInd+" and iaa.cod_anu="+codAnu+" and iaa.TEM_BRS_IAA = 'O'";
+				//requeteSQL = "select iaa.TEM_BRS_IAA from ins_adm_anu iaa where iaa.cod_ind="+codInd+" and iaa.cod_anu="+codAnu+" and iaa.TEM_BRS_IAA = 'O'";
+				requeteSQL = "select iaa.COD_SOC from ins_adm_anu iaa where iaa.cod_ind="+codInd+" and iaa.cod_anu="+codAnu+" and iaa.COD_SOC = 'BO'";
 			}
 
 			try{

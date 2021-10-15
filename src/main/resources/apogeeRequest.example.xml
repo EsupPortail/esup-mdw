@@ -185,7 +185,8 @@ WHERE iid.cod_ind = iaa.cod_ind AND iid.cod_anu = iaa.cod_anu AND iid.cod_drt = 
 where csp.COD_PCS = iaa.COD_PCS_ETUDIANT and csp.TEM_SAI_QTR='O' 
 and iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU#</entry>
 
-<entry key="temBoursierIaa">select iaa.TEM_BRS_IAA from ins_adm_anu iaa where iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU# and iaa.TEM_BRS_IAA = 'O'</entry>
+<!-- <entry key="temBoursierIaa">select iaa.TEM_BRS_IAA from ins_adm_anu iaa where iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU# and iaa.TEM_BRS_IAA = 'O'</entry> -->
+<entry key="temBoursierIaa">select iaa.COD_SOC from ins_adm_anu iaa where iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU# and iaa.COD_SOC = 'BO'</entry>
 
 <entry key="inscritsFromElp">select rownum, i.cod_ind,i.cod_etu, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, i.lib_pr1_ind, 
 to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,  
