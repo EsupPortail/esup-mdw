@@ -34,6 +34,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -59,6 +60,7 @@ import com.lowagie.text.pdf.GrayColor;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
+import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
@@ -69,6 +71,7 @@ import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
@@ -131,8 +134,9 @@ public class NoteController {
 					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					// Test si on doit activer l'encryption
+					byte[] ownerPwd = PdfUtils.generatePwd();
 					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
 					if(configController.isInsertionFiligranePdfNotes()){
@@ -141,9 +145,13 @@ public class NoteController {
 					creerPdfResume(document,MainUI.getCurrent().getEtudiant(),notesPDFFormatPortrait);
 					docWriter.close();
 					baosPDF.close();
-					//Creation de l'export
-					byte[] bytes = baosPDF.toByteArray();
-					return new ByteArrayInputStream(bytes);
+					if(PropertyUtils.isEnablePdfResumeNoteSignature()) {
+						//Creation de l'export après ajout de signature
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(),ownerPwd)).toByteArray());
+					} else {
+						//Creation de l'export
+						return new ByteArrayInputStream(baosPDF.toByteArray());
+					}
 				} catch (DocumentException e) {
 					LOG.error("Erreur à la génération du résumé des notes : DocumentException ",e);
 					return null;
@@ -185,8 +193,9 @@ public class NoteController {
 					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					// Test si on doit activer l'encryption
+					byte[] ownerPwd = PdfUtils.generatePwd();
 					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
 					//récupération d'une eventuelle signature
@@ -199,9 +208,13 @@ public class NoteController {
 					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait,codSign);
 					docWriter.close();
 					baosPDF.close();
-					//Creation de l'export
-					byte[] bytes = baosPDF.toByteArray();
-					return new ByteArrayInputStream(bytes);
+					if(PropertyUtils.isEnablePdfDetailNoteSignature()) {
+						//Creation de l'export après ajout de signature
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+					} else {
+						//Creation de l'export
+						return new ByteArrayInputStream(baosPDF.toByteArray());
+					}
 				} catch (DocumentException e) {
 					LOG.error("Erreur à la génération du détail des notes : DocumentException ",e);
 					return null;
@@ -211,6 +224,7 @@ public class NoteController {
 				}
 
 			}
+
 		};
 
 		// Création de la ressource 
@@ -793,7 +807,7 @@ public class NoteController {
 			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
 			header = FontFactory.getFont("Arial", 11, Font.BOLD);
 		}
-		
+
 		String[] color = configController.getHeaderColorPdf();
 		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
 		/*if(formatPortrait){
@@ -1048,7 +1062,7 @@ public class NoteController {
 				}
 				break;
 			}
-			
+
 			table2= new PdfPTable(afficherSession2 ? tabWidth.length : (tabWidth.length - 2));
 			table2.setWidthPercentage(98);
 			//Si on n'affiche pas la session2
@@ -1356,6 +1370,8 @@ public class NoteController {
 		return listeCodes;
 	}
 
+
+
 	/**
 	 * Inner class to add a watermark to every page.
 	 */
@@ -1379,11 +1395,11 @@ public class NoteController {
 		@Override
 		public void onEndPage(PdfWriter writer, Document document) {
 			ColumnText.showTextAligned(
-					writer.getDirectContentUnder(),
-					Element.ALIGN_CENTER,
-					new Phrase(applicationContext.getMessage("pdf.filigrane", null, Locale.getDefault()).toUpperCase(), FONT),
-					coordonneex, coordonneey,
-					writer.getPageNumber() % 2 == 1 ? 45 : -45);
+				writer.getDirectContentUnder(),
+				Element.ALIGN_CENTER,
+				new Phrase(applicationContext.getMessage("pdf.filigrane", null, Locale.getDefault()).toUpperCase(), FONT),
+				coordonneex, coordonneey,
+				writer.getPageNumber() % 2 == 1 ? 45 : -45);
 		}
 	}
 

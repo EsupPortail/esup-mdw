@@ -117,6 +117,20 @@
 	
 	<!-- Activer la sécurité sur les pdf générés par l'application (pdf encryption) -->
 	<Parameter name="EnablePdfSecurity" value="true" />
+	<!-- Activer la signature électronique sur les pdf générés par l'application -->
+	<Parameter name="pdf.detailnote.sign" value="false" />
+	<Parameter name="pdf.resumenote.sign" value="false" />
+	<Parameter name="pdf.certificat.sign" value="false" />
+	<Parameter name="pdf.quittance.sign" value="false" />
+	<Parameter name="pdf.calendrier.sign" value="false" />
+	<Parameter name="pdf.sign.keystore.path" value="C://monkeystore.keystore" />
+	<Parameter name="pdf.sign.password" value="" />
+	<Parameter name="pdf.sign.provider" value="" />
+	<Parameter name="pdf.sign.reason" value="" />
+	<Parameter name="pdf.sign.location" value="" />
+	<Parameter name="pdf.sign.contact" value="" />
+	
+
 	
 	<!-- Activer la redirection automatique sur la vue mobile si possible -->
 	<Parameter name="autoredirect.to.mobileview" value="true"/>

@@ -53,6 +53,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
@@ -69,6 +70,7 @@ import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
+import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 /**
@@ -280,16 +282,21 @@ public class SsoController {
 					Document document = configureDocument();
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					// Test si on doit activer l'encryption
+					byte[] ownerPwd = PdfUtils.generatePwd();
 					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
 					creerPdfQuittance(document,MainUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();
 					baosPDF.close();
-					//Creation de l'export
-					byte[] bytes = baosPDF.toByteArray();
-					return new ByteArrayInputStream(bytes);
+					if(PropertyUtils.isEnablePdfQuittanceSignature()) {
+						//Creation de l'export après ajout de signature
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+					} else {
+						//Creation de l'export
+						return new ByteArrayInputStream(baosPDF.toByteArray());
+					}
 				} catch (DocumentException e) {
 					LOG.error("Erreur à la génération de l'attestation : DocumentException ",e);
 					return null;

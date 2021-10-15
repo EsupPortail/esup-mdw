@@ -50,12 +50,14 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
@@ -118,16 +120,21 @@ public class CalendrierController {
 					Document document = configureDocument(MARGE_PDF);
 					docWriter = PdfWriter.getInstance(document, baosPDF);
 					// Test si on doit activer l'encryption
+					byte[] ownerPwd = PdfUtils.generatePwd();
 					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
 					creerPdfCalendrier(document,MainUI.getCurrent().getEtudiant());
 					docWriter.close();
 					baosPDF.close();
-					//Creation de l'export
-					byte[] bytes = baosPDF.toByteArray();
-					return new ByteArrayInputStream(bytes);
+					if(PropertyUtils.isEnablePdfCalendrierSignature()) {
+						//Creation de l'export après ajout de signature
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+					} else {
+						//Creation de l'export
+						return new ByteArrayInputStream(baosPDF.toByteArray());
+					}
 				} catch (DocumentException e) {
 					LOG.error("Erreur à la génération du calendrier des examens : DocumentException ",e);
 					return null;

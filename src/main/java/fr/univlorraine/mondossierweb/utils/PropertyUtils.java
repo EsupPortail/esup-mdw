@@ -301,5 +301,85 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value) || !value.equals("true")) return false;
 		return true;
 	}
+
+	public static String getPdfSignatureKeystorePath() {
+		String value = System.getProperty("context.pdf.sign.keystore.path");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+
+	public static String getPdfSignaturePassword() {
+		String value = System.getProperty("context.pdf.sign.password");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+
+	public static boolean isEnablePdfDetailNoteSignature() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.detailnote.sign"))
+			&& System.getProperty("context.pdf.detailnote.sign").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isEnablePdfResumeNoteSignature() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.resumenote.sign"))
+			&& System.getProperty("context.pdf.resumenote.sign").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isEnablePdfCertificatSignature() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.certificat.sign"))
+			&& System.getProperty("context.pdf.certificat.sign").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isEnablePdfQuittanceSignature() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.quittance.sign"))
+			&& System.getProperty("context.pdf.quittance.sign").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isEnablePdfCalendrierSignature() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.calendrier.sign"))
+			&& System.getProperty("context.pdf.calendrier.sign").equals("true")){
+			return true;
+		}
+		return false;
+	}
+
+	public static String getPdfSignatureProvider() {
+		String value = System.getProperty("context.pdf.sign.provider");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+
+	public static String getPdfSignatureReason() {
+		String value = System.getProperty("context.pdf.sign.reason");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+
+	public static String getPdfSignatureLocation() {
+		String value = System.getProperty("context.pdf.sign.location");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+
+	public static String getPdfSignatureContact() {
+		String value = System.getProperty("context.pdf.sign.contact");
+		if(!StringUtils.hasText(value)) return null;
+		return value;
+	}
+
+	
+
+
 	
 }
