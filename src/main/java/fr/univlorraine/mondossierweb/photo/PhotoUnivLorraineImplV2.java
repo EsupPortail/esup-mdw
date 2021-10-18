@@ -40,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.auth0.jwt.JWT;
@@ -307,6 +308,8 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
+		} catch (HttpServerErrorException hsee) {
+			LOG.warn("Une erreur "+hsee.getStatusCode()+" est survenue lors de la récupération du token JWT du serveur photo "+login,hsee);
 		} catch (Exception e) {
 			LOG.error("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login,e);
 		}
@@ -349,7 +352,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			}
 		} catch(HttpClientErrorException he) { 
 			LOG.warn("Récupération de la photo de "+login+" non autorisée Erreur HTTP "+he.getStatusCode()+". Il est probable que l'étudiant ne soit plus présent dans le ldap");
-		}catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Une erreur est survenue lors de la récupération de la photo de "+login,e);
 		}
 		return null;
@@ -381,6 +384,8 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			} else {
 				LOG.warn("Une erreur est survenue lors de la récupération de l'avatar Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
+		} catch (HttpServerErrorException hsee) {
+			LOG.warn("Une erreur "+hsee.getStatusCode()+" est survenue lors de la récupération de l'avatar",hsee);
 		} catch (Exception e) {
 			LOG.error("Une erreur est survenue lors de la récupération de la photo de l'avatar ",e);
 		}
