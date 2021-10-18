@@ -309,7 +309,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 				LOG.warn("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
 		} catch (HttpServerErrorException hsee) {
-			LOG.warn("Une erreur "+hsee.getStatusCode()+" est survenue lors de la récupération du token JWT du serveur photo "+login,hsee);
+			LOG.warn("Une HttpServerErrorException "+hsee.getStatusCode()+" est survenue lors de la récupération du token JWT du serveur photo "+login, hsee);
 		} catch (Exception e) {
 			LOG.error("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login,e);
 		}
