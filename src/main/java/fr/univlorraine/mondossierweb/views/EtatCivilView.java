@@ -396,6 +396,24 @@ public class EtatCivilView extends VerticalLayout implements View {
 		formatLabel(fieldBac, captionBac, bec.getLib_bac());
 		formBacLayout.addComponent(fieldBac);
 		
+		if(bec.getLicSpeBacPre()!=null) {
+			String captionSpePreBac = applicationContext.getMessage(NAME+".speprebac.title", null, getLocale());
+			Label fieldSpePreBac = new Label();
+			formatLabel(fieldSpePreBac, captionSpePreBac, bec.getLicSpeBacPre());
+			formBacLayout.addComponent(fieldSpePreBac);
+		}
+		if(bec.getLicSpe1Bac()!=null) {
+			String captionSpe1Bac = applicationContext.getMessage(NAME+".spe1bac.title", null, getLocale());
+			Label fieldSpe1Bac = new Label();
+			formatLabel(fieldSpe1Bac, captionSpe1Bac, bec.getLicSpe1Bac());
+			formBacLayout.addComponent(fieldSpe1Bac);
+		}
+		if(bec.getLicSpe2Bac()!=null) {
+			String captionSpe2Bac = applicationContext.getMessage(NAME+".spe2bac.title", null, getLocale());
+			Label fieldSpe2Bac = new Label();
+			formatLabel(fieldSpe2Bac, captionSpe2Bac, bec.getLicSpe1Bac());
+			formBacLayout.addComponent(fieldSpe2Bac);
+		}
 		if(bec.getLicOpt1Bac()!=null) {
 			String captionOpt1Bac = applicationContext.getMessage(NAME+".opt1bac.title", null, getLocale());
 			Label fieldOpt1Bac = new Label();
@@ -419,24 +437,6 @@ public class EtatCivilView extends VerticalLayout implements View {
 			Label fieldOpt4Bac = new Label();
 			formatLabel(fieldOpt4Bac, captionOpt4Bac, bec.getLicOpt4Bac());
 			formBacLayout.addComponent(fieldOpt4Bac);
-		}
-		if(bec.getLicSpeBacPre()!=null) {
-			String captionSpePreBac = applicationContext.getMessage(NAME+".speprebac.title", null, getLocale());
-			Label fieldSpePreBac = new Label();
-			formatLabel(fieldSpePreBac, captionSpePreBac, bec.getLicSpeBacPre());
-			formBacLayout.addComponent(fieldSpePreBac);
-		}
-		if(bec.getLicSpe1Bac()!=null) {
-			String captionSpe1Bac = applicationContext.getMessage(NAME+".spe1bac.title", null, getLocale());
-			Label fieldSpe1Bac = new Label();
-			formatLabel(fieldSpe1Bac, captionSpe1Bac, bec.getLicSpe1Bac());
-			formBacLayout.addComponent(fieldSpe1Bac);
-		}
-		if(bec.getLicSpe2Bac()!=null) {
-			String captionSpe2Bac = applicationContext.getMessage(NAME+".spe2bac.title", null, getLocale());
-			Label fieldSpe2Bac = new Label();
-			formatLabel(fieldSpe2Bac, captionSpe2Bac, bec.getLicSpe1Bac());
-			formBacLayout.addComponent(fieldSpe2Bac);
 		}
 
 		String captionAnneeBac = applicationContext.getMessage(NAME+".anneebac.title", null, getLocale());

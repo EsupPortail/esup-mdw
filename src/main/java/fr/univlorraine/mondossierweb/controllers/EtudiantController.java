@@ -74,6 +74,7 @@ import gouv.education.apogee.commun.client.ws.EtudiantMetier.IndBacDTO2;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.InfoAdmEtuDTO4;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.TableauIndBacDTO2;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementCourtDTO;
+import gouv.education.apogee.commun.client.ws.ScolariteMetier.OptionBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.ScolariteMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.SpecialiteBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.WebBaseException_Exception;
@@ -490,12 +491,12 @@ public class EtudiantController {
 	private void recuperOptBacApogee() {
 		try {
 			LOG.debug("Recuperation Options BAC");
-			List<SpecialiteBacDTO2>  liste = scolariteService.recupererOptBacWS(null, null);
+			List<OptionBacDTO2>  liste = scolariteService.recupererOptBacWS(null, null);
 			if(liste!=null && !liste.isEmpty()) {
 				LOG.debug(liste.size()+" Options BAC");
 				listeOptBac = new HashMap<String, String> ();
-				for(SpecialiteBacDTO2 opt : liste) {
-					listeOptBac.put(opt.getCodSpeBac(), opt.getLibSpeBac());
+				for(OptionBacDTO2 opt : liste) {
+					listeOptBac.put(opt.getCodOptBac(), opt.getLibOptBac());
 				}
 			} else {
 				LOG.warn("Aucune Option BAC récupérée dans Apogée : "+liste);
