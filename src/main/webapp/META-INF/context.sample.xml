@@ -161,7 +161,8 @@
 	<Parameter name="param.elasticsearch.index.champlibelleobjet" value="LIB_OBJ" />  -->
 
 	
-	
+	<!-- Proposer l'autocomplétion sur les ELP ("false" par défaut pour ne pas polluer les résultats) -->
+	<Parameter name="recherche.autocompletion.elp" value="false" />
 
 
 	<!-- true pour que l'email de l'étudiant (état-civil) soit récupéré par 

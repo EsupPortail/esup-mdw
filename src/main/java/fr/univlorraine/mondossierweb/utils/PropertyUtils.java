@@ -379,6 +379,14 @@ public class PropertyUtils {
 	}
 
 	
+	public static boolean isEnableRechercheAutoElp() {
+		if(StringUtils.hasText(System.getProperty("context.recherche.autocompletion.elp"))
+			&& System.getProperty("context.recherche.autocompletion.elp").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	
 
 
 	
