@@ -418,7 +418,7 @@
 
 			<!-- Active le Static Weaving d'EclipseLink -->
 			<!-- Scan des annotations -->
-			<plugin>
+			<!--  <plugin>
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections-maven</artifactId>
 				<version>0.9.9-RC2</version>
@@ -432,14 +432,54 @@
 						</goals>
 						<phase>process-classes</phase>
 					</execution>
-				</executions>
+				</executions>  
+			</plugin> -->
+			  <plugin>
+    			<groupId>org.codehaus.gmavenplus</groupId>
+    			<artifactId>gmavenplus-plugin</artifactId>
+    			<version>1.5</version>
+    			<executions>
+        			<execution>
+            		<phase>process-classes</phase>
+            		<goals>
+                		<goal>execute</goal>
+            		</goals>
+            		<configuration>
+                	<scripts>
+                    	<script><![CDATA[
+                        new org.reflections.Reflections("fr.univlorraine")
+                            .save(project.build.directory + '/generated-persistenceinfo/reflections.xml')]]>
+                    	</script>
+                	</scripts>
+            	</configuration>
+        		</execution>
+    			</executions>
+    			<dependencies>
+        			<dependency>
+            			<groupId>org.reflections</groupId>
+            			<artifactId>reflections</artifactId>
+            			<version>0.9.10</version>
+        			</dependency>
+        			<dependency>
+           	 		<groupId>org.codehaus.groovy</groupId>
+            			<artifactId>groovy-all</artifactId>
+            			<version>${groovy.version}</version>
+            			<scope>runtime</scope>
+        			</dependency>
+					<dependency>
+    					<groupId>org.dom4j</groupId>
+    					<artifactId>dom4j</artifactId>
+    					<version>2.1.3</version>
+					</dependency>
+    			</dependencies>
 			</plugin>
+			<!-- Création du persistence.xml temporaire-->
 			<plugin>
 				<groupId>org.codehaus.gmaven</groupId>
 				<artifactId>groovy-maven-plugin</artifactId>
 				<version>2.0</version>
 				<executions>
-					<!-- Création du persistence.xml temporaire -->
+					
 					<execution>
 						<id>generatePersistenceXml</id>
 						<phase>process-classes</phase>
@@ -479,6 +519,7 @@
 							</source>
 						</configuration>
 					</execution>
+					
 					<!-- Compilation des fichiers .scss (theme Vaadin) -->
 					<execution>
 						<id>compileScss</id>
