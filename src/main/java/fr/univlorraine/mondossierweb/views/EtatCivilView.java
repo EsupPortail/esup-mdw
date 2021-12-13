@@ -411,7 +411,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 		if(bec.getLicSpe2Bac()!=null) {
 			String captionSpe2Bac = applicationContext.getMessage(NAME+".spe2bac.title", null, getLocale());
 			Label fieldSpe2Bac = new Label();
-			formatLabel(fieldSpe2Bac, captionSpe2Bac, bec.getLicSpe1Bac());
+			formatLabel(fieldSpe2Bac, captionSpe2Bac, bec.getLicSpe2Bac());
 			formBacLayout.addComponent(fieldSpe2Bac);
 		}
 		if(bec.getLicOpt1Bac()!=null) {
