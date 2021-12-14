@@ -68,6 +68,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
 
@@ -469,7 +470,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			if(casesAcocherVet){
 				listeTypeAutorise.add(Utils.VET);
 			}
-			if(casesAcocherElp){
+			if(PropertyUtils.isEnableRechercheAutoElp() && casesAcocherElp){
 				listeTypeAutorise.add(Utils.ELP);
 			}
 			if(casesAcocherEtudiant){
