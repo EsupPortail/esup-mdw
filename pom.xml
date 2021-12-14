@@ -1408,9 +1408,10 @@
 		 <dependency>
     		<groupId>fr.univlorraine</groupId>
     		<artifactId>mdw-tools</artifactId>
-    		<!--  <version>1.0.3</version>  -->   
-    	   <!--    <version>2.0.3</version>  -->
-    	        <version>2.0.4</version>
+    		<!--  <version>1.0.3</version> -->   
+    	    <!--  <version>2.0.3</version> -->
+    	    <!--  <version>2.0.4</version> -->
+    	        <version>2.0.5</version>
 		 </dependency>
 		
 		
@@ -1522,23 +1523,28 @@
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-         <version>2.6.7</version>
-        <!-- <version>2.9.10</version> -->
+         <!-- <version>2.6.7</version> -->
+        <version>2.9.10</version>
     </dependency>
 
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-          <version>2.6.7</version>
-        <!-- <version>2.9.10</version> -->
+         <!--  <version>2.6.7</version> -->
+        <version>2.9.10</version>
     </dependency>
 
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-            <version>2.6.7.5</version> 
-       <!--  <version>2.9.10.8</version> -->
+        <!--  <version>2.6.7.5</version> --> 
+        <version>2.9.10.8</version> 
     </dependency> 
+    <dependency>
+    	<groupId>com.fasterxml.jackson.dataformat</groupId>
+    	<artifactId>jackson-dataformat-smile</artifactId>
+    	<version>2.9.10</version>
+	</dependency>
 
 	</dependencies>
 
