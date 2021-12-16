@@ -20,10 +20,11 @@
 
 -->
 <configuration scan="true">
-
+	
 	<property name="logsPath" value="${catalina.base}/logs" />
 
 	<property name="defaultPattern" value="%date{HH:mm:ss.SSS} [%thread] %-5level %mdc{username} %logger - %message%n" />
+	
 
 	<!-- increases performances for jul -->
 	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
@@ -96,10 +97,10 @@
     		<onMatch>DENY</onMatch>
 		</filter>  -->
 
-		<filter class="fr.univlorraine.tools.logback.TimeFilter">
+		 <filter class="fr.univlorraine.tools.logback.TimeFilter">
 			<startDisabling>${context.mail.startDisabling}</startDisabling>
 			<stopDisabling>${context.mail.stopDisabling}</stopDisabling>
-		</filter>
+		</filter> 
 
 		<layout class="ch.qos.logback.classic.html.HTMLLayout" />
 	</appender>

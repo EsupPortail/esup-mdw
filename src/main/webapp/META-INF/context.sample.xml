@@ -25,7 +25,7 @@
 
 	<!-- Base MySQL propre à l'application -->
 	<Resource name="jdbc/dbMdw" type="javax.sql.DataSource" username="usermdw"
-		password="xxxxx" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw"
+		password="xxxxx" driverClassName="com.mysql.cj.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw?serverTimezone=Europe/Paris"
 		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
 		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1'" />
 
