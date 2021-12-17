@@ -174,7 +174,10 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					batimentLabel.setStyleName("v-label-align-right");
 					
 					//ajout de la salle
-					Label salleLabel = new Label(exam.getLibsalle());
+					Label salleLabel = new Label(exam.getSalle());
+					if(StringUtils.hasText(exam.getLibsalle())) {
+						salleLabel.setValue(exam.getSalle() + " ("+exam.getLibsalle()+")");
+					}
 					detailLayout.addComponent(salleLabel);
 					salleLabel.setStyleName("v-label-align-right");
 					
