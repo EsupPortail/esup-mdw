@@ -1428,11 +1428,11 @@
 		</dependency>
 		
 		 <!--  Dépendances liées à la perte de la lib AMUE -->
-		<!--   <dependency>
+		<dependency>
 			<groupId>org.apache.axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
-		</dependency>-->
+		</dependency>
 		<dependency>
     		<groupId>org.apache.axis2</groupId>
     		<artifactId>axis2</artifactId>
