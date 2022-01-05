@@ -1427,7 +1427,7 @@
     		<version>20100915</version>
 		</dependency>
 		
-		 <!--  Dépendances liées à la perte de la lib AMUE -->
+		 <!--  Axis 1.4 nécessaire à uportal-ws-client -->
 		<dependency>
 			<groupId>org.apache.axis</groupId>
 			<artifactId>axis</artifactId>
