@@ -861,7 +861,7 @@ public class ResultatController {
 										if (codsession < 2) {
 											//1er session  : juin
 											if (red.getNotEpr() != null) {
-												elp2.setNote1(red.getNotEpr().replaceAll(",", "."));
+												elp2.setNote1(formatNoteEpreuve(red.getNotEpr()));
 
 												//Gestion du barème:
 												if(red.getBarNotEpr() != null){
@@ -882,7 +882,7 @@ public class ResultatController {
 										} else {
 											//2er session  : septembre
 											if (red.getNotEpr() != null) {
-												elp2.setNote2(red.getNotEpr().replaceAll(",", "."));
+												elp2.setNote2(formatNoteEpreuve(red.getNotEpr()));
 
 												//Gestion du barème:
 												if(red.getBarNotEpr() != null){
@@ -1083,6 +1083,15 @@ public class ResultatController {
 		}
 	}
 
+
+
+	private String formatNoteEpreuve(String notEpr) {
+		String note =  notEpr.replaceAll(",", ".");
+		if (note.startsWith(".")) {
+			note = "0" + note;
+		}
+		return note;
+	}
 
 
 	/**
