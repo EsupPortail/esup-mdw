@@ -1211,10 +1211,11 @@
 		<dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservices-client</artifactId>
-			<!--  <version>6.20.31</version>    -->
+			<!-- <version>6.20.31</version> -->
 			<!-- <version>6.20.50</version> -->
 			<!-- <version>6.20.51</version> -->
-			<version>6.20.70</version>
+			<!-- <version>6.20.70</version> -->
+			<version>6.20.81</version>
 		</dependency>
 		<!-- Utils UL Lib AMUE 2021 -->
 		 <dependency>
@@ -1224,7 +1225,7 @@
            	<!-- <version>1.0.1</version> --> 
         </dependency>
 		
-		 <!-- WS Apogee Lib UL -->
+		<!-- WS Apogee Lib UL -->
        	<!-- <dependency> 
 			<groupId>fr.univlorraine</groupId> 
 			<artifactId>apo-ws-client</artifactId> 
