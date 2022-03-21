@@ -88,6 +88,14 @@
 	<Parameter name="typeEtudiantLdap" value="student" />  
 	<!-- La propriete ldap du contact désignant son codetu -->
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
+	
+	
+	<!-- Attribut ldap permettant de caractériser un doctorant (l'application vérifira l'accès "enseignant" en priorité ). Ex : edupersonaffiliation  -->
+	<Parameter name="attributLdapDoctorant" value="" />
+	<!-- Liste des valeurs (séparées par ;) de l'attribut ldap ci-dessus permettant de caractériser un doctorant. Ex : researcher -->
+	<Parameter name="valeursAttributLdapDoctorant" value="" />
+	
+	
 	<!-- attribut ldap stockant le login CAS de la personne. Le lien CAS/ldap sera fait sur cet attribut -->
 	<Parameter name="ldap.uid.attribute" value="uid" />
 	<!-- dn vers l'ou du ldap contenant les utilisateurs -->

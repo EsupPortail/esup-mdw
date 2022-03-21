@@ -161,6 +161,10 @@ public class Utils {
 	public static final String PARAM_TYP_STRING = "STRING";
 	
 	public static final String DATA_IMAGE = "data:image";
+	
+	public static final String LDAP_ETUDIANT = "LDAP_ETUDIANT";
+	
+	public static final String LDAP_DOCTORANT = "LDAP_DOCTORANT";
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;
@@ -200,8 +204,6 @@ public class Utils {
 	//liste des vues enseignants dont l'accès est à protéger
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
 		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
-
-
 
 	
 	/** formatage d'une Localdate pour ne garder que jour, mois , annee*/
@@ -320,7 +322,7 @@ public class Utils {
 
 	//retourne vrai si les listes ont une valeur en commun
 	public static boolean listHaveCommonValue(List<String> l1,List<String> l2) {
-		if(l1!=null && l1.size()>0 && l2!=null && l2.size()>0){
+		if(l1 != null && !l1.isEmpty() && l2 != null && !l2.isEmpty()){
 			for(String s1 : l1){
 				for(String s2: l2){
 					if(StringUtils.hasText(s1) && StringUtils.hasText(s2) && s1.equals(s2)){

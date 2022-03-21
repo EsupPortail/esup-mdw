@@ -151,6 +151,9 @@ public class SpringConfig {
 		if(StringUtils.hasText(PropertyUtils.getAttributGroupeLdap())){
 			lattributes.add(PropertyUtils.getAttributGroupeLdap());
 		}
+		if(StringUtils.hasText(PropertyUtils.getAttributLdapDoctorant())){
+			lattributes.add(PropertyUtils.getAttributLdapDoctorant());
+		}
 		String[] tat =new String[lattributes.size()];
 		lattributes.toArray(tat);
 		return tat;

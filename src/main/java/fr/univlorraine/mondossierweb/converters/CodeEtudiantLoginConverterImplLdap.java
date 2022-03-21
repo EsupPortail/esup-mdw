@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
 
@@ -56,8 +57,9 @@ public class CodeEtudiantLoginConverterImplLdap implements CodeEtudiantLoginConv
 		
 		
 		try {
-			if(ldapUserSearch.searchForUser(login)!=null){
-				String[] vals= ldapUserSearch.searchForUser(login).getStringAttributes(PropertyUtils.getAttributLdapCodEtu());
+			DirContextOperations dco = ldapUserSearch.searchForUser(login);
+			if(dco!=null){
+				String[] vals= dco.getStringAttributes(PropertyUtils.getAttributLdapCodEtu());
 				if(vals!=null){
 					LOG.debug("Codetu via LDAP pour "+login+" => "+vals[0]);
 					return vals[0];

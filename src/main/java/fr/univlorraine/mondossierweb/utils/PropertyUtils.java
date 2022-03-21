@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -187,13 +188,9 @@ public class PropertyUtils {
 
 	/** Retourne le type Etudiant dans Ldap */
 	public static List<String> getTypeEtudiantLdap(){
-		LinkedList<String> values = new LinkedList<String>();
 		String value = System.getProperty("context.typeEtudiantLdap");
 		if(!StringUtils.hasText(value)) throw new NullPointerException("typeEtudiantLdap cannot be null !");
-		for(String s : value.split(";")){
-			values.add(s);
-		}
-		return values;
+		return Arrays.asList(value.split(";"));
 	}
 
 
@@ -211,6 +208,18 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value)) throw new NullPointerException("attributLdapEtudiant cannot be null !");
 		return value;
 	}
+	
+	/** Retourne l'attribut ldap permettant de caractériser un doctorant (l'application vérifira l'accès "enseignant" en priorité )   */
+	public static String getAttributLdapDoctorant(){
+		return System.getProperty("context.attributLdapDoctorant");
+	}
+	
+	/** Retourne les valeurs de l'attribut ldap permettant de caractériser un doctorant   */
+	public static List<String> getValeursAttributLdapDoctorant(){
+		String value = System.getProperty("context.valeursAttributLdapDoctorant");
+		if(!StringUtils.hasText(value)) return null;
+		return Arrays.asList(value.split(";"));
+	}
 
 	/** Retourne la propriete ldap du contact désignant ses groupes  */
 	public static String getAttributGroupeLdap(){
@@ -219,13 +228,9 @@ public class PropertyUtils {
 
 	/** Retourne la liste des groupes ldap autorisés  */
 	public static List<String> getListeGroupesLdapAutorises(){
-		LinkedList<String> values = new LinkedList<String>();
 		String value = System.getProperty("context.listeGroupesLdap");
-		if(!StringUtils.hasText(value)) return values;
-		for(String s : value.split(";")){
-			values.add(s);
-		}
-		return values;
+		if(!StringUtils.hasText(value)) return null;
+		return Arrays.asList(value.split(";"));
 	}
 
 	/** Retourne la propriete ldap du contact désignant son code etudiant  */
@@ -237,13 +242,9 @@ public class PropertyUtils {
 
 	/** Retourne la liste des groupes uportal autorisés  */
 	public static List<String> getListeGroupesUportalAutorises(){
-		LinkedList<String> values = new LinkedList<String>();
 		String value = System.getProperty("context.uportal.groupes.autorises");
 		if(!StringUtils.hasText(value)) return null;
-		for(String s : value.split(";")){
-			values.add(s);
-		}
-		return values;
+		return Arrays.asList(value.split(";"));
 	}
 
 	/** Retourne vrai si les données de l'état-civil doivent être récupérées dans l'annuaire */
