@@ -43,7 +43,7 @@ public class VersionEtapeServiceImpl implements VersionEtapeService{
 		VersionEtapePK vepk = new VersionEtapePK();
 		vepk.setCod_etp(codvet);
 		vepk.setCod_vrs_vet(versVet);
-		VersionEtape vet = versionEtapeRepository.findOne(vepk);
+		VersionEtape vet = versionEtapeRepository.findById(vepk).orElse(null);
 		if(vet!=null){
 			return vet.getLib_web_vet();
 		}

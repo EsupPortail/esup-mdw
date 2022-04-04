@@ -41,7 +41,7 @@ public class DiplomeApogeeServiceImpl implements DiplomeApogeeService{
 
 	@Override
 	public DiplomeApogee findDiplome(String codDip) {
-		return dipRepository.findOne(codDip);
+		return dipRepository.findById(codDip).orElse(null);
 	}
 
 

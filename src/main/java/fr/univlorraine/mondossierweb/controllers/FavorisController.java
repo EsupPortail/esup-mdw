@@ -79,7 +79,7 @@ public class FavorisController {
 	}
 
 	public void removeFavori(FavorisPK favori) {
-		favorisRepository.delete(favori);
+		favorisRepository.deleteById(favori);
 	}
 
 	public void saveFavori(Favoris favori) {

@@ -473,7 +473,7 @@ public class ConfigController {
 	 */
 	private List<String> getListValeurForParameter(String parameter){
 		LinkedList<String> values = new LinkedList<String>();
-		PreferencesApplication pa = preferencesApplicationRepository.findOne(parameter);
+		PreferencesApplication pa = preferencesApplicationRepository.findById(parameter).orElse(null);
 		if(pa!=null && pa.getPrefId()!=null){
 			if(pa.getPreferencesApplicationValeurs()!=null && pa.getPreferencesApplicationValeurs().size()>0){
 				for(PreferencesApplicationValeurs valeur : pa.getPreferencesApplicationValeurs()){
@@ -490,7 +490,7 @@ public class ConfigController {
 	 * @return la valeur d'un parametre de type String
 	 */
 	private String getValeurForParameter(String parameter){
-		PreferencesApplication pa = preferencesApplicationRepository.findOne(parameter);
+		PreferencesApplication pa = preferencesApplicationRepository.findById(parameter).orElse(null);
 		if(pa!=null && StringUtils.hasText(pa.getValeur())){
 			return pa.getValeur();
 		}
@@ -527,7 +527,7 @@ public class ConfigController {
 	 * @return les parametres applicatifs en base
 	 */
 	public UtilisateurSwap getSwapUtilisateur(String login){
-		return utilisateurSwapRepository.findOne(login);
+		return utilisateurSwapRepository.findById(login).orElse(null);
 	}
 
 	/**
@@ -536,7 +536,7 @@ public class ConfigController {
 	 * @return la valeur d'un parametre de type booleen
 	 */
 	private boolean getBooleanValueForParameter(String parameter){
-		PreferencesApplication pa = preferencesApplicationRepository.findOne(parameter);
+		PreferencesApplication pa = preferencesApplicationRepository.findById(parameter).orElse(null);
 		if(pa!=null && StringUtils.hasText(pa.getValeur())
 				&& pa.getValeur().equals("true")){
 			return true;

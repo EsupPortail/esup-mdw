@@ -136,7 +136,7 @@ public class ComposanteServiceImpl implements ComposanteService{
 
 	@Override
 	public String getLibelleComposante(String codCmp) {
-		Composante c = composanteRepository.findOne(codCmp);
+		Composante c = composanteRepository.findById(codCmp).orElse(null);
 		if(c!=null){
 			return c.getLibCmp();
 		}

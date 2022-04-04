@@ -156,7 +156,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 
 	private boolean isAdmin(String login) {
-		Administrateurs adm = administrateursRepository.findOne(login);
+		Administrateurs adm = administrateursRepository.findById(login).orElse(null);
 		//Si le login est dans la table admin
 		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
 			//On vérifie quand même que l'utilisateur est présent dans le ldap
@@ -424,7 +424,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 	public String getCurrentUserName(String username) {
 		//return "toto54";
 
-		UtilisateurSwap us= utilisateurSwapRepository.findOne(username);
+		UtilisateurSwap us= utilisateurSwapRepository.findById(username).orElse(null);
 		if(us!=null && us.getLoginCible()!=null){
 			//test si la date de création du swap utilisateur n'est pas plus vieille que 1 heure
 			Calendar dateButoire = Calendar.getInstance(); 

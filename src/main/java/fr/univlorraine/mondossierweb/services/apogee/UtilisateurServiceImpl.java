@@ -41,7 +41,7 @@ public class UtilisateurServiceImpl implements UtilisateurService{
 
 	@Override
 	public Utilisateur findUtilisateur(String uti) {
-		return utilisateurRepository.findOne(uti);
+		return utilisateurRepository.findById(uti).orElse(null);
 	}
 
 

@@ -55,7 +55,7 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 
 	@Override
 	public String getLibelleElp(String codElp) {
-		ElementPedagogique elp = elpRepository.findOne(codElp);
+		ElementPedagogique elp = elpRepository.findById(codElp).orElse(null);
 		if(elp!=null){
 			return elp.getLib_elp();
 		}
