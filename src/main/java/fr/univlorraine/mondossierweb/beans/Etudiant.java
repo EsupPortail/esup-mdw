@@ -139,6 +139,10 @@ public class Etudiant {
 	 */
 	private boolean temAmenagementEtude;
 	/**
+	 * vrai si le dossier d'inscription est validé
+	 */
+	private boolean temDossierInscriptionValide;
+	/**
 	 * vrai si étudiant est salarié
 	 */
 	private boolean temSalarie;

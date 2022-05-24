@@ -81,6 +81,10 @@ public class Inscription {
 	 */
 	private boolean estEnCours;
 	/**
+	 * vrai si le dossier d'inscription est validé
+	 */
+	private boolean estDossierValide;
+	/**
 	 * etat de l'IAE
 	 */
 	private String etatIae;

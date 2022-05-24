@@ -515,7 +515,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return etaEdtCrt;
 	}
 
-	@Override
+	/*@Override
 	public boolean isDossierInscriptionValide(String cod_ind, String cod_anu) {
 		try {
 			@SuppressWarnings("unchecked")
@@ -532,7 +532,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			LOG.info("isDossierInscriptionValide - Aucune IAA pour " + cod_ind + " en " + cod_anu);
 		}
 		return false;
-	}
+	}*/
 
 
 

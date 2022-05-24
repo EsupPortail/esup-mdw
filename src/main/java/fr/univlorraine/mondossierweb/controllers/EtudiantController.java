@@ -312,6 +312,12 @@ public class EtudiantController {
 								if(iaad.getRegimeIns()!=null && StringUtils.hasText(iaad.getRegimeIns().getLibRgi())){
 									GenericUI.getCurrent().getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
 								}
+								
+								//recupérer le témoin dossier d'inscription validé
+								GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(false);
+								if(iaad.getEtatIaa().getTemDosIAA() != null && iaad.getEtatIaa().getTemDosIAA().equals("O")){
+									GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(true);
+								}
 
 
 								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
@@ -688,6 +694,11 @@ public class EtudiantController {
 						}else{
 							insc.setEstEnRegle(false);
 						}
+						
+						// Si le dossier d'inscription est validé
+						if(insdto.getEtatIaa() != null && insdto.getEtatIaa().getTemDosIAA() != null && insdto.getEtatIaa().getTemDosIAA().equals("O")) {
+							insc.setEstDossierValide(true);
+						}
 
 						//récupération de l'état de l'inscription
 						if(insdto.getEtatIae()!=null && StringUtils.hasText(insdto.getEtatIae().getCodeEtatIAE())){
@@ -898,7 +909,8 @@ public class EtudiantController {
 		//interdit l'édition de la quittance pour les étudiants dont le dossier n'est pas validé
 		if(!configController.isQuittanceDossierNonValide()){
 			//Si le dossier d'inscription non valide
-			if(!multipleApogeeService.isDossierInscriptionValide(etu.getCod_ind(), codAnuIns)){
+			//if(!multipleApogeeService.isDossierInscriptionValide(etu.getCod_ind(), codAnuIns)){
+			if(!ins.isEstDossierValide()){
 				return false;
 			}
 		}
@@ -959,7 +971,8 @@ public class EtudiantController {
 		//interdit l'édition de certificat pour les étudiants dont le dossier n'est pas validé
 		if(!configController.isCertificatScolariteDossierNonValide()){
 			//Si le dossier d'inscription non valide
-			if(!multipleApogeeService.isDossierInscriptionValide(etu.getCod_ind(), codAnuIns)){
+			//if(!multipleApogeeService.isDossierInscriptionValide(etu.getCod_ind(), codAnuIns)){
+			if(!ins.isEstDossierValide()){
 				return false;
 			}
 		}
