@@ -84,11 +84,11 @@ public class RequestUtils {
 	}
 	
 	public String getMontant2emPaiement() {
-		return properties.getProperty("montantsPayes");
+		return properties.getProperty("montant2emPaiement");
 	}
 	
 	public String getMontantsPayes(){
-		return properties.getProperty("montant2emPaiement");
+		return properties.getProperty("montantsPayes");
 	}
 	
 	public String getMontantTotalPaye(){
