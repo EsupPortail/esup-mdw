@@ -52,6 +52,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
@@ -348,8 +349,10 @@ public class InscriptionController {
 				float newWidth=scaleRatio * imageSignature.getWidth();
 				imageSignature.scaleAbsolute(newWidth, 100);
 				// Maj 1.3.2
-				imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
+				//imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
 				//imageSignature.setAbsolutePosition(350, 150);
+				imageSignature.setAlignment(Element.ALIGN_RIGHT);
+				imageSignature.setIndentationRight(25);
 				document.add(imageSignature);
 
 			}

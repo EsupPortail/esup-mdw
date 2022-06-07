@@ -673,7 +673,9 @@ public class SsoController {
 						float scaleRatio = 100 / imageSignature.getHeight(); 
 						float newWidth=scaleRatio * imageSignature.getWidth();
 						imageSignature.scaleAbsolute(newWidth, 100);
-						imageSignature.setAbsolutePosition(configController.getQuittancePdfPositionSignatureX(), configController.getQuittancePdfPositionSignatureY());
+						//imageSignature.setAbsolutePosition(configController.getQuittancePdfPositionSignatureX(), configController.getQuittancePdfPositionSignatureY());
+						imageSignature.setAlignment(Element.ALIGN_RIGHT);
+						imageSignature.setIndentationRight(30);
 						document.add(imageSignature);
 
 					} else {
