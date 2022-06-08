@@ -82,12 +82,15 @@
 	<Parameter name="attributGroupeLdap" value=""/>
 	<!-- La liste des groupes ldap autorisant l'acces à mondossierWeb en tant qu'enseignant séparés par un point virgule. Laisser vide pour ne pas utiliser -->
 	<Parameter name="listeGroupesLdap" value=""/>
+		<!-- La liste des groupes ldap autorisant l'acces à mondossierWeb en tant qu'admin séparés par un point virgule. Laisser vide pour ne pas utiliser -->
+	<Parameter name="listeGroupesLdapAdmin" value=""/>
 	<!-- La propriete ldap du contact désignant son type (typeEtudiantLdap ou pas ) -->
 	<Parameter name="attributLdapEtudiant" value="edupersonprimaryaffiliation" />
 	<!-- Le type ldap designant un etudiant. Possibilité d'en indiquer plusieurs séparés par des point-virgules -->
 	<Parameter name="typeEtudiantLdap" value="student" />  
 	<!-- La propriete ldap du contact désignant son codetu -->
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
+	
 	
 	
 	<!-- Attribut ldap permettant de caractériser un doctorant (l'application vérifira l'accès "enseignant" en priorité ). Ex : edupersonaffiliation  -->

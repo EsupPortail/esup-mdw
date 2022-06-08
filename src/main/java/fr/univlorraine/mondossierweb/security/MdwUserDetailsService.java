@@ -156,11 +156,18 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 
 	private boolean isAdmin(String login) {
-		Administrateurs adm = administrateursRepository.findById(login).orElse(null);
-		//Si le login est dans la table admin
-		if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
-			//On vérifie quand même que l'utilisateur est présent dans le ldap
-			if(estDansLeLdap(login)){
+		DirContextOperations dco = getLdapEntry(login);
+		// Si l'utilisateur est présent dans le ldap
+		if(dco!=null) {
+			//on recupère la liste de groupes ldap donnant le droit admin
+			List<String> listegroupes = PropertyUtils.getListeGroupesLdapAdmin();
+			// Si appartient au groupe ldap admin
+			if(estDansLeGroupe(login, dco, PropertyUtils.getAttributGroupeLdap(), listegroupes)) {
+				return true;
+			}
+			// Si le login est dans la table admin
+			Administrateurs adm = administrateursRepository.findById(login).orElse(null);
+			if(adm!=null && adm.getLogin()!=null && adm.getLogin().equals(login)){
 				return true;
 			}
 		}
@@ -172,15 +179,16 @@ public class MdwUserDetailsService implements UserDetailsService {
 	 * @param login de l'utilisateur
 	 * @return vrai si le compte est dans le ldap le type retourné par ldap.
 	 */
-	public boolean estDansLeLdap(final String login) {
+	public DirContextOperations getLdapEntry(final String login) {
 		try {
-			if(ldapUserSearch.searchForUser(login)!=null){
+			return ldapUserSearch.searchForUser(login);
+			/*if(ldapUserSearch.searchForUser(login)!=null){
 				return true;
 			}
-			return false;
+			return false;*/
 		} catch (Exception e) {
 			log.error("Probleme à la recuperation de l'utilisateur : "+login+" dans le LDAP",e);
-			return false;
+			return null;
 		}
 	}
 
@@ -300,7 +308,8 @@ public class MdwUserDetailsService implements UserDetailsService {
 			if (StringUtils.hasText(PropertyUtils.getAttributGroupeLdap()) && listegroupes != null && listegroupes.size()>0) {
 				//on recupère l'utilisateur ldap
 				DirContextOperations dco = ldapUserSearch.searchForUser(username);
-				if(dco!=null){
+				userldap = estDansLeGroupe(username, dco, PropertyUtils.getAttributGroupeLdap(), listegroupes);
+				/*if(dco!=null){
 					String[] vals= dco.getStringAttributes(PropertyUtils.getAttributGroupeLdap());
 					if(vals!=null){
 						List<String> lmemberof = Arrays.asList(vals);
@@ -319,7 +328,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 							}
 						}
 					}
-				}
+				}*/
 				if(!userldap){
 					log.debug("utilisateur "+username+" n'appartient à aucun groupe ldap autorises");
 				}					
@@ -354,6 +363,29 @@ public class MdwUserDetailsService implements UserDetailsService {
 				}
 			}else{
 				log.info("Utilisateur "+username+" n'appartient à aucun groupe uportal ou  ldap");
+			}
+		}
+		return false;
+	}
+
+
+
+	private boolean estDansLeGroupe(String username, DirContextOperations dco, String attributGroupeLdap, List<String> listegroupes) {
+		if(dco!=null && StringUtils.hasText(attributGroupeLdap) && !listegroupes.isEmpty()){
+			String[] vals= dco.getStringAttributes(attributGroupeLdap);
+			if(vals!=null){
+				List<String> lmemberof = Arrays.asList(vals);
+				//Si le compte LDAP possede des groupes
+				if (!lmemberof.isEmpty()) {
+					//on regarde si il appartient a un des groupes
+					for (String groupe : listegroupes) {
+						//on cherche le groupe	
+						if (lmemberof.contains(groupe)) {
+							log.info("Utilisateur "+username+" autorisé via groupe LDAP : "+ groupe);
+							return true;
+						} 
+					}
+				}
 			}
 		}
 		return false;

@@ -226,6 +226,14 @@ public class PropertyUtils {
 		return System.getProperty("context.attributGroupeLdap");
 	}
 
+	
+	/** Retourne la liste des groupes ldap autorisés en tant qu'admin  */
+	public static List<String> getListeGroupesLdapAdmin(){
+		String value = System.getProperty("context.listeGroupesLdapAdmin");
+		if(!StringUtils.hasText(value)) return null;
+		return Arrays.asList(value.split(";"));
+	}
+	
 	/** Retourne la liste des groupes ldap autorisés  */
 	public static List<String> getListeGroupesLdapAutorises(){
 		String value = System.getProperty("context.listeGroupesLdap");
