@@ -348,19 +348,21 @@ public class InscriptionController {
 				float scaleRatio = 100 / imageSignature.getHeight(); 
 				float newWidth=scaleRatio * imageSignature.getWidth();
 				imageSignature.scaleAbsolute(newWidth, 100);
-				// Maj 1.3.2
-				//imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
-				//imageSignature.setAbsolutePosition(350, 150);
-				imageSignature.setAlignment(Element.ALIGN_RIGHT);
-				imageSignature.setIndentationRight(25);
+				// Maj 1.6.8
+				// Si on doit superposer la signature avec le tampon
+				if (StringUtils.hasText(configController.getCertScolTampon())) {
+					imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
+				} else {
+					imageSignature.setAlignment(Element.ALIGN_RIGHT);
+					imageSignature.setIndentationRight(25);
+				}
 				document.add(imageSignature);
-
 			}
 
 
 
 			// Ajout tampon
-			if (configController.getCertScolTampon() != null && !configController.getCertScolTampon().equals("")) {
+			if (StringUtils.hasText(configController.getCertScolTampon())) {
 				Image imageTampon = Image.getInstance(configController.getCertScolTampon());
 				float scaleTampon = 100 / imageTampon.getWidth();
 				float newHeigthTampon = scaleTampon * imageTampon.getHeight();

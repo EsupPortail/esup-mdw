@@ -360,7 +360,7 @@ public class ConfigController {
 		return getValeurForParameter("quittancePdfPositionSignature");
 	}*/
 	
-	/*
+	
 	private String getCertificatScolaritePdfPositionSignature() {
 		return getValeurForParameter("certificatScolaritePdfPositionSignature");
 	}
@@ -371,7 +371,7 @@ public class ConfigController {
 	
 	public float getCertificatScolaritePdfPositionSignatureY() {
 		return Float.parseFloat(getCertificatScolaritePdfPositionSignature().split("-")[1]);
-	}*/
+	}
 
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");
