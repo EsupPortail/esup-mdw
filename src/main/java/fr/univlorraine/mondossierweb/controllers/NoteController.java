@@ -329,16 +329,16 @@ public class NoteController {
 		try {
 			//ajout image test
 			if (configController.getLogoUniversitePdf()!= null && !configController.getLogoUniversitePdf().equals("")){
-				Image image1 = Image.getInstance(configController.getLogoUniversitePdf());
-				float scaleRatio = 40 / image1.getHeight();
-				float newWidth=scaleRatio * image1.getWidth();
-				image1.scaleAbsolute(newWidth, 40);
+				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
+				float scaleRatio = 40 / imageLogo.getHeight();
+				float newWidth=scaleRatio * imageLogo.getWidth();
+				imageLogo.scaleAbsolute(newWidth, 40);
 				if(formatPortrait){
-					image1.setAbsolutePosition(560 - newWidth,760);
+					imageLogo.setAbsolutePosition(560 - newWidth,760);
 				}else{
-					image1.setAbsolutePosition(800 - newWidth, 528);
+					imageLogo.setAbsolutePosition(800 - newWidth, 528);
 				}
-				document.add(image1);
+				document.add(imageLogo);
 			}
 
 			boolean affMentionEtudiant = configController.isAffMentionEtudiant();
@@ -910,16 +910,16 @@ public class NoteController {
 		try {
 			//ajout image test
 			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
-				Image image1 = Image.getInstance(configController.getLogoUniversitePdf());
-				float scaleRatio = 40 / image1.getHeight();
-				float newWidth=scaleRatio * image1.getWidth();
-				image1.scaleAbsolute(newWidth, 40);
+				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
+				float scaleRatio = 40 / imageLogo.getHeight();
+				float newWidth=scaleRatio * imageLogo.getWidth();
+				imageLogo.scaleAbsolute(newWidth, 40);
 				if(formatPortrait){
-					image1.setAbsolutePosition(560 - newWidth,760);
+					imageLogo.setAbsolutePosition(560 - newWidth,760);
 				}else{
-					image1.setAbsolutePosition(800 - newWidth, 528);
+					imageLogo.setAbsolutePosition(800 - newWidth, 528);
 				}
-				document.add(image1);
+				document.add(imageLogo);
 			}
 
 
