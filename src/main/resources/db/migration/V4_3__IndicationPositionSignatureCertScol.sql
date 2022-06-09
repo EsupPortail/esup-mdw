@@ -12,7 +12,7 @@
 
 -- --------------------------------------------------------
 
-UPDATE preferences_application set PREF_DESC = 'Position de la signature sur le certificat de scolarité (si utilisation du tampon)' where PREF_ID = 'certificatScolaritePdfPositionSignature';
+UPDATE `PREFERENCES_APPLICATION` set `PREF_DESC` = 'Position de la signature sur le certificat de scolarité (si utilisation du tampon)' where `PREF_ID` = 'certificatScolaritePdfPositionSignature';
 
 
 

@@ -12,9 +12,9 @@
 
 -- --------------------------------------------------------
 
-UPDATE preferences_application set PREF_DESC = '[INUTILISE] Paramètre ignoré en version 1.6.8' where PREF_ID = 'certificatScolaritePdfPositionSignature';
+UPDATE `PREFERENCES_APPLICATION` set `PREF_DESC` = '[INUTILISE] Paramètre ignoré en version 1.6.8' where `PREF_ID` = 'certificatScolaritePdfPositionSignature';
 
 
-UPDATE preferences_application set PREF_DESC = '[INUTILISE] Paramètre ignoré en version 1.6.8' where PREF_ID = 'quittancePdfPositionSignature';
+UPDATE `PREFERENCES_APPLICATION` set `PREF_DESC` = '[INUTILISE] Paramètre ignoré en version 1.6.8' where `PREF_ID` = 'quittancePdfPositionSignature';
 
 
