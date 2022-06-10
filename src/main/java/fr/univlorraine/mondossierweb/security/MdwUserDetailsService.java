@@ -371,7 +371,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 
 	private boolean estDansLeGroupe(String username, DirContextOperations dco, String attributGroupeLdap, List<String> listegroupes) {
-		if(dco!=null && StringUtils.hasText(attributGroupeLdap) && listegroupes != null && !listegroupes.isEmpty()){
+		if(dco != null && StringUtils.hasText(attributGroupeLdap) && listegroupes != null && !listegroupes.isEmpty()){
 			String[] vals= dco.getStringAttributes(attributGroupeLdap);
 			if(vals!=null){
 				List<String> lmemberof = Arrays.asList(vals);
