@@ -71,7 +71,10 @@ public class Inscription {
 	 * version de l'étape.
 	 */
 	private String cod_vrs_vet;
-	
+	/**
+	 * Libellé du régime de l'IAE
+	 */
+	private String lib_rge;
 	/**
 	 * vrai si inscription en regle (payée)
 	 */

@@ -33,4 +33,6 @@ public interface InscriptionService {
 	public String getFormationEnCours(String codetu);
 	
 	public String getStatut(String codAnu, String codInd);
+
+	public String getRegime(String cod_ind, String anneeIAE, String codeEtp, String versionEtp);
 }

@@ -319,9 +319,9 @@ public class InscriptionController {
 			table.addCell(makeCell(inscription.getLib_etp(), normal));
 			table.addCell(makeCell(applicationContext.getMessage("pdf.composante", null, Locale.getDefault())+" :", normal));
 			table.addCell(makeCell(inscription.getLib_comp(), normal));
-			if(configController.isCertScolRegimeIns() && StringUtils.hasText(etudiant.getRegimeIns())){
+			if(configController.isCertScolRegimeIns() && StringUtils.hasText(inscription.getLib_rge())){
 				table.addCell(makeCell(applicationContext.getMessage("pdf.regime", null, Locale.getDefault())+" :", normal));
-				table.addCell(makeCell(etudiant.getRegimeIns(), normal));
+				table.addCell(makeCell(inscription.getLib_rge(), normal));
 			}
 			document.add(table);
 
