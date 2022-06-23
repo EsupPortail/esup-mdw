@@ -562,9 +562,9 @@ public class SsoController {
 				//Si paiement en 3X
 				if(etudiant.getQuittance_sso().isPmt_3x()){
 					//Ajout bloc sur le paiement en 3X
-					String p1 =etudiant.getQuittance_sso().getMnt_pmt1();
-					String p2 = etudiant.getQuittance_sso().getMnt_pmt2();
-					String p3 = etudiant.getQuittance_sso().getMnt_pmt3();
+					String p1 =etudiant.getQuittance_sso().getMnt_pmt1() + applicationContext.getMessage("pdf.quittance.p3x.euro", null, Locale.getDefault());
+					String p2 = etudiant.getQuittance_sso().getMnt_pmt2() + applicationContext.getMessage("pdf.quittance.p3x.euro", null, Locale.getDefault());
+					String p3 = etudiant.getQuittance_sso().getMnt_pmt3() + applicationContext.getMessage("pdf.quittance.p3x.euro", null, Locale.getDefault());
 					String d1 =etudiant.getQuittance_sso().getDat_pmt1();
 					String d2 = etudiant.getQuittance_sso().getDat_pmt2();
 					String d3 = etudiant.getQuittance_sso().getDat_pmt3();
@@ -606,7 +606,7 @@ public class SsoController {
 						celld1.setBorder(Rectangle.NO_BORDER);
 						table2.addCell(celld1);
 
-						Paragraph pmnt2 = new Paragraph(d.getMnt_droit_paye(), normal);
+						Paragraph pmnt2 = new Paragraph(d.getMnt_droit_paye() + applicationContext.getMessage("pdf.quittance.detail.euro", null, Locale.getDefault()), normal);
 						pmnt2.setAlignment(Element.ALIGN_RIGHT);
 						PdfPCell celld2 = new PdfPCell(pmnt2);
 						celld2.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -632,7 +632,7 @@ public class SsoController {
 					celltt.setBorder(Rectangle.NO_BORDER);
 					table2.addCell(celltt);
 
-					Paragraph pmnttotal2 = new Paragraph(etudiant.getQuittance_sso().getMnt_total(), normalBig);
+					Paragraph pmnttotal2 = new Paragraph(etudiant.getQuittance_sso().getMnt_total() + applicationContext.getMessage("pdf.quittance.total.euro", null, Locale.getDefault()), normalBig);
 					pmnttotal2.setAlignment(Element.ALIGN_RIGHT);
 					PdfPCell celltt2 = new PdfPCell(pmnttotal2);
 					celltt2.setBorder(Rectangle.NO_BORDER);

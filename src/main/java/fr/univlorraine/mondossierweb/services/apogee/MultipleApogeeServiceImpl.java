@@ -67,7 +67,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	@Override
 	public String getAnneeEnCours() {
 		return (String) entityManagerApogee.createNativeQuery("select cod_anu from annee_uni where eta_anu_iae = 'O'").getSingleResult();
-
 	}
 	
 	@Override
