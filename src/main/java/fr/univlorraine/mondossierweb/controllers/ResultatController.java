@@ -989,8 +989,9 @@ public class ResultatController {
 				}
 			}
 
-			//Gestion de la descendance des semestres si temNotesEtuSem est renseigné et à true dans monDossierWeb.xml
-			if(configController.isTemNotesEtuSem()){
+			// Gestion de la descendance des semestres si temNotesEtuSem est renseigné et à true dans monDossierWeb.xml
+			// et qu'il ne s'agit pas d'une extraction
+			if(configController.isTemNotesEtuSem() && !sourceExtractionApogee){
 				if (e.getElementsPedagogiques().size() > 0) {
 					List<Integer> listeRangAsupprimer=new LinkedList<Integer>();
 					int rang = 0;
