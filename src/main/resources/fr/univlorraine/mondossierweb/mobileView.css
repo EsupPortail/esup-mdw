@@ -177,6 +177,21 @@ opacity: 1.0 !important;
 	width: 100% !important;
 }
 
+.valo-ul .layout-rang-mobile {
+	border-top: 1px solid #d1d1ce;
+}
+
+.valo-ul .libelle-rang-mobile {
+	text-align: right;
+	padding-right: 0.5em;
+	font-weight: bold;
+}
+
+.valo-ul .value-rang-mobile {
+	padding-left: 0.3em;
+}
+
+
 .valo-ul .v-panel-caption-centertitle-panel {
 text-align: center !important;
   border-right: 0px !important;

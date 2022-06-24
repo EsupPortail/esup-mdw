@@ -409,7 +409,17 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							}
 							noteLayout.addComponent(vlsession2);
 						}
-						libElpLayout.addComponent(noteLayout);
+						
+						VerticalLayout globalResultatLayout = new VerticalLayout();
+						globalResultatLayout.setSizeFull();
+						globalResultatLayout.setSpacing(false);
+						globalResultatLayout.addComponent(noteLayout);
+						// Si on doit afficher le rang
+						if((configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) && StringUtils.hasText(elp.getRang())){
+							globalResultatLayout.addComponent(getRangComponent(elp.getRang()));
+						}
+						
+						libElpLayout.addComponent(globalResultatLayout);
 
 						notesLayout.addComponent(libElpLayout);
 
@@ -468,6 +478,22 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 		}
 	}
 
+	
+	private com.vaadin.ui.Component getRangComponent(String r) {
+		HorizontalLayout rl = new HorizontalLayout();
+		rl.setStyleName("layout-rang-mobile");
+		rl.setWidth("100%");
+		Label libelleRang = new Label(applicationContext.getMessage(NAME + ".rang", null, getLocale()));
+		libelleRang.setStyleName("libelle-rang-mobile");
+		libelleRang.setWidth("100%");
+		Label rang = new Label(r);
+		rang.addStyleName("value-rang-mobile");
+		rang.setWidth("100%");
+		rl.addComponent(libelleRang);
+		rl.addComponent(rang);
+		return rl;
+	}
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
 

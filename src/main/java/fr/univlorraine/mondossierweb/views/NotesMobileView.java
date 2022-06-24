@@ -23,6 +23,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -43,7 +44,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -207,7 +207,9 @@ public class NotesMobileView extends VerticalLayout implements View {
 					libelleLayout.setComponentAlignment(libelleButton, Alignment.MIDDLE_CENTER);
 
 
-
+					VerticalLayout globalResultatLayout = new VerticalLayout();
+					globalResultatLayout.setSizeFull();
+					globalResultatLayout.setSpacing(false);
 
 					HorizontalLayout notesessionLayout = new HorizontalLayout();
 					notesessionLayout.setSizeFull();
@@ -241,9 +243,15 @@ public class NotesMobileView extends VerticalLayout implements View {
 					}
 
 					noteLayout.addComponent(libelleLayout);
-
-
-					noteLayout.addComponent(notesessionLayout);
+					
+					globalResultatLayout.addComponent(notesessionLayout);
+					//noteLayout.addComponent(notesessionLayout);
+					// Si on doit afficher le rang
+					if(MdwTouchkitUI.getCurrent().getEtudiant().isAfficherRang() &&
+						diplome.isAfficherRang() && StringUtils.hasText(diplome.getRang())){
+						globalResultatLayout.addComponent(getRangComponent(diplome.getRang()));
+					}
+					noteLayout.addComponent(globalResultatLayout);
 
 					panelEnCours.setContent(noteLayout);
 					diplomesLayout.addComponent(panelEnCours);
@@ -289,8 +297,9 @@ public class NotesMobileView extends VerticalLayout implements View {
 					libelleLayout.addComponent(libelleButton);
 					libelleLayout.setComponentAlignment(libelleButton, Alignment.MIDDLE_CENTER);
 
-
-
+					VerticalLayout globalResultatLayout = new VerticalLayout();
+					globalResultatLayout.setSizeFull();
+					globalResultatLayout.setSpacing(false);
 
 					HorizontalLayout notesessionLayout = new HorizontalLayout();
 					notesessionLayout.setSizeFull();
@@ -324,9 +333,17 @@ public class NotesMobileView extends VerticalLayout implements View {
 					}
 
 					noteLayout.addComponent(libelleLayout);
-
-
-					noteLayout.addComponent(notesessionLayout);
+					
+					globalResultatLayout.addComponent(notesessionLayout);
+					//noteLayout.addComponent(notesessionLayout);
+					// Si on doit afficher le rang
+					if(MdwTouchkitUI.getCurrent().getEtudiant().isAfficherRang() &&
+						etape.isAfficherRang() && StringUtils.hasText(etape.getRang())){
+						globalResultatLayout.addComponent(getRangComponent(etape.getRang()));
+					}
+					noteLayout.addComponent(globalResultatLayout);
+					
+					
 
 					panelEnCours.setContent(noteLayout);
 					elpsLayout.addComponent(panelEnCours);
@@ -357,6 +374,20 @@ public class NotesMobileView extends VerticalLayout implements View {
 		}
 	}
 
+	private com.vaadin.ui.Component getRangComponent(String r) {
+		HorizontalLayout rl = new HorizontalLayout();
+		rl.setStyleName("layout-rang-mobile");
+		rl.setWidth("100%");
+		Label libelleRang = new Label(applicationContext.getMessage(NAME + ".rang", null, getLocale()));
+		libelleRang.setStyleName("libelle-rang-mobile");
+		libelleRang.setWidth("100%");
+		Label rang = new Label(r);
+		rang.addStyleName("value-rang-mobile");
+		rang.setWidth("100%");
+		rl.addComponent(libelleRang);
+		rl.addComponent(rang);
+		return rl;
+	}
 	/**
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
