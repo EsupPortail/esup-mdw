@@ -613,7 +613,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css</packagingExcludes>
+					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css,VAADIN/gwt-unitCache/**</packagingExcludes>
 					<webResources>
             			<resource>
               			<!-- this is relative to the pom.xml directory -->
@@ -621,7 +621,7 @@
               				 <includes>
                 				<include>LICENSE-2.0.txt</include>
                 				<include>LICENSE-VAADIN.txt</include>
-              					</includes>
+              				 </includes>
             			</resource>
           			</webResources>
 				</configuration>
