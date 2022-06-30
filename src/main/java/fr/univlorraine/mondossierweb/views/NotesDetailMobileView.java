@@ -484,10 +484,10 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 		rl.setStyleName("layout-rang-mobile");
 		rl.setWidth("100%");
 		Label libelleRang = new Label(applicationContext.getMessage(NAME + ".rang", null, getLocale()));
-		libelleRang.setStyleName("libelle-rang-mobile");
+		libelleRang.setStyleName("libelle-rang-mobile-detail");
 		libelleRang.setWidth("100%");
 		Label rang = new Label(r);
-		rang.addStyleName("value-rang-mobile");
+		rang.addStyleName("value-rang-mobile-detail");
 		rang.setWidth("100%");
 		rl.addComponent(libelleRang);
 		rl.addComponent(rang);
