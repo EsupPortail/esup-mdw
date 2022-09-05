@@ -233,5 +233,7 @@ where ind.COD_GPE = g.cod_gpe
 and g.COD_GPE = #COD_GPE#
 and ind.COD_ANU= #COD_ANU# </entry>
 
+<entry key="temSesUniVet">select TEM_SES_UNI from version_etape where cod_etp=#COD_ETP# and cod_vrs_vet=#COD_VRS_VET#</entry>
+
 
 </properties>

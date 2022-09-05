@@ -168,6 +168,16 @@ public class Utils {
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;
+	
+	// témoin session unique dans la table VERSION_ETAPE
+	public static final String TEM_SES_UNI = "O";
+	
+	// témoin session unique retourné par les WS
+	public static final String COD_SES_UNI = "0";
+	
+	public static final String APOGEE_EXTRACTION = "Apogee-extraction";
+	
+	public static final String APOGEE = "Apogee";
 
 	//liste des vues desktop
 	private static final String[] LISTE_VIEWS_DESKTOP = {
@@ -204,6 +214,8 @@ public class Utils {
 	//liste des vues enseignants dont l'accès est à protéger
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
 		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
+
+	
 
 	
 	/** formatage d'une Localdate pour ne garder que jour, mois , annee*/

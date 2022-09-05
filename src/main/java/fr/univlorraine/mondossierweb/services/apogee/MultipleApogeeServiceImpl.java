@@ -533,7 +533,34 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return false;
 	}*/
 
+	@Override
+	public Boolean getTemSesUniVet(String codEtp, String codVrsVet) {
+		if(StringUtils.hasText(codEtp) && StringUtils.hasText(codVrsVet)){
 
+			String requeteSQL="";
+
+			//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+			if(StringUtils.hasText(requestUtils.getTemSesUniVet())){
+				//On utilise la requête indiquée dans le fichier XML
+				requeteSQL = requestUtils.getTemSesUniVet().replaceAll("#COD_ETP#", codEtp).replaceAll("#COD_VRS_VET#", codVrsVet);
+			}else{
+				requeteSQL = "select TEM_SES_UNI from version_etape where cod_etp='"+codEtp+"' and cod_vrs_vet="+codVrsVet;
+			}
+
+			try{
+				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
+				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+				String temSesUni = (String) query.getSingleResult();
+				LOG.debug("getTemSesUniVet "+codEtp + "/" + codVrsVet +" => " + temSesUni);
+				if(StringUtils.hasText(temSesUni) && temSesUni.equals(Utils.TEM_SES_UNI)) {
+					return true;
+				}
+			}catch (NoResultException | EmptyResultDataAccessException nre){
+				return false;
+			}
+		}
+		return false;
+	}
 
 
 

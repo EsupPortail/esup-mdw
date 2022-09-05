@@ -43,6 +43,8 @@ import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatElpEprDTO5;
@@ -78,10 +80,14 @@ public class ResultatController {
 	private ElementPedagogiqueService elementPedagogiqueService;
 
 	@Resource
-	private transient ConfigController configController;
+	private ConfigController configController;
 
 	@Resource
-	private transient EtudiantController etudiantController;
+	private EtudiantController etudiantController;
+	
+	/** {@link MultipleApogeeServiceImpl} */
+	@Resource
+	private MultipleApogeeService multipleApogeeService;
 
 	/**
 	 * proxy pour faire appel aux infos sur les résultats du WS .
@@ -110,20 +116,20 @@ public class ResultatController {
 
 			String sourceResultat = PropertyUtils.getSourceResultats();
 			if(sourceResultat == null || sourceResultat.equals("")){
-				sourceResultat="Apogee";
+				sourceResultat = Utils.APOGEE;
 			}
 
 
 			// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 			// Si different annee en cours => sourceResultat = Apogee
-			if(sourceResultat.compareTo("Apogee-extraction")==0){
+			if(sourceResultat.compareTo(Utils.APOGEE_EXTRACTION)==0){
 				// On recupere les resultats dans cpdto avec sourceResultat=Apogee
-				sourceResultat="Apogee";
+				sourceResultat = Utils.APOGEE;
 				List<ContratPedagogiqueResultatVdiVetDTO2> cpdtoResult = pedagogiqueService.recupererContratPedagogiqueResultatVdiVetV2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 
 				// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction
 				temoin=null;
-				sourceResultat="Apogee-extraction";
+				sourceResultat = Utils.APOGEE_EXTRACTION;
 				List<ContratPedagogiqueResultatVdiVetDTO2> cpdtoExtract;
 				try {
 					cpdtoExtract = pedagogiqueService.recupererContratPedagogiqueResultatVdiVetV2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
@@ -194,19 +200,19 @@ public class ResultatController {
 
 				String sourceResultat = PropertyUtils.getSourceResultats();
 				if(sourceResultat == null || sourceResultat.equals("")){
-					sourceResultat="Apogee";
+					sourceResultat = Utils.APOGEE;
 				}
 
 
 				// VR 09/11/2009 : Verif annee de recherche si sourceResultat = apogee-extraction :
 				// Si different annee en cours => sourceResultat = Apogee
-				if(sourceResultat.compareTo("Apogee-extraction")==0){
+				if(sourceResultat.compareTo(Utils.APOGEE_EXTRACTION)==0){
 					// On recupere les resultats dans cpdto avec sourceResultat=Apogee
-					sourceResultat="Apogee";
+					sourceResultat = Utils.APOGEE;
 					List<ContratPedagogiqueResultatVdiVetDTO2> cpdtoResult = pedagogiqueService.recupererContratPedagogiqueResultatVdiVetV2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 					// Puis dans cpdtoExtract avec sourceResultat=Apogee-extraction pour l'année en cours
 					temoin=null;
-					sourceResultat="Apogee-extraction";
+					sourceResultat = Utils.APOGEE_EXTRACTION;
 					List<ContratPedagogiqueResultatVdiVetDTO2> cpdtoExtract;
 					try {
 						cpdtoExtract = pedagogiqueService.recupererContratPedagogiqueResultatVdiVetV2(e.getCod_etu(), "toutes", sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
@@ -547,6 +553,8 @@ public class ResultatController {
 
 
 			if (reedto != null && !reedto.isEmpty()) {
+				// Témoin de session unique sur la VET
+				Boolean temSesUniVet = null;
 				//On parcourt les ELP:
 				for (ContratPedagogiqueResultatElpEprDTO5 cpree :  reedto) {
 
@@ -597,147 +605,160 @@ public class ResultatController {
 						//On s'occupe des résultats :
 						TableauResultatElpDto3 relpdto = cpree.getResultatsElp();
 						if (relpdto != null && relpdto.getItem() != null && !relpdto.getItem().isEmpty()) {
+							// Si l'ELP possède des résultats pour 2 MCC différentes (session unique + session double)
+							// et qu'on n'a pas déjà récupéré le tem_ses_uni de la VET
+							if(contientResultatsMixte(relpdto.getItem()) && temSesUniVet == null) {
+								// Récupération du témoin de session unique de la VET correspondante
+								temSesUniVet = multipleApogeeService.getTemSesUniVet(et.getCode(), et.getVersion());
+								LOG.debug("temoinEtatDelib "+et.getCode() + "/" + et.getVersion() + " : " + temSesUniVet);
+							}
 							//on parcourt les résultats pour l'ELP:
 							for (ResultatElpDTO3 rpd : relpdto.getItem() ) {
+								// Si une session est renseignée et qu'elle est raccord avec la MCC de la VET
+								if(temSesUniVet == null || rpd == null || rpd.getSession() == null || rpd.getSession().getCodSes() == null 
+									|| (temSesUniVet.booleanValue() && rpd.getSession().getCodSes().equals(Utils.COD_SES_UNI))
+									|| (!temSesUniVet.booleanValue() && !rpd.getSession().getCodSes().equals(Utils.COD_SES_UNI))) {
 
-								if(rpd != null && rpd.getEtatDelib() != null && rpd.getEtatDelib().getCodEtaAvc()!= null)
-									elp.setEtatDelib(rpd.getEtatDelib().getCodEtaAvc());
+									if(rpd != null && rpd.getEtatDelib() != null && rpd.getEtatDelib().getCodEtaAvc()!= null)
+										elp.setEtatDelib(rpd.getEtatDelib().getCodEtaAvc());
 
-								//on affiche pas les résultats d'admissibilité
-								if(configController.isAffResAdmissibilite() || rpd.getNatureResultat()==null || rpd.getNatureResultat().getCodAdm()== null || !rpd.getNatureResultat().getCodAdm().equals("0")){
-									//29/01/10
-									//On récupère les notes si l'ELP est dans un état de delibération compris dans la liste des témoins paramétrés.
-									if(rpd.getEtatDelib()==null ||  temoinEtatDelib.contains(rpd.getEtatDelib().getCodEtaAvc())){
+									//on affiche pas les résultats d'admissibilité
+									if (configController.isAffResAdmissibilite() || rpd.getNatureResultat()==null || rpd.getNatureResultat().getCodAdm()== null || !rpd.getNatureResultat().getCodAdm().equals("0")){
+										//29/01/10
+										//On récupère les notes si l'ELP est dans un état de delibération compris dans la liste des témoins paramétrés.
+										if (rpd.getEtatDelib()==null ||  temoinEtatDelib.contains(rpd.getEtatDelib().getCodEtaAvc())){
 
-										int codsession = 0;
-										if(rpd.getSession() != null){
-											codsession = new Integer(rpd.getSession().getCodSes());
-										}else{
-											//Pour info, on arrive ici car on peut etre en VAC: validation d'acquis
-										}
+											int codsession = 0;
+											if(rpd.getSession() != null){
+												codsession = new Integer(rpd.getSession().getCodSes());
+											}else{
+												//Pour info, on arrive ici car on peut etre en VAC: validation d'acquis
+											}
 
-										String result = null;
+											String result = null;
 
-										//le résultat:
-										if (rpd.getTypResultat() != null ) {
-											result = rpd.getTypResultat().getCodTre();
-										}
+											//le résultat:
+											if (rpd.getTypResultat() != null ) {
+												result = rpd.getTypResultat().getCodTre();
+											}
 
-										//Test sur la session traitée
-										if (codsession < 2) {
-											//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
-											elpEtatDelibS1OK=true;
+											//Test sur la session traitée
+											if (codsession < 2) {
+												//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
+												elpEtatDelibS1OK=true;
 
-											//1er session  : juin
-											if (rpd.getNotElp() != null && !rpd.getNotElp().equals("null")) {
-												elp.setNote1(rpd.getNotElp().toString());
-												if(rpd.getNotPntJurElp()!= null && !rpd.getNotPntJurElp().equals(new BigDecimal(0))){
-													elp.setNote1(elp.getNote1()+"(+"+rpd.getNotPntJurElp()+")");
+												//1er session  : juin
+												if (rpd.getNotElp() != null && !rpd.getNotElp().equals("null")) {
+													elp.setNote1(rpd.getNotElp().toString());
+													if(rpd.getNotPntJurElp()!= null && !rpd.getNotPntJurElp().equals(new BigDecimal(0))){
+														elp.setNote1(elp.getNote1()+"(+"+rpd.getNotPntJurElp()+")");
+													}
+
+												} 
+												if ((elp.getNote1() == null || (elp.getNote1() != null && elp.getNote1().equals(""))) && result != null && result.equals("DEF")) {
+													elp.setNote1("DEF");
 												}
 
-											} 
-											if ((elp.getNote1() == null || (elp.getNote1() != null && elp.getNote1().equals(""))) && result != null && result.equals("DEF")) {
-												elp.setNote1("DEF");
-											}
-
-											//Gestion du barème:
-											if(rpd.getBarNotElp() != null){
-												elp.setBareme1(rpd.getBarNotElp());
-											}
-
-											//ajout du rang si pas déjà renseigné via la session de juin.
-											if(rpd.getNbrRngEtuElp() != null && !rpd.getNbrRngEtuElp().equals("")
-												&& (elp.getRang()==null || elp.getRang().equals(""))){
-												elp.setRang(rpd.getNbrRngEtuElp()+"/"+rpd.getNbrRngEtuElpTot());
-											}
-
-											//on récupère l'année car si année!=null c'est un PRC  si pas déjà renseigné via la session de juin.
-											if(rpd.getCodAnu()!=null && !rpd.getCodAnu().equals("")
-												&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
-												elp.setAnnee(rpd.getCodAnu());
-												anneePrc = rpd.getCodAnu();
-											}
-
-
-											// Récupération des crédits ECTS version 5.20.laa
-											// Si on a un crédit ECTS de référence et si crédit ECTS pas déjà renseigné via la session de juin.
-											if(creditEctsElp!=null && (elp.getEcts()==null || elp.getEcts().equals(""))){
-												//Si on a un crédit acquis 
-												if(rpd.getNbrCrdElp()!= null && rpd.getNbrCrdElp().toString()!=null && !rpd.getNbrCrdElp().toString().equals("")){
-													elp.setEcts(Utils.getEctsToDisplay(rpd.getNbrCrdElp())+"/"+creditEctsElp);
-												}else{
-													elp.setEcts("0/"+creditEctsElp);
+												//Gestion du barème:
+												if(rpd.getBarNotElp() != null){
+													elp.setBareme1(rpd.getBarNotElp());
 												}
-											}
 
-											elp.setRes1(result);
-										} else {
-											//2em session  : septembre
-											//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
-											elpEtatDelibS2OK=true;
-
-											if (rpd.getNotElp() != null && !rpd.getNotElp().equals("null")) {
-												elp.setNote2(rpd.getNotElp().toString());
-												if(rpd.getNotPntJurElp()!= null && !rpd.getNotPntJurElp().equals(new BigDecimal(0))){
-													elp.setNote2(elp.getNote2()+"(+"+rpd.getNotPntJurElp()+")");
+												//ajout du rang si pas déjà renseigné via la session de juin.
+												if(rpd.getNbrRngEtuElp() != null && !rpd.getNbrRngEtuElp().equals("")
+													&& (elp.getRang()==null || elp.getRang().equals(""))){
+													elp.setRang(rpd.getNbrRngEtuElp()+"/"+rpd.getNbrRngEtuElpTot());
 												}
-											}
-											if ((elp.getNote2() == null || (elp.getNote2() != null && elp.getNote2().equals(""))) && result != null && result.equals("DEF")) {
-												elp.setNote2("DEF");
-											}
 
-											//Gestion du barème:
-											if(rpd.getBarNotElp()!= null){
-												elp.setBareme2(rpd.getBarNotElp());
-											}
-
-											//ajout du rang
-											if(rpd.getNbrRngEtuElp() != null && !rpd.getNbrRngEtuElp().equals("")){
-												elp.setRang(rpd.getNbrRngEtuElp()+"/"+rpd.getNbrRngEtuElpTot());
-											}
-											//on récupère l'année car si getCodAnu()!=null c'est un PRC
-											if(rpd.getCodAnu()!=null && !rpd.getCodAnu().equals("")){
-												elp.setAnnee(rpd.getCodAnu());
-												anneePrc = rpd.getCodAnu();
-											}
-
-											// Récupération des crédits ECTS version 5.20.laa
-											// Si on a un crédit ECTS de référence
-											if(creditEctsElp!=null){
-												//Si on a un crédit acquis 
-												if(rpd.getNbrCrdElp()!= null && rpd.getNbrCrdElp().toString()!=null && !rpd.getNbrCrdElp().toString().equals("")){
-													elp.setEcts(Utils.getEctsToDisplay(rpd.getNbrCrdElp())+"/"+creditEctsElp);
-												}else{
-													elp.setEcts("0/"+creditEctsElp);
+												//on récupère l'année car si année!=null c'est un PRC  si pas déjà renseigné via la session de juin.
+												if(rpd.getCodAnu()!=null && !rpd.getCodAnu().equals("")
+													&& (elp.getAnnee()==null || elp.getAnnee().equals(""))){
+													elp.setAnnee(rpd.getCodAnu());
+													anneePrc = rpd.getCodAnu();
 												}
+
+
+												// Récupération des crédits ECTS version 5.20.laa
+												// Si on a un crédit ECTS de référence et si crédit ECTS pas déjà renseigné via la session de juin.
+												if(creditEctsElp!=null && (elp.getEcts()==null || elp.getEcts().equals(""))){
+													//Si on a un crédit acquis 
+													if(rpd.getNbrCrdElp()!= null && rpd.getNbrCrdElp().toString()!=null && !rpd.getNbrCrdElp().toString().equals("")){
+														elp.setEcts(Utils.getEctsToDisplay(rpd.getNbrCrdElp())+"/"+creditEctsElp);
+													}else{
+														elp.setEcts("0/"+creditEctsElp);
+													}
+												}
+
+												elp.setRes1(result);
+											} else {
+												//2em session  : septembre
+												//l'elp est dans un état de delibération compris dans la liste des témoins paramétrés.
+												elpEtatDelibS2OK=true;
+
+												if (rpd.getNotElp() != null && !rpd.getNotElp().equals("null")) {
+													elp.setNote2(rpd.getNotElp().toString());
+													if(rpd.getNotPntJurElp()!= null && !rpd.getNotPntJurElp().equals(new BigDecimal(0))){
+														elp.setNote2(elp.getNote2()+"(+"+rpd.getNotPntJurElp()+")");
+													}
+												}
+												if ((elp.getNote2() == null || (elp.getNote2() != null && elp.getNote2().equals(""))) && result != null && result.equals("DEF")) {
+													elp.setNote2("DEF");
+												}
+
+												//Gestion du barème:
+												if(rpd.getBarNotElp()!= null){
+													elp.setBareme2(rpd.getBarNotElp());
+												}
+
+												//ajout du rang
+												if(rpd.getNbrRngEtuElp() != null && !rpd.getNbrRngEtuElp().equals("")){
+													elp.setRang(rpd.getNbrRngEtuElp()+"/"+rpd.getNbrRngEtuElpTot());
+												}
+												//on récupère l'année car si getCodAnu()!=null c'est un PRC
+												if(rpd.getCodAnu()!=null && !rpd.getCodAnu().equals("")){
+													elp.setAnnee(rpd.getCodAnu());
+													anneePrc = rpd.getCodAnu();
+												}
+
+												// Récupération des crédits ECTS version 5.20.laa
+												// Si on a un crédit ECTS de référence
+												if(creditEctsElp!=null){
+													//Si on a un crédit acquis 
+													if(rpd.getNbrCrdElp()!= null && rpd.getNbrCrdElp().toString()!=null && !rpd.getNbrCrdElp().toString().equals("")){
+														elp.setEcts(Utils.getEctsToDisplay(rpd.getNbrCrdElp())+"/"+creditEctsElp);
+													}else{
+														elp.setEcts("0/"+creditEctsElp);
+													}
+												}
+
+												elp.setRes2(result);
 											}
 
-											elp.setRes2(result);
-										}
 
 
+											//CAS DE NON OBTENTION PAR CORRESPONDANCE.
+											if(rpd.getLcc() == null) {
 
-										//CAS DE NON OBTENTION PAR CORRESPONDANCE.
-										if(rpd.getLcc() == null) {
+												//ajout de la signification du résultat dans la map
+												if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(result)) {
+													e.getSignificationResultats().put(result, rpd.getTypResultat().getLibTre());
+												}
 
-											//ajout de la signification du résultat dans la map
-											if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(result)) {
-												e.getSignificationResultats().put(result, rpd.getTypResultat().getLibTre());
 											}
-
 										}
 									}
-								}
-								//On affiche la correspondance meme si l'état de délibération n'est pas compris dans la liste des témoins paramétrés.
-								if(rpd.getLcc() != null) {
-									//les notes ont été obtenues par correspondance a session 1.
-									elp.setNote1("COR");
-									//ajout de la signification du résultat dans la map
-									if ( !e.getSignificationResultats().containsKey("COR")) {
-										e.getSignificationResultats().put("COR",applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
+									//On affiche la correspondance meme si l'état de délibération n'est pas compris dans la liste des témoins paramétrés.
+									if(rpd.getLcc() != null) {
+										//les notes ont été obtenues par correspondance a session 1.
+										elp.setNote1("COR");
+										//ajout de la signification du résultat dans la map
+										if ( !e.getSignificationResultats().containsKey("COR")) {
+											e.getSignificationResultats().put("COR",applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
+										}
 									}
+								} else {
+									LOG.debug("Résultat ignoré  car temSesUniVet = "+temSesUniVet+" pour VET "+et.getCode() + "/" + et.getVersion());
 								}
-
 							}
 						}
 
@@ -1086,6 +1107,32 @@ public class ResultatController {
 
 
 
+	private boolean contientResultatsMixte(List<ResultatElpDTO3> resultats) {
+		Boolean sessionUnique = null;
+		// On parcourt les résultats
+		for(ResultatElpDTO3 r : resultats) {
+			// Si on a une info de session
+			if(r != null && r.getSession() != null && StringUtils.hasText(r.getSession().getCodSes())) {
+				// Récupération de l'info de session
+				Boolean su = r.getSession().getCodSes().equals(Utils.COD_SES_UNI);
+				// Si c'est la première info de session récupérée
+				if(sessionUnique == null) {
+					// On garde l'information dans sessionUnique
+					sessionUnique = su;
+				} else {
+					// Si c'et une MCC différente de celle trouvée jusque là
+					if(sessionUnique.booleanValue() != su.booleanValue()) {
+						LOG.debug("contientResultatsMixte true");
+						return true;
+					}
+				}
+			}
+		}
+		LOG.debug("contientResultatsMixte false");
+		return false;
+	}
+
+
 	private String formatNoteEpreuve(String notEpr) {
 		String note =  notEpr.replaceAll(",", ".");
 		if (note.startsWith(".")) {
@@ -1155,24 +1202,24 @@ public class ResultatController {
 
 			String sourceResultat = PropertyUtils.getSourceResultats();
 			if(forceSourceApogee || sourceResultat == null || sourceResultat.equals("")){
-				sourceResultat="Apogee";
+				sourceResultat = Utils.APOGEE;
 			}
 
 			//Si on doit se baser sur l'extraction Apogée
 			if(utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
 				//On se base sur l'extraction apogée
-				sourceResultat="Apogee-extraction";
+				sourceResultat = Utils.APOGEE_EXTRACTION;
 				temoin=null;
 			}else{
 				//On va chercher les résultats directement dans Apogée
-				sourceResultat="Apogee";
+				sourceResultat = Utils.APOGEE;
 			}
 
 			String anneeParam=et.getAnnee().substring(0, 4);
 			int annee = Integer.parseInt(anneeParam);
 
 			//07/09/10
-			if(sourceResultat.compareTo("Apogee-extraction")==0){
+			if(sourceResultat.compareTo(Utils.APOGEE_EXTRACTION)==0){
 				//07/09/10
 				//on prend le témoin pour Apogee-extraction
 				List<ContratPedagogiqueResultatElpEprDTO5> cpdto = pedagogiqueService.recupererContratPedagogiqueResultatElpEprV6(e.getCod_etu(), anneeParam, et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
@@ -1220,18 +1267,18 @@ public class ResultatController {
 
 			String sourceResultat = PropertyUtils.getSourceResultats();
 			if(forceSourceApogee || sourceResultat == null || sourceResultat.equals("")){
-				sourceResultat="Apogee";
+				sourceResultat = Utils.APOGEE;
 			}
 
 
 			//Si on doit se baser sur l'extraction Apogée
 			if(utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
 				//On se base sur l'extraction apogée
-				sourceResultat="Apogee-extraction";
+				sourceResultat = Utils.APOGEE_EXTRACTION;
 				temoin=null;
 			}else{
 				//On va chercher les résultats directement dans Apogée
-				sourceResultat="Apogee";
+				sourceResultat = Utils.APOGEE;
 			}
 
 
@@ -1239,7 +1286,7 @@ public class ResultatController {
 			int annee = Integer.parseInt(anneeParam);
 
 			// 07/12/11 récupération du fonctionnement identique à la récupéraition des notes pour les étudiants.
-			if(sourceResultat.compareTo("Apogee-extraction")==0){
+			if(sourceResultat.compareTo(Utils.APOGEE_EXTRACTION)==0){
 				List<ContratPedagogiqueResultatElpEprDTO5> cpdto = pedagogiqueService.recupererContratPedagogiqueResultatElpEprV6(e.getCod_etu(), anneeParam , et.getCode(), et.getVersion(), sourceResultat, temoin, "toutes", "tous",temoinEtatIae);
 				setNotesElpEpr(e, et, cpdto,"AET",annee,true);
 			}else{
@@ -1264,7 +1311,7 @@ public class ResultatController {
 
 		int anneeEnCours = new Integer(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
 		int anneeDemandee = new Integer(annee);
-		
+
 		// Si l'application est paramétrée pour utiliser les extractions sur la dernière année ouverte au résultats
 		if(configController.isNotesAnneeOuverteResExtractionApogee()) {
 			int anneeRes = new Integer(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
@@ -1273,7 +1320,7 @@ public class ResultatController {
 				return true;
 			}
 		}
-		
+
 		String anneePivot = configController.getNotesAnneePivotExtractionApogee();
 		// Si l'application est paramétrée pour utiliser une année pivot pour l'utilsation des extractions
 		if(StringUtils.hasText(anneePivot)) {
@@ -1294,7 +1341,7 @@ public class ResultatController {
 
 	public boolean utilisationExtractionApogee(String annee, String sourceResultat) {
 		// Si sourceResultat = apogee-extraction :
-		if(sourceResultat.compareTo("Apogee-extraction")==0){
+		if(sourceResultat.compareTo(Utils.APOGEE_EXTRACTION)==0){
 			return utilisationExtractionApogee(annee); 
 		}
 		return false;
@@ -1330,7 +1377,7 @@ public class ResultatController {
 		//Récupération de la source des résultats
 		String sourceResultat = PropertyUtils.getSourceResultats();
 		if(sourceResultat == null || sourceResultat.equals("")){
-			sourceResultat="Apogee";
+			sourceResultat = Utils.APOGEE;
 		}
 
 		//Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
@@ -1359,7 +1406,7 @@ public class ResultatController {
 		//Récupération de la source des résultats
 		String sourceResultat = PropertyUtils.getSourceResultats();
 		if(sourceResultat == null || sourceResultat.equals("")){
-			sourceResultat="Apogee";
+			sourceResultat = Utils.APOGEE;
 		}
 
 		//Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape

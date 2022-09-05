@@ -90,5 +90,7 @@ public interface MultipleApogeeService {
 	public abstract boolean isSalarie(String codInd, String codAnu);
 	
 	//public abstract boolean isDossierInscriptionValide(String cod_ind, String cod_anu);
+	
+	public Boolean getTemSesUniVet(String codvet,String versVet);
 
 }

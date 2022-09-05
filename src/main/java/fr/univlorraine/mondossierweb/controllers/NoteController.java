@@ -73,6 +73,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Gestion des notes
@@ -1325,21 +1326,21 @@ public class NoteController {
 		//récupération de la source des résultats
 		String sourceResultat = PropertyUtils.getSourceResultats();
 		if(sourceResultat == null || sourceResultat.equals("")){
-			sourceResultat="Apogee";
+			sourceResultat = Utils.APOGEE;
 		}
 
 
 		//Si on doit se baser sur l'extraction Apogée
 		if(resultatController.utilisationExtractionApogee(et.getAnnee().substring(0, 4),sourceResultat)){
 			//On se base sur l'extraction apogée
-			sourceResultat="Apogee-extraction";
+			sourceResultat = Utils.APOGEE_EXTRACTION;
 		}else{
 			//On va chercher les résultats directement dans Apogée
-			sourceResultat="Apogee";
+			sourceResultat = Utils.APOGEE;
 		}
 
 		// si sourceResultat = apogee-extraction
-		if(sourceResultat.compareTo("Apogee-extraction")==0){
+		if(sourceResultat.compareTo(Utils.APOGEE_EXTRACTION)==0){
 			//Si on doit aller chercher une signature à apposer sur le document
 			if(configController.isNotesPDFsignature()){
 				// on teste s'il y a bien des elps presents

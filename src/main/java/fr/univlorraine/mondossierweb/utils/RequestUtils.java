@@ -159,6 +159,11 @@ public class RequestUtils {
 	public String getCodIndInscritsFromGroupe() {
 		return properties.getProperty("codIndInscritsFromGroupe");
 	}
+
+
+	public String getTemSesUniVet() {
+		return properties.getProperty("temSesUniVet");
+	}
 	
 
 }

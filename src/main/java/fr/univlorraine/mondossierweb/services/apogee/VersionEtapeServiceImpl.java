@@ -34,10 +34,7 @@ public class VersionEtapeServiceImpl implements VersionEtapeService{
 
 	@Resource
 	private VersionEtapeApogeeRepository versionEtapeRepository;
-
-
-
-
+	
 	@Override
 	public String getLibelleVet(String codvet, String versVet) {
 		VersionEtapePK vepk = new VersionEtapePK();
@@ -49,6 +46,5 @@ public class VersionEtapeServiceImpl implements VersionEtapeService{
 		}
 		return null;
 	}
-
 
 }
