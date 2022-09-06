@@ -216,7 +216,7 @@ public class EtudiantController {
 				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
-				LOG.info("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
+				LOG.debug("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
 				GenericUI.getCurrent().getEtudiant().setCodCiv(iuec.getCodCiv());
 				GenericUI.getCurrent().getEtudiant().setSexEtatCiv(iuec.getCodSexEtatCiv());
 				GenericUI.getCurrent().getEtudiant().setPrenomEtatCiv(iuec.getLibPrEtaCiv());

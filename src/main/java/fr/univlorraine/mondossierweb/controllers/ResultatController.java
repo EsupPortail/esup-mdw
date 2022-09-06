@@ -925,6 +925,7 @@ public class ResultatController {
 							}
 							//ajout de l'épreuve dans la liste en tant qu'élément si elle a une note ou un résultat (si on veut afficher les résultats)
 							if (EprNotee || (confAffResultatsEpreuve && EprResult)) {
+								LOG.debug("*****Ajout epreuve à la liste : " + elp2.getCode());
 								liste1.add(elp2);
 							}
 						}
