@@ -198,7 +198,7 @@ public class SsoController {
 		q.setList_droits_payes(convertResultToListDroitUniversitaire(ldp));
 
 		e.setQuittance_sso(q);
-		
+
 		return true;
 	}
 
@@ -245,16 +245,16 @@ public class SsoController {
 
 		// Récupérer la date de cotisation
 		affiliation.setDat_cotisation(ssoApogeeService.getDateCotisation(codAnu, e.getCod_ind()));
-		
+
 		// date d'effet
 		affiliation.setDat_effet(r.get("DAT_AFL_SSO"));
 
 		e.setAffilition_sso(affiliation);
-		
+
 		if(affiliation.getDat_cotisation() == null) {
 			return false;
 		}
-		
+
 		return true;
 
 	}
@@ -432,6 +432,20 @@ public class SsoController {
 				}
 				pNom.setAlignment(Element.ALIGN_LEFT);
 				document.add(pNom);
+			}
+
+			// Lieu et date de naissance
+			if(configController.isQuittancePdfNaissance() && StringUtils.hasText(etudiant.getDatenaissance())) {
+				Paragraph pNaissance = new Paragraph(applicationContext.getMessage("pdf.quittance.datenaissance", null, Locale.getDefault())+" ", normal);
+				Chunk dateNaissance = new Chunk(etudiant.getDatenaissance(), normalBig);
+				pNaissance.add(dateNaissance);
+				if (StringUtils.hasText(etudiant.getLieunaissance()) && StringUtils.hasText(etudiant.getDepartementnaissance())) {
+					Chunk lieuNaissance0 = new Chunk(" "+applicationContext.getMessage("pdf.quittance.lieunaissance", null, Locale.getDefault()) + " ", normal);
+					pNaissance.add(lieuNaissance0);
+					Chunk lieuNaissance1 = new Chunk(etudiant.getLieunaissance() + " (" + etudiant.getDepartementnaissance() + ")", normalBig);
+					pNaissance.add(lieuNaissance1);
+				}
+				document.add(pNaissance);
 			}
 
 			//INE
@@ -641,20 +655,20 @@ public class SsoController {
 
 				}
 				document.add(table2);
-				
-				
+
+
 				// Si on doit ajouter la signature sur la quittance
 				if(configController.isQuittancePdfSignature()) {
 					document.add(new Paragraph(" "));
 					Signataire signataire = multipleApogeeService.getSignataireQuittance(configController.getQuittanceCodeSignataire(), PropertyUtils.getClefApogeeDecryptBlob(), configController.isQuittanceSignatureTampon());
-					
+
 					String nomSignataire = StringUtils.hasText(configController.getQuittanceDescSignataire())? configController.getQuittanceDescSignataire() : signataire.getQua_sig() + " " + signataire.getNom_sig();
 
 					//date
 					Date d = new Date();
 					DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 					String date = dateFormat.format(d);
-					
+
 					float[] widthsSignataire = {2f, 1.3f};
 					PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
 					tableSignataire.setWidthPercentage(100f);
@@ -757,13 +771,13 @@ public class SsoController {
 			//Nom Prénom
 			if (etudiant.getNom() != null) {
 				Paragraph pNom = new Paragraph("\n\n"+etudiant.getNom(), normalBigger);
-				
+
 				// Si on doit utiliser les données d'état-civil
 				if (etudiant.isTemPrUsage() && configController.isAffiliationSsoUsageEtatCivil()) {
 					//On utilise les données d'état-civil
 					pNom = new Paragraph("\n\n"+etudiant.getPrenomEtatCiv()+ " " + etudiant.getNomAffichage(), normalBigger);
 				}
-				
+
 				pNom.setAlignment(Element.ALIGN_LEFT);
 				document.add(pNom);
 			}

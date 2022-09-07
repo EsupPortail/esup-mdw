@@ -393,6 +393,10 @@ public class ConfigController {
 	public boolean isQuittancePdfSignature() {
 		return getBooleanValueForParameter("quittancePdfSignature");
 	}
+	
+	public boolean isQuittancePdfNaissance() {
+		return getBooleanValueForParameter("quittancePdfNaissance");
+	}
 
 	public String getQuittanceCodeSignataire() {
 		return getValeurForParameter("quittanceCodeSignataire");
@@ -556,19 +560,5 @@ public class ConfigController {
 
 	}
 
-	
-
-
-
-
-
-
-
-	
-
-
-
-
-	
 
 }
