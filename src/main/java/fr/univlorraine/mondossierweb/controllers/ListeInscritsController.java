@@ -653,12 +653,13 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2) {
 
-		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
+		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)));
+			boolean grp = listeGroupes != null;
+			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp);
 			wb.write(baos);
 			byte[] bytes = baos.toByteArray();
 			return new ByteArrayInputStream(bytes);
@@ -676,13 +677,10 @@ public class ListeInscritsController {
 	 * @return le fichier excel de la liste des inscrits.
 	 */
 	@SuppressWarnings("deprecation")
-	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape) {
+	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape, boolean withEtape, boolean withSession1, boolean withSession2, boolean withGroupe) {
 		//	creation du fichier excel
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet("page1");
-
-		boolean isSession1=true;
-		boolean isSession2=true;
 
 		//formatage de la taille des colonne
 		sheet.setColumnWidth((short) 0, (short) (4000));
@@ -690,22 +688,42 @@ public class ListeInscritsController {
 		sheet.setColumnWidth((short) 2, (short) (5120));
 		sheet.setColumnWidth((short) 3, (short) (4000));
 		sheet.setColumnWidth((short) 4, (short) (12000));
+		int colonne = 5;
 		if (isTraiteEtape) {
-			sheet.setColumnWidth((short) 5 , (short) (1200));
-			sheet.setColumnWidth((short) 6, (short) (2000));
-			sheet.setColumnWidth((short) 7, (short) (3000));
-			sheet.setColumnWidth((short) 8, (short) (2000));
-			sheet.setColumnWidth((short) 9, (short) (3000));
-
-		} else {
-			sheet.setColumnWidth((short) 5, (short) (3000));
-			sheet.setColumnWidth((short) 6, (short) (3000));
-			sheet.setColumnWidth((short) 7, (short) (18000));
-			sheet.setColumnWidth((short) 8, (short) (2000));
-			sheet.setColumnWidth((short) 9, (short) (3000));
-			sheet.setColumnWidth((short) 10, (short) (2000));
-			sheet.setColumnWidth((short) 11, (short) (3000));
-			sheet.setColumnWidth((short) 12, (short) (15000));
+			//colonne IAE
+			sheet.setColumnWidth((short) colonne , (short) (1200));
+			colonne++;
+		} 
+		if (!isTraiteEtape && withEtape) {
+			// colonne codetp
+			sheet.setColumnWidth((short) colonne , (short) (3000));
+			colonne++;
+			// colonne codvrsvet
+			sheet.setColumnWidth((short) colonne , (short) (3000));
+			colonne++;
+			// colonne libetp
+			sheet.setColumnWidth((short) colonne , (short) (18000));
+			colonne++;
+		}
+		if (withSession1) {
+			// colonne note session1
+			sheet.setColumnWidth((short) colonne, (short) (2000));
+			colonne++;
+			// colonne résultat session1
+			sheet.setColumnWidth((short) colonne, (short) (3000));
+			colonne++;
+		}
+		if (withSession2) {
+			// colonne note session2
+			sheet.setColumnWidth((short) colonne, (short) (2000));
+			colonne++;
+			// colonne résultat session2
+			sheet.setColumnWidth((short) colonne, (short) (3000));
+			colonne++;
+		}
+		if (withGroupe) {
+			// colonne groupe
+			sheet.setColumnWidth((short) colonne, (short) (15000));
 		}
 
 		// Creation des lignes
@@ -766,7 +784,7 @@ public class ListeInscritsController {
 			cellLib6.setCellValue(applicationContext.getMessage("xls.iae", null, Locale.getDefault()).toUpperCase()+"?" );
 			rang_cellule++;
 		}
-		if (!isTraiteEtape) {
+		if (!isTraiteEtape && withEtape) {
 			XSSFCell cellLib7 = row.createCell((short) rang_cellule);
 			cellLib7.setCellStyle(headerStyle);
 			cellLib7.setCellValue(applicationContext.getMessage("xls.code", null, Locale.getDefault()).toUpperCase() );
@@ -782,7 +800,7 @@ public class ListeInscritsController {
 			cellLib9.setCellValue(applicationContext.getMessage("xls.etape", null, Locale.getDefault()).toUpperCase() );
 			rang_cellule++;
 		}
-		if (isSession1) {
+		if (withSession1) {
 			XSSFCell cellLib10 = row.createCell((short) rang_cellule);
 			cellLib10.setCellStyle(headerStyle);
 			cellLib10.setCellValue(applicationContext.getMessage("xls.note1", null, Locale.getDefault()).toUpperCase());
@@ -795,7 +813,7 @@ public class ListeInscritsController {
 
 		}
 
-		if (isSession2) {
+		if (withSession2) {
 			XSSFCell cellLib12 = row.createCell((short) rang_cellule);
 			cellLib12.setCellStyle(headerStyle);
 			cellLib12.setCellValue(applicationContext.getMessage("xls.note2", null, Locale.getDefault()).toUpperCase() );
@@ -809,7 +827,7 @@ public class ListeInscritsController {
 		}
 
 		//info sur les groupes
-		if (!isTraiteEtape) {
+		if (withGroupe) {
 			XSSFCell cellLib14 = row.createCell((short) rang_cellule);
 			cellLib14.setCellStyle(headerStyle);
 			cellLib14.setCellValue(applicationContext.getMessage("xls.groupes", null, Locale.getDefault()).toUpperCase() );
@@ -857,7 +875,7 @@ public class ListeInscritsController {
 					cellLibInscrit5.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
-				if (!isTraiteEtape) {
+				if (!isTraiteEtape && withEtape) {
 					String codes = "";
 					String versions = "";
 					String libelles = "";
@@ -882,7 +900,7 @@ public class ListeInscritsController {
 					cellLibInscrit8.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
-				if (isSession1) {
+				if (withSession1) {
 					XSSFCell cellLibInscrit9 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit9.setCellValue(inscrit.getNotej());
 					cellLibInscrit9.setCellStyle(alignTopStyle);
@@ -894,7 +912,7 @@ public class ListeInscritsController {
 					rang_cellule_inscrit++;
 				}
 
-				if (isSession2) {
+				if (withSession2) {
 					XSSFCell cellLibInscrit11 = rowInscrit.createCell((short) rang_cellule_inscrit);
 					cellLibInscrit11.setCellValue(inscrit.getNotes());
 					cellLibInscrit11.setCellStyle(alignTopStyle);
@@ -907,7 +925,7 @@ public class ListeInscritsController {
 				}
 
 				//ajout info sur les groupes si il y a lieu
-				if (!isTraiteEtape) {
+				if (withGroupe) {
 					XSSFCell cellLibGroupes = rowInscrit.createCell((short) rang_cellule_inscrit);
 					String grpXls="";
 					List<String> lcodegroup = Utils.splitStringFromSemiColon(inscrit.getCodes_groupes());
