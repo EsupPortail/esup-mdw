@@ -107,9 +107,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	public static final String[] INS_FIELDS_VET = {"nom","prenom","date_nai_ind","iae"};
 
-	public static final String[] INS_FIELDS_TO_DISPLAY_ELP = {"cod_etu","nom","prenom","date_nai_ind","email","etape","notes1","notes2"};
+	public static final String[] INS_FIELDS_TO_DISPLAY_ELP = {"cod_etu","nom","prenom","date_nai_ind","email","etape","notes1","notes2","groupe"};
 
-	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","nom","prenom","date_nai_ind","email","iae","notes1","notes2"};
+	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","nom","prenom","date_nai_ind","email","iae","notes1","notes2","groupe"};
 
 	public static final String TOUTES_LES_ETAPES_LABEL = "toutes";
 
@@ -197,6 +197,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private CheckBox collapseResultatsS1;
 
 	private CheckBox collapseResultatsS2;
+	
+	private CheckBox collapseGrp;
 
 
 
@@ -601,7 +603,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 							//création du trombi en pdf
 							return listeInscritsController.getXlsStream(linscrits, listecodind,listeGroupes,libObj,  annee, typeFavori, 
-								collapseEtp.getValue(), collapseResultatsS1.getValue(),collapseResultatsS2.getValue());
+								collapseEtp.getValue(), collapseResultatsS1.getValue(),collapseResultatsS2.getValue(),collapseGrp.getValue());
 						}
 					}, nomFichierExcel);
 					resourceXls.setMIMEType("application/force-download;charset=UTF-8");
@@ -655,6 +657,17 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					collapseResultatsS2.setDescription(applicationContext.getMessage(NAME+".collapseResultatsS2.description", null, getLocale()));
 					middleResumeLayout.addComponent(collapseResultatsS2);
 					middleResumeLayout.setComponentAlignment(collapseResultatsS2, Alignment.MIDDLE_CENTER);
+					
+					if(listeGroupes != null) {
+						collapseGrp = new CheckBox(applicationContext.getMessage(NAME+".collapseGrp.title", null, getLocale()));
+						collapseGrp.setValue(false);
+						collapseGrp.addValueChangeListener(e->{
+							inscritstable.setColumnCollapsed("groupe", !collapseGrp.getValue());
+						});
+						collapseGrp.setDescription(applicationContext.getMessage(NAME+".collapseGrp.description", null, getLocale()));
+						middleResumeLayout.addComponent(collapseGrp);
+						middleResumeLayout.setComponentAlignment(collapseGrp, Alignment.MIDDLE_CENTER);
+					}
 
 
 					resumeLayout.addComponent(middleResumeLayout);
@@ -772,6 +785,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setColumnHeader("notes1", applicationContext.getMessage(NAME+".table.notes1", null, getLocale()));
 					inscritstable.addGeneratedColumn("notes2", new Session2ColumnGenerator());
 					inscritstable.setColumnHeader("notes2", applicationContext.getMessage(NAME+".table.notes2", null, getLocale()));
+					
+					inscritstable.addGeneratedColumn("groupe", new GroupeColumnGenerator());
+					inscritstable.setColumnHeader("groupe", applicationContext.getMessage(NAME+".table.groupe", null, getLocale()));
 
 					//Si on est sur un ELP
 					if(typeIsElp()){
@@ -792,9 +808,10 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setColumnCollapsingAllowed(true);
 					inscritstable.setColumnReorderingAllowed(false);
 
-					//On masque les colonnes de notes par défaut
+					//On masque les colonnes de notes et groupe par défaut
 					inscritstable.setColumnCollapsed("notes1", true);
 					inscritstable.setColumnCollapsed("notes2", true);
+					inscritstable.setColumnCollapsed("groupe", true);
 
 
 
@@ -1038,6 +1055,35 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					notelayout.addComponent(res);
 				}
 				return notelayout;
+			}
+			return null;
+		}
+	}
+	
+	
+	/** Formats the position in a column containing Date objects. */
+	@SuppressWarnings("serial")
+	class GroupeColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+			Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR 
+			BeanItem<Inscrit> bins = (BeanItem<Inscrit>) item;
+			if(bins!=null){
+				Inscrit i = (Inscrit) bins.getBean();
+				HorizontalLayout groupelayout = new HorizontalLayout();
+				groupelayout.setSpacing(true);
+				if(StringUtils.hasText(i.getCodes_groupes())){
+					Label groupes = new Label(Utils.getLibelleFromComboBox(i.getCodes_groupes(), listeGroupes));
+					groupelayout.addComponent(groupes);
+				}
+				return groupelayout;
 			}
 			return null;
 		}

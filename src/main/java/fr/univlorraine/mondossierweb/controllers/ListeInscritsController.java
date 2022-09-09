@@ -653,12 +653,11 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp) {
 
 		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-			boolean grp = listeGroupes != null;
 			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp);
 			wb.write(baos);
 			byte[] bytes = baos.toByteArray();
@@ -927,14 +926,7 @@ public class ListeInscritsController {
 				//ajout info sur les groupes si il y a lieu
 				if (withGroupe) {
 					XSSFCell cellLibGroupes = rowInscrit.createCell((short) rang_cellule_inscrit);
-					String grpXls="";
-					List<String> lcodegroup = Utils.splitStringFromSemiColon(inscrit.getCodes_groupes());
-					for(String codegroupe : lcodegroup){
-						if(StringUtils.hasText(grpXls)){
-							grpXls += ", ";
-						}
-						grpXls += listeGroupes.getItemCaption(codegroupe);
-					}
+					String grpXls = Utils.getLibelleFromComboBox(inscrit.getCodes_groupes(), listeGroupes);
 					cellLibGroupes.setCellValue(grpXls);
 					cellLibGroupes.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;

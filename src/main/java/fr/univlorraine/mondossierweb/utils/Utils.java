@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
@@ -374,6 +375,18 @@ public class Utils {
 		}else{
 			return null;
 		}
+	}
+
+	public static String getLibelleFromComboBox(String codes, ComboBox combobox) {
+		StringBuilder bld = new StringBuilder();
+		List<String> listeCodes = Utils.splitStringFromSemiColon(codes);
+		for(String code : listeCodes){
+			if(StringUtils.hasText(bld)){
+				bld.append(", ");
+			}
+			bld.append(combobox.getItemCaption(code));
+		}
+		return bld.toString();
 	}
 
 }
