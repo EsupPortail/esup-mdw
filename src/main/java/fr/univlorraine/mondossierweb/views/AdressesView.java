@@ -214,8 +214,8 @@ public class AdressesView extends VerticalLayout implements View {
 				btnModifAdresses.setIcon(FontAwesome.EDIT);
 				btnModifAdresses.addClickListener(e->{
 					ModificationAdressesWindow maw = modificationAdressesWindowFactory.getObject();
-					maw.init(MainUI.getCurrent().getEtudiant()); 
-					maw.addCloseListener(f->{init();});
+					maw.init(MainUI.getCurrent().getEtudiant(), configController.isModificationTelephoneAutorisee()); 
+					maw.addCloseListener(f->init());
 					UI.getCurrent().addWindow(maw);
 				});
 				btnLayout.addComponent(btnModifAdresses);

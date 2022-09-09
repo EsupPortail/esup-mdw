@@ -111,7 +111,7 @@ public class ModificationAdressesWindow extends Window {
 	 * @param message
 	 * @param titre
 	 */
-	public void init(Etudiant etudiant) {
+	public void init(Etudiant etudiant, boolean modificationTelephoneAutorisee) {
 		/* Style */
 		//setWidth(900, Unit.PIXELS);
 		setModal(true);
@@ -298,7 +298,9 @@ public class ModificationAdressesWindow extends Window {
 		fieldTelephone1.setWidth("326px");
 		fieldTelephone1.setMaxLength(15);
 		fieldTelephone1.setRequired(false);
-		formAdresseAnnuelleLayout.addComponent(fieldTelephone1);
+		if(modificationTelephoneAutorisee) {
+			formAdresseAnnuelleLayout.addComponent(fieldTelephone1);
+		}
 
 		//ajout du panel adresse Annuelle
 		adressesAnnuellePanel.setContent(formAdresseAnnuelleLayout);
@@ -439,7 +441,10 @@ public class ModificationAdressesWindow extends Window {
 		fieldTelephone2.setWidth("326px");
 		fieldTelephone2.setMaxLength(15);
 		fieldTelephone2.setRequired(false);
-		formAdresseFixeLayout.addComponent(fieldTelephone2);
+		if(modificationTelephoneAutorisee) {
+			formAdresseFixeLayout.addComponent(fieldTelephone2);
+		}
+
 
 		//ajout du panel adresse fixe
 		adressesFixePanel.setContent(formAdresseFixeLayout);

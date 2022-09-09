@@ -196,6 +196,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("modificationAdresses");
 	}
 	
+	public boolean isModificationTelephoneAutorisee() {
+		return getBooleanValueForParameter("modificationTelephone");
+	}
+	
 	public boolean isAffNumerosAnonymat() {
 		return getBooleanValueForParameter("affNumerosAnonymat");
 	}
