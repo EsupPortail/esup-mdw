@@ -601,9 +601,14 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							String annee=(String)listeAnnees.getValue();
 							String libObj=panelFormInscrits.getCaption();
 
+							Boolean etp = collapseEtp != null ? collapseEtp.getValue() : null;
+							Boolean s1 = collapseResultatsS1 != null ? collapseResultatsS1.getValue() : null;
+							Boolean s2 = collapseResultatsS2 !=null ? collapseResultatsS2.getValue() : null;
+							Boolean grp = collapseGrp != null ? collapseGrp.getValue() : null;
+							
 							//création du trombi en pdf
 							return listeInscritsController.getXlsStream(linscrits, listecodind,listeGroupes,libObj,  annee, typeFavori, 
-								collapseEtp.getValue(), collapseResultatsS1.getValue(),collapseResultatsS2.getValue(),collapseGrp.getValue());
+								etp, s1,s2,grp);
 						}
 					}, nomFichierExcel);
 					resourceXls.setMIMEType("application/force-download;charset=UTF-8");
