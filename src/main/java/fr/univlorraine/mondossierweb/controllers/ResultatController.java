@@ -56,9 +56,9 @@ import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatElpDTO3;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatEprDTO;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVdiDTO;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVetDTO;
-import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEpreuveElpDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEpreuveElpDto24;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEtapeResVdiVetDto2;
-import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatElpDto3;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatElpDto33;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatEprDto2;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVdiDto;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVetDto;
@@ -603,7 +603,7 @@ public class ResultatController {
 						String anneePrc = null;
 
 						//On s'occupe des résultats :
-						TableauResultatElpDto3 relpdto = cpree.getResultatsElp();
+						TableauResultatElpDto33 relpdto = cpree.getResultatsElp();
 						if (relpdto != null && relpdto.getItem() != null && !relpdto.getItem().isEmpty()) {
 							// Si l'ELP possède des résultats pour 2 MCC différentes (session unique + session double)
 							// et qu'on n'a pas déjà récupéré le tem_ses_uni de la VET
@@ -812,7 +812,7 @@ public class ResultatController {
 					}
 
 					//les epreuves de l'élément (si il y en a )
-					TableauEpreuveElpDto2 epelpdto = cpree.getEpreuvesElp();
+					TableauEpreuveElpDto24 epelpdto = cpree.getEpreuvesElp();
 
 					if (epelpdto != null && epelpdto.getItem() != null && !epelpdto.getItem().isEmpty()) {
 

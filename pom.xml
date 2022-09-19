@@ -1219,7 +1219,8 @@
 			<!-- <version>6.20.70</version> -->
 			<!-- <version>6.20.81</version> -->
 			<!-- <version>6.30.00</version> -->
-			<version>6.30.30</version>
+			<!-- <version>6.30.30</version> -->
+			<version>6.30.50</version>
 		</dependency>
 		<!-- Utils UL Lib AMUE 2021 -->
 		 <dependency>
