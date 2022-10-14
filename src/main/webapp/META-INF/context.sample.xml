@@ -117,8 +117,10 @@
 	<!-- Source des résultats lors de l'appel aux Web Services Apogée pour récupérer les notes et résultats. Apogee ou Apogee-extraction -->
 	<Parameter name="sourceResultats" value="Apogee" />
 	
-	<!-- Mode production : Desactive le mode debug -->
+	<!-- Mode production : Desactive le mode debug de vaadin. Laisser à true -->
 	<Parameter name="productionMode" value="true" />
+	<!-- Mode debug : Active le mode debug pour les classes mondossierweb -->
+	<Parameter name="debugMode" value="false" />
 	
 	<!-- Active/Desactive le push -->
 	<Parameter name="enablePush" value="true" />
