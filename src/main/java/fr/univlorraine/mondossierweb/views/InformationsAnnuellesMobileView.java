@@ -120,12 +120,12 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
-							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
+						MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(ListeInscritsMobileView.NAME)){
 						MdwTouchkitUI.getCurrent().navigateToListeInscrits();
 					}else{
 
 						if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
-								MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
+							MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
 							MdwTouchkitUI.getCurrent().navigateToRecherche(null);
 						}
 					}
@@ -143,7 +143,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			if(userController.isEnseignant()){
 				//Si on ne peut pas déjà revenir sur la recherche via le bouton 'retour'
 				if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()==null ||
-						!MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
+					!MdwTouchkitUI.getCurrent().getDossierEtuFromView().equals(RechercheMobileView.NAME)){
 					//Bouton Search
 					Button searchButton = new Button();
 					searchButton.setIcon(FontAwesome.SEARCH);
@@ -263,7 +263,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					}
 					//Si on a au moins une inscription
 					if(MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae() !=null &&
-							!MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().isEmpty()){
+						!MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().isEmpty()){
 						Inscription inscription = MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().get(0);
 
 						//Si on peut proposer le certificat de scolarité
@@ -293,62 +293,65 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				}
 
 
+				// Infos annuelles
+				if((userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignants()) || userController.isEtudiant()){
 
-
-
-				//Numéro Anonymat visible que si l'utilisateur est étudiant
-				List<Anonymat> lano = null;
-				if(!userController.isEnseignant() && userController.isEtudiant()){
-					lano = MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat();
-					if(lano!=null) {
-						//Si l'étudiant n'a qu'un seul numéro d'anonymat
-						if(lano.size()==1){
-							String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
-							formatTextField(fieldNumAnonymat);
-							//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-							//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-							formInfosLayout.addComponent(fieldNumAnonymat);
-						}
-						//Si l'étudiant a plusieurs numéros d'anonymat
-						if(lano.size()>1){
-							int i=0;
-							for(Anonymat ano : lano){
-								String captionNumAnonymat = "";
-								if(i==0){
-									//Pour le premier numéro affiché on affiche le libellé du champ
-									captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
-								}
-								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+					//Numéro Anonymat visible que si l'utilisateur est étudiant
+					List<Anonymat> lano = null;
+					if(userController.isEtudiant()){
+						lano = MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat();
+						if(lano!=null) {
+							//Si l'étudiant n'a qu'un seul numéro d'anonymat
+							if(lano.size()==1){
+								String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
+								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
 								formatTextField(fieldNumAnonymat);
-								if(i==0){
-									//Pour le premier numéro affiché on affiche l'info bulle
-									//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-									//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-								}
+								//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+								//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 								formInfosLayout.addComponent(fieldNumAnonymat);
-								i++;
+							}
+							//Si l'étudiant a plusieurs numéros d'anonymat
+							if(lano.size()>1){
+								int i=0;
+								for(Anonymat ano : lano){
+									String captionNumAnonymat = "";
+									if(i==0){
+										//Pour le premier numéro affiché on affiche le libellé du champ
+										captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
+									}
+									TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+									formatTextField(fieldNumAnonymat);
+									if(i==0){
+										//Pour le premier numéro affiché on affiche l'info bulle
+										//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+										//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+									}
+									formInfosLayout.addComponent(fieldNumAnonymat);
+									i++;
+								}
 							}
 						}
 					}
+
+					if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffBoursierEnseignants() )) {
+						String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
+						TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().isBoursier() ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
+						formatTextField(fieldNumBoursier);
+						formInfosLayout.addComponent(fieldNumBoursier);
+					}
+					if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffSalarieEnseignants() )) {
+						String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
+						TextField fieldSalarie = new TextField(captionSalarie, MdwTouchkitUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
+						formatTextField(fieldSalarie);
+						formInfosLayout.addComponent(fieldSalarie);
+					}
+					if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffAmenagementEnseignants() )) {
+						String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
+						TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MdwTouchkitUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
+						formatTextField(fieldAmenagementEtude);
+						formInfosLayout.addComponent(fieldAmenagementEtude);
+					}
 				}
-
-				String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-				TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().isBoursier() ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
-				formatTextField(fieldNumBoursier);
-				formInfosLayout.addComponent(fieldNumBoursier);
-
-				String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-				TextField fieldSalarie = new TextField(captionSalarie, MdwTouchkitUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
-				formatTextField(fieldSalarie);
-				formInfosLayout.addComponent(fieldSalarie);
-
-				String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-				TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MdwTouchkitUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
-				formatTextField(fieldAmenagementEtude);
-				formInfosLayout.addComponent(fieldAmenagementEtude);
-
-
 
 				panelInfos.setContent(formInfosLayout);
 

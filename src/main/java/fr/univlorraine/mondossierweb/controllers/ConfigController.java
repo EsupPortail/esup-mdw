@@ -272,6 +272,18 @@ public class ConfigController {
 	public boolean isAffInfosAnnuellesEnseignants() {
 		return getBooleanValueForParameter("affInfosAnnuellesEnseignants");
 	}
+	
+	public boolean isAffBoursierEnseignants() {
+		return getBooleanValueForParameter("affBoursierEnseignants");
+	}
+	
+	public boolean isAffSalarieEnseignants() {
+		return getBooleanValueForParameter("affSalarieEnseignants");
+	}
+	
+	public boolean isAffAmenagementEnseignants() {
+		return getBooleanValueForParameter("affAmenagementEnseignants");
+	}
 
 	public boolean isAffInfosContactEnseignants() {
 		return getBooleanValueForParameter("affInfosContactEnseignants");

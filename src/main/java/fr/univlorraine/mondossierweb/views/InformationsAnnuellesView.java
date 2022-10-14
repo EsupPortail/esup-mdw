@@ -42,6 +42,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
@@ -65,6 +66,8 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 	private transient UserController userController;
 	@Resource
 	private transient EtudiantController etudiantController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	/**
@@ -74,7 +77,7 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MainUI && ((userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignants()) || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
@@ -132,21 +135,24 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 				}
 			}
 
-			String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-			TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().isBoursier()  ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
-			formatTextField(fieldNumBoursier);
-			formInfosLayout.addComponent(fieldNumBoursier);
-
-			String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-			TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
-			formatTextField(fieldSalarie);
-			formInfosLayout.addComponent(fieldSalarie);
-
-			String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-			TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
-			formatTextField(fieldAmenagementEtude);
-			formInfosLayout.addComponent(fieldAmenagementEtude);
-
+			if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffBoursierEnseignants() )) {
+				String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
+				TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().isBoursier()  ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
+				formatTextField(fieldNumBoursier);
+				formInfosLayout.addComponent(fieldNumBoursier);
+			}
+			if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffSalarieEnseignants() )) {
+				String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
+				TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
+				formatTextField(fieldSalarie);
+				formInfosLayout.addComponent(fieldSalarie);
+			}
+			if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffAmenagementEnseignants() )) {
+				String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
+				TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
+				formatTextField(fieldAmenagementEtude);
+				formInfosLayout.addComponent(fieldAmenagementEtude);
+			}
 
 
 			panelInfos.setContent(formInfosLayout);
