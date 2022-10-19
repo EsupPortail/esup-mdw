@@ -827,13 +827,13 @@ public class MainUI extends GenericUI {
 			mainMenu.addComponent(usernameLabel);
 
 			/* Etat Civil */
-			addItemMenu("Etat-civil", EtatCivilView.NAME, FontAwesome.USER);
+			addItemMenu(applicationContext.getMessage(EtatCivilView.NAME + ".title", null, getLocale()), EtatCivilView.NAME, FontAwesome.USER);
 
 			//info annuelles 
 			if(userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignants()){
 				//visibles que si étudiant inscrit pour l'année en cours
 				if(etudiant.isInscritPourAnneeEnCours()){
-					addItemMenu("Informations annuelles", InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
+					addItemMenu(applicationContext.getMessage(InformationsAnnuellesView.NAME + ".title", null, getLocale()), InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
 				}
 			}
 
@@ -844,11 +844,11 @@ public class MainUI extends GenericUI {
 
 
 			/* Inscriptions */
-			addItemMenu("Inscriptions", InscriptionsView.NAME, FontAwesome.FILE_TEXT);
+			addItemMenu(applicationContext.getMessage(InscriptionsView.NAME + ".title", null, getLocale()), InscriptionsView.NAME, FontAwesome.FILE_TEXT);
 
 			/* Calendrier */
 			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
-				addItemMenu("Calendrier des épreuves", CalendrierView.NAME, FontAwesome.CALENDAR);
+				addItemMenu(applicationContext.getMessage(CalendrierView.NAME + ".title", null, getLocale()), CalendrierView.NAME, FontAwesome.CALENDAR);
 			}
 
 			/* Notes et Résultats */
@@ -871,7 +871,7 @@ public class MainUI extends GenericUI {
 			/* Deconnexion */
 			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
 			if(configController.isLogoutCasPropose() && userController.isEtudiant()){
-				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
+				Button decoBtn = new Button(applicationContext.getMessage("buttonDeconnexion.label", null, getLocale()), FontAwesome.SIGN_OUT);
 				decoBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 				decoBtn.addClickListener(e -> {
 					userController.disconnectUser();
