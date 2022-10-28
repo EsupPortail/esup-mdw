@@ -209,7 +209,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 			//Si un des profils du compte ldap correspond au profil doctorant (potentiellement "enseignant" en priorité)
 			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_DOCTORANT)) { 
-				// On cherche d'abors à savoir si c'est un enseignant
+				// On cherche d'abord à savoir si c'est un enseignant
 				if(determineEnseignant(username)) {
 					return new String[]{Utils.TEACHER_USER};
 				}
