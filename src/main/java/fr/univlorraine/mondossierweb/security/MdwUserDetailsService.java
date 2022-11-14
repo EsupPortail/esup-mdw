@@ -194,11 +194,11 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 
 	public String[] determineTypeUser(String username) {
-		log.debug("   determineTypeUser "+username);
+		log.info("   determineTypeUser "+username);
 
 		List<String> llogins=configController.getListeLoginsBloques();
 		if(llogins!=null && llogins.contains(username)){
-			log.debug("utilisateur "+username+" bloqué car il a été exclu de l'application");
+			log.info("utilisateur "+username+" bloqué car il a été exclu de l'application");
 			return new String[]{Utils.UNAUTHORIZED_USER};
 
 		}else{
@@ -249,7 +249,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 				return new String[]{Utils.TEACHER_USER};
 			}
 
-			log.debug("utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+			log.info("utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
 			return new String[]{Utils.UNAUTHORIZED_USER};
 
 		}
@@ -330,19 +330,19 @@ public class MdwUserDetailsService implements UserDetailsService {
 					}
 				}*/
 				if(!userldap){
-					log.debug("utilisateur "+username+" n'appartient à aucun groupe ldap autorises");
+					log.info("utilisateur "+username+" n'appartient à aucun groupe ldap autorises");
 				}					
 			}
 		}
 
 		if (useruportal || userldap) {
 			//c'est un utilisateur uportal il est donc autorisé en tant qu'enseignant
-			log.debug("USER "+username+" ENSEIGNANT VIA UPORTAL OU GROUPE LDAP");
+			log.info("USER "+username+" ENSEIGNANT VIA UPORTAL OU GROUPE LDAP");
 			return true;
 
 		} else {
 			//va voir dans apogée
-			log.debug("USER "+username+" NON ENSEIGNANT VIA UPORTAL OU GROUPES LDAP -> Recherche Apogée");
+			log.info("USER "+username+" NON ENSEIGNANT VIA UPORTAL OU GROUPES LDAP -> Recherche Apogée");
 
 			//On test si on doit chercher l'utilisateur dans Apogee
 			if(PropertyUtils.isLoginApogee()){
@@ -353,10 +353,10 @@ public class MdwUserDetailsService implements UserDetailsService {
 
 					// Si l'utilisateur a été trouvé et qu'il est en service (si on doit tester le témoin En_SERVICE)
 					if (uti != null && (uti.isTemEnService() || !PropertyUtils.isCheckTesUtilisateurApogee())) {
-						log.debug("USER "+username+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
+						log.info("USER "+username+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
 						return true;
 					} else {
-						log.debug("utilisateur "+username+" n'appartient à aucun groupe uportal ou ldap, et n'est pas dans la table utilisateur d'APOGEE ");
+						log.info("utilisateur "+username+" n'appartient à aucun groupe uportal ou ldap, et n'est pas dans la table utilisateur d'APOGEE ");
 					}
 				} catch (Exception ex) {
 					log.error("Probleme lors de la vérification de l'existence de l'utilisateur "+username+" dans la table Utilisateur de Apogee",ex);
@@ -400,7 +400,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 	 */
 	public List<String> getLdapProfiles(final String login) {
 		try {
-			log.debug("     getLdapProfiles searchForUser : "+login);
+			log.info("     getLdapProfiles searchForUser : "+login);
 			DirContextOperations dco = ldapUserSearch.searchForUser(login);
 			if(dco != null){
 				List<String> profilsLdap = new LinkedList<String> ();
@@ -412,10 +412,10 @@ public class MdwUserDetailsService implements UserDetailsService {
 				if(compteLdapMatch(dco, PropertyUtils.getAttributLdapDoctorant(), PropertyUtils.getValeursAttributLdapDoctorant())) {
 					profilsLdap.add(Utils.LDAP_DOCTORANT);
 				}
-				log.debug("Profils LDAP "+login+" : "+profilsLdap);
+				log.info("Profils LDAP "+login+" : "+profilsLdap);
 				return profilsLdap;
 			}
-			log.debug("Compte LDAP "+login+" non trouve");
+			log.info("Compte LDAP "+login+" non trouve");
 			return null;
 		} catch (Exception e) {
 			log.error("Probleme à la recuperation de l'utilisateur : "+login+" dans le LDAP",e);
