@@ -41,6 +41,8 @@ public class MdwUserDetails implements UserDetails {
 	private String codetu;
 
 	private boolean admin;
+	
+	private boolean isGestionnaire;
 
 	private boolean isEnseignant;
 
@@ -74,6 +76,10 @@ public class MdwUserDetails implements UserDetails {
 
 		this.type = droit;
 
+		if(droit.equals(Utils.GEST_USER)){
+			this.isGestionnaire = true;
+		}
+		
 		if(droit.equals(Utils.TEACHER_USER)){
 			this.isEnseignant = true;
 		}
@@ -83,8 +89,8 @@ public class MdwUserDetails implements UserDetails {
 			this.codetu = profil[1];
 		}
 
-		//Si admin ou teacher ou student , le user est autorisé a consulter un dossier étudiant
-		if(droit.equals(Utils.ADMIN_USER) || droit.equals(Utils.TEACHER_USER) || droit.equals(Utils.STUDENT_USER)){
+		//Si admin, gest, teacher ou student :  le user est autorisé a consulter un dossier étudiant
+		if(droit.equals(Utils.ADMIN_USER) || droit.equals(Utils.GEST_USER) || droit.equals(Utils.TEACHER_USER) || droit.equals(Utils.STUDENT_USER)){
 			authorities.add(new SimpleGrantedAuthority(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE));
 		}
 
@@ -94,6 +100,9 @@ public class MdwUserDetails implements UserDetails {
 			//on rajoute le droit teacher_user
 			this.isEnseignant = true;
 			authorities.add(new SimpleGrantedAuthority(Utils.TEACHER_USER));
+			//on rajoute le droit gest_user
+			this.isGestionnaire = true;
+			authorities.add(new SimpleGrantedAuthority(Utils.GEST_USER));
 		}
 
 

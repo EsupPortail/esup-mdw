@@ -86,6 +86,11 @@ public class Utils {
 	 * type utilisateur enseignant.
 	 */
 	public static final String TEACHER_USER = "teacher";
+	
+	/**
+	 * type utilisateur gestionnaire.
+	 */
+	public static final String GEST_USER = "gestionnaire";
 
 	/**
 	 * type utilisateur non-autorisé.
@@ -166,6 +171,12 @@ public class Utils {
 	public static final String LDAP_ETUDIANT = "LDAP_ETUDIANT";
 	
 	public static final String LDAP_DOCTORANT = "LDAP_DOCTORANT";
+	
+	public static final String LDAP_GEST = "LDAP_GEST";
+	
+	public static final Object PROFIL_GEST = "GEST";
+	
+	public static final Object PROFIL_ENS = "ENS";
 
 	/** Durée en heure de la durée maxi de validité d'un swap utilisateur */
 	public static final int NB_HEURE_DUREE_SWAP_USER = 1;
@@ -215,6 +226,8 @@ public class Utils {
 	//liste des vues enseignants dont l'accès est à protéger
 	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
 		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
+
+
 
 	
 

@@ -110,6 +110,10 @@ public class ConfigController {
 	public boolean isPartieEnseignantActive() {
 		return getBooleanValueForParameter("partieEnseignantActive");
 	}
+	
+	public boolean isProfilGestionnaireActif() {
+		return getBooleanValueForParameter("profilGestionnaireActif");
+	}
 
 	public boolean isPartieEtudiantActive() {
 		return getBooleanValueForParameter("partieEtudiantActive");

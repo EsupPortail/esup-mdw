@@ -695,7 +695,9 @@ public class MdwTouchkitUI extends GenericUI{
 
 	private boolean applicationActive(){
 		return configController.isApplicationMobileActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-				|| (!userController.isEnseignant() && !userController.isEtudiant()) || (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+				|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
+				|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
+				|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
 	}
 
 	public void startBusyIndicator() {

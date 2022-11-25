@@ -206,14 +206,26 @@ public class MdwUserDetailsService implements UserDetailsService {
 			List<String> profisLdap = getLdapProfiles(username);
 
 			boolean doctorantNonEnseignant = false;
+			boolean doctorantNonGestionnaire = false;
 
 			//Si un des profils du compte ldap correspond au profil doctorant (potentiellement "enseignant" en priorité)
+			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_GEST)) { 
+				return new String[]{Utils.GEST_USER};
+			}
+			
+			//Si un des profils du compte ldap correspond au profil doctorant (potentiellement "enseignant" en priorité)
 			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_DOCTORANT)) { 
-				// On cherche d'abord à savoir si c'est un enseignant
+				// On cherche d'abord à savoir si c'est un gestionnaire
+				if(determineGestionnaire(username)) {
+					return new String[]{Utils.GEST_USER};
+				}
+				doctorantNonGestionnaire = true;
+				// Puis si c'est un enseignant
 				if(determineEnseignant(username)) {
 					return new String[]{Utils.TEACHER_USER};
 				}
 				doctorantNonEnseignant = true;
+				
 			}
 
 			//Si un des profils du compte ldap correspond au profil étudiant
@@ -244,6 +256,11 @@ public class MdwUserDetailsService implements UserDetailsService {
 				return new String[]{Utils.STUDENT_USER,codetu};
 			}
 
+			// Si c'est un gestionnaire (si c'est un doctorantNonGestionnaire on ne refait pas le test pour rien)
+			if(!doctorantNonGestionnaire && determineGestionnaire(username)) {
+				return new String[]{Utils.GEST_USER};
+			}
+			
 			// Si c'est un enseignant (si c'est un doctorantNonEnseignant on ne refait pas le test pour rien)
 			if(!doctorantNonEnseignant && determineEnseignant(username)) {
 				return new String[]{Utils.TEACHER_USER};
@@ -256,6 +273,34 @@ public class MdwUserDetailsService implements UserDetailsService {
 	}
 
 
+	private boolean determineGestionnaire(String username) {
+		// Inutile de rechercher dans le ldap car cette étape a été effectuée dans getLdapProfiles, appelée par determineTypeUser
+		// On regarde si on doit chercher un utilisateur au profil GEST dans Apogee
+		if(PropertyUtils.isLoginApogee() && PropertyUtils.getProfilUtilisateurApogee().equals(Utils.PROFIL_GEST)){
+			return estUtilisateurApogeeValide(username);
+		}
+		return false;
+	}
+
+
+	private boolean estUtilisateurApogeeValide(String username) {
+		//Test de la présence dans la table utilisateur d'Apogee
+		//on regarde si il est dans la table utilisateur 
+		try {
+			Utilisateur uti = utilisateurService.findUtilisateur(username.toUpperCase());
+
+			// Si l'utilisateur a été trouvé et qu'il est en service (si on doit tester le témoin En_SERVICE)
+			if (uti != null && (uti.isTemEnService() || !PropertyUtils.isCheckTesUtilisateurApogee())) {
+				log.info("USER "+username+" GESTIONNAIRE VIA APOGEE.UTILISATEUR. Profil : "+PropertyUtils.getProfilUtilisateurApogee());
+				return true;
+			} else {
+				log.info("utilisateur "+username+" n'est pas dans la table utilisateur d'APOGEE ");
+			}
+		} catch (Exception ex) {
+			log.error("Probleme lors de la vérification de l'existence de l'utilisateur "+username+" dans la table Utilisateur de Apogee",ex);
+		}
+		return false;
+	}
 
 
 
@@ -344,22 +389,10 @@ public class MdwUserDetailsService implements UserDetailsService {
 			//va voir dans apogée
 			log.info("USER "+username+" NON ENSEIGNANT VIA UPORTAL OU GROUPES LDAP -> Recherche Apogée");
 
-			//On test si on doit chercher l'utilisateur dans Apogee
-			if(PropertyUtils.isLoginApogee()){
-				//Test de la présence dans la table utilisateur d'Apogee
-				//on regarde si il est dans la table utilisateur 
-				try {
-					Utilisateur uti = utilisateurService.findUtilisateur(username.toUpperCase());
-
-					// Si l'utilisateur a été trouvé et qu'il est en service (si on doit tester le témoin En_SERVICE)
-					if (uti != null && (uti.isTemEnService() || !PropertyUtils.isCheckTesUtilisateurApogee())) {
-						log.info("USER "+username+" ENSEIGNANT VIA APOGEE.UTILISATEUR");
-						return true;
-					} else {
-						log.info("utilisateur "+username+" n'appartient à aucun groupe uportal ou ldap, et n'est pas dans la table utilisateur d'APOGEE ");
-					}
-				} catch (Exception ex) {
-					log.error("Probleme lors de la vérification de l'existence de l'utilisateur "+username+" dans la table Utilisateur de Apogee",ex);
+			//On test si on doit chercher un utilisateur au profil ENS dans Apogee
+			if(PropertyUtils.isLoginApogee() && PropertyUtils.getProfilUtilisateurApogee().equals(Utils.PROFIL_ENS)){
+				if(estUtilisateurApogeeValide(username)) {
+					return true;
 				}
 			}else{
 				log.info("Utilisateur "+username+" n'appartient à aucun groupe uportal ou  ldap");
@@ -411,6 +444,10 @@ public class MdwUserDetailsService implements UserDetailsService {
 				// Test si doctorant
 				if(compteLdapMatch(dco, PropertyUtils.getAttributLdapDoctorant(), PropertyUtils.getValeursAttributLdapDoctorant())) {
 					profilsLdap.add(Utils.LDAP_DOCTORANT);
+				}
+				// Test si gestionnaire
+				if(compteLdapMatch(dco, PropertyUtils.getAttributLdapGestionnaire(), PropertyUtils.getValeursAttributLdapGestionnaire())) {
+					profilsLdap.add(Utils.LDAP_GEST);
 				}
 				log.info("Profils LDAP "+login+" : "+profilsLdap);
 				return profilsLdap;

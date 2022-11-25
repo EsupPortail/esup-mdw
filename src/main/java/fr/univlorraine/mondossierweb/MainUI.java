@@ -369,7 +369,7 @@ public class MainUI extends GenericUI {
 				}
 				//On bloque l'accès aux vues enseignants
 				if(Utils.isViewEnseignant(event.getViewName())){
-					//Si utilisateur n'est pas enseignant
+					//Si utilisateur n'est pas enseignant ou gestionnaire
 					if(!userController.isEnseignant()){
 						//acces bloque
 						return false;
@@ -492,11 +492,6 @@ public class MainUI extends GenericUI {
 					etudiantController.recupererEtatCivil();
 					//On construit le menu affiché à l'étudiant
 					buildMainMenuEtudiant();
-					//Test des erreurs de session éventuelles
-					/*if(!etudiant.getCod_etu().equals(userController.getCodetu())){
-						LOG.error("Erreur possible de session : "+userController.getCodetu()+"accede au dossier : "+etudiant.getCod_etu());
-						displayViewFullScreen(ErreurView.NAME);
-					}*/
 				}
 
 
@@ -517,12 +512,6 @@ public class MainUI extends GenericUI {
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigationComplete=true;
 					}
-
-					/*if(fragment.contains("accesNotesEtudiant") && userController.isEnseignant()){
-						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
-						navigator.navigateTo(NotesView.NAME);
-						navigationComplete=true;
-					}*/
 				}
 
 				if(!navigationComplete){
@@ -1049,7 +1038,9 @@ public class MainUI extends GenericUI {
 
 	private boolean applicationActive(){
 		return configController.isApplicationActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-			|| (!userController.isEnseignant() && !userController.isEtudiant()) || (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+			|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
+			|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
+			|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
 	}
 
 	/**

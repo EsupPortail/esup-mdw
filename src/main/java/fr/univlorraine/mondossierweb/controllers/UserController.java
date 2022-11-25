@@ -142,9 +142,14 @@ public class UserController {
 	}
 
 	public boolean isEnseignant() {
-		return getCurrentUser().isEnseignant();
+		// un gestionnaire est un enseignant ++, il a tous les droits des enseignants
+		return getCurrentUser().isEnseignant() || getCurrentUser().isGestionnaire() ;
 	}
-
+	
+	public boolean isGestionnaire() {
+		return getCurrentUser().isGestionnaire();
+	}
+	
 	public boolean isEtudiant() {		
 		return getCurrentUser().isEtudiant();
 	}
