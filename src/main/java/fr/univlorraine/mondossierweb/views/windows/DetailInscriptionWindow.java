@@ -98,10 +98,10 @@ public class DetailInscriptionWindow extends Window {
 			//Test si user enseignant
 			if(userController.isEnseignant()){
 				//On recupere le détail de l'IP pour un enseignant
-				resultatController.renseigneDetailInscriptionEnseignant(etape);
+				resultatController.renseigneDetailInscription(etape, userController.isGestionnaire());
 			}else{
 				//On récupère le détail de l'IP pour un étudiant
-				resultatController.renseigneDetailInscription(etape);
+				resultatController.renseigneDetailInscriptionEtudiant(etape);
 			}
 
 			/* Layout */

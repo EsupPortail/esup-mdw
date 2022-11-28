@@ -178,10 +178,10 @@ public class RechercheController {
 				if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
 					MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 					etudiantController.recupererEtatCivil();
-					if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants()) || configController.isAffCalendrierEpreuvesEnseignants()){
+					if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || configController.isAffCalendrierEpreuvesEnseignant()){
 						etudiantController.recupererCalendrierExamens();
 					}
-					resultatController.recupererNotesEtResultatsEnseignant(MdwTouchkitUI.getCurrent().getEtudiant());
+					resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
 				}
 				if(fromSearch){
 					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();

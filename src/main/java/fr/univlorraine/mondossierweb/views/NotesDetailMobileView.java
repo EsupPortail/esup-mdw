@@ -146,10 +146,10 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				//Test si user enseignant
 				if(userController.isEnseignant()){
 					//On recupere les notes pour un enseignant
-					resultatController.renseigneDetailNotesEtResultatsEnseignant(etapeToDisplay);
+					resultatController.renseigneDetailNotesEtResultats(etapeToDisplay, userController.isGestionnaire());
 				}else{
 					//On récupère les notes pour un étudiant
-					resultatController.renseigneDetailNotesEtResultats(etapeToDisplay);
+					resultatController.renseigneDetailNotesEtResultatsEtudiant(etapeToDisplay);
 				}
 
 				//NAVBAR

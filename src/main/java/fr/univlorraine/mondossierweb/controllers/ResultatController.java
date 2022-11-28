@@ -84,7 +84,7 @@ public class ResultatController {
 
 	@Resource
 	private EtudiantController etudiantController;
-	
+
 	/** {@link MultipleApogeeServiceImpl} */
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
@@ -98,7 +98,7 @@ public class ResultatController {
 	 * va chercher et renseigne les notes de
 	 * l'étudiant via le WS de l'Amue.
 	 */
-	public void recupererNotesEtResultats(Etudiant e) {
+	public void recupererNotesEtResultatsEtudiant(Etudiant e) {
 
 		try {
 			e.getDiplomes().clear();
@@ -181,24 +181,35 @@ public class ResultatController {
 	 * va chercher et renseigne les notes de
 	 * l'étudiant à destination d'un enseignant via le WS de l'Amue.
 	 */
-	public void recupererNotesEtResultatsEnseignant(Etudiant e) {
+	public void recupererNotesEtResultats(Etudiant e, boolean isGestionnaire) {
 
 		if(e!=null && StringUtils.hasText(e.getCod_etu())){
 			try {
 				e.getDiplomes().clear();
 				e.getEtapes().clear();
 
-				String temoin = configController.getTemoinNotesEnseignant();
+				
+				String temoin = null;
+				String temoinEtatIae = null;
+				String sourceResultat = PropertyUtils.getSourceResultats();
+				
+				if(isGestionnaire) {
+					temoin = configController.getTemoinNotesGestionnaire();
+					temoinEtatIae = configController.getTemoinEtatIaeNotesGestionnaire();
+				} else {
+					temoin = configController.getTemoinNotesEnseignant();
+					temoinEtatIae = configController.getTemoinEtatIaeNotesEnseignant();
+				}
+				
 				if(temoin == null || temoin.equals("")){
 					temoin="AET";
 				}
 
-				String temoinEtatIae = configController.getTemoinEtatIaeNotesEnseignant();
 				if(temoinEtatIae == null || temoinEtatIae.equals("")){
 					temoinEtatIae="E";
 				}
 
-				String sourceResultat = PropertyUtils.getSourceResultats();
+				
 				if(sourceResultat == null || sourceResultat.equals("")){
 					sourceResultat = Utils.APOGEE;
 				}
@@ -1186,7 +1197,7 @@ public class ResultatController {
 	 * et résultats des éléments de l'etape choisie
 	 * de l'étudiant placé en paramètre via le WS de l'Amue.
 	 */
-	public void recupererDetailNotesEtResultats(Etudiant e,Etape et, boolean forceSourceApogee){
+	public void recupererDetailNotesEtResultatsEtudiant(Etudiant e,Etape et, boolean forceSourceApogee){
 		try {
 
 			e.getElementsPedagogiques().clear();
@@ -1250,23 +1261,31 @@ public class ResultatController {
 	 * va chercher et renseigne les notes de
 	 * l'étudiant via le WS de l'Amue.
 	 */
-	public void recupererDetailNotesEtResultatsEnseignant(Etudiant e,Etape et, boolean forceSourceApogee){
+	public void recupererDetailNotesEtResultats(Etudiant e,Etape et, boolean forceSourceApogee, boolean isGestionnaire){
 		try {
 
 			e.getElementsPedagogiques().clear();
 
-			String temoin = configController.getTemoinNotesEnseignant();
+			String temoin = null;
+			String temoinEtatIae = null;
+			String sourceResultat = PropertyUtils.getSourceResultats();
+			
+			if(isGestionnaire) {
+				temoin = configController.getTemoinNotesGestionnaire();
+				temoinEtatIae = configController.getTemoinEtatIaeNotesGestionnaire();
+			} else {
+				temoin = configController.getTemoinNotesEnseignant();
+				temoinEtatIae = configController.getTemoinEtatIaeNotesEnseignant();
+			}
+
 			if(temoin == null || temoin.equals("")){
 				temoin="AET";
 			}
 
-			String temoinEtatIae = configController.getTemoinEtatIaeNotesEnseignant();
 			if(temoinEtatIae == null || temoinEtatIae.equals("")){
 				temoinEtatIae="E";
 			}
 
-
-			String sourceResultat = PropertyUtils.getSourceResultats();
 			if(forceSourceApogee || sourceResultat == null || sourceResultat.equals("")){
 				sourceResultat = Utils.APOGEE;
 			}
@@ -1348,12 +1367,12 @@ public class ResultatController {
 		return false;
 	}
 
-	public void renseigneNotesEtResultats(Etudiant e) {
+	public void renseigneNotesEtResultatsEtudiant(Etudiant e) {
 		//On regarde si on a pas déjà les infos dans le cache:
 		String rang = getRangNotesEtResultatsEnCache(true,e);
 
 		if(rang == null){
-			recupererNotesEtResultats(e);
+			recupererNotesEtResultatsEtudiant(e);
 			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
 			ajouterCacheResultatVdiVet(true,e);
 		}else{
@@ -1362,11 +1381,11 @@ public class ResultatController {
 		}
 	}
 
-	public void renseigneNotesEtResultatsVueEnseignant(Etudiant e) {
+	public void renseigneNotesEtResultats(Etudiant e, boolean isGestionnaire) {
 		//On regarde si on a pas déjà les infos dans le cache:
 		String rang = getRangNotesEtResultatsEnCache(false,e);
 		if(rang == null){
-			recupererNotesEtResultatsEnseignant(e);
+			recupererNotesEtResultats(e, isGestionnaire);
 			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
 			ajouterCacheResultatVdiVet(false,e);
 		}else{
@@ -1374,7 +1393,8 @@ public class ResultatController {
 			recupererCacheResultatVdiVet(new Integer(rang),e);
 		}
 	}
-	public void renseigneDetailInscription(Etape etape) {
+
+	public void renseigneDetailInscriptionEtudiant(Etape etape) {
 		//Récupération de la source des résultats
 		String sourceResultat = PropertyUtils.getSourceResultats();
 		if(sourceResultat == null || sourceResultat.equals("")){
@@ -1388,7 +1408,7 @@ public class ResultatController {
 			String rang = getRangDetailInscriptionEnCache(etape,GenericUI.getCurrent().getEtudiant());
 
 			if(rang == null){
-				recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,true);
+				recupererDetailNotesEtResultatsEtudiant(GenericUI.getCurrent().getEtudiant(),etape,true);
 				//AJOUT DES INFOS recupérées dans le cache.
 				ajouterCacheDetailInscription(etape,GenericUI.getCurrent().getEtudiant());
 			}else{
@@ -1399,11 +1419,11 @@ public class ResultatController {
 		}else{
 			LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
 			//Méthode de récupération de l'IP commune aux notes
-			renseigneDetailNotesEtResultats(etape);
+			renseigneDetailNotesEtResultatsEtudiant(etape);
 		}
 	}
 
-	public void renseigneDetailInscriptionEnseignant(Etape etape) {
+	public void renseigneDetailInscription(Etape etape, boolean isGestionnaire) {
 		//Récupération de la source des résultats
 		String sourceResultat = PropertyUtils.getSourceResultats();
 		if(sourceResultat == null || sourceResultat.equals("")){
@@ -1417,7 +1437,7 @@ public class ResultatController {
 			String rang = getRangDetailInscriptionEnCache(etape,GenericUI.getCurrent().getEtudiant());
 
 			if(rang == null){
-				recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape,true);
+				recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,true, isGestionnaire);
 				//AJOUT DES INFOS recupérées dans le cache.
 				ajouterCacheDetailInscription(etape,GenericUI.getCurrent().getEtudiant());
 			}else{
@@ -1427,17 +1447,18 @@ public class ResultatController {
 		}else{
 			LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
 			//Méthode de récupération de l'IP commune aux notes
-			renseigneDetailNotesEtResultatsEnseignant(etape);
+			renseigneDetailNotesEtResultats(etape, isGestionnaire);
 		}
 
 	}
 
-	public void renseigneDetailNotesEtResultats(Etape etape) {
+	// Renseigne les résultats pour un utiliateur étudiant
+	public void renseigneDetailNotesEtResultatsEtudiant(Etape etape) {
 		//On regarde si on a pas déjà les infos dans le cache:
 		String rang = getRangDetailNotesEtResultatsEnCache(etape,true,GenericUI.getCurrent().getEtudiant());
 
 		if(rang == null){
-			recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,false);
+			recupererDetailNotesEtResultatsEtudiant(GenericUI.getCurrent().getEtudiant(),etape,false);
 			//AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
 			ajouterCacheDetailNotesEtResultats(etape,true,GenericUI.getCurrent().getEtudiant());
 		}else{
@@ -1446,11 +1467,12 @@ public class ResultatController {
 		}
 	}
 
-	public void renseigneDetailNotesEtResultatsEnseignant(Etape etape) {
+	// Renseigne les résultats pour un utilisateur enseignant ou un gestionnaire
+	public void renseigneDetailNotesEtResultats(Etape etape, boolean isGestionnaire) {
 		//On regarde si on a pas déjà les infos dans le cache:
 		String rang = getRangDetailNotesEtResultatsEnCache(etape,false,GenericUI.getCurrent().getEtudiant());
 		if(rang == null){
-			recupererDetailNotesEtResultatsEnseignant(GenericUI.getCurrent().getEtudiant(),etape,false);
+			recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(),etape,false, isGestionnaire);
 			//AJOUT DES INFOS recupérées dans le cache. false car on est en vue Enseignant
 			ajouterCacheDetailNotesEtResultats(etape,false,GenericUI.getCurrent().getEtudiant());
 		}else{

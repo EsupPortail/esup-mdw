@@ -79,16 +79,25 @@ public class ConfigController {
 	public boolean isAttestationAffiliationSSO(){
 		return getBooleanValueForParameter("attestationAffiliationSSO");
 	}
-	public boolean isAttestSsoAutorisePersonnel(){
-		return getBooleanValueForParameter("attestSsoAutorisePersonnel");
+	
+	public boolean isAttestSsoAutoriseGestionnaire(){
+		return getBooleanValueForParameter("attestSsoAutoriseGestionnaire");
+	}
+	
+	public boolean isAttestSsoAutoriseEnseignant(){
+		return getBooleanValueForParameter("attestSsoAutoriseEnseignant");
 	}
 
 	public boolean isCertificatScolariteTouteAnnee() {
 		return getBooleanValueForParameter("certificatScolariteTouteAnnee");
 	}
 
-	public boolean isCertScolAutorisePersonnel() {
-		return getBooleanValueForParameter("certScolAutorisePersonnel");
+	public boolean isCertScolAutoriseGestionnaire() {
+		return getBooleanValueForParameter("certScolAutoriseGestionnaire");
+	}
+	
+	public boolean isCertScolAutoriseEnseignant() {
+		return getBooleanValueForParameter("certScolAutoriseEnseignant");
 	}
 
 	public boolean isCertificatScolaritePiecesNonValidees() {
@@ -160,8 +169,13 @@ public class ConfigController {
 	public boolean isQuittanceDroitsPayes(){
 		return getBooleanValueForParameter("quittanceDroitsPayes");
 	}
-	public boolean isQuittanceDroitsPayesAutorisePersonnel(){
-		return getBooleanValueForParameter("quittanceDroitsPayesAutorisePersonnel");
+	
+	public boolean isQuittanceDroitsPayesAutoriseGestionnaire(){
+		return getBooleanValueForParameter("quittanceDroitsPayesAutoriseGestionnaire");
+	}
+	
+	public boolean isQuittanceDroitsPayesAutoriseEnseignant(){
+		return getBooleanValueForParameter("quittanceDroitsPayesAutoriseEnseignant");
 	}
 	
 	public boolean isAffBtnQuittanceDroitsPayesNouvelleLigne(){
@@ -269,36 +283,64 @@ public class ConfigController {
 		return getBooleanValueForParameter("affDetailExamen");
 	}
 
-	public boolean isAffAdresseEnseignants() {
-		return getBooleanValueForParameter("affAdressesEnseignants");
-	}
-
-	public boolean isAffInfosAnnuellesEnseignants() {
-		return getBooleanValueForParameter("affInfosAnnuellesEnseignants");
+	public boolean isAffAdressesGestionnaire() {
+		return getBooleanValueForParameter("affAdressesGestionnaire");
 	}
 	
-	public boolean isAffBoursierEnseignants() {
-		return getBooleanValueForParameter("affBoursierEnseignants");
+	public boolean isAffAdresseEnseignant() {
+		return getBooleanValueForParameter("affAdressesEnseignant");
+	}
+
+	public boolean isAffInfosAnnuellesGestionnaire() {
+		return getBooleanValueForParameter("affInfosAnnuellesGestionnaire");
 	}
 	
-	public boolean isAffSalarieEnseignants() {
-		return getBooleanValueForParameter("affSalarieEnseignants");
+	public boolean isAffInfosAnnuellesEnseignant() {
+		return getBooleanValueForParameter("affInfosAnnuellesEnseignant");
 	}
 	
-	public boolean isAffAmenagementEnseignants() {
-		return getBooleanValueForParameter("affAmenagementEnseignants");
+	public boolean isAffBoursierGestionnaire() {
+		return getBooleanValueForParameter("affBoursierGestionnaire");
+	}
+	
+	public boolean isAffBoursierEnseignant() {
+		return getBooleanValueForParameter("affBoursierEnseignant");
+	}
+	
+	public boolean isAffSalarieGestionnaire() {
+		return getBooleanValueForParameter("affSalarieGestionnaire");
+	}
+	
+	public boolean isAffSalarieEnseignant() {
+		return getBooleanValueForParameter("affSalarieEnseignant");
+	}
+	
+	public boolean isAffAmenagementGestionnaire() {
+		return getBooleanValueForParameter("affAmenagementGestionnaire");
+	}
+	
+	public boolean isAffAmenagementEnseignant() {
+		return getBooleanValueForParameter("affAmenagementEnseignant");
+	}
+	
+	public boolean isAffInfosContactGestionnaire() {
+		return getBooleanValueForParameter("affInfosContactGestionnaire");
 	}
 
-	public boolean isAffInfosContactEnseignants() {
-		return getBooleanValueForParameter("affInfosContactEnseignants");
+	public boolean isAffInfosContactEnseignant() {
+		return getBooleanValueForParameter("affInfosContactEnseignant");
 	}
 
-	public boolean isAffCalendrierEpreuvesEnseignants() {
-		return getBooleanValueForParameter("affCalendrierEpreuvesEnseignants");
+	public boolean isAffCalendrierEpreuvesGestionnaire() {
+		return getBooleanValueForParameter("affCalendrierEpreuvesGestionnaire");
+	}
+	
+	public boolean isAffCalendrierEpreuvesEnseignant() {
+		return getBooleanValueForParameter("affCalendrierEpreuvesEnseignant");
 	}
 
-	public boolean isAffCalendrierEpreuvesEtudiants() {
-		return getBooleanValueForParameter("affCalendrierEpreuvesEtudiants");
+	public boolean isAffCalendrierEpreuvesEtudiant() {
+		return getBooleanValueForParameter("affCalendrierEpreuvesEtudiant");
 	}
 	
 	public boolean isCertificatScolariteCarteEditee() {
@@ -359,6 +401,11 @@ public class ConfigController {
 		return getValeurForParameter("assistanceContactMail");
 	}
 
+
+	public String getTemoinEtatIaeNotesGestionnaire() {
+		return getValeurForParameter("temoinEtatIaeNotesGestionnaire");
+	}
+	
 	public String getTemoinEtatIaeNotesEnseignant() {
 		return getValeurForParameter("temoinEtatIaeNotesEnseignant");
 	}
@@ -398,6 +445,10 @@ public class ConfigController {
 	}
 
 
+	public String getTemoinNotesGestionnaire() {
+		return getValeurForParameter("temoinNotesGestionnaire");
+	}
+	
 	public String getTemoinNotesEnseignant() {
 		return getValeurForParameter("temoinNotesEnseignant");
 	}

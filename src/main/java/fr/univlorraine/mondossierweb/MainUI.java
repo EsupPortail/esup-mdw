@@ -542,7 +542,7 @@ public class MainUI extends GenericUI {
 									navigator.navigateTo(NotesView.NAME);
 								}else{
 									//Si on demande à accéder directement à la vue calendrier et que la vue est activée
-									if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiants()){
+									if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiant()){
 										//On affiche la vue Calendrier
 										navigator.navigateTo(CalendrierView.NAME);
 									}else{
@@ -819,7 +819,7 @@ public class MainUI extends GenericUI {
 			addItemMenu(applicationContext.getMessage(EtatCivilView.NAME + ".title", null, getLocale()), EtatCivilView.NAME, FontAwesome.USER);
 
 			//info annuelles 
-			if(userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignants()){
+			if(userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignant()){
 				//visibles que si étudiant inscrit pour l'année en cours
 				if(etudiant.isInscritPourAnneeEnCours()){
 					addItemMenu(applicationContext.getMessage(InformationsAnnuellesView.NAME + ".title", null, getLocale()), InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
@@ -827,7 +827,7 @@ public class MainUI extends GenericUI {
 			}
 
 			/* Adresses */
-			if(userController.isEtudiant() || configController.isAffAdresseEnseignants()){
+			if(userController.isEtudiant() || configController.isAffAdresseEnseignant()){
 				addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
 			}
 
@@ -836,7 +836,7 @@ public class MainUI extends GenericUI {
 			addItemMenu(applicationContext.getMessage(InscriptionsView.NAME + ".title", null, getLocale()), InscriptionsView.NAME, FontAwesome.FILE_TEXT);
 
 			/* Calendrier */
-			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
+			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || configController.isAffCalendrierEpreuvesEnseignant()){
 				addItemMenu(applicationContext.getMessage(CalendrierView.NAME + ".title", null, getLocale()), CalendrierView.NAME, FontAwesome.CALENDAR);
 			}
 

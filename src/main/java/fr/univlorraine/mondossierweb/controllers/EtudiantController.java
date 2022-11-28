@@ -866,7 +866,7 @@ public class EtudiantController {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les attestations.
-		if ( !configController.isAttestSsoAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isAttestSsoAutoriseEnseignant() && userController.isEnseignant()) {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
@@ -900,7 +900,7 @@ public class EtudiantController {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les quittance
-		if ( !configController.isQuittanceDroitsPayesAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isQuittanceDroitsPayesAutoriseEnseignant() && userController.isEnseignant()) {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
@@ -938,7 +938,7 @@ public class EtudiantController {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les certificats.
-		if ( !configController.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isCertScolAutoriseEnseignant() && userController.isEnseignant()) {
 			return false;
 		}
 
