@@ -819,7 +819,9 @@ public class MainUI extends GenericUI {
 			addItemMenu(applicationContext.getMessage(EtatCivilView.NAME + ".title", null, getLocale()), EtatCivilView.NAME, FontAwesome.USER);
 
 			//info annuelles 
-			if(userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignant()){
+			if(userController.isEtudiant() || 
+				(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
+				(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire())){
 				//visibles que si étudiant inscrit pour l'année en cours
 				if(etudiant.isInscritPourAnneeEnCours()){
 					addItemMenu(applicationContext.getMessage(InformationsAnnuellesView.NAME + ".title", null, getLocale()), InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
@@ -827,7 +829,9 @@ public class MainUI extends GenericUI {
 			}
 
 			/* Adresses */
-			if(userController.isEtudiant() || configController.isAffAdresseEnseignant()){
+			if(userController.isEtudiant() || 
+				(userController.isEnseignant() && configController.isAffAdressesEnseignant()) || 
+				(userController.isGestionnaire() && configController.isAffAdressesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
 			}
 
@@ -836,7 +840,9 @@ public class MainUI extends GenericUI {
 			addItemMenu(applicationContext.getMessage(InscriptionsView.NAME + ".title", null, getLocale()), InscriptionsView.NAME, FontAwesome.FILE_TEXT);
 
 			/* Calendrier */
-			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || configController.isAffCalendrierEpreuvesEnseignant()){
+			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || 
+				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) || 
+				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(CalendrierView.NAME + ".title", null, getLocale()), CalendrierView.NAME, FontAwesome.CALENDAR);
 			}
 

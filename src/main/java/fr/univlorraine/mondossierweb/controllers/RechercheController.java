@@ -178,7 +178,9 @@ public class RechercheController {
 				if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
 					MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 					etudiantController.recupererEtatCivil();
-					if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || configController.isAffCalendrierEpreuvesEnseignant()){
+					if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
+						(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+						(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 						etudiantController.recupererCalendrierExamens();
 					}
 					resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());

@@ -287,7 +287,7 @@ public class ConfigController {
 		return getBooleanValueForParameter("affAdressesGestionnaire");
 	}
 	
-	public boolean isAffAdresseEnseignant() {
+	public boolean isAffAdressesEnseignant() {
 		return getBooleanValueForParameter("affAdressesEnseignant");
 	}
 

@@ -381,7 +381,9 @@ public class MdwTouchkitUI extends GenericUI{
 						if(GenericUI.getCurrent().getEtudiant()==null){
 							navigator.navigateTo(ErreurView.NAME);
 						}else{
-							if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || configController.isAffCalendrierEpreuvesEnseignant()){
+							if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || 
+								(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+								(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 								//On récupère le calendrier de l'étudiant
 								etudiantController.recupererCalendrierExamens();
 							}
@@ -518,7 +520,9 @@ public class MdwTouchkitUI extends GenericUI{
 		navigator.navigateTo(InformationsAnnuellesMobileView.NAME);
 		//Refresh des vues du dossier étudiant avec les données de l'étudiant
 		informationsAnnuellesMobileView.refresh();
-		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || configController.isAffCalendrierEpreuvesEnseignant()){
+		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || 
+			(userController.isEtudiant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+			(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 			calendrierMobileView.refresh();
 		}
 		notesMobileView.refresh();
@@ -555,7 +559,9 @@ public class MdwTouchkitUI extends GenericUI{
 		//tabInfoAnnuelles.setCaption("<div class=\"valotabcaption\">"+tabInfoAnnuelles.getCaption()+"</div>");
 
 		//Création de l'onglet Calendrier
-		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || configController.isAffCalendrierEpreuvesEnseignant()){
+		if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || 
+			(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+			(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 			tabCalendrier = menuEtudiant.addTab(calendrierMobileView, applicationContext.getMessage("mobileUI.calendrier.title", null, getLocale()), FontAwesome.CALENDAR);
 			tabCalendrier.setId("tabCalendrier");
 		}

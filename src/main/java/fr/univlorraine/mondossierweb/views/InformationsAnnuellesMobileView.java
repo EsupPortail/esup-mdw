@@ -294,7 +294,9 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 				// Infos annuelles
-				if((userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || userController.isEtudiant()){
+				if(userController.isEtudiant() || 
+					(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
+					(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire())){
 
 					//Numéro Anonymat visible que si l'utilisateur est étudiant
 					List<Anonymat> lano = null;
@@ -333,19 +335,25 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 						}
 					}
 
-					if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffBoursierEnseignant() )) {
+					if(userController.isEtudiant() || 
+						(userController.isEnseignant() && configController.isAffBoursierEnseignant()) ||
+						(userController.isGestionnaire() && configController.isAffBoursierGestionnaire())) {
 						String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
 						TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().isBoursier() ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
 						formatTextField(fieldNumBoursier);
 						formInfosLayout.addComponent(fieldNumBoursier);
 					}
-					if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffSalarieEnseignant() )) {
+					if(userController.isEtudiant() || 
+						(userController.isEnseignant() && configController.isAffSalarieEnseignant()) || 
+						(userController.isGestionnaire() && configController.isAffSalarieGestionnaire())) {
 						String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
 						TextField fieldSalarie = new TextField(captionSalarie, MdwTouchkitUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
 						formatTextField(fieldSalarie);
 						formInfosLayout.addComponent(fieldSalarie);
 					}
-					if(userController.isEtudiant() || (userController.isEnseignant() && configController.isAffAmenagementEnseignant() )) {
+					if(userController.isEtudiant() || 
+						(userController.isEnseignant() && configController.isAffAmenagementEnseignant()) ||
+						(userController.isGestionnaire() && configController.isAffAmenagementGestionnaire())) {
 						String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
 						TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MdwTouchkitUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
 						formatTextField(fieldAmenagementEtude);
