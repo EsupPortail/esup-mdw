@@ -369,7 +369,7 @@ public class MainUI extends GenericUI {
 				}
 				//On bloque l'accès aux vues enseignants
 				if(Utils.isViewEnseignant(event.getViewName())){
-					//Si utilisateur n'est pas enseignant
+					//Si utilisateur n'est pas enseignant ou gestionnaire
 					if(!userController.isEnseignant()){
 						//acces bloque
 						return false;
@@ -492,11 +492,6 @@ public class MainUI extends GenericUI {
 					etudiantController.recupererEtatCivil();
 					//On construit le menu affiché à l'étudiant
 					buildMainMenuEtudiant();
-					//Test des erreurs de session éventuelles
-					/*if(!etudiant.getCod_etu().equals(userController.getCodetu())){
-						LOG.error("Erreur possible de session : "+userController.getCodetu()+"accede au dossier : "+etudiant.getCod_etu());
-						displayViewFullScreen(ErreurView.NAME);
-					}*/
 				}
 
 
@@ -517,12 +512,6 @@ public class MainUI extends GenericUI {
 						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
 						navigationComplete=true;
 					}
-
-					/*if(fragment.contains("accesNotesEtudiant") && userController.isEnseignant()){
-						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
-						navigator.navigateTo(NotesView.NAME);
-						navigationComplete=true;
-					}*/
 				}
 
 				if(!navigationComplete){
@@ -553,7 +542,7 @@ public class MainUI extends GenericUI {
 									navigator.navigateTo(NotesView.NAME);
 								}else{
 									//Si on demande à accéder directement à la vue calendrier et que la vue est activée
-									if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiants()){
+									if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiant()){
 										//On affiche la vue Calendrier
 										navigator.navigateTo(CalendrierView.NAME);
 									}else{
@@ -830,7 +819,9 @@ public class MainUI extends GenericUI {
 			addItemMenu(applicationContext.getMessage(EtatCivilView.NAME + ".title", null, getLocale()), EtatCivilView.NAME, FontAwesome.USER);
 
 			//info annuelles 
-			if(userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignants()){
+			if(userController.isEtudiant() || 
+				(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
+				(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire())){
 				//visibles que si étudiant inscrit pour l'année en cours
 				if(etudiant.isInscritPourAnneeEnCours()){
 					addItemMenu(applicationContext.getMessage(InformationsAnnuellesView.NAME + ".title", null, getLocale()), InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
@@ -838,7 +829,9 @@ public class MainUI extends GenericUI {
 			}
 
 			/* Adresses */
-			if(userController.isEtudiant() || configController.isAffAdresseEnseignants()){
+			if(userController.isEtudiant() || 
+				(userController.isEnseignant() && configController.isAffAdressesEnseignant()) || 
+				(userController.isGestionnaire() && configController.isAffAdressesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
 			}
 
@@ -847,7 +840,9 @@ public class MainUI extends GenericUI {
 			addItemMenu(applicationContext.getMessage(InscriptionsView.NAME + ".title", null, getLocale()), InscriptionsView.NAME, FontAwesome.FILE_TEXT);
 
 			/* Calendrier */
-			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiants())  || configController.isAffCalendrierEpreuvesEnseignants()){
+			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || 
+				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) || 
+				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(CalendrierView.NAME + ".title", null, getLocale()), CalendrierView.NAME, FontAwesome.CALENDAR);
 			}
 
@@ -1049,7 +1044,9 @@ public class MainUI extends GenericUI {
 
 	private boolean applicationActive(){
 		return configController.isApplicationActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-			|| (!userController.isEnseignant() && !userController.isEtudiant()) || (userController.isEnseignant() && configController.isPartieEnseignantActive()));
+			|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
+			|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
+			|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
 	}
 
 	/**

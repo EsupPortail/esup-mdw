@@ -1120,7 +1120,6 @@ public class ListeInscritsController {
 
 					compteur++;
 
-					//String foto = photo.getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu());
 					String foto = GenericUI.getCurrent().getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 					Image photo = null;
 					if(foto == null || !foto.startsWith(Utils.DATA_IMAGE)) {

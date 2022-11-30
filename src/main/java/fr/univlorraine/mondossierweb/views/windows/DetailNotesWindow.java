@@ -111,10 +111,10 @@ public class DetailNotesWindow extends Window {
 			//Test si user enseignant et en vue Enseignant
 			if(userController.isEnseignant() && MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
 				//On recupere les notes pour un enseignant
-				resultatController.renseigneDetailNotesEtResultatsEnseignant(etape);
+				resultatController.renseigneDetailNotesEtResultats(etape, userController.isGestionnaire());
 			}else{
 				//On récupère les notes pour un étudiant
-				resultatController.renseigneDetailNotesEtResultats(etape);
+				resultatController.renseigneDetailNotesEtResultatsEtudiant(etape);
 			}
 
 			/* Layout */

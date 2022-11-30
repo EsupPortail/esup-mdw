@@ -77,6 +77,8 @@
 	<Parameter name="loginApogee" value="true" />
 	<!-- Vérification du temoin en service si loginApogee = true  -->
 	<Parameter name="checkTesUtilisateurApogee" value="false" />
+	<!-- Profil attribué aux utilisateurs Apogée ENS (enseignant) ou GEST (gestionnaire)  -->
+	<Parameter name="profilUtilisateurApogee" value="ENS" />
 	
 	<!-- le nom de l'attribut contenant les groupes ldap pour une authentification via les groupes ldap. Laisser vide pour ne pas utiliser -->
 	<Parameter name="attributGroupeLdap" value=""/>
@@ -84,6 +86,7 @@
 	<Parameter name="listeGroupesLdap" value=""/>
 		<!-- La liste des groupes ldap autorisant l'acces à mondossierWeb en tant qu'admin séparés par un point virgule. Laisser vide pour ne pas utiliser -->
 	<Parameter name="listeGroupesLdapAdmin" value=""/>
+	
 	<!-- La propriete ldap du contact désignant son type (typeEtudiantLdap ou pas ) -->
 	<Parameter name="attributLdapEtudiant" value="edupersonprimaryaffiliation" />
 	<!-- Le type ldap designant un etudiant. Possibilité d'en indiquer plusieurs séparés par des point-virgules -->
@@ -92,12 +95,15 @@
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
 	
 	
-	
 	<!-- Attribut ldap permettant de caractériser un doctorant (l'application vérifira l'accès "enseignant" en priorité ). Ex : edupersonaffiliation  -->
 	<Parameter name="attributLdapDoctorant" value="" />
 	<!-- Liste des valeurs (séparées par ;) de l'attribut ldap ci-dessus permettant de caractériser un doctorant. Ex : researcher -->
 	<Parameter name="valeursAttributLdapDoctorant" value="" />
 	
+	<!-- Attribut ldap permettant de caractériser un Gestionnaire Ex : edupersonaffiliation  -->
+	<Parameter name="attributLdapGestionnaire" value="udlCategories" />
+	<!-- Liste des valeurs (séparées par ;) de l'attribut ldap ci-dessus permettant de caractériser un gestionnaire. Ex : researcher -->
+	<Parameter name="valeursAttributLdapGestionnaire" value="DC" />
 	
 	<!-- attribut ldap stockant le login CAS de la personne. Le lien CAS/ldap sera fait sur cet attribut -->
 	<Parameter name="ldap.uid.attribute" value="uid" />

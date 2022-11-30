@@ -116,12 +116,12 @@ public class EtudiantController {
 
 	@Resource(name="${emailConverter.implementation}")
 	private transient EmailConverterInterface emailConverter;
-	
+
 
 
 
 	private HashMap<String, String> listeOptBac;
-	
+
 	private HashMap<String, String> listeSpeBac;
 
 	/**
@@ -139,7 +139,7 @@ public class EtudiantController {
 	 */
 	private final ScolariteMetierServiceInterface scolariteService = ServiceProvider.getService(ScolariteMetierServiceInterface.class);
 
-	
+
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
 
@@ -199,8 +199,8 @@ public class EtudiantController {
 
 
 				GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
-				
-				
+
+
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
 					// on passe par emailConverter pour récupérer l'e-mail.
 					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail(GenericUI.getCurrent().getEtudiant().getCod_etu()));
@@ -312,7 +312,7 @@ public class EtudiantController {
 								if(iaad.getRegimeIns()!=null && StringUtils.hasText(iaad.getRegimeIns().getLibRgi())){
 									GenericUI.getCurrent().getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
 								}
-								
+
 								//recupérer le témoin dossier d'inscription validé
 								GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(false);
 								if(iaad.getEtatIaa().getTemDosIAA() != null && iaad.getEtatIaa().getTemDosIAA().equals("O")){
@@ -447,7 +447,7 @@ public class EtudiantController {
 
 	}
 
-	
+
 	private String getSpecialiteBac(String codSpe) {
 		LOG.debug("Recuperation lib SPE BAC from code : "+codSpe);
 		if(codSpe!=null) {
@@ -460,7 +460,7 @@ public class EtudiantController {
 		}
 		return null;
 	}
-	
+
 	private void recuperSpeBacApogee() {
 		try {
 			LOG.debug("Recuperation SPE BAC");
@@ -477,7 +477,7 @@ public class EtudiantController {
 		} catch (WebBaseException_Exception e) {
 			LOG.warn("Erreur a la recupération des SPECIALITE BAC",e);
 		}
-		
+
 	}
 
 	private String getOptionBac(String codOpt) {
@@ -510,7 +510,7 @@ public class EtudiantController {
 		} catch (WebBaseException_Exception e) {
 			LOG.warn("Erreur a la recupération des OPTIONS BAC",e);
 		}
-		
+
 	}
 
 	public void recupererAdresses() {
@@ -695,7 +695,7 @@ public class EtudiantController {
 						}else{
 							insc.setEstEnRegle(false);
 						}
-						
+
 						// Si le dossier d'inscription est validé
 						if(insdto.getEtatIaa() != null && insdto.getEtatIaa().getTemDosIAA() != null && insdto.getEtatIaa().getTemDosIAA().equals("O")) {
 							insc.setEstDossierValide(true);
@@ -866,7 +866,11 @@ public class EtudiantController {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les attestations.
-		if ( !configController.isAttestSsoAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isAttestSsoAutoriseEnseignant() && userController.isEnseignant() && !userController.isGestionnaire()) {
+			return false;
+		}
+		// autoriser ou non les gestionnaires à imprimer les attestations.
+		if ( !configController.isAttestSsoAutoriseGestionnaire() && userController.isGestionnaire()) {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
@@ -900,7 +904,11 @@ public class EtudiantController {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les quittance
-		if ( !configController.isQuittanceDroitsPayesAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isQuittanceDroitsPayesAutoriseEnseignant() && userController.isEnseignant() && !userController.isGestionnaire()) {
+			return false;
+		}
+		// autoriser ou non les gestionnaires à imprimer les quittance
+		if ( !configController.isQuittanceDroitsPayesAutoriseGestionnaire() && userController.isGestionnaire()) {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
@@ -938,7 +946,12 @@ public class EtudiantController {
 			return false;
 		}
 		// autoriser ou non les personnels à imprimer les certificats.
-		if ( !configController.isCertScolAutorisePersonnel() && userController.isEnseignant()) {
+		if ( !configController.isCertScolAutoriseEnseignant() && userController.isEnseignant() && !userController.isGestionnaire()) {
+			return false;
+		}
+
+		// autoriser ou non les gestionnaires à imprimer les certificats.
+		if ( !configController.isCertScolAutoriseGestionnaire() && userController.isGestionnaire()) {
 			return false;
 		}
 

@@ -140,6 +140,16 @@ public class PropertyUtils {
 		}
 		return false;
 	}
+	
+	/** Retourne le profil à attribuer aux utilisateurs Apogée (ENS ou GEST) */
+	public static String getProfilUtilisateurApogee(){
+		if(StringUtils.hasText(System.getProperty("context.profilUtilisateurApogee"))
+			&& (System.getProperty("context.profilUtilisateurApogee").equals(Utils.PROFIL_ENS) 
+				|| System.getProperty("context.profilUtilisateurApogee").equals(Utils.PROFIL_GEST))){
+			return System.getProperty("context.profilUtilisateurApogee");
+		}
+		return null;
+	}
 
 	/** Retourne vrai on doit activer l'encryption sur les pdf générés */
 	public static boolean isEnablePdfSecurity(){
@@ -221,6 +231,20 @@ public class PropertyUtils {
 		return Arrays.asList(value.split(";"));
 	}
 
+	
+	/** Retourne l'attribut ldap permettant de caractériser un gestionnaire   */
+	public static String getAttributLdapGestionnaire(){
+		return System.getProperty("context.attributLdapGestionnaire");
+	}
+	
+	/** Retourne les valeurs de l'attribut ldap permettant de caractériser un gestionnaire   */
+	public static List<String> getValeursAttributLdapGestionnaire(){
+		String value = System.getProperty("context.valeursAttributLdapGestionnaire");
+		if(!StringUtils.hasText(value)) return null;
+		return Arrays.asList(value.split(";"));
+	}
+	
+	
 	/** Retourne la propriete ldap du contact désignant ses groupes  */
 	public static String getAttributGroupeLdap(){
 		return System.getProperty("context.attributGroupeLdap");
