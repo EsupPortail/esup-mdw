@@ -211,28 +211,38 @@ public class InscriptionController {
 			// Ajout Bordeaux1
 			if (configController.isCertScolUtiliseLogo()){
 				//ajout image test
-				if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+				if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 					Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-					float scaleRatio = 40 / imageLogo.getHeight(); 
-					float newWidth=scaleRatio * imageLogo.getWidth();
-					imageLogo.scaleAbsolute(newWidth, 40);
-					imageLogo.setAbsolutePosition(100, 750);
+					
+					int largeurLogo = configController.getLogoUniversitePdfDimension();
+					float scaleRatio = largeurLogo / imageLogo.getWidth(); 
+					float newHeight = scaleRatio * imageLogo.getHeight();
+					imageLogo.scaleAbsolute(largeurLogo, newHeight);
+					
+					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPortraitPositionX(), configController.getLogoUniversitePdfPortraitPositionY());
+					
 					document.add(imageLogo);
 				}
-				else if (configController.getCertScolHeaderUniv() != null && !configController.getCertScolHeaderUniv().equals("")) {
-					Image imageHeader = Image.getInstance(configController.getCertScolHeaderUniv());
-					float scaleHeader = 600 / imageHeader.getWidth();
+				else if (StringUtils.hasText(configController.getHeaderPdf())) {
+					Image imageHeader = Image.getInstance(configController.getHeaderPdf());
+					
+					int largeurHeader = configController.getDimensionPDFHeaderFooter();
+					float scaleHeader = largeurHeader / imageHeader.getWidth();
 					float newHeigthHeader = scaleHeader * imageHeader.getHeight();
-					imageHeader.scaleAbsolute(600, newHeigthHeader);
+					imageHeader.scaleAbsolute(largeurHeader, newHeigthHeader);
+					
 					imageHeader.setAbsolutePosition(0, 765);
 					document.add(imageHeader);
 				}
 
-				if (configController.getCertScolFooter() != null && !configController.getCertScolFooter().equals("")) {
-					Image imageFooter = Image.getInstance(configController.getCertScolFooter());
-					float scaleFooter = 600 / imageFooter.getWidth();
-					float newHeigthFooter = scaleFooter * imageFooter.getHeight();
-					imageFooter.scaleAbsolute(600, newHeigthFooter);
+				if (StringUtils.hasText(configController.getFooterPdf())) {
+					Image imageFooter = Image.getInstance(configController.getFooterPdf());
+					
+					int largeurFooter = configController.getDimensionPDFHeaderFooter();
+					float scaleFooter = largeurFooter / imageFooter.getWidth();
+					float newHeigthHeader = scaleFooter * imageFooter.getHeight();
+					imageFooter.scaleAbsolute(largeurFooter, newHeigthHeader);
+					
 					imageFooter.setAbsolutePosition(0, 0);
 					document.add(imageFooter);
 				}
@@ -340,17 +350,18 @@ public class InscriptionController {
 			document.add(tableSignataire);
 
 			//ajout signature
-			if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){ //MODIF 09/10/2012
-				//tableSignataire.addCell(makeCellSignataire("", normal));
+			if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){
 				LOG.debug(signataire.getImg_sig_std().toString());
 				Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
 
-				float scaleRatio = 100 / imageSignature.getHeight(); 
-				float newWidth=scaleRatio * imageSignature.getWidth();
-				imageSignature.scaleAbsolute(newWidth, 100);
-				// Maj 1.6.8
-				// Si on doit superposer la signature avec le tampon
-				if (StringUtils.hasText(configController.getCertScolTampon())) {
+				int largeurSignature = configController.getDimensionPDFSignature();
+				float scaleRatio = largeurSignature / imageSignature.getWidth(); 
+				float newHeight = scaleRatio * imageSignature.getHeight();
+				imageSignature.scaleAbsolute(largeurSignature, newHeight);
+				
+				// Maj 1.6.20
+				// Si on doit fixer la position de la signature
+				if (StringUtils.hasText(configController.getCertificatScolaritePdfPositionSignature())) {
 					imageSignature.setAbsolutePosition(configController.getCertificatScolaritePdfPositionSignatureX(), configController.getCertificatScolaritePdfPositionSignatureY());
 				} else {
 					imageSignature.setAlignment(Element.ALIGN_RIGHT);
@@ -364,10 +375,18 @@ public class InscriptionController {
 			// Ajout tampon
 			if (StringUtils.hasText(configController.getCertScolTampon())) {
 				Image imageTampon = Image.getInstance(configController.getCertScolTampon());
-				float scaleTampon = 100 / imageTampon.getWidth();
+				
+				int largeurTampon = configController.getCertScolTamponDimension();
+				float scaleTampon = largeurTampon / imageTampon.getWidth();
 				float newHeigthTampon = scaleTampon * imageTampon.getHeight();
-				imageTampon.scaleAbsolute(100, newHeigthTampon);
-				imageTampon.setAbsolutePosition(415, 200);
+				imageTampon.scaleAbsolute(largeurTampon, newHeigthTampon);
+				
+				if(StringUtils.hasText(configController.getCertScolTamponPosition())) {
+					imageTampon.setAbsolutePosition(configController.getCertScolTamponPositionX(), configController.getCertScolTamponPositionY());
+				} else {
+					imageTampon.setAlignment(Element.ALIGN_RIGHT);
+					imageTampon.setIndentationRight(25);
+				}
 				document.add(imageTampon);
 			}
 

@@ -329,15 +329,18 @@ public class NoteController {
 		document.open();
 		try {
 			//ajout image test
-			if (configController.getLogoUniversitePdf()!= null && !configController.getLogoUniversitePdf().equals("")){
+			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				float scaleRatio = 40 / imageLogo.getHeight();
-				float newWidth=scaleRatio * imageLogo.getWidth();
-				imageLogo.scaleAbsolute(newWidth, 40);
+				
+				int largeurLogo = configController.getLogoUniversitePdfDimension();
+				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
+				float newHeight = scaleRatio * imageLogo.getHeight();
+				imageLogo.scaleAbsolute(largeurLogo, newHeight);
+				
 				if(formatPortrait){
-					imageLogo.setAbsolutePosition(560 - newWidth,760);
+					imageLogo.setAbsolutePosition(configController.getNotesPDFLogoUniversitePositionX() - largeurLogo,configController.getNotesPDFLogoUniversitePositionY());
 				}else{
-					imageLogo.setAbsolutePosition(800 - newWidth, 528);
+					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
 				}
 				document.add(imageLogo);
 			}
@@ -861,7 +864,12 @@ public class NoteController {
 
 						try {
 							Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
-							imageSignature.scaleAbsolute(78,46);
+							
+							int largeurSignature = configController.getNotePDFSignatureDimension();
+							float scaleRatio = largeurSignature / imageSignature.getWidth(); 
+							float newHeight=scaleRatio * imageSignature.getHeight();
+							imageSignature.scaleAbsolute(largeurSignature, newHeight);
+							
 							PdfPCell cellSignature = new PdfPCell();
 							cellSignature.setBorder(0);
 							cellSignature.setImage(imageSignature);
@@ -910,15 +918,18 @@ public class NoteController {
 		document.open();
 		try {
 			//ajout image test
-			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				float scaleRatio = 40 / imageLogo.getHeight();
-				float newWidth=scaleRatio * imageLogo.getWidth();
-				imageLogo.scaleAbsolute(newWidth, 40);
+				
+				int largeurLogo = configController.getLogoUniversitePdfDimension();
+				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
+				float newHeight = scaleRatio * imageLogo.getHeight();
+				imageLogo.scaleAbsolute(largeurLogo, newHeight);
+				
 				if(formatPortrait){
-					imageLogo.setAbsolutePosition(560 - newWidth,760);
+					imageLogo.setAbsolutePosition(configController.getNotesPDFLogoUniversitePositionX() - largeurLogo, configController.getNotesPDFLogoUniversitePositionY());
 				}else{
-					imageLogo.setAbsolutePosition(800 - newWidth, 528);
+					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
 				}
 				document.add(imageLogo);
 			}

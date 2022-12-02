@@ -1049,12 +1049,15 @@ public class ListeInscritsController {
 		try {
 
 			//ajout image test
-			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				float scaleRatio = 40 / imageLogo.getHeight();
-				float newWidth=scaleRatio * imageLogo.getWidth();
-				imageLogo.scaleAbsolute(newWidth, 40);
-				imageLogo.setAbsolutePosition(800 - newWidth, 528);
+				
+				int largeurLogo = configController.getLogoUniversitePdfDimension();
+				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
+				float newHeight = scaleRatio * imageLogo.getHeight();
+				imageLogo.scaleAbsolute(largeurLogo, newHeight);
+				
+				imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
 				document.add(imageLogo);
 			}
 
@@ -1184,13 +1187,13 @@ public class ListeInscritsController {
 			document.add(table);
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du certificat : BadElementException ",e);
+			LOG.error("Erreur à la génération du trombinoscope : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du certificat : MalformedURLException ",e);
+			LOG.error("Erreur à la génération du trombinoscope : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du certificat : IOException ",e);
+			LOG.error("Erreur à la génération du trombinoscope : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du certificat : DocumentException ",e);
+			LOG.error("Erreur à la génération du trombinoscope : DocumentException ",e);
 		}
 
 		// step 6: fermeture du document.

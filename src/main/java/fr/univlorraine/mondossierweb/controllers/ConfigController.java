@@ -428,7 +428,7 @@ public class ConfigController {
 	}*/
 	
 	
-	private String getCertificatScolaritePdfPositionSignature() {
+	public String getCertificatScolaritePdfPositionSignature() {
 		return getValeurForParameter("certificatScolaritePdfPositionSignature");
 	}
 	
@@ -439,7 +439,65 @@ public class ConfigController {
 	public float getCertificatScolaritePdfPositionSignatureY() {
 		return Float.parseFloat(getCertificatScolaritePdfPositionSignature().split("-")[1]);
 	}
-
+	
+	
+	public String getLogoUniversitePdfPortraitPosition() {
+		return getValeurForParameter("logoUniversitePdfPortraitPosition");
+	}
+	
+	public float getLogoUniversitePdfPortraitPositionX() {
+		return Float.parseFloat(getLogoUniversitePdfPortraitPosition().split("-")[0]);
+	}
+	
+	public float getLogoUniversitePdfPortraitPositionY() {
+		return Float.parseFloat(getLogoUniversitePdfPortraitPosition().split("-")[1]);
+	}
+	
+	
+	public String getNotesPDFLogoUniversitePosition() {
+		return getValeurForParameter("notesPDFLogoUniversitePosition");
+	}
+	
+	public float getNotesPDFLogoUniversitePositionX() {
+		return Float.parseFloat(getNotesPDFLogoUniversitePosition().split("-")[0]);
+	}
+	
+	public float getNotesPDFLogoUniversitePositionY() {
+		return Float.parseFloat(getNotesPDFLogoUniversitePosition().split("-")[1]);
+	}
+	
+	
+	
+	public String getLogoUniversitePdfPaysagePosition() {
+		return getValeurForParameter("logoUniversitePdfPaysagePosition");
+	}
+	
+	public float getLogoUniversitePdfPaysagePositionX() {
+		return Float.parseFloat(getLogoUniversitePdfPaysagePosition().split("-")[0]);
+	}
+	
+	public float getLogoUniversitePdfPaysagePositionY() {
+		return Float.parseFloat(getLogoUniversitePdfPaysagePosition().split("-")[1]);
+	}
+	
+	
+	
+	
+	
+	
+	
+	public String getCertScolTamponPosition() {
+		return getValeurForParameter("certScolTamponPosition");
+	}
+	
+	public float getCertScolTamponPositionX() {
+		return Float.parseFloat(getCertScolTamponPosition().split("-")[0]);
+	}
+	
+	public float getCertScolTamponPositionY() {
+		return Float.parseFloat(getCertScolTamponPosition().split("-")[1]);
+	}
+	
 	public String getTemoinNotesEtudiant() {
 		return getValeurForParameter("temoinNotesEtudiant");
 	}
@@ -492,13 +550,21 @@ public class ConfigController {
 	public String getLogoUniversitePdf() {
 		return getValeurForParameter("logoUniversitePdf");
 	}
-
-	public String getCertScolHeaderUniv() {
-		return getValeurForParameter("certScolHeaderUniv");
+	
+	public int getLogoUniversitePdfDimension(){
+		return  Integer.parseInt(getValeurForParameter("logoUniversitePdfDimension"));
+	}
+	
+	public String getHeaderPdf() {
+		return getValeurForParameter("headerPdf");
 	}
 
-	public String getCertScolFooter() {
-		return getValeurForParameter("certScolFooter");
+	public String getFooterPdf() {
+		return getValeurForParameter("footerPdf");
+	}
+	
+	public int getDimensionPDFHeaderFooter(){
+		return  Integer.parseInt(getValeurForParameter("dimensionPDFHeaderFooter"));
 	}
 
 	public String getCertScolLieuEdition() {
@@ -508,7 +574,19 @@ public class ConfigController {
 	public String getCertScolTampon() {
 		return getValeurForParameter("certScolTampon");
 	}
+	
+	public int getCertScolTamponDimension(){
+		return  Integer.parseInt(getValeurForParameter("certScolTamponDimension"));
+	}
 
+	public int getDimensionPDFSignature(){
+		return  Integer.parseInt(getValeurForParameter("dimensionPDFSignature"));
+	}
+	
+	public int getNotePDFSignatureDimension() {
+		return  Integer.parseInt(getValeurForParameter("notePDFSignatureDimension"));
+	}
+	
 	public int getTrombiMobileNbEtuParPage(){
 		return  Integer.parseInt(getValeurForParameter("trombiMobileNbEtuParPage"));
 	}
@@ -630,6 +708,8 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+
 
 
 }

@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import javax.annotation.Resource;
 
+import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -203,12 +204,15 @@ public class CalendrierController {
 		document.open();
 		try {
 			//ajout image test
-			if (configController.getLogoUniversitePdf() != null && !configController.getLogoUniversitePdf().equals("")){
+			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				float scaleRatio = 40 / imageLogo.getHeight();
-				float newWidth=scaleRatio * imageLogo.getWidth();
-				imageLogo.scaleAbsolute(newWidth, 40);
-				imageLogo.setAbsolutePosition(800 - newWidth, 528);
+
+				int largeurLogo = configController.getLogoUniversitePdfDimension();
+				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
+				float newHeight = scaleRatio * imageLogo.getHeight();
+				imageLogo.scaleAbsolute(largeurLogo, newHeight);
+				
+				imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
 				document.add(imageLogo);
 			}
 
