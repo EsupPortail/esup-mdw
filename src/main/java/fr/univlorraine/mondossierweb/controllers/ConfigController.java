@@ -343,6 +343,18 @@ public class ConfigController {
 		return getBooleanValueForParameter("affCalendrierEpreuvesEtudiant");
 	}
 	
+	public boolean isAffNotesEnseignant() {
+		return getBooleanValueForParameter("affNotesEnseignant");
+	}
+	
+	public boolean isAffNotesEtudiant() {
+		return getBooleanValueForParameter("affNotesEtudiant");
+	}
+	
+	public boolean isAffNotesGestionnaire() {
+		return getBooleanValueForParameter("affNotesGestionnaire");
+	}
+	
 	public boolean isCertificatScolariteCarteEditee() {
 		return getBooleanValueForParameter("certificatScolariteEditionCarte");
 	}

@@ -106,7 +106,11 @@ public class CalendrierView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null &&
+			((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
+				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())) ) {
+			
 			/* Style */
 			setMargin(true);
 			setSpacing(true);

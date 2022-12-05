@@ -847,7 +847,11 @@ public class MainUI extends GenericUI {
 			}
 
 			/* Notes et Résultats */
-			addItemMenu(applicationContext.getMessage(NotesView.NAME + ".title", null, getLocale()), NotesView.NAME, FontAwesome.LIST);
+			if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
+				(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+				(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
+				addItemMenu(applicationContext.getMessage(NotesView.NAME + ".title", null, getLocale()), NotesView.NAME, FontAwesome.LIST);
+			}
 
 			/* Séparation avant Bouton "Aide" */
 			CssLayout bottomMainMenu1 = new CssLayout();

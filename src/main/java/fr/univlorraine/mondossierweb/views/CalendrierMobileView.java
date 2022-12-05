@@ -88,7 +88,11 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 	}
 	public void refresh(){
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MdwTouchkitUI && (userController.isEnseignant() || userController.isEtudiant()) && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null){
+		if(UI.getCurrent() instanceof MdwTouchkitUI &&  MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null && 
+			((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
+				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire()))){
+			
 			removeAllComponents();
 
 			/* Style */

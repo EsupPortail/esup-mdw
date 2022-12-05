@@ -183,7 +183,11 @@ public class RechercheController {
 						(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 						etudiantController.recupererCalendrierExamens();
 					}
+					if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
+						(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+						(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
 					resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
+					}
 				}
 				if(fromSearch){
 					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();

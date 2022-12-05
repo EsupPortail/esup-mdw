@@ -97,9 +97,10 @@ public class NotesMobileView extends VerticalLayout implements View {
 	public void refresh(){
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MdwTouchkitUI && (userController.isEnseignant() || userController.isEtudiant()) 
-				&& MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null
-				&& !(userController.isEtudiant() && MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes())){
+		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null && 
+				((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
+					(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+					(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) ){
 
 			removeAllComponents();
 

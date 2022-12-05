@@ -221,12 +221,12 @@ public class MdwTouchkitUI extends GenericUI{
 			while (cause instanceof Throwable) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
-						LOG.info("Erreur de fragment ");
-						// Retour à la racine
-						Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
-						return;
+					LOG.info("Erreur de fragment ");
+					// Retour à la racine
+					Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
+					return;
 				}
-				
+
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
 					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
@@ -236,7 +236,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 				if(cause!=null && cause.getClass()!=null){
 					String simpleName = cause.getClass().getSimpleName();
-				
+
 					/* Gérer les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
@@ -262,7 +262,7 @@ public class MdwTouchkitUI extends GenericUI{
 		getPage().setTitle(environment.getRequiredProperty("app.name"));
 
 		reloadIfUriFragmentError(getPage().getUriFragment());
-		
+
 		/* Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 				car le fragment ne correspond pas à une vue existante) */
 		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
@@ -278,9 +278,9 @@ public class MdwTouchkitUI extends GenericUI{
 				if(!applicationActive() && !source.getUriFragment().contains(AccesBloqueView.NAME)){
 					afficherMessageMaintenance();
 				}
-				
+
 				reloadIfUriFragmentError(source.getUriFragment());
-				
+
 			}
 		});
 
@@ -387,8 +387,12 @@ public class MdwTouchkitUI extends GenericUI{
 								//On récupère le calendrier de l'étudiant
 								etudiantController.recupererCalendrierExamens();
 							}
-							//On récupère les notes de l'étudiant
-							resultatController.recupererNotesEtResultatsEtudiant(etudiant);
+							if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
+								(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+								(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
+								//On récupère les notes de l'étudiant
+								resultatController.recupererNotesEtResultatsEtudiant(etudiant);
+							}
 							//On affiche le dossier
 							navigateToDossierEtudiant();
 						}
@@ -525,7 +529,11 @@ public class MdwTouchkitUI extends GenericUI{
 			(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 			calendrierMobileView.refresh();
 		}
-		notesMobileView.refresh();
+		if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
+			(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+			(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
+			notesMobileView.refresh();
+		}
 
 		//Si le menu étudiant n'a jamais été initialisé
 		if(menuEtudiant==null){
@@ -571,13 +579,17 @@ public class MdwTouchkitUI extends GenericUI{
 			//On créé le navigationManager
 			noteNavigationManager= new NavigationManagerView();
 		}
-		//le composant affiché dans le navigationManager est la vue des notes
-		noteNavigationManager.setFirstComponent(notesMobileView);
-		//le composant suivant à afficher dans le navigationManager est la vue du détail des notes
-		noteNavigationManager.setNextComponent(notesDetailMobileView);
-		//Création de l'onglet Résultats
-		tabNotes = menuEtudiant.addTab(noteNavigationManager, applicationContext.getMessage("mobileUI.resultats.title", null, getLocale()),  FontAwesome.LIST);
-		tabNotes.setId("tabNotes");
+		if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
+			(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+			(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
+			//le composant affiché dans le navigationManager est la vue des notes
+			noteNavigationManager.setFirstComponent(notesMobileView);
+			//le composant suivant à afficher dans le navigationManager est la vue du détail des notes
+			noteNavigationManager.setNextComponent(notesDetailMobileView);
+			//Création de l'onglet Résultats
+			tabNotes = menuEtudiant.addTab(noteNavigationManager, applicationContext.getMessage("mobileUI.resultats.title", null, getLocale()),  FontAwesome.LIST);
+			tabNotes.setId("tabNotes");
+		}
 
 		//Détection du retour sur la vue du détail des notes pour mettre à jour le JS
 		menuEtudiant.addSelectedTabChangeListener(new SelectedTabChangeListener() {
@@ -693,9 +705,9 @@ public class MdwTouchkitUI extends GenericUI{
 
 	private boolean applicationActive(){
 		return configController.isApplicationMobileActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-				|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
-				|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
-				|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
+			|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
+			|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
+			|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
 	}
 
 	public void startBusyIndicator() {
@@ -727,7 +739,7 @@ public class MdwTouchkitUI extends GenericUI{
 			Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
 		}
 	}
-	
+
 	/**
 	 * Configure la reconnexion en cas de déconnexion.
 	 */

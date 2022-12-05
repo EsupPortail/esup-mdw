@@ -41,6 +41,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -97,9 +98,10 @@ public class DetailNotesWindow extends Window {
 		etape = et;
 
 		//On vérifie le droit d'accéder à la vue
-		if((userController.isEnseignant() || userController.isEtudiant()) 
-				&& MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null
-				&& !(userController.isEtudiant() && MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes())){
+		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null && 
+			((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
+				(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+				(userController.isGestionnaire() && configController.isAffNotesGestionnaire()))  ){
 
 			/* Style */
 			setWidth(80, Unit.PERCENTAGE);
