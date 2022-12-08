@@ -102,7 +102,7 @@
 	
 	<!-- Attribut ldap permettant de caractériser un Gestionnaire Ex : edupersonaffiliation  -->
 	<Parameter name="attributLdapGestionnaire" value="" />
-	<!-- Liste des valeurs (séparées par ;) de l'attribut ldap ci-dessus permettant de caractériser un gestionnaire. Ex : researcher -->
+	<!-- Liste des valeurs (séparées par ;) de l'attribut ldap ci-dessus permettant de caractériser un gestionnaire. Ex : staff -->
 	<Parameter name="valeursAttributLdapGestionnaire" value="" />
 	
 	<!-- attribut ldap stockant le login CAS de la personne. Le lien CAS/ldap sera fait sur cet attribut -->
