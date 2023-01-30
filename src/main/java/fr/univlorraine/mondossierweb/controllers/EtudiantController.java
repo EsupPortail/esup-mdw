@@ -1051,7 +1051,7 @@ public class EtudiantController {
 		List<String> retour = new LinkedList<String>();
 		boolean erreur = false;
 		String message = "";
-		if(StringUtils.hasText(telephone) && !Pattern.matches("[0-9[. ]]*", telephone)){
+		if(StringUtils.hasText(telephone) && !Utils.telephoneValide(telephone)){
 			message = applicationContext.getMessage("modificationContact.erreur.tel", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;

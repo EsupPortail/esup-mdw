@@ -36,6 +36,7 @@ import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseMajDTO;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.CommuneMajDTO;
@@ -183,7 +184,7 @@ public class AdresseController {
 				retour.add(message);
 				erreur = true;
 			}
-			if (adresseAnnuelle.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseAnnuelle.getNumerotel().replaceAll(" ", "")))){
+			if (adresseAnnuelle.getNumerotel() != null && !Utils.telephoneValide(adresseAnnuelle.getNumerotel())){
 				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.telephone", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
@@ -216,7 +217,7 @@ public class AdresseController {
 			retour.add(message);
 			erreur = true;
 		}
-		if (adresseFixe.getNumerotel()!=null && (!Pattern.matches("[0-9[.]]*", adresseFixe.getNumerotel().replaceAll(" ", "")))){
+		if (adresseFixe.getNumerotel() != null && !Utils.telephoneValide(adresseFixe.getNumerotel())){
 			message = applicationContext.getMessage("modificationAdressesWindow.erreur.af.telephone", null, Locale.getDefault());
 			retour.add(message);
 			erreur = true;

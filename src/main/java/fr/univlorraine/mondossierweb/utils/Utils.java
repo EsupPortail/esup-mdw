@@ -402,5 +402,9 @@ public class Utils {
 		return bld.toString();
 	}
 
+	public static boolean telephoneValide(String telephone) {
+		String pattern = "^(\\+\\d{1,3}( )?)?((\\(\\d{1,3}\\))|\\d{1,3})[- .]?\\d{3,4}[- .]?\\d{4}$";
+		return Pattern.matches(pattern, telephone.replaceAll(" ", ""));
+	}
 }
 
