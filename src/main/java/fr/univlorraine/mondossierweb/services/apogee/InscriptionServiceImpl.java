@@ -108,7 +108,8 @@ public class InscriptionServiceImpl implements InscriptionService{
 				"and ve.cod_vrs_vet = ins.cod_vrs_vet "+
 				"and ind.cod_etu = "+codetu+" "+
 				"and ins.cod_ind = ind.cod_ind "+
-				"and   eta_iae = 'E' "+
+				"and eta_iae = 'E' "+
+				"and tem_iae_prm = 'O' "+
 				"ORDER BY COD_ANU DESC").getResultList();
 
 		if(llib!=null && llib.size()>0){
