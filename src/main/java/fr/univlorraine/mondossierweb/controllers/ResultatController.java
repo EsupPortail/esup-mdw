@@ -71,6 +71,8 @@ import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatV
 public class ResultatController {
 
 	private Logger LOG = LoggerFactory.getLogger(ResultatController.class);
+	
+	private static final String ACRONYME_CORRESPONDANCE = "COR";
 
 	/* Injections */
 	@Resource
@@ -651,6 +653,21 @@ public class ResultatController {
 											//le résultat:
 											if (rpd.getTypResultat() != null ) {
 												result = rpd.getTypResultat().getCodTre();
+												if (StringUtils.hasText(result) && !e.getSignificationResultats().containsKey(result)) {
+													e.getSignificationResultats().put(result, rpd.getTypResultat().getLibTre());
+												}
+											}
+											//On affiche la correspondance meme si l'état de délibération n'est pas compris dans la liste des témoins paramétrés.
+											if(rpd.getLcc() != null) {
+												if (StringUtils.hasText(result)) {
+													result += "/" + ACRONYME_CORRESPONDANCE;
+												} else {
+													result = ACRONYME_CORRESPONDANCE;
+												}
+												//ajout de la signification du résultat dans la map
+												if ( !e.getSignificationResultats().containsKey(ACRONYME_CORRESPONDANCE)) {
+													e.getSignificationResultats().put(ACRONYME_CORRESPONDANCE,applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
+												}
 											}
 
 											//Test sur la session traitée
@@ -744,27 +761,6 @@ public class ResultatController {
 
 												elp.setRes2(result);
 											}
-
-
-
-											//CAS DE NON OBTENTION PAR CORRESPONDANCE.
-											if(rpd.getLcc() == null) {
-
-												//ajout de la signification du résultat dans la map
-												if (result != null && !result.equals("") && !e.getSignificationResultats().containsKey(result)) {
-													e.getSignificationResultats().put(result, rpd.getTypResultat().getLibTre());
-												}
-
-											}
-										}
-									}
-									//On affiche la correspondance meme si l'état de délibération n'est pas compris dans la liste des témoins paramétrés.
-									if(rpd.getLcc() != null) {
-										//les notes ont été obtenues par correspondance a session 1.
-										elp.setNote1("COR");
-										//ajout de la signification du résultat dans la map
-										if ( !e.getSignificationResultats().containsKey("COR")) {
-											e.getSignificationResultats().put("COR",applicationContext.getMessage("notesView.signification.type.correspondance", null, Locale.getDefault()));
 										}
 									}
 								} else {
