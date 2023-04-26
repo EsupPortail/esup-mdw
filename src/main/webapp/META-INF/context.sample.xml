@@ -22,6 +22,9 @@
 <Context>
 	<!-- Desactive la persistence des sessions apres un redemarrage -->
 	<Manager pathname="" />
+	
+	<!-- Desactive le JarScanner de Tomcat -->
+	<JarScanner scanClassPath="false" scanAllFiles="false" scanAllDirectories="false"/>
 
 	<!-- Base MySQL propre à l'application -->
 	<Resource name="jdbc/dbMdw" type="javax.sql.DataSource" username="usermdw"
