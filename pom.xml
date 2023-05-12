@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.6.24</version>
+	<version>1.6.25</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -62,7 +62,8 @@
 		<!-- <apo.ws.version>6.30.00</apo.ws.version> -->
 		<!-- <apo.ws.version>6.30.30</apo.ws.version> -->
 		<!--<apo.ws.version>6.30.50</apo.ws.version>-->
-		<apo.ws.version>6.30.70</apo.ws.version>
+		<!-- <apo.ws.version>6.30.70</apo.ws.version> -->
+		<apo.ws.version>6.40.00</apo.ws.version>
 	</properties>
 
 	<distributionManagement>
