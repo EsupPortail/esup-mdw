@@ -629,6 +629,10 @@ public class ConfigController {
 		String color = getValeurForParameter("headerColorPdf");
 		return color.split(",");
 	}
+	
+	public int getNbAnneesInfosAnnuelles() {
+		return Integer.parseInt(getValeurForParameter("nbAnneesInfosAnnuelles"));
+	}
 
 
 
@@ -720,7 +724,6 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
-
 
 
 

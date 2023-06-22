@@ -42,6 +42,7 @@ import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
@@ -283,66 +284,93 @@ public class EtudiantController {
 
 				GenericUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
 				LOG.debug("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
+				GenericUI.getCurrent().getEtudiant().setInfosAnnuelles(new LinkedList<InfosAnnuelles> ());
 				try{
-					List<InsAdmAnuDTO2> iaad2 = administratifService.recupererIAAnnuellesV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), GenericUI.getCurrent().getAnneeUnivEnCours(), "ARE");
+					// Initialisation des paramètres
+					int anneeApo = Integer.parseInt(GenericUI.getCurrent().getAnneeUnivEnCours());
+					int anneeMin = anneeApo - configController.getNbAnneesInfosAnnuelles() + 1;
+					
+					//Appel du WebService
+					List<InsAdmAnuDTO2> iaad2 = administratifService.recupererIAAnnuellesV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), 
+						configController.getNbAnneesInfosAnnuelles() == 1 ? GenericUI.getCurrent().getAnneeUnivEnCours() : "toutes", "ARE");
+					
+					// Si on a récupéré des données
 					if(iaad2!=null){
+						
 						LOG.debug("nb ia pour annee en cours : "+iaad2.size());
-						boolean insOkTrouvee=false;
+						
+						// Liste des années pour lesquelles une IA valide a été trouvée
+						List<Integer> insOkTrouvee= new LinkedList<Integer> ();
+						// Vrai s'il sagit de l'année universitaire en cours dans Apogée
+						boolean iaAnneeApoEnCours = false;
+						
+						// Pour chaque IAA récupérée
 						for(InsAdmAnuDTO2 iaad : iaad2){
-							//Si IA non annulée
-							if(!insOkTrouvee && iaad!=null && iaad.getEtatIaa()!=null && iaad.getEtatIaa().getCodeEtatIAA()!=null && !iaad.getEtatIaa().getCodeEtatIAA().equals("A") ){
-								insOkTrouvee=true;
-
-								//recuperer le code cat sociale
-								if( multipleApogeeService.isBoursier(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours())){
-									GenericUI.getCurrent().getEtudiant().setBoursier(true);
+							String anneeIaa = iaad.getAnneeIAA();
+							int anneeIaaEnCours = Integer.parseInt(anneeIaa);
+							// Si l'année de l'IAA doit être traitée
+							if(anneeIaaEnCours >= anneeMin) {
+								// S'il s'agit de l'année active dans Apogée
+								if(anneeIaaEnCours == anneeApo) {
+									iaAnneeApoEnCours = true;
 								}
+								//Si IA non annulée et qu'aucune IA valide pour l'année n'a pas déjà été trouvée
+								if(!insOkTrouvee.contains(anneeIaaEnCours) && iaad.getEtatIaa()!=null && iaad.getEtatIaa().getCodeEtatIAA()!=null && !iaad.getEtatIaa().getCodeEtatIAA().equals("A") ){
+									
+									// Ajout de l'année à la liste des années récupérées
+									insOkTrouvee.add(anneeIaaEnCours);
 
-								//recuperer le statut
-								if(iaad.getStatut()!= null && iaad.getStatut().getCode()!=null){
-									GenericUI.getCurrent().getEtudiant().setStatut(iaad.getStatut().getCode());
-								}
+									// Si l'IA est sur l'année en cours dans Apogée
+									if(iaAnneeApoEnCours) {
+										// On met à jour le témoin étudiant inscrit pour l'année en cours
+										GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
 
-								//recupérer le témoin d'affiliation à la sécu
-								if(iaad.getTemoinAffiliationSS()!=null && iaad.getTemoinAffiliationSS().equals("O")){
-									GenericUI.getCurrent().getEtudiant().setAffilieSso(true);
-								}
+										// Récuperation du statut
+										if(iaad.getStatut() != null && iaad.getStatut().getCode() != null){
+											GenericUI.getCurrent().getEtudiant().setStatut(iaad.getStatut().getCode());
+										}
 
-								//recupérer le régime d'inscription
-								if(iaad.getRegimeIns()!=null && StringUtils.hasText(iaad.getRegimeIns().getLibRgi())){
-									GenericUI.getCurrent().getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
-								}
+										// Récuperation du témoin d'affiliation à la sécu
+										GenericUI.getCurrent().getEtudiant().setAffilieSso(iaad.getTemoinAffiliationSS() != null && iaad.getTemoinAffiliationSS().equals("O"));
 
-								//recupérer le témoin dossier d'inscription validé
-								GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(false);
-								if(iaad.getEtatIaa().getTemDosIAA() != null && iaad.getEtatIaa().getTemDosIAA().equals("O")){
-									GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(true);
-								}
+										// Récuperation du régime d'inscription
+										if(iaad.getRegimeIns() != null && StringUtils.hasText(iaad.getRegimeIns().getLibRgi())){
+											GenericUI.getCurrent().getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
+										}
 
+										// Récuperation du témoin dossier d'inscription validé
+										GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(iaad.getEtatIaa().getTemDosIAA() != null && iaad.getEtatIaa().getTemDosIAA().equals("O"));
+									}
 
-								GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
-								//Si témoin aménagement d'étude valué à O
-								if(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O")){
-									GenericUI.getCurrent().getEtudiant().setTemAmenagementEtude(true);
+									// Récupération informations pour l'onglet "Informations annuelles"
+									InfosAnnuelles infos = new InfosAnnuelles();
+									infos.setAnnee(anneeIaa);
+									infos.setAnneeEnCours(iaAnneeApoEnCours);
+									infos.setLibelle(Utils.getAnneeUniversitaireEnCours(anneeIaa));
+
+									// Si boursier
+									infos.setBoursier(multipleApogeeService.isBoursier(GenericUI.getCurrent().getEtudiant().getCod_ind(), anneeIaa));
+
+									// Si témoin aménagement d'étude valué à O
+									infos.setTemAmenagementEtude(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O"));
+
+									// Si salarie
+									infos.setTemSalarie(multipleApogeeService.isSalarie(GenericUI.getCurrent().getEtudiant().getCod_ind(), anneeIaa));
+
+									if(configController.isAffNumerosAnonymat()) {
+										//On recupere les numeros d'anonymat
+										infos.setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), anneeIaa));
+									}
+
+									// Ajout des informations dans la liste
+									GenericUI.getCurrent().getEtudiant().getInfosAnnuelles().add(0, infos);
 								}
 							}
 						}
-						if(!insOkTrouvee){
+						// Si aucune inscription valide pour l'année en cours dans Apogée n'a été trouvée
+						if(!insOkTrouvee.contains(anneeApo)){
 							GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 						}
-
-						GenericUI.getCurrent().getEtudiant().setTemSalarie(multipleApogeeService.isSalarie(GenericUI.getCurrent().getEtudiant().getCod_ind(), GenericUI.getCurrent().getAnneeUnivEnCours()));
-
-						//Si catégorie socio-professionnelle renseignée
-						/*if(iaad.getCatSocProfEtu()!=null && iaad.getCatSocProfEtu().getCodeCategorie()!=null){
-							String codeCatSocPro = iaad.getCatSocProfEtu().getCodeCategorie();
-							//test si la catégorie n'est pas une catégorie de non salarié
-							if(!codeCatSocPro.equals("81") && !codeCatSocPro.equals("82") &&
-									!codeCatSocPro.equals("99") &&
-									!codeCatSocPro.equals("A") ){
-								GenericUI.getCurrent().getEtudiant().setTemSalarie(true);
-							}
-						}*/
 					}else{
 						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
 					}
@@ -353,9 +381,12 @@ public class EtudiantController {
 
 				TableauIndBacDTO2 bacvo = iaetu.getListeBacs();
 				//Si on a récupéré des bacs
-				if (bacvo != null && bacvo.getItem()!=null && !bacvo.getItem().isEmpty()) {
+				if (bacvo != null && bacvo.getItem() != null && !bacvo.getItem().isEmpty()) {
+					// Pour chaque BAC
 					for (IndBacDTO2 bac : bacvo.getItem()) {
+						// Si le bac est valué
 						if (bac != null) {
+							// Création de l'objet BacEtatCivil
 							BacEtatCivil bec = new BacEtatCivil();
 
 							bec.setLib_bac(bac.getLibelleBac());
@@ -397,11 +428,6 @@ public class EtudiantController {
 					BacEtatCivil bec = new BacEtatCivil();
 					bec.setLib_bac("/");
 					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
-				}
-
-				if(configController.isAffNumerosAnonymat()) {
-					//On recupere les numeros d'anonymat
-					GenericUI.getCurrent().getEtudiant().setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), getAnneeUnivEnCours(GenericUI.getCurrent())));
 				}
 
 				//On vérifie si l'étudiant est interdit de consultation de ses notes

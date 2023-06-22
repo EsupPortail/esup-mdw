@@ -119,10 +119,6 @@ public class Etudiant {
 	 */
 	private String telPortable;
 	/**
-	 * Le numéro de boursier
-	 */
-	private boolean boursier;
-	/**
 	 * affilié à la sécu pour l'année en cours
 	 */
 	private boolean affilieSso;
@@ -135,17 +131,13 @@ public class Etudiant {
 	 */
 	private boolean inscritPourAnneeEnCours;
 	/**
-	 * vrai si étudiant a un régime d'aménagement d'étude
-	 */
-	private boolean temAmenagementEtude;
-	/**
 	 * vrai si le dossier d'inscription est validé
 	 */
 	private boolean temDossierInscriptionValide;
 	/**
-	 * vrai si étudiant est salarié
+	 * Liste des infos annuelles
 	 */
-	private boolean temSalarie;
+	private List<InfosAnnuelles> infosAnnuelles;
 	/**
 	 * statut de l'étudiant
 	 */
@@ -220,10 +212,6 @@ public class Etudiant {
 	 * vrai si les résultat à l'épreuve sont définitifs.
 	 */
 	private boolean deliberationTerminee;
-	/**
-	 * la liste des numérots d'anonymat pour l'année en cours
-	 */
-	private List<Anonymat> numerosAnonymat;
 	/**
 	 * les données d'affiliation à la sécu de l'étudiant 
 	 */

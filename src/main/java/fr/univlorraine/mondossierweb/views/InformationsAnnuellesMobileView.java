@@ -49,6 +49,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -241,21 +242,42 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 
 
-			Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
-			panelInfos.setStyleName("centertitle-panel");
-			panelInfos.addStyleName("v-colored-panel-caption");
+
 
 
 
 			//Si l'étudiant est inscrit pour l'année en cours
-			if(MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
+			if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
+				//Etudiant non inscrit pour l'année en cours
+				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
+				panelInfos.setStyleName("centertitle-panel");
+				panelInfos.addStyleName("v-colored-panel-caption");
+
+				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
+				labelNonInscritLayout.setMargin(true);
+				labelNonInscritLayout.setSizeFull();
+				Label labelNonInscrit = new Label(applicationContext.getMessage(NAME + ".inscrit.non", null, getLocale()));
+				labelNonInscrit.setStyleName(ValoTheme.LABEL_COLORED);
+				labelNonInscrit.addStyleName(ValoTheme.LABEL_BOLD);
+				labelNonInscrit.setWidth("100%");
+				labelNonInscrit.addStyleName("label-centre");
+				labelNonInscritLayout.addComponent(labelNonInscrit);
+				panelInfos.setContent(labelNonInscritLayout);
+			} 
+			for(InfosAnnuelles infos : MdwTouchkitUI.getCurrent().getEtudiant().getInfosAnnuelles()) {
+				
+				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+infos.getLibelle());
+				panelInfos.setStyleName("centertitle-panel");
+				panelInfos.addStyleName("v-colored-panel-caption");
 
 				FormLayout formInfosLayout = new FormLayout();
 				formInfosLayout.setSpacing(true);
 				formInfosLayout.setMargin(true);	
 
 				//Si on affiche le certificat de scolarité sur mobile
-				if(configController.isCertificatScolaritePdfMobile()){
+				if(MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours() 
+					&& infos.isAnneeEnCours()
+					&& configController.isCertificatScolaritePdfMobile()){
 
 					//Si les informations sur les inscriptions n'ont pas déjà été récupérées, on les récupère
 					if(MdwTouchkitUI.getCurrent().getEtudiant().getLibEtablissement()==null){
@@ -264,6 +286,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					//Si on a au moins une inscription
 					if(MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae() !=null &&
 						!MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().isEmpty()){
+						// Récupération de la première inscription de la liste
 						Inscription inscription = MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().get(0);
 
 						//Si on peut proposer le certificat de scolarité
@@ -301,15 +324,13 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					//Numéro Anonymat visible que si l'utilisateur est étudiant
 					List<Anonymat> lano = null;
 					if(userController.isEtudiant()){
-						lano = MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat();
+						lano = infos.getNumerosAnonymat();
 						if(lano!=null) {
 							//Si l'étudiant n'a qu'un seul numéro d'anonymat
 							if(lano.size()==1){
 								String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MdwTouchkitUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
+								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, infos.getNumerosAnonymat().get(0).getCod_etu_ano());
 								formatTextField(fieldNumAnonymat);
-								//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-								//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 								formInfosLayout.addComponent(fieldNumAnonymat);
 							}
 							//Si l'étudiant a plusieurs numéros d'anonymat
@@ -323,11 +344,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 									}
 									TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
 									formatTextField(fieldNumAnonymat);
-									if(i==0){
-										//Pour le premier numéro affiché on affiche l'info bulle
-										//fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-										//fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-									}
 									formInfosLayout.addComponent(fieldNumAnonymat);
 									i++;
 								}
@@ -339,7 +355,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 						(userController.isEnseignant() && configController.isAffBoursierEnseignant()) ||
 						(userController.isGestionnaire() && configController.isAffBoursierGestionnaire())) {
 						String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-						TextField fieldNumBoursier = new TextField(captionBousier, MdwTouchkitUI.getCurrent().getEtudiant().isBoursier() ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
+						TextField fieldNumBoursier = new TextField(captionBousier, infos.isBoursier() ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
 						formatTextField(fieldNumBoursier);
 						formInfosLayout.addComponent(fieldNumBoursier);
 					}
@@ -347,7 +363,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 						(userController.isEnseignant() && configController.isAffSalarieEnseignant()) || 
 						(userController.isGestionnaire() && configController.isAffSalarieGestionnaire())) {
 						String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-						TextField fieldSalarie = new TextField(captionSalarie, MdwTouchkitUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
+						TextField fieldSalarie = new TextField(captionSalarie, infos.isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
 						formatTextField(fieldSalarie);
 						formInfosLayout.addComponent(fieldSalarie);
 					}
@@ -355,7 +371,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 						(userController.isEnseignant() && configController.isAffAmenagementEnseignant()) ||
 						(userController.isGestionnaire() && configController.isAffAmenagementGestionnaire())) {
 						String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-						TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MdwTouchkitUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
+						TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, infos.isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
 						formatTextField(fieldAmenagementEtude);
 						formInfosLayout.addComponent(fieldAmenagementEtude);
 					}
@@ -363,26 +379,12 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 				panelInfos.setContent(formInfosLayout);
 
-			}else{
-				//Etudiant non inscrit pour l'année en cours
-
-				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
-				labelNonInscritLayout.setMargin(true);
-				labelNonInscritLayout.setSizeFull();
-				Label labelNonInscrit = new Label(applicationContext.getMessage(NAME + ".inscrit.non", null, getLocale()));
-				labelNonInscrit.setStyleName(ValoTheme.LABEL_COLORED);
-				labelNonInscrit.addStyleName(ValoTheme.LABEL_BOLD);
-				labelNonInscrit.setWidth("100%");
-				labelNonInscrit.addStyleName("label-centre");
-				labelNonInscritLayout.addComponent(labelNonInscrit);
-				panelInfos.setContent(labelNonInscritLayout);
 
 
-			}
-
-			//Si étudiant non inscrit ou si user étudiant ou si on a autorisé la visualisation des infos annuelles par l'enseignant
-			if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours() || userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignant()){
-				globalLayout.addComponent(panelInfos);
+				//Si étudiant non inscrit ou si user étudiant ou si on a autorisé la visualisation des infos annuelles par l'enseignant
+				if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours() || userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignant()){
+					globalLayout.addComponent(panelInfos);
+				}
 			}
 
 			addComponent(globalLayout);

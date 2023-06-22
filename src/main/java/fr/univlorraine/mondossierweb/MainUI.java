@@ -822,8 +822,8 @@ public class MainUI extends GenericUI {
 			if(userController.isEtudiant() || 
 				(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
 				(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire())){
-				//visibles que si étudiant inscrit pour l'année en cours
-				if(etudiant.isInscritPourAnneeEnCours()){
+				//visibles que si l'étudiant a des infos annuelles à afficher
+				if(!etudiant.getInfosAnnuelles().isEmpty()){
 					addItemMenu(applicationContext.getMessage(InformationsAnnuellesView.NAME + ".title", null, getLocale()), InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
 				}
 			}

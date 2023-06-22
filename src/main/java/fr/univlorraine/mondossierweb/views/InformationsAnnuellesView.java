@@ -42,6 +42,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -95,81 +96,79 @@ public class InformationsAnnuellesView extends VerticalLayout implements View {
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
 
-			Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MainUI.getCurrent())));
+			for(InfosAnnuelles infos : MainUI.getCurrent().getEtudiant().getInfosAnnuelles()) {
+				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+infos.getLibelle());
 
-			FormLayout formInfosLayout = new FormLayout();
-			formInfosLayout.setSpacing(true);
-			formInfosLayout.setMargin(true);
+				FormLayout formInfosLayout = new FormLayout();
+				formInfosLayout.setSpacing(true);
+				formInfosLayout.setMargin(true);
 
-			//Numéro Anonymat visible que si l'utilisateur est étudiant
-			List<Anonymat> lano = null;
-			if(userController.isEtudiant()){
-				lano = MainUI.getCurrent().getEtudiant().getNumerosAnonymat();
-				if(lano!=null) {
-					//Si l'étudiant n'a qu'un seul numéro d'anonymat
-					if(lano.size()==1){
-						String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-						TextField fieldNumAnonymat = new TextField(captionNumAnonymat, MainUI.getCurrent().getEtudiant().getNumerosAnonymat().get(0).getCod_etu_ano());
-						formatTextField(fieldNumAnonymat);
-						fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-						fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-						formInfosLayout.addComponent(fieldNumAnonymat);
-					}
-					//Si l'étudiant a plusieurs numéros d'anonymat
-					if(lano.size()>1){
-						int i=0;
-						for(Anonymat ano : lano){
-							String captionNumAnonymat = "";
-							if(i==0){
-								//Pour le premier numéro affiché on affiche le libellé du champ
-								captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
-							}
-							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+				//Numéro Anonymat visible que si l'utilisateur est étudiant
+				List<Anonymat> lano = null;
+				if(userController.isEtudiant()){
+					lano = infos.getNumerosAnonymat();
+					if(lano!=null) {
+						//Si l'étudiant n'a qu'un seul numéro d'anonymat
+						if(lano.size()==1){
+							String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
+							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, infos.getNumerosAnonymat().get(0).getCod_etu_ano());
 							formatTextField(fieldNumAnonymat);
-							if(i==0){
-								//Pour le premier numéro affiché on affiche l'info bulle
-								fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-								fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-							}
+							fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+							fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
 							formInfosLayout.addComponent(fieldNumAnonymat);
-							i++;
+						}
+						//Si l'étudiant a plusieurs numéros d'anonymat
+						if(lano.size()>1){
+							int i=0;
+							for(Anonymat ano : lano){
+								String captionNumAnonymat = "";
+								if(i==0){
+									//Pour le premier numéro affiché on affiche le libellé du champ
+									captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
+								}
+								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
+								formatTextField(fieldNumAnonymat);
+								if(i==0){
+									//Pour le premier numéro affiché on affiche l'info bulle
+									fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
+									fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
+								}
+								formInfosLayout.addComponent(fieldNumAnonymat);
+								i++;
+							}
 						}
 					}
 				}
-			}
 
-			if(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffBoursierEnseignant()) || 
-				(userController.isGestionnaire() && configController.isAffBoursierGestionnaire())) {
-				String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-				TextField fieldNumBoursier = new TextField(captionBousier, MainUI.getCurrent().getEtudiant().isBoursier()  ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
-				formatTextField(fieldNumBoursier);
-				formInfosLayout.addComponent(fieldNumBoursier);
-			}
-			if(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffSalarieEnseignant()) || 
-				(userController.isGestionnaire() && configController.isAffSalarieGestionnaire())) {
-				String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-				TextField fieldSalarie = new TextField(captionSalarie, MainUI.getCurrent().getEtudiant().isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
-				formatTextField(fieldSalarie);
-				formInfosLayout.addComponent(fieldSalarie);
-			}
-			if(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffAmenagementEnseignant()) ||
-				(userController.isGestionnaire() && configController.isAffAmenagementGestionnaire())) {
-				String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-				TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, MainUI.getCurrent().getEtudiant().isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
-				formatTextField(fieldAmenagementEtude);
-				formInfosLayout.addComponent(fieldAmenagementEtude);
-			}
+				if(userController.isEtudiant() || 
+					(userController.isEnseignant() && configController.isAffBoursierEnseignant()) || 
+					(userController.isGestionnaire() && configController.isAffBoursierGestionnaire())) {
+					String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
+					TextField fieldNumBoursier = new TextField(captionBousier, infos.isBoursier()  ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
+					formatTextField(fieldNumBoursier);
+					formInfosLayout.addComponent(fieldNumBoursier);
+				}
+				if(userController.isEtudiant() || 
+					(userController.isEnseignant() && configController.isAffSalarieEnseignant()) || 
+					(userController.isGestionnaire() && configController.isAffSalarieGestionnaire())) {
+					String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
+					TextField fieldSalarie = new TextField(captionSalarie, infos.isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
+					formatTextField(fieldSalarie);
+					formInfosLayout.addComponent(fieldSalarie);
+				}
+				if(userController.isEtudiant() || 
+					(userController.isEnseignant() && configController.isAffAmenagementEnseignant()) ||
+					(userController.isGestionnaire() && configController.isAffAmenagementGestionnaire())) {
+					String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
+					TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, infos.isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
+					formatTextField(fieldAmenagementEtude);
+					formInfosLayout.addComponent(fieldAmenagementEtude);
+				}
 
 
-			panelInfos.setContent(formInfosLayout);
-			globalLayout.addComponent(panelInfos);
-			//Si on affiche aucun ou un seul numéro d'anonymat, on diminue la largeur du panneau.
-			/*if(lano==null || lano.size()<2) {
-			globalLayout.addComponent(new VerticalLayout());
-		}*/
+				panelInfos.setContent(formInfosLayout);
+				globalLayout.addComponent(panelInfos);
+			}
 			addComponent(globalLayout);
 		}
 
