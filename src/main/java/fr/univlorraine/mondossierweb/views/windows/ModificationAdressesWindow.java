@@ -49,6 +49,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.AdresseController;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
@@ -488,7 +489,7 @@ public class ModificationAdressesWindow extends Window {
 			adresseFixe.setNumerotel(fieldTelephone2.getValue());
 
 			erreursLayout.removeAllComponents();
-			List<String> retour = adresseController.majAdresses(adresseAnnuelle, adresseFixe);
+			List<String> retour = adresseController.majAdresses(adresseAnnuelle, adresseFixe, modificationTelephoneAutorisee);
 			if(retour!=null && retour.size()==1 && retour.get(0).equals("OK")){
 				//ajout maj vue adresse
 				etudiantController.recupererAdresses();

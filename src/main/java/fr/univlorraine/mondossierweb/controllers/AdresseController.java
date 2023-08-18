@@ -143,7 +143,7 @@ public class AdresseController {
 		return lvilles;
 	}
 
-	public List<String> majAdresses(Adresse adresseAnnuelle, Adresse adresseFixe) {
+	public List<String> majAdresses(Adresse adresseAnnuelle, Adresse adresseFixe, boolean modificationTelephoneAutorisee) {
 		List<String> retour = new LinkedList<String>();
 
 		//1-vérification des parametres
@@ -184,7 +184,7 @@ public class AdresseController {
 				retour.add(message);
 				erreur = true;
 			}
-			if (adresseAnnuelle.getNumerotel() != null && !Utils.telephoneValide(adresseAnnuelle.getNumerotel())){
+			if (modificationTelephoneAutorisee && StringUtils.hasText(adresseAnnuelle.getNumerotel()) && !Utils.telephoneValide(adresseAnnuelle.getNumerotel())){
 				message = applicationContext.getMessage("modificationAdressesWindow.erreur.an.telephone", null, Locale.getDefault());
 				retour.add(message);
 				erreur = true;
