@@ -208,12 +208,21 @@ public class NoteController {
 					String libEtb = multipleApogeeService.getLibEtablissementDef();
 					//récupération d'une eventuelle signature
 					String codSign=getCodeSignataire(etape,MainUI.getCurrent().getEtudiant());
+					Signataire signataire = null;
+					Image imageSignature = null;
+					if (configController.isNotesPDFsignature() && StringUtils.hasText(codSign)) {
+						signataire = multipleApogeeService.getSignataireRvn(codSign,PropertyUtils.getClefApogeeDecryptBlob());
+						if (signataire.getImg_sig_std() != null){
+							imageSignature = Image.getInstance(signataire.getImg_sig_std());
+						}
+					}
+					docWriter.setPageEvent(new DetailHeaderFooter(libEtb, etape.getAnnee(), notesPDFFormatPortrait, configController.isNotesPDFsignature(), StringUtils.hasText(codSign), signataire, imageSignature));
 					//Si on doit mettre le filigramme et qu'on n'a pas de signature à apposer au document
 					if(configController.isInsertionFiligranePdfNotes() && !StringUtils.hasText(codSign)){
 						//On ajoute le filigramme
 						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait,codSign, libEtb);
+					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb, signataire, imageSignature);
 					docWriter.close();
 					baosPDF.close();
 					if(PropertyUtils.isEnablePdfDetailNoteSignature()) {
@@ -330,12 +339,12 @@ public class NoteController {
 			//ajout image test
 			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				
+
 				int largeurLogo = configController.getLogoUniversitePdfDimension();
 				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
 				float newHeight = scaleRatio * imageLogo.getHeight();
 				imageLogo.scaleAbsolute(largeurLogo, newHeight);
-				
+
 				if(formatPortrait){
 					imageLogo.setAbsolutePosition(configController.getNotesPDFLogoUniversitePositionX() - largeurLogo,configController.getNotesPDFLogoUniversitePositionY());
 				}else{
@@ -790,7 +799,7 @@ public class NoteController {
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String codSign, String libEtb) {
+	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String libEtb, Signataire signataire, Image imageSignature) {
 
 
 
@@ -840,53 +849,48 @@ public class NoteController {
 		if (configController.isNotesPDFsignature()) {
 
 			try {
-				if (StringUtils.hasText(codSign)) {
-					Signataire signataire = multipleApogeeService.getSignataireRvn(codSign,PropertyUtils.getClefApogeeDecryptBlob());
-					if (signataire.getImg_sig_std() != null){
-						float[] widthsSignataire = {2f, 1.3f};
-						PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
+				if (signataire != null && signataire.getImg_sig_std() != null){
+					float[] widthsSignataire = {2f, 1.3f};
+					PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
 
-						tableSignataire.setWidthPercentage(100f);
-						tableSignataire.addCell(makeCellSignataire("", normal));
-						tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" " + date , normal));
-						tableSignataire.addCell(makeCellSignataire("", normal));
+					tableSignataire.setWidthPercentage(100f);
+					tableSignataire.addCell(makeCellSignataire("", normal));
+					tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" " + date , normal));
+					tableSignataire.addCell(makeCellSignataire("", normal));
 
-						tableSignataire.addCell(makeCellSignataire(signataire.getNom_sig(), normal));
-						tableSignataire.addCell(makeCellSignataire("", normal));
+					tableSignataire.addCell(makeCellSignataire(signataire.getNom_sig(), normal));
+					tableSignataire.addCell(makeCellSignataire("", normal));
 
 
-						Paragraph para2 = new Paragraph();
-						para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + date + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),normal));
+					Paragraph para2 = new Paragraph();
+					para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + date + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),normal));
 
-						try {
-							Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
-							
-							int largeurSignature = configController.getNotePDFSignatureDimension();
-							float scaleRatio = largeurSignature / imageSignature.getWidth(); 
-							float newHeight=scaleRatio * imageSignature.getHeight();
-							imageSignature.scaleAbsolute(largeurSignature, newHeight);
-							
-							PdfPCell cellSignature = new PdfPCell();
-							cellSignature.setBorder(0);
-							cellSignature.setImage(imageSignature);
-							cellSignature.setFixedHeight(72f/(float)300 * imageSignature.getHeight());
-							cellSignature.setHorizontalAlignment(Element.ALIGN_CENTER);
-							tableSignataire.addCell(cellSignature);
+					if(imageSignature != null) {
 
-							Chunk ck = new Chunk (imageSignature, 0, -10, true);
-							para2.add(ck);
+						int largeurSignature = configController.getNotePDFSignatureDimension();
+						float scaleRatio = largeurSignature / imageSignature.getWidth(); 
+						float newHeight=scaleRatio * imageSignature.getHeight();
+						imageSignature.scaleAbsolute(largeurSignature, newHeight);
 
-						}
-						catch (IOException e){
-						}
-						//TODO FOOTER
-						/*
+						PdfPCell cellSignature = new PdfPCell();
+						cellSignature.setBorder(0);
+						cellSignature.setImage(imageSignature);
+						cellSignature.setFixedHeight(72f/(float)300 * imageSignature.getHeight());
+						cellSignature.setHorizontalAlignment(Element.ALIGN_CENTER);
+						tableSignataire.addCell(cellSignature);
+
+						Chunk ck = new Chunk (imageSignature, 0, -10, true);
+						para2.add(ck);
+
+					}
+
+					//TODO FOOTER
+					/*
 						HeaderFooter footer = new HeaderFooter(para2,false);
 						footer.setAlignment(HeaderFooter.ALIGN_LEFT);
 						document.setFooter(footer);*/
-					}
-				}
-				else {
+
+				} else {
 					//TODO FOOTER
 					/*
 					Paragraph para2 = new Paragraph();
@@ -911,7 +915,7 @@ public class NoteController {
 			HeaderFooter hf = new HeaderFooter(phra, phra2);
 			hf.setAlignment(HeaderFooter.ALIGN_CENTER);
 			document.setFooter(hf);	 
-			*/
+			 */
 		}
 
 		//ouverte du document.
@@ -920,12 +924,12 @@ public class NoteController {
 			//ajout image test
 			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				
+
 				int largeurLogo = configController.getLogoUniversitePdfDimension();
 				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
 				float newHeight = scaleRatio * imageLogo.getHeight();
 				imageLogo.scaleAbsolute(largeurLogo, newHeight);
-				
+
 				if(formatPortrait){
 					imageLogo.setAbsolutePosition(configController.getNotesPDFLogoUniversitePositionX() - largeurLogo, configController.getNotesPDFLogoUniversitePositionY());
 				}else{
@@ -1023,7 +1027,7 @@ public class NoteController {
 				HeaderFooter headerp = new HeaderFooter(phraheader,pAfter);
 				headerp.setAlignment(HeaderFooter.ALIGN_LEFT);
 				document.setHeader(headerp);
-				*/
+				 */
 
 				document.add(new Paragraph("\n",normal));
 			}
@@ -1445,65 +1449,149 @@ public class NoteController {
 		}
 		return false;
 	}
-	
+
 	class ResumeHeaderFooter extends PdfPageEventHelper {
-        String libEtb;
-        boolean formatPortrait;
-        
-        public ResumeHeaderFooter(String libEtb, boolean formatPortrait) {
+		String libEtb;
+		boolean formatPortrait;
+
+		public ResumeHeaderFooter(String libEtb, boolean formatPortrait) {
 			super();
 			this.formatPortrait = formatPortrait;
 			this.libEtb = libEtb;
 		}
-        
-        private Phrase generateFooterContent(PdfWriter writer) {
-        	Font ffont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
-            
-        	String partie1 = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()); 
-    		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + Utils.getDateString();
 
-    		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
-    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
-    			for (int i = 0; i < diff; i++) {
-    				partie1 = partie1 + " ";
+		private Phrase generateFooterContent(int page) {
+			Font ffont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 
-    			}
-    		} 
-    		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
-    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
-    			for (int i = 0; i < diff; i++) {
-    				partie2 = " " + partie2;
-    			}
-    		}
+			String partie1 = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()); 
+			String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + Utils.getDateString();
 
-    		//création du pied de page:
-    		Phrase p = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + writer.getPageNumber() +"- " + partie2, ffont);
-    		
-            return p;
-        }
-        
-        /*private Phrase generateHeaderContent() {
+			if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
+				int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
+				for (int i = 0; i < diff; i++) {
+					partie1 = partie1 + " ";
 
-    		//création du header :
+				}
+			} 
+			if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
+				int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
+				for (int i = 0; i < diff; i++) {
+					partie2 = " " + partie2;
+				}
+			}
+
+			//création du pied de page:
+			Phrase p = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + page +"- " + partie2, ffont);
+
+			return p;
+		}
+
+		public void onEndPage(PdfWriter writer, Document document) {
+			PdfContentByte cb = writer.getDirectContent();
+			if(!formatPortrait){
+				ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, generateFooterContent(writer.getPageNumber()),
+					(document.right() - document.left()) / 2 + document.leftMargin(),
+					document.bottom() - 10, 0);
+			}
+		}
+
+	}
+
+
+
+
+
+	class DetailHeaderFooter extends PdfPageEventHelper {
+
+		String libEtb;
+		String annee;
+		boolean formatPortrait;
+		boolean avecSignature;
+		boolean codSign;
+		Signataire signataire;
+		Image imageSignature;
+
+		public DetailHeaderFooter(String libEtb, String annee, boolean formatPortrait, boolean avecSignature, boolean codSign, Signataire signataire, Image imageSignature) {
+			super();
+			this.libEtb = libEtb;
+			this.annee = annee;
+			this.formatPortrait = formatPortrait;
+			this.avecSignature = avecSignature;
+			this.codSign = codSign;
+			this.signataire = signataire;
+			this.imageSignature = imageSignature;
+		}
+
+		private Phrase generateFooterContent(int page) {
+			Font ffont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
+
+			String partie1 = applicationContext.getMessage("pdf.notes.detail", null, Locale.getDefault()); 
+			String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + Utils.getDateString();
+			if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
+				int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
+				for (int i = 0; i < diff; i++) {
+					partie1 = partie1 + " ";
+
+				}
+			} 
+			if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
+				int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
+				for (int i = 0; i < diff; i++) {
+					partie2 = " " + partie2;
+				}
+			}
+
+			//création du pied de page:
+			Phrase p = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + page +"- " + partie2, ffont);
+
+			return p;
+		}
+
+		private Paragraph generateSignFooterContent() {
+			Font normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
+			Paragraph p = new Paragraph();
+			if(codSign) {
+				p.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + Utils.getDateString() + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),normal));
+				Chunk ck = new Chunk (imageSignature, 0, -10, true);
+				p.add(ck);
+			} else {
+				p.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" "+ Utils.getDateString(), normal));
+				p.add(new Phrase("\n"+applicationContext.getMessage("pdf.notes.info.original", null, Locale.getDefault()),normal));
+			}
+
+			return p;
+		}
+
+		private Phrase generateHeaderContent(int page) {
+			Font normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
 			Font normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
-    		
-    		Phrase p = new Phrase(libEtb, normalbig);
-			
-            return p;
-        }*/
-        
-        public void onEndPage(PdfWriter writer, Document document) {
-        	PdfContentByte cb = writer.getDirectContent();
-        	if(!formatPortrait){
-        		ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, generateFooterContent(writer),
-                (document.right() - document.left()) / 2 + document.leftMargin(),
-                document.bottom() - 10, 0);
-        	} /*else {
-        		ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, generateHeaderContent(),
-                    document.left(),
-                    document.top() + 10, 0);
-        	}*/
-        }
-        
+
+			Phrase phraheader = new Phrase("",normal);
+
+			phraheader.add(new Paragraph(libEtb+"\n", normalbig));
+			phraheader.add(new Phrase(applicationContext.getMessage("pdf.year", null, Locale.getDefault()) + " : " + annee + "                                                                                                                                                                                                     page " + page, normal));
+
+			return phraheader;
+		}
+
+		public void onEndPage(PdfWriter writer, Document document) {
+			PdfContentByte cb = writer.getDirectContent();
+			if(formatPortrait && writer.getPageNumber() > 1) {
+				ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, generateHeaderContent(writer.getPageNumber()),
+					document.left(),
+					document.top() + 10, 0);
+			}
+			if(!avecSignature){
+				ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, generateFooterContent(writer.getPageNumber()),
+					(document.right() - document.left()) / 2 + document.leftMargin(),
+					document.bottom() - 10, 0);
+			} else {
+				ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, generateSignFooterContent(),
+					document.left(),
+					document.bottom() - 10, 0);
+			}
+
+		}
+
 	}
 }
