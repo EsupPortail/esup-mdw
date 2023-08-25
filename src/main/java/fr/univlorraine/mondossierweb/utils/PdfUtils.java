@@ -28,9 +28,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfSignatureAppearance;
-import com.lowagie.text.pdf.PdfStamper;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfStamper;
 
 public class PdfUtils {
 	
@@ -57,12 +58,14 @@ public class PdfUtils {
 
 			ByteArrayOutputStream fout = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			PdfStamper stp = PdfStamper.createSignature(reader, fout, '\0');
-
 			PdfSignatureAppearance sap = stp.getSignatureAppearance();
+			//TODO FOOTER
+			/*
 			sap.setCrypto(key, chain, null, PdfSignatureAppearance.SELF_SIGNED);
 			if(PropertyUtils.getPdfSignatureProvider() != null) {
 				sap.setProvider(PropertyUtils.getPdfSignatureProvider());
 			}
+			*/
 			if(PropertyUtils.getPdfSignatureReason() != null) {
 				sap.setReason(PropertyUtils.getPdfSignatureReason());
 			}
@@ -73,10 +76,10 @@ public class PdfUtils {
 				sap.setContact(PropertyUtils.getPdfSignatureContact());
 			}
 			sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
-			//sap.setVisibleSignature(new Rectangle(100, 100, 200, 200), reader.getNumberOfPages(), null);
-
-			stp.close();
+			sap.setVisibleSignature(new Rectangle(100, 100, 200, 200), reader.getNumberOfPages(), null);
+			//stp.close();
 			fout.close();
+			
 			return fout;
 
 		} catch (Exception e) {

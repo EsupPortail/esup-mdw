@@ -406,5 +406,11 @@ public class Utils {
 		String pattern = "^(\\+\\d{1,3}( )?)?((\\(\\d{1,3}\\))|\\d{1,3})[- .]?\\d{3,4}[- .]?\\d{4}$";
 		return Pattern.matches(pattern, telephone.replaceAll(" ", ""));
 	}
+
+	public static String getDateString() {
+		Date d = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		return dateFormat.format(d);
+	}
 }
 

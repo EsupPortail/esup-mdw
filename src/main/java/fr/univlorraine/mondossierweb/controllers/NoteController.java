@@ -42,26 +42,29 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.GrayColor;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfPageEventHelper;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.GrayColor;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 
 import fr.univlorraine.mondossierweb.MainUI;
@@ -69,6 +72,7 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Resultat;
+import fr.univlorraine.mondossierweb.controllers.CalendrierController.CalendrierFooter;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
@@ -140,10 +144,12 @@ public class NoteController {
 						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
+					String libEtb = multipleApogeeService.getLibEtablissementDef();
+					docWriter.setPageEvent(new ResumeHeaderFooter(libEtb, notesPDFFormatPortrait));
 					if(configController.isInsertionFiligranePdfNotes()){
 						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfResume(document,MainUI.getCurrent().getEtudiant(),notesPDFFormatPortrait);
+					creerPdfResume(document,MainUI.getCurrent().getEtudiant(),notesPDFFormatPortrait, libEtb);
 					docWriter.close();
 					baosPDF.close();
 					if(PropertyUtils.isEnablePdfResumeNoteSignature()) {
@@ -199,6 +205,7 @@ public class NoteController {
 						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
+					String libEtb = multipleApogeeService.getLibEtablissementDef();
 					//récupération d'une eventuelle signature
 					String codSign=getCodeSignataire(etape,MainUI.getCurrent().getEtudiant());
 					//Si on doit mettre le filigramme et qu'on n'a pas de signature à apposer au document
@@ -206,7 +213,7 @@ public class NoteController {
 						//On ajoute le filigramme
 						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait,codSign);
+					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait,codSign, libEtb);
 					docWriter.close();
 					baosPDF.close();
 					if(PropertyUtils.isEnablePdfDetailNoteSignature()) {
@@ -264,40 +271,31 @@ public class NoteController {
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfResume(final Document document, Etudiant etudiant, boolean formatPortrait) {
+	public void creerPdfResume(final Document document, Etudiant etudiant, boolean formatPortrait, String libEtb) {
 
 
 
 		//configuration des fonts
 		Font normal = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.NORMAL);
 		Font normalbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 11, Font.BOLD);
-		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
 
 		if(formatPortrait){
 			normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
 			normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
-			legerita = FontFactory.getFont("Arial", 7, Font.ITALIC);
 			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
 			header = FontFactory.getFont("Arial", 11, Font.BOLD);
 		}
 
 		String[] color = configController.getHeaderColorPdf();
-		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
-		/*Color headerColor = new Color(153, 153, 255);
-		if(formatPortrait){
-			headerColor = new Color(142, 142, 142);
-		}*/
-
-
+		BaseColor headerColor = new BaseColor(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
 
 
 		//pieds de pages:
-		Date d = new Date();
+		/*Date d = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String date = dateFormat.format(d);
-		//alignement des libellé du pied de page:
 		String partie1 = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()); 
 		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + date;
 		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
@@ -312,16 +310,17 @@ public class NoteController {
 			for (int i = 0; i < diff; i++) {
 				partie2 = " " + partie2;
 			}
-		}
+		}*/
 
-		//creation du pied de page:
+		//TODO FOOTER
+		/*
 		Phrase phra = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
 		Phrase phra2 = new Phrase("- "+partie2, legerita);
 		HeaderFooter hf = new HeaderFooter(phra, phra2);
 		hf.setAlignment(HeaderFooter.ALIGN_CENTER);
 		if(!formatPortrait){
 			document.setFooter(hf);	 
-		}
+		}*/
 
 
 
@@ -352,19 +351,13 @@ public class NoteController {
 			p.setIndentationLeft(5);
 			if(!formatPortrait)
 				p.setIndentationLeft(10);
-			document.add(p);
-
-			// Phrase pour le header
-			Phrase phraheader = new Phrase("",normal);	
+			document.add(p);	
 
 			if(formatPortrait) {
 				// PFE : Ajout Université
-				Paragraph p000 = new Paragraph(multipleApogeeService.getLibEtablissementDef()+"\n", normalbig);
+				Paragraph p000 = new Paragraph(libEtb + "\n", normalbig);
 				p000.setIndentationLeft(5);
-				if(!formatPortrait)
-					p000.setIndentationLeft(10);
 				document.add(p000);
-				phraheader.add(p000);
 			}
 
 			if (etudiant.getNom() != null) {
@@ -402,20 +395,23 @@ public class NoteController {
 					document.add(p03);
 				}
 
-				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);
+				Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + Utils.getDateString(), normal);
 				p03.setIndentationLeft(5);
 				if(!formatPortrait)
 					p03.setIndentationLeft(10);
 				document.add(p03);
-				document.add(new Paragraph("\n"));
 			}
+			document.add(new Paragraph("\n"));
 
+			//TODO FOOTER
+			/*
 			if (formatPortrait) {
 				HeaderFooter headerdi = new HeaderFooter(phraheader,false);
 				headerdi.setAlignment(HeaderFooter.ALIGN_LEFT);
 				document.setHeader(headerdi);
 				document.add(new Paragraph("\n",normal));
 			}
+			 */
 
 			//Partie DIPLOMES
 			PdfPTable table = new PdfPTable(1);
@@ -461,9 +457,9 @@ public class NoteController {
 			PdfPCell ct2 = new PdfPCell(p2);
 			PdfPCell ct3 = new PdfPCell(p3);
 
-			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(Color.black);
+			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
+			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(BaseColor.BLACK);
 
 
 
@@ -489,10 +485,10 @@ public class NoteController {
 
 
 
-			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(Color.black);
-			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(Color.black);
-			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(Color.black);
-			ctmention.setBorder(Rectangle.BOTTOM); ctmention.setBorderColorBottom(Color.black);
+			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(BaseColor.BLACK);
+			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(BaseColor.BLACK);
+			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(BaseColor.BLACK);
+			ctmention.setBorder(Rectangle.BOTTOM); ctmention.setBorderColorBottom(BaseColor.BLACK);
 
 
 
@@ -508,7 +504,7 @@ public class NoteController {
 			table2.addCell(ct7);
 
 			PdfPCell ctrang  = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.rank", null, Locale.getDefault()),normalbig));
-			ctrang.setBorder(Rectangle.BOTTOM); ctrang.setBorderColorBottom(Color.black);
+			ctrang.setBorder(Rectangle.BOTTOM); ctrang.setBorderColorBottom(BaseColor.BLACK);
 
 			if(etudiant.isAfficherRang()){
 				table2.addCell(ctrang);
@@ -638,7 +634,7 @@ public class NoteController {
 
 
 			PdfPCell ct3etape = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.etape", null, Locale.getDefault()),normalbig));
-			ct3etape.setBorder(Rectangle.BOTTOM); ct3etape.setBorderColorBottom(Color.black);
+			ct3etape.setBorder(Rectangle.BOTTOM); ct3etape.setBorderColorBottom(BaseColor.BLACK);
 
 			tabletape2.addCell(ct1);
 			tabletape2.addCell(ct2);
@@ -794,7 +790,7 @@ public class NoteController {
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait,String codSign) {
+	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String codSign, String libEtb) {
 
 
 
@@ -813,7 +809,7 @@ public class NoteController {
 		}
 
 		String[] color = configController.getHeaderColorPdf();
-		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
+		BaseColor headerColor = new BaseColor(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
 		/*if(formatPortrait){
 			headerColor = new Color(142, 142, 142);
 		}*/
@@ -883,20 +879,23 @@ public class NoteController {
 						}
 						catch (IOException e){
 						}
-
+						//TODO FOOTER
+						/*
 						HeaderFooter footer = new HeaderFooter(para2,false);
 						footer.setAlignment(HeaderFooter.ALIGN_LEFT);
-						document.setFooter(footer);
+						document.setFooter(footer);*/
 					}
 				}
 				else {
+					//TODO FOOTER
+					/*
 					Paragraph para2 = new Paragraph();
 					para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" "+ date, normal));
 					para2.add(new Phrase("\n"+applicationContext.getMessage("pdf.notes.info.original", null, Locale.getDefault()),normal));
 
 					HeaderFooter footer = new HeaderFooter(para2,false);
 					footer.setAlignment(HeaderFooter.ALIGN_LEFT);
-					document.setFooter(footer);
+					document.setFooter(footer);*/
 
 				}
 			} catch (Exception e) {
@@ -905,13 +904,14 @@ public class NoteController {
 
 
 		}else{
-			//creation du pied de page:
+			//TODO FOOTER
+			/*
 			Phrase phra = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
 			Phrase phra2 = new Phrase("- "+partie2, legerita);
 			HeaderFooter hf = new HeaderFooter(phra, phra2);
 			hf.setAlignment(HeaderFooter.ALIGN_CENTER);
 			document.setFooter(hf);	 
-			document.setFooter(hf);
+			*/
 		}
 
 		//ouverte du document.
@@ -948,10 +948,8 @@ public class NoteController {
 
 			if (formatPortrait) {	
 				// PFE : Ajout Université
-				Paragraph p000 = new Paragraph(multipleApogeeService.getLibEtablissementDef()+"\n", normalbig);
+				Paragraph p000 = new Paragraph(libEtb + "\n", normalbig);
 				p000.setIndentationLeft(5);
-				if(!formatPortrait)
-					p000.setIndentationLeft(10);
 				document.add(p000);
 				phraheader.add(p000);
 			}
@@ -1020,9 +1018,12 @@ public class NoteController {
 				Phrase pAnnee = new Phrase(applicationContext.getMessage("pdf.year", null, Locale.getDefault()) + " : " + annee + "                                                                                                                                                                                                     page ", normal);
 				Phrase pAfter = new Phrase(" ", normal);
 				phraheader.add(pAnnee);
+				//TODO FOOTER
+				/*
 				HeaderFooter headerp = new HeaderFooter(phraheader,pAfter);
 				headerp.setAlignment(HeaderFooter.ALIGN_LEFT);
 				document.setHeader(headerp);
+				*/
 
 				document.add(new Paragraph("\n",normal));
 			}
@@ -1115,14 +1116,14 @@ public class NoteController {
 			PdfPCell cellEcts = new PdfPCell(parEcts);
 
 			//ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(Color.black);
-			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(Color.black);
-			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(Color.black);
-			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(Color.black);
-			ct7.setBorder(Rectangle.BOTTOM); ct7.setBorderColorBottom(Color.black);
-			cellRang.setBorder(Rectangle.BOTTOM); cellRang.setBorderColorBottom(Color.black);
-			cellEcts.setBorder(Rectangle.BOTTOM); cellEcts.setBorderColorBottom(Color.black);
+			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(BaseColor.BLACK);
+			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(BaseColor.BLACK);
+			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(BaseColor.BLACK);
+			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(BaseColor.BLACK);
+			ct7.setBorder(Rectangle.BOTTOM); ct7.setBorderColorBottom(BaseColor.BLACK);
+			cellRang.setBorder(Rectangle.BOTTOM); cellRang.setBorderColorBottom(BaseColor.BLACK);
+			cellEcts.setBorder(Rectangle.BOTTOM); cellEcts.setBorderColorBottom(BaseColor.BLACK);
 
 
 			if (formatPortrait) {
@@ -1390,7 +1391,7 @@ public class NoteController {
 	class Watermark extends PdfPageEventHelper {
 
 		/** Default watermark font */
-		Font FONT = new Font(5, 52, Font.BOLD, new GrayColor(0.75f));
+		Font FONT = new Font(FontFamily.HELVETICA, 52, Font.BOLD, new GrayColor(0.75f));
 		boolean formatPortrait;
 		float coordonneex;
 		float coordonneey;
@@ -1443,5 +1444,66 @@ public class NoteController {
 			}
 		}
 		return false;
+	}
+	
+	class ResumeHeaderFooter extends PdfPageEventHelper {
+        String libEtb;
+        boolean formatPortrait;
+        
+        public ResumeHeaderFooter(String libEtb, boolean formatPortrait) {
+			super();
+			this.formatPortrait = formatPortrait;
+			this.libEtb = libEtb;
+		}
+        
+        private Phrase generateFooterContent(PdfWriter writer) {
+        	Font ffont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
+            
+        	String partie1 = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()); 
+    		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + Utils.getDateString();
+
+    		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
+    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
+    			for (int i = 0; i < diff; i++) {
+    				partie1 = partie1 + " ";
+
+    			}
+    		} 
+    		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
+    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
+    			for (int i = 0; i < diff; i++) {
+    				partie2 = " " + partie2;
+    			}
+    		}
+
+    		//création du pied de page:
+    		Phrase p = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + writer.getPageNumber() +"- " + partie2, ffont);
+    		
+            return p;
+        }
+        
+        /*private Phrase generateHeaderContent() {
+
+    		//création du header :
+			Font normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
+    		
+    		Phrase p = new Phrase(libEtb, normalbig);
+			
+            return p;
+        }*/
+        
+        public void onEndPage(PdfWriter writer, Document document) {
+        	PdfContentByte cb = writer.getDirectContent();
+        	if(!formatPortrait){
+        		ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, generateFooterContent(writer),
+                (document.right() - document.left()) / 2 + document.leftMargin(),
+                document.bottom() - 10, 0);
+        	} /*else {
+        		ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, generateHeaderContent(),
+                    document.left(),
+                    document.top() + 10, 0);
+        	}*/
+        }
+        
 	}
 }

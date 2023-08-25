@@ -53,20 +53,24 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.ui.ComboBox;
 
 import fr.univlorraine.apowsutils.ServiceProvider;
@@ -76,6 +80,7 @@ import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Groupe;
+import fr.univlorraine.mondossierweb.controllers.CalendrierController.CalendrierFooter;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
@@ -959,6 +964,7 @@ public class ListeInscritsController {
 				docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 			}
 			docWriter.setStrictImageSequence(true);
+			docWriter.setPageEvent(new TrombinoscopeFooter(libObj, annee));
 			creerPdfTrombinoscope(document, linscrits, listecodind, libObj, annee);
 			docWriter.close();
 			baosPDF.close();
@@ -992,7 +998,7 @@ public class ListeInscritsController {
 
 		document.setPageSize(PageSize.A4.rotate());
 		float marginPage = (margin / 2.54f) * 72f;
-		document.setMargins(marginPage, marginPage, marginPage, marginPage);
+		document.setMargins(marginPage, marginPage, marginPage, marginPage * 1.5f);
 
 		return document;
 	}
@@ -1008,40 +1014,8 @@ public class ListeInscritsController {
 		//configuration des fonts
 		Font normal = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.NORMAL);
 		Font normalbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.BOLD);
-		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font leger = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.NORMAL);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
-		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
-
-		//pieds de pages:
-		String part="";
-		Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		String date = dateFormat.format(d);
-		//alignement des libellés du pied de page:
-		String partie1 = libelle+" "+annee;
-		String partie2 =  applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+" : " + date;
-		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
-			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
-			for (int i = 0; i < diff; i++) {
-				partie1 = partie1 + " ";
-
-			}
-		} 
-		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
-			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
-			for (int i = 0; i < diff; i++) {
-				partie2 = " " + partie2;
-			}
-		}
-
-		//création du pied de page:
-		Phrase phra = new Phrase(partie1 + "-" + part +" Page", legerita);
-		Phrase phra2 = new Phrase("- "+partie2, legerita);
-		HeaderFooter hf = new HeaderFooter(phra, phra2);
-		hf.setAlignment(HeaderFooter.ALIGN_CENTER);
-		document.setFooter(hf);	 
-
 
 		//ouverte du document.
 		document.open();
@@ -1080,7 +1054,7 @@ public class ListeInscritsController {
 			document.add(p4);
 
 
-			Paragraph p03 = new Paragraph( applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+" : " + date + "\n\n", normal);
+			Paragraph p03 = new Paragraph( applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+" : " + Utils.getDateString() + "\n\n", normal);
 			p03.setIndentationLeft(15);
 			document.add(p03);
 
@@ -1090,10 +1064,10 @@ public class ListeInscritsController {
 
 			int compteur = 0;
 			Rectangle border = new Rectangle(0f, 0f);
-			border.setBorderColorLeft(Color.WHITE);
-			border.setBorderColorBottom(Color.WHITE);
-			border.setBorderColorRight(Color.WHITE);
-			border.setBorderColorTop(Color.WHITE);
+			border.setBorderColorLeft(BaseColor.WHITE);
+			border.setBorderColorBottom(BaseColor.WHITE);
+			border.setBorderColorRight(BaseColor.WHITE);
+			border.setBorderColorTop(BaseColor.WHITE);
 
 			String tabNom[] = new String[NB_INSCRITS_LIGNE_TROMBI_PDF];
 			String tabNum[] = new String[NB_INSCRITS_LIGNE_TROMBI_PDF];
@@ -1146,8 +1120,10 @@ public class ListeInscritsController {
 							Paragraph pinscrit = new Paragraph();
 							pinscrit.add(ph);
 							pinscrit.add(ph2);
+							// TODO Ajouter marge
 							PdfPCell celltext = new PdfPCell(pinscrit);
 							celltext.cloneNonPositionParameters(border);
+							celltext.setPaddingBottom(15);
 							table.addCell(celltext);
 						}
 						compteur = 0;
@@ -1199,11 +1175,54 @@ public class ListeInscritsController {
 		// step 6: fermeture du document.
 		document.close();
 
-
-
-
 	}
 
+	
+	class TrombinoscopeFooter extends PdfPageEventHelper {
+		
+        String libelle;
+        String annee;
+        
+        public TrombinoscopeFooter(String libelle, String annee) {
+			super();
+			 this.libelle = libelle;
+			 this.annee = annee;
+		}
+        
+        private Phrase generateContent(PdfWriter writer) {
+        	Font ffont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
+            
+        	//alignement des libellés du pied de page:
+    		String partie1 = libelle + " " + annee;
+    		String partie2 =  applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+" : " + Utils.getDateString();
+    		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
+    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
+    			for (int i = 0; i < diff; i++) {
+    				partie1 = partie1 + " ";
+
+    			}
+    		} 
+    		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
+    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
+    			for (int i = 0; i < diff; i++) {
+    				partie2 = " " + partie2;
+    			}
+    		}
+
+    		//création du pied de page:
+    		Phrase p = new Phrase(partie1 + " -" + "Page " + writer.getPageNumber() +"- " + partie2, ffont);
+    		
+            return p;
+        }
+        
+        public void onEndPage(PdfWriter writer, Document document) {
+        	PdfContentByte cb = writer.getDirectContent();
+            ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, generateContent(writer),
+                (document.right() - document.left()) / 2 + document.leftMargin(),
+                document.bottom() - 50, 0);
+        }
+        
+	}
 
 	/**
 	 * 
