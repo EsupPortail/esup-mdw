@@ -208,7 +208,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 			boolean doctorantNonEnseignant = false;
 			boolean doctorantNonGestionnaire = false;
 
-			//Si un des profils du compte ldap correspond au profil doctorant (potentiellement "enseignant" en priorité)
+			//Si un des profils du compte ldap correspond au profil gestionnaire (potentiellement "enseignant" en priorité)
 			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_GEST)) { 
 				return new String[]{Utils.GEST_USER};
 			}
