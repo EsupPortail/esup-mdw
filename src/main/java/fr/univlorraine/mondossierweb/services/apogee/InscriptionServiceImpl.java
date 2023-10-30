@@ -121,27 +121,4 @@ public class InscriptionServiceImpl implements InscriptionService{
 	}
 
 
-	@Override
-	public String getRegime(String cod_ind, String anneeIAE, String codeEtp, String versionEtp) {
-		@SuppressWarnings("unchecked")
-		List<String>  llibrge = (List<String>) entityManagerApogee.createNativeQuery("select reg.LIB_RGI from ins_adm_etp iae, regime_ins reg"
-			+ " where reg.COD_RGI = iae.COD_RGE"
-			+ " and iae.COD_IND = "+ cod_ind
-			+ " and cod_anu = " + anneeIAE
-			+ " and COD_ETP = '" + codeEtp + "'"
-			+ " and COD_VRS_VET = " + versionEtp).getResultList();
-
-		if(llibrge!=null && llibrge.size()>0){
-			return llibrge.get(0);
-		}
-
-		return null;
-	}
-
-
-	
-
-
-
-
 }
