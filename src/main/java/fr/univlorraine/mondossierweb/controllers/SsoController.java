@@ -387,34 +387,34 @@ public class SsoController {
 				//ajout image test
 				if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 					Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-					
+
 					int largeurLogo = configController.getLogoUniversitePdfDimension();
 					float scaleRatio = largeurLogo / imageLogo.getWidth(); 
 					float newHeight = scaleRatio * imageLogo.getHeight();
 					imageLogo.scaleAbsolute(largeurLogo, newHeight);
-					
+
 					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPortraitPositionX(), configController.getLogoUniversitePdfPortraitPositionY());
 					document.add(imageLogo);
 				}
 				else if (StringUtils.hasText(configController.getHeaderPdf())) {
 					Image imageHeader = Image.getInstance(configController.getHeaderPdf());
-					
+
 					int largeurHeader = configController.getDimensionPDFHeaderFooter();
 					float scaleHeader = largeurHeader / imageHeader.getWidth();
 					float newHeigthHeader = scaleHeader * imageHeader.getHeight();
 					imageHeader.scaleAbsolute(largeurHeader, newHeigthHeader);
-					
+
 					document.add(imageHeader);
 				}
 
 				if (StringUtils.hasText(configController.getFooterPdf())) {
 					Image imageFooter = Image.getInstance(configController.getFooterPdf());
-					
+
 					int largeurFooter = configController.getDimensionPDFHeaderFooter();
 					float scaleFooter = largeurFooter / imageFooter.getWidth();
 					float newHeigthHeader = scaleFooter * imageFooter.getHeight();
 					imageFooter.scaleAbsolute(largeurFooter, newHeigthHeader);
-					
+
 					imageFooter.setAbsolutePosition(0, 0);
 					document.add(imageFooter);
 				}
@@ -488,13 +488,15 @@ public class SsoController {
 				table.addCell(cell);
 
 				//Num de quittance 2
-				Paragraph pquit2 = new Paragraph(applicationContext.getMessage("pdf.quittance.num", null, Locale.getDefault())+" : ", normal);
-				Chunk quitText2 = new Chunk(etudiant.getQuittance_sso().getNum_quittance2(), normalBig);
-				pquit2.add(quitText2);
-				PdfPCell cell2 = new PdfPCell(pquit2);
+				PdfPCell cell2 = new PdfPCell();
+				if(StringUtils.hasText(etudiant.getQuittance_sso().getNum_quittance2())) {
+					Paragraph pquit2 = new Paragraph(applicationContext.getMessage("pdf.quittance.num", null, Locale.getDefault())+" : ", normal);
+					Chunk quitText2 = new Chunk(etudiant.getQuittance_sso().getNum_quittance2(), normalBig);
+					pquit2.add(quitText2);
+					cell2 = new PdfPCell(pquit2);
+				}
 				cell2.setBorder(Rectangle.NO_BORDER);
 				table.addCell(cell2);
-
 
 				//Date de quittance 1
 				Paragraph pdatquit = new Paragraph(applicationContext.getMessage("pdf.quittance.date", null, Locale.getDefault())+" : ", normal);
@@ -506,10 +508,13 @@ public class SsoController {
 				table.addCell(cell3);
 
 				//Date de quittance 2
-				Paragraph pdatquit2 = new Paragraph(applicationContext.getMessage("pdf.quittance.date", null, Locale.getDefault())+" : ", normal);
-				Chunk quitDat2 = new Chunk(etudiant.getQuittance_sso().getDat_quittance2(), normalBig);
-				pdatquit2.add(quitDat2);
-				PdfPCell cell4 = new PdfPCell(pdatquit2);
+				PdfPCell cell4 = new PdfPCell();
+				if(StringUtils.hasText(etudiant.getQuittance_sso().getDat_quittance2())) {
+					Paragraph pdatquit2 = new Paragraph(applicationContext.getMessage("pdf.quittance.date", null, Locale.getDefault())+" : ", normal);
+					Chunk quitDat2 = new Chunk(etudiant.getQuittance_sso().getDat_quittance2(), normalBig);
+					pdatquit2.add(quitDat2);
+					cell4 = new PdfPCell(pdatquit2);
+				}
 				cell4.setBorder(Rectangle.NO_BORDER);
 				table.addCell(cell4);
 
@@ -696,7 +701,7 @@ public class SsoController {
 						float scaleRatio = largeurSignature / imageSignature.getWidth(); 
 						float newHeight = scaleRatio * imageSignature.getHeight();
 						imageSignature.scaleAbsolute(largeurSignature, newHeight);
-						
+
 						imageSignature.setAlignment(Element.ALIGN_RIGHT);
 						imageSignature.setIndentationRight(30);
 						document.add(imageSignature);
@@ -742,35 +747,35 @@ public class SsoController {
 				//ajout image test
 				if (StringUtils.hasText(configController.getLogoUniversitePdf())){
 					Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-					
+
 					int largeurLogo = configController.getLogoUniversitePdfDimension();
 					float scaleRatio = largeurLogo / imageLogo.getWidth(); 
 					float newHeight = scaleRatio * imageLogo.getHeight();
 					imageLogo.scaleAbsolute(largeurLogo, newHeight);
-					
+
 					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPortraitPositionX(), configController.getLogoUniversitePdfPortraitPositionY());
 					document.add(imageLogo);
 				}
 				else if (StringUtils.hasText(configController.getHeaderPdf())) {
 					Image imageHeader = Image.getInstance(configController.getHeaderPdf());
-					
+
 					int largeurHeader = configController.getDimensionPDFHeaderFooter();
 					float scaleHeader = largeurHeader / imageHeader.getWidth();
 					float newHeigthHeader = scaleHeader * imageHeader.getHeight();
 					imageHeader.scaleAbsolute(largeurHeader, newHeigthHeader);
-					
+
 					imageHeader.setAbsolutePosition(0, 765);
 					document.add(imageHeader);
 				}
 
 				if (StringUtils.hasText(configController.getFooterPdf())) {
 					Image imageFooter = Image.getInstance(configController.getFooterPdf());
-					
+
 					int largeurFooter = configController.getDimensionPDFHeaderFooter();
 					float scaleFooter = largeurFooter / imageFooter.getWidth();
 					float newHeigthHeader = scaleFooter * imageFooter.getHeight();
 					imageFooter.scaleAbsolute(largeurFooter, newHeigthHeader);
-					
+
 					imageFooter.setAbsolutePosition(0, 0);
 					document.add(imageFooter);
 				}
