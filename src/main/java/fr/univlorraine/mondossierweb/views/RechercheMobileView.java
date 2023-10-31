@@ -195,6 +195,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				champRecherche.setWidth(100, Unit.PERCENTAGE); 
 				champRecherche.setEnabled(true);
 				champRecherche.setImmediate(true);
+				champRecherche.setMaxLength(100);
 				champRecherche.focus();
 				champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
 				champRecherche.addTextChangeListener(new TextChangeListener() {

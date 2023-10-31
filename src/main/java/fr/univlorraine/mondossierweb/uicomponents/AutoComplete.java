@@ -46,18 +46,13 @@ public class AutoComplete extends TextField{
 
 
 	public void showChoices(List<ResultatDeRecherche> text, Layout layout, Button btnRecherche, boolean touchkitMobileDisplay) {
-
-
 		//Si du texte est saisi
 		if(text.size()>0){
-
 			//Si la popup est déjà instanciée, on la masque
 			if(choicesPopup!=null){
 				choicesPopup.setPopupVisible(false);
 
 			}
-
-
 			//Si c'est la première fois que l'on affiche la popup
 			if(choices==null){
 				//On créé la table contenant les propositions
@@ -81,7 +76,7 @@ public class AutoComplete extends TextField{
 				}
 
 				choices.setImmediate(true);
-				
+
 				//Gestion du clic sur une ligne de la table -> on met la valeut de la ligne dans le textField de saisie
 				choices.addItemClickListener(new ItemClickListener() {
 					@Override

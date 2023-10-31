@@ -167,6 +167,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				champRecherche.setWidth(700, Unit.PIXELS); //540
 				champRecherche.setEnabled(true);
 				champRecherche.setImmediate(true);
+				champRecherche.setMaxLength(100);
 				champRecherche.focus();
 				champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
 				champRecherche.addTextChangeListener(new TextChangeListener() {
