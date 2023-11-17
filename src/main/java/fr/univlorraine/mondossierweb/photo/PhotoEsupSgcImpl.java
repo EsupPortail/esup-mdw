@@ -58,7 +58,7 @@ public class PhotoEsupSgcImpl implements IPhoto {
 
 	private Logger LOG = LoggerFactory.getLogger(PhotoUnivLorraineImplV2.class);
 
-	@Value("${context.param.esupsgc.urlphoto}")
+	@Value("${param.esupsgc.urlphoto}")
 	private String esupSgcPhotoUrl;
 
 	@Resource

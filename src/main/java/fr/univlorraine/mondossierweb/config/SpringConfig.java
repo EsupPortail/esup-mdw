@@ -146,7 +146,7 @@ public class SpringConfig {
 			lattributes.add(environment.getProperty("ldap.uid.attribute"));
 		}
 		lattributes.add("mail");
-		if(environment.getProperty("context.param.esupsgc.urlphoto")!=null) {
+		if(environment.getProperty("param.esupsgc.urlphoto")!=null) {
 			lattributes.add("eduPersonPrincipalName");
 		}
 		lattributes.add(PropertyUtils.getAttributLdapEtudiant());

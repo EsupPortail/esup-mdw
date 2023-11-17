@@ -229,6 +229,8 @@
 	<Parameter name="serveurphoto.implementation" value="photoEmptyImpl" />
 	<!-- photoUnivLorraineImpl : implémentation pour université de Lorraine
 	<Parameter name="serveurphoto.implementation" value="photoUnivLorraineImpl" /> -->
+	<!-- photoEsupSgc : implémentation pour utiliser ESUP-SGC (paramètre param.esupsgc.urlphoto ci-dessous à renseigner)
+	<Parameter name="serveurphoto.implementation" value="photoEsupSgc" /> -->
 
 	
 	<!-- Config Photoserver UL 
@@ -238,7 +240,9 @@
 		value="http://photoserver-test.univ-lorraine.fr/PhotoServer/getTicket?ip=%ip%&amp;mode=%mode%&amp;typ_lim=%typLim%&amp;val_lim=%valLim%&amp;client=%client%" />
 	<Parameter name="param.photoserver.codeapp" value="0" /> -->
 
-
+	<!--  Config Photoserver ESUP-SGC
+	<Parameter name="param.esupsgc.urlphoto"
+			   value="https://esup-sgc.mon-univ.fr/wsrest/photo/%s/restrictedPhoto"/>-->
 
 	<!-- Compte Google Analytics, facultatif -->
 	<!--  <Parameter name="google.analytics.account" value="UA-00000000-1" /> -->
