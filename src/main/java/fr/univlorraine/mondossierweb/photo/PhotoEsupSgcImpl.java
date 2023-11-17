@@ -84,7 +84,7 @@ public class PhotoEsupSgcImpl implements IPhoto {
 
 	byte[] getPhoto(String cod_etu) {
 		String eppn = getEppnFromCodEtu(cod_etu);
-		String url = String.format("%s/%s/photo", esupSgcPhotoUrl, eppn);
+		String url = String.format(esupSgcPhotoUrl, eppn);
 		LOG.debug("GET PHOTO : " + url);
 		try {
 			ResponseEntity<byte[]> response = rt.getForEntity(url, byte[].class);
