@@ -107,14 +107,19 @@ public class PhotoEsupSgcImpl implements IPhoto {
 	}
 
 	String getEppnFromCodEtu(String codetu) {
-		String[] vals= ldapEtudiantSearch.searchForUser(codetu).getStringAttributes("eduPersonPrincipalName");
-		if(vals!=null){
-			LOG.debug("login via codetu pour "+codetu+" => "+vals[0]);
-			return vals[0];
-		} else {
-			LOG.warn("No eduPersonPrincipalName  in LDAP for " + codetu);
+		try {
+			String[] vals = ldapEtudiantSearch.searchForUser(codetu).getStringAttributes("eduPersonPrincipalName");
+			if (vals != null) {
+				LOG.debug("login via codetu pour " + codetu + " => " + vals[0]);
+				return vals[0];
+			} else {
+				LOG.warn("No eduPersonPrincipalName  in LDAP for " + codetu);
+			}
+			return null;
+		} catch (Exception e) {
+			LOG.error("probleme de récupération de l'eppn depuis le codetu via le ldap. ",e);
+			return null;
 		}
-		return null;
 	}
 
 
