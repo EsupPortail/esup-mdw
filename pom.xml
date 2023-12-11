@@ -39,7 +39,7 @@
 		<!-- <vaadin.version>7.7.28</vaadin.version> -->
 		<vaadin.version>7.7.35</vaadin.version>
 	 	<!-- <springframework.version>4.3.22.RELEASE</springframework.version> -->
-		<springframework.version>5.3.18</springframework.version>
+		<springframework.version>6.0.0</springframework.version>
 		<!-- <spring.data.jpa.version>1.11.23.RELEASE</spring.data.jpa.version>-->
 		<spring.data.jpa.version>2.6.3</spring.data.jpa.version>
 		<spring.security.version>4.2.20.RELEASE</spring.security.version>
