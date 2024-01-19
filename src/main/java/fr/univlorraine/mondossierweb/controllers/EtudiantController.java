@@ -703,8 +703,10 @@ public class EtudiantController {
 						insc.setCod_etp(insdto.getEtape().getCodeEtp());
 						insc.setCod_vrs_vet(insdto.getEtape().getVersionEtp());
 						insc.setLib_etp(insdto.getEtape().getLibWebVet());
-						insc.setLib_rge(inscriptionService.getRegime(GenericUI.getCurrent().getEtudiant().getCod_ind(), insdto.getAnneeIAE(), insdto.getEtape().getCodeEtp(),insdto.getEtape().getVersionEtp()));
-
+						if(insdto.getRegimeIns() != null) {
+							insc.setLib_rge(insdto.getRegimeIns().getLibRgi());
+						}
+						
 						//récupération des informations sur le diplôme
 						insc.setCod_dip(insdto.getDiplome().getCodeDiplome());
 						insc.setVers_dip(insdto.getDiplome().getVersionDiplome());
