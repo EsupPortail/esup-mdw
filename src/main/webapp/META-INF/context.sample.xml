@@ -147,10 +147,24 @@
 	<Parameter name="pdf.calendrier.sign" value="false" />
 	<Parameter name="pdf.sign.keystore.path" value="C://monkeystore.keystore" />
 	<Parameter name="pdf.sign.password" value="" />
-	<Parameter name="pdf.sign.provider" value="" />
+	<Parameter name="pdf.sign.creator" value="" />
 	<Parameter name="pdf.sign.reason" value="" />
 	<Parameter name="pdf.sign.location" value="" />
 	<Parameter name="pdf.sign.contact" value="" />
+	<Parameter name="pdf.sign.visible" value="false" />
+	<Parameter name="pdf.sign.visible.text" value="Digitally signed by University of ..." />
+	<Parameter name="pdf.sign.tsa" value="false" />
+	<Parameter name="pdf.sign.tsa.url" value="http://timestamp.digicert.com" />
+	<Parameter name="pdf.sign.tsa.username" value="toto" />
+	<Parameter name="pdf.sign.tsa.password" value="titi" />
+	<Parameter name="pdf.sign.tsa.tokensize" value="8192" />
+	<Parameter name="pdf.sign.policy.identifier" value="" />
+	<Parameter name="pdf.sign.policy.hash" value="" />
+	<Parameter name="pdf.sign.policy.digestalgorythm" value="" />
+	<Parameter name="pdf.sign.policy.uri" value="" />
+	
+	
+	
 	
 
 	
