@@ -433,9 +433,9 @@ public class PropertyUtils {
 		return value;
 	}
 	
-	public static boolean getPdfSignatureTsa() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.sign.tsa"))
-				&& System.getProperty("context.pdf.sign.tsa").equals("true")){
+	public static boolean getPdfSignatureLta() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.sign.lta"))
+				&& System.getProperty("context.pdf.sign.lta").equals("true")){
 			return true;
 		}
 		return false;

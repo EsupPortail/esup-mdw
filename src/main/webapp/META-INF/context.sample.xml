@@ -153,7 +153,7 @@
 	<Parameter name="pdf.sign.contact" value="" />
 	<Parameter name="pdf.sign.visible" value="false" />
 	<Parameter name="pdf.sign.visible.text" value="Digitally signed by University of ..." />
-	<Parameter name="pdf.sign.tsa" value="false" />
+	<Parameter name="pdf.sign.lta" value="false" />
 	<Parameter name="pdf.sign.tsa.url" value="http://timestamp.digicert.com" />
 	<Parameter name="pdf.sign.tsa.username" value="toto" />
 	<Parameter name="pdf.sign.tsa.password" value="titi" />

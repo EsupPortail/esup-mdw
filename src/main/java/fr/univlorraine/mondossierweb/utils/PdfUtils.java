@@ -195,7 +195,7 @@ public class PdfUtils {
 				Security.addProvider(provider);
 				ExternalSignature signature = new PrivateKeySignature(key, DigestAlgorithms.SHA256, provider.getName());
 				
-				if(!PropertyUtils.getPdfSignatureTsa()) {
+				if(!PropertyUtils.getPdfSignatureLta()) {
 					MakeSignature.signDetached(sap, digest, signature, chain, null, null, null, 0, CryptoStandard.CMS);
 				} else {
 			        // TSAClient
@@ -205,7 +205,7 @@ public class PdfUtils {
 					int tsa_tokensize = PropertyUtils.getPdfSignatureTsaTokenSize();
 					TSAClientBouncyCastle tsc = new TSAClientBouncyCastle(tsa_url,tsa_username,tsa_password,tsa_tokensize,DigestAlgorithms.SHA256);
 					
-					// OcspClient
+					// OcspClient 
 					List<CrlClient> crlList = new ArrayList<CrlClient>();
 			        crlList.add(new CrlClientOnline(chain));
 			        OCSPVerifier ocspVerifier = new OCSPVerifier(null, null);
@@ -241,7 +241,7 @@ public class PdfUtils {
 
 	public static byte[] generatePwd() {
 		String pwd = RandomStringUtils.randomAlphanumeric(MIN_LENGTH_PWD, MAX_LENGTH_PWD);
-		LOG.debug("ownerPwd :" + pwd);
+		LOG.debug("ownerPwd : {}", pwd);
 		return pwd.getBytes();
 	}
 	
@@ -291,22 +291,22 @@ public class PdfUtils {
 	        ValidationData validationData = new ValidationData();
 
 	        while (certificate != null) {
-	            //System.out.println(certificate.getSubjectX500Principal().getName());
+	        	LOG.debug("Certificate name : {}" , certificate.getSubjectX500Principal().getName());
 	            X509Certificate issuer = getIssuerCertificate(certificate);
 	            validationData.certs.add(certificate.getEncoded());
 	            byte[] ocspResponse = ocspClient.getEncoded(certificate, issuer, null);
 	            if (ocspResponse != null) {
-	                //System.out.println("  with OCSP response");
+	            	LOG.debug("  with OCSP response");
 	                validationData.ocsps.add(ocspResponse);
 	                X509Certificate ocspSigner = getOcspSignerCertificate(ocspResponse);
 	                if (ocspSigner != null) {
-	                    //System.out.printf("  signed by %s\n", ocspSigner.getSubjectX500Principal().getName());
+	                	LOG.debug("  signed by {}\n", ocspSigner.getSubjectX500Principal().getName());
 	                }
 	                addLtvForChain(ocspSigner, ocspClient, crlClient, getOcspHashKey(ocspResponse));
 	            } else {
 	               Collection<byte[]> crl = crlClient.getEncoded(certificate, null);
 	               if (crl != null && !crl.isEmpty()) {
-	                   //System.out.printf("  with %s CRLs\n", crl.size());
+	            	   LOG.debug("  with {} CRLs\n", crl.size());
 	                   validationData.crls.addAll(crl);
 	                   for (byte[] crlBytes : crl) {
 	                       addLtvForChain(null, ocspClient, crlClient, getCrlHashKey(crlBytes));

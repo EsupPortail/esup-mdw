@@ -1495,9 +1495,6 @@ public class NoteController {
 	}
 
 
-
-
-
 	class DetailHeaderFooter extends PdfPageEventHelper {
 
 		String libEtb;

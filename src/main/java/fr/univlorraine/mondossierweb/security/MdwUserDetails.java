@@ -59,7 +59,8 @@ public class MdwUserDetails implements UserDetails {
 
 	public MdwUserDetails(String username, String[] profil, boolean canAccessToAdminView, String ip) {
 
-		log.info("Connexion-IP:"+ip+"-Login:"+username+"-Profil:"+profil[0]+(profil.length==2?"-"+profil[1]:"")+"-AdminView:"+canAccessToAdminView);
+		log.info("Connexion-IP:{}-Login:{}-Profil:{}{}-AdminView:{}",
+				ip, username, profil[0],(profil.length==2 ? "-"+profil[1] : ""),canAccessToAdminView );
 
 		this.username = username;
 		String droit = profil[0];
