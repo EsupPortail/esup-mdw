@@ -427,15 +427,51 @@ public class PropertyUtils {
 		return false;
 	}
 	
+	public static int getPdfSignatureVisiblePosition(int p) {
+		String value = System.getProperty("context.pdf.sign.visible.position");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("context.pdf.sign.visible.position cannot be null !");
+		return Integer.parseInt(value.split("-")[p]);
+	}
+	
+	public static int getPdfSignatureVisibleLlX(){
+		return getPdfSignatureVisiblePosition(0);
+	}
+	
+	public static int getPdfSignatureVisibleLlY() {
+		return getPdfSignatureVisiblePosition(1);
+	}
+	
+	public static int getPdfSignatureVisibleUrX() {
+		return getPdfSignatureVisiblePosition(2);
+	}
+	
+	public static int getPdfSignatureVisibleUrY() {
+		return getPdfSignatureVisiblePosition(3);
+	}
+	
 	public static String getPdfSignatureVisibleText() {
 		String value = System.getProperty("context.pdf.sign.visible.text");
 		if(!StringUtils.hasText(value)) return null;
 		return value;
 	}
 	
-	public static boolean getPdfSignatureLta() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.sign.lta"))
-				&& System.getProperty("context.pdf.sign.lta").equals("true")){
+	public static boolean getPdfSignatureAlt() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.sign.alt"))
+				&& System.getProperty("context.pdf.sign.alt").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	public static boolean getPdfSignaturePolicy() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.sign.policy"))
+				&& System.getProperty("context.pdf.sign.policy").equals("true")){
+			return true;
+		}
+		return false;
+	}
+	public static boolean getPdfSignatureTsa() {
+		if(StringUtils.hasText(System.getProperty("context.pdf.sign.tsa"))
+				&& System.getProperty("context.pdf.sign.tsa").equals("true")){
 			return true;
 		}
 		return false;
