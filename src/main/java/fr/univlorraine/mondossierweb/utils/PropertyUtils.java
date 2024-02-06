@@ -355,46 +355,6 @@ public class PropertyUtils {
 		return value;
 	}
 
-	public static boolean isEnablePdfDetailNoteSignature() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.detailnote.sign"))
-				&& System.getProperty("context.pdf.detailnote.sign").equals("true")){
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean isEnablePdfResumeNoteSignature() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.resumenote.sign"))
-				&& System.getProperty("context.pdf.resumenote.sign").equals("true")){
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean isEnablePdfCertificatSignature() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.certificat.sign"))
-				&& System.getProperty("context.pdf.certificat.sign").equals("true")){
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean isEnablePdfQuittanceSignature() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.quittance.sign"))
-				&& System.getProperty("context.pdf.quittance.sign").equals("true")){
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean isEnablePdfCalendrierSignature() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.calendrier.sign"))
-				&& System.getProperty("context.pdf.calendrier.sign").equals("true")){
-			return true;
-		}
-		return false;
-	}
-
 	public static String getPdfSignatureCreator() {
 		String value = System.getProperty("context.pdf.sign.creator");
 		if(!StringUtils.hasText(value)) return null;
@@ -418,114 +378,45 @@ public class PropertyUtils {
 		if(!StringUtils.hasText(value)) return null;
 		return value;
 	}
-
-	public static boolean getPdfSignatureVisible() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.sign.visible"))
-				&& System.getProperty("context.pdf.sign.visible").equals("true")){
-			return true;
-		}
-		return false;
+	
+	public static int getPdfSignatureVisibleLlX(String[] position){
+		return Integer.parseInt(position[0]);
 	}
 	
-	public static int getPdfSignatureVisiblePosition(int p) {
-		String value = System.getProperty("context.pdf.sign.visible.position");
-		if(!StringUtils.hasText(value)) throw new NullPointerException("context.pdf.sign.visible.position cannot be null !");
-		return Integer.parseInt(value.split("-")[p]);
+	public static int getPdfSignatureVisibleLlY(String[] position) {
+		return Integer.parseInt(position[1]);
 	}
 	
-	public static int getPdfSignatureVisibleLlX(){
-		return getPdfSignatureVisiblePosition(0);
+	public static int getPdfSignatureVisibleUrX(String[] position) {
+		return Integer.parseInt(position[2]);
 	}
 	
-	public static int getPdfSignatureVisibleLlY() {
-		return getPdfSignatureVisiblePosition(1);
-	}
-	
-	public static int getPdfSignatureVisibleUrX() {
-		return getPdfSignatureVisiblePosition(2);
-	}
-	
-	public static int getPdfSignatureVisibleUrY() {
-		return getPdfSignatureVisiblePosition(3);
-	}
-	
-	public static String getPdfSignatureVisibleText() {
-		String value = System.getProperty("context.pdf.sign.visible.text");
-		if(!StringUtils.hasText(value)) return null;
-		return value;
-	}
-	
-	public static boolean getPdfSignatureAlt() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.sign.alt"))
-				&& System.getProperty("context.pdf.sign.alt").equals("true")){
-			return true;
-		}
-		return false;
-	}
-	public static boolean getPdfSignaturePolicy() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.sign.policy"))
-				&& System.getProperty("context.pdf.sign.policy").equals("true")){
-			return true;
-		}
-		return false;
-	}
-	public static boolean getPdfSignatureTsa() {
-		if(StringUtils.hasText(System.getProperty("context.pdf.sign.tsa"))
-				&& System.getProperty("context.pdf.sign.tsa").equals("true")){
-			return true;
-		}
-		return false;
+	public static int getPdfSignatureVisibleUrY(String[] position) {
+		return Integer.parseInt(position[3]);
 	}
 	
 	public static String getPdfSignatureTsaUrl() {
-		String value = System.getProperty("context.pdf.sign.tsa.url");
+		String value = System.getProperty("context.pdf.sign.alt.tsa.url");
 		if(!StringUtils.hasText(value)) return null;
 		return value;
 	}
 	
 	public static String getPdfSignatureTsaUsername() {
-		String value = System.getProperty("context.pdf.sign.tsa.username");
+		String value = System.getProperty("context.pdf.sign.alt.tsa.username");
 		if(!StringUtils.hasText(value)) return null;
 		return value;
 	}
 	
 	public static String getPdfSignatureTsaPassword() {
-		String value = System.getProperty("context.pdf.sign.tsa.password");
+		String value = System.getProperty("context.pdf.sign.alt.tsa.password");
 		if(!StringUtils.hasText(value)) return null;
 		return value;
 	}
 	public static int getPdfSignatureTsaTokenSize(){
-		String value = System.getProperty("context.pdf.sign.tsa.tokensize");
-		if(!StringUtils.hasText(value)) throw new NullPointerException("context.pdf.sign.tsa.tokensize cannot be null !");
+		String value = System.getProperty("context.pdf.sign.alt.tsa.tokensize");
+		if(!StringUtils.hasText(value)) throw new NullPointerException("context.pdf.sign.alt.tsa.tokensize cannot be null !");
 		return Integer.parseInt(value);
 	}
-
-	public static String getPdfSignaturePolicyIdentifier() {
-		String value = System.getProperty("context.pdf.sign.policy.identifier");
-		if(!StringUtils.hasText(value)) return null;
-		return value;
-	}
-	
-	public static String getPdfSignaturePolicyHash() {
-		String value = System.getProperty("context.pdf.sign.policy.hash");
-		if(!StringUtils.hasText(value)) return null;
-		return value;
-	}
-	
-	public static String getPdfSignaturePolicyDigestAlgorithm() {
-		String value = System.getProperty("context.pdf.sign.policy.digestalgorythm");
-		if(!StringUtils.hasText(value)) return null;
-		return value;
-	}
-	
-	public static String getPdfSignaturePolicyUri() {
-		String value = System.getProperty("context.pdf.sign.policy.uri");
-		if(!StringUtils.hasText(value)) return null;
-		return value;
-	}
-
-
-
 
 
 

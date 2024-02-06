@@ -137,40 +137,23 @@
 	<!-- vrai si on doit afficher l'indicateur de loading entre certains écrans. Push obligatoire -->
 	<Parameter name="showLoadingIndicator" value="true" />
 	
-	<!-- Activer la sécurité sur les pdf générés par l'application (pdf encryption) -->
+	<!-- Activer la sécurité sur les pdf générés par l'application (chiffrement pdf via AES 128 bits) -->
 	<Parameter name="EnablePdfSecurity" value="true" />
-	<!-- Activer la signature électronique sur les pdf générés par l'application -->
-	<Parameter name="pdf.detailnote.sign" value="false" />
-	<Parameter name="pdf.resumenote.sign" value="false" />
-	<Parameter name="pdf.certificat.sign" value="false" />
-	<Parameter name="pdf.quittance.sign" value="false" />
-	<Parameter name="pdf.calendrier.sign" value="false" />
+	<!-- (facultatif) Keystore pour la signature électronique des pdf (voir adminView, onglet PDF) -->
 	<Parameter name="pdf.sign.keystore.path" value="C://monkeystore.keystore" />
 	<Parameter name="pdf.sign.password" value="" />
 	<Parameter name="pdf.sign.creator" value="" />
 	<Parameter name="pdf.sign.reason" value="" />
 	<Parameter name="pdf.sign.location" value="" />
 	<Parameter name="pdf.sign.contact" value="" />
-	<Parameter name="pdf.sign.visible" value="false" />
-	<Parameter name="pdf.sign.visible.position" value="100-100-200-200" />
-	<Parameter name="pdf.sign.visible.text" value="Digitally signed by University of ..." />
-	<Parameter name="pdf.sign.alt" value="false" />
-	<Parameter name="pdf.sign.tsa" value="false" />
-	<Parameter name="pdf.sign.tsa.url" value="http://timestamp.digicert.com" />
-	<Parameter name="pdf.sign.tsa.username" value="toto" />
-	<Parameter name="pdf.sign.tsa.password" value="titi" />
-	<Parameter name="pdf.sign.tsa.tokensize" value="8192" />
-	<Parameter name="pdf.sign.policy" value="false" />
-	<Parameter name="pdf.sign.policy.identifier" value="" />
-	<Parameter name="pdf.sign.policy.hash" value="" />
-	<Parameter name="pdf.sign.policy.digestalgorythm" value="" />
-	<Parameter name="pdf.sign.policy.uri" value="" />
-	
-	
-	
-	
+	<!-- (facultatif) TSA Signature compatible ALT : Nécessité de posséder un certificat délivré par une authentité de certification externe 
+	     La signature Alt doit être activée pour les pdf dans l'adminView (onglet PDF) -->
+	<Parameter name="pdf.sign.alt.tsa.url" value="http://timestamp.digicert.com" />
+	<Parameter name="pdf.sign.alt.tsa.username" value="toto" />
+	<Parameter name="pdf.sign.alt.tsa.password" value="pwd" />
+	<Parameter name="pdf.sign.alt.tsa.tokensize" value="8192" />
 
-	
+
 	<!-- Activer la redirection automatique sur la vue mobile si possible -->
 	<Parameter name="autoredirect.to.mobileview" value="true"/>
 	

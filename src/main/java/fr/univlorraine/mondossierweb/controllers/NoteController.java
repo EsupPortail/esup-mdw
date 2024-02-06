@@ -148,9 +148,9 @@ public class NoteController {
 					creerPdfResume(document,MainUI.getCurrent().getEtudiant(),notesPDFFormatPortrait, libEtb);
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfResumeNoteSignature()) {
+					if(configController.isSignaturePdfResumeNote()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(),ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(),ownerPwd), configController.isSignatureAltPdfResumeNote(), configController.getSignatureAltPositionResumeNote()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());
@@ -221,9 +221,9 @@ public class NoteController {
 					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb, signataire, imageSignature);
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfDetailNoteSignature()) {
+					if(configController.isSignaturePdfDetailNote()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfDetailNote(), configController.getSignatureAltPositionDetailNote()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());

@@ -75,6 +75,7 @@ import org.bouncycastle.operator.OperatorException;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.x509.util.StreamParsingException;
+import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +131,7 @@ public class PdfUtils {
 
 	private static final int MAX_LENGTH_PWD = 30;
 
-	public static ByteArrayOutputStream signPdf(PdfReader reader) {
+	public static ByteArrayOutputStream signPdf(PdfReader reader, boolean signatureAlt, String[] signaturePosition) {
 		try {
 
 			KeyStore ks = KeyStore.getInstance("PKCS12");
@@ -144,11 +145,6 @@ public class PdfUtils {
 			PdfStamper stp = PdfStamper.createSignature(reader, fout, '\0');
 
 			PdfSignatureAppearance sap = stp.getSignatureAppearance();
-			//sap.setCryptoDictionary(new PdfDictionary());
-			//sap.setCrypto(key, chain, null, PdfSignatureAppearance.NOT_CERTIFIED);
-			/*if(PropertyUtils.getPdfSignatureProvider() != null) {
-					sap.setProvider(PropertyUtils.getPdfSignatureProvider());
-				}*/
 			if(PropertyUtils.getPdfSignatureReason() != null) {
 				sap.setReason(PropertyUtils.getPdfSignatureReason());
 			}
@@ -164,20 +160,10 @@ public class PdfUtils {
 			sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
 			sap.setSignDate(Calendar.getInstance());
 
-			if(PropertyUtils.getPdfSignatureVisible()) {
-				Rectangle r = new Rectangle(PropertyUtils.getPdfSignatureVisibleLlX(), PropertyUtils.getPdfSignatureVisibleLlY(), 
-						PropertyUtils.getPdfSignatureVisibleUrX(), PropertyUtils.getPdfSignatureVisibleUrY());
+			if(signatureAlt && signaturePosition != null) {
+				Rectangle r = new Rectangle(PropertyUtils.getPdfSignatureVisibleLlX(signaturePosition), PropertyUtils.getPdfSignatureVisibleLlY(signaturePosition), 
+						PropertyUtils.getPdfSignatureVisibleUrX(signaturePosition), PropertyUtils.getPdfSignatureVisibleUrY(signaturePosition));
 				sap.setVisibleSignature(r, reader.getNumberOfPages(), null);
-
-				// Creating the appearance for layer 2
-				PdfTemplate n2 = sap.getLayer(2);
-				ColumnText ct = new ColumnText(n2);
-				ct.setSimpleColumn(n2.getBoundingBox());
-				//Font blue = new Font(FontFamily.HELVETICA, 8, Font.NORMAL, new BaseColor(0,50,110));
-				//Chunk blueText = new Chunk(PropertyUtils.getPdfSignatureVisibleText(), blue);	        
-				Paragraph p = new Paragraph(new Chunk(PropertyUtils.getPdfSignatureVisibleText()));
-				ct.addElement(p);
-				ct.go();
 			}
 
 			// ExternalSignature
@@ -189,7 +175,8 @@ public class PdfUtils {
 			// Compatibilité ALT
 			List<CrlClient> crlList = null;
 			OcspClientBouncyCastle ocspClient = null;
-			if(PropertyUtils.getPdfSignatureAlt()) {
+			TSAClientBouncyCastle tsc = null;
+			if(signatureAlt) {
 				// OcspClient 
 				crlList = new ArrayList<CrlClient>();
 				crlList.add(new CrlClientOnline(chain));
@@ -199,35 +186,17 @@ public class PdfUtils {
 				// Ajout niveau PAdES B-LT
 				AdobeLtvEnabling adobeLtvEnabling = new AdobeLtvEnabling(stp);
 				adobeLtvEnabling.enable(ocspClient, new CrlClientOnline(chain));
-			}
 
-			// TSAClient (Timestamping Authority)
-			TSAClientBouncyCastle tsc = null;
-			if(PropertyUtils.getPdfSignatureTsa()) {
+				// TSAClient (Timestamping Authority)
 				String tsa_url = PropertyUtils.getPdfSignatureTsaUrl();
 				String tsa_username = PropertyUtils.getPdfSignatureTsaUsername();
 				String tsa_password = PropertyUtils.getPdfSignatureTsaPassword();
 				int tsa_tokensize = PropertyUtils.getPdfSignatureTsaTokenSize();
 				tsc = new TSAClientBouncyCastle(tsa_url,tsa_username,tsa_password,tsa_tokensize,DigestAlgorithms.SHA256);
+
 			}
 
-			// SignaturePolicy
-			SignaturePolicyInfo spi = null;
-			if(PropertyUtils.getPdfSignaturePolicy()) {
-				String policyIdentifier = PropertyUtils.getPdfSignaturePolicyIdentifier();
-				String policyHash = PropertyUtils.getPdfSignaturePolicyHash();
-				String policyDigestAlgorithm = PropertyUtils.getPdfSignaturePolicyDigestAlgorithm();
-				String policyUri = PropertyUtils.getPdfSignaturePolicyUri();
-				spi = new SignaturePolicyInfo(policyIdentifier, policyHash, policyDigestAlgorithm, policyUri);
-			}
-
-			// Sign document
-			if(spi != null) {
-				MakeSignature.signDetached(sap, digest, signature, chain, crlList, ocspClient, tsc, 0, CryptoStandard.CADES, spi);
-			} else {
-				MakeSignature.signDetached(sap, digest, signature, chain, crlList, ocspClient, tsc, 0, CryptoStandard.CMS);
-			}
-
+			MakeSignature.signDetached(sap, digest, signature, chain, crlList, ocspClient, tsc, 0, CryptoStandard.CADES);
 
 			stp.close();
 			fout.close();

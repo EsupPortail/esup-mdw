@@ -633,8 +633,63 @@ public class ConfigController {
 	public int getNbAnneesInfosAnnuelles() {
 		return Integer.parseInt(getValeurForParameter("nbAnneesInfosAnnuelles"));
 	}
+	
+	
+	public boolean isSignaturePdfCalendrier() {
+		return getBooleanValueForParameter("calendrierSignature");
+	}
+	public boolean isSignaturePdfCertificat() {
+		return getBooleanValueForParameter("certificatSignature");
+	}
+	public boolean isSignaturePdfQuittance() {
+		return getBooleanValueForParameter("quittanceSignature");
+	}
+	public boolean isSignaturePdfResumeNote() {
+		return getBooleanValueForParameter("resumeNoteSignature");
+	}
+	public boolean isSignaturePdfDetailNote() {
+		return getBooleanValueForParameter("detailNoteSignature");
+	}
 
+	
+	public boolean isSignatureAltPdfCalendrier() {
+		return getBooleanValueForParameter("calendrierSignatureAlt");
+	}
+	public boolean isSignatureAltPdfCertificat() {
+		return getBooleanValueForParameter("certificatSignatureAlt");
+	}
+	public boolean isSignatureAltPdfQuittance() {
+		return getBooleanValueForParameter("quittanceSignatureAlt");
+	}
+	public boolean isSignatureAltPdfResumeNote() {
+		return getBooleanValueForParameter("resumeNoteSignatureAlt");
+	}
+	public boolean isSignatureAltPdfDetailNote() {
+		return getBooleanValueForParameter("detailNoteSignatureAlt");
+	}
+	
+	public String[] getSignatureAltPositionCalendrier() {
+		return getSplitValuesForParameter("calendrierSignatureAltPosition");
+	}
+	public String[] getSignatureAltPositionCertificat() {
+		return getSplitValuesForParameter("certificatSignatureAltPosition");
+	}
+	public String[] getSignatureAltPositionQuittance() {
+		return getSplitValuesForParameter("quittanceSignatureAltPosition");
+	}
+	public String[] getSignatureAltPositionResumeNote() {
+		return getSplitValuesForParameter("resumeNoteSignatureAltPosition");
+	}
+	public String[] getSignatureAltPositionDetailNote() {
+		return getSplitValuesForParameter("detailNoteSignatureAltPosition");
+	}
 
+	
+	private String[] getSplitValuesForParameter(String parameter) {
+		String value = getValeurForParameter(parameter);
+		if(!StringUtils.hasText(value)) return null;
+		return value.split("-");
+	}
 
 	/**
 	 * 

@@ -289,9 +289,9 @@ public class SsoController {
 					creerPdfQuittance(document,MainUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfQuittanceSignature()) {
+					if(configController.isSignaturePdfQuittance()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfQuittance(), configController.getSignatureAltPositionQuittance()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());

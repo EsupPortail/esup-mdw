@@ -134,9 +134,9 @@ public class CalendrierController {
 					creerPdfCalendrier(document,MainUI.getCurrent().getEtudiant());
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfCalendrierSignature()) {
+					if(configController.isSignaturePdfCalendrier()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfCalendrier(), configController.getSignatureAltPositionCalendrier()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());

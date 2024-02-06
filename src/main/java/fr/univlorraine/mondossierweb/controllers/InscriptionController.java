@@ -139,9 +139,9 @@ public class InscriptionController {
 					creerPdfCertificatScolarite(document,GenericUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfCertificatSignature()) {
+					if(configController.isSignaturePdfCertificat()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfCertificat(), configController.getSignatureAltPositionCertificat()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());
