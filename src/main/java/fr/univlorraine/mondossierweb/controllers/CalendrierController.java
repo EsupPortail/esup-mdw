@@ -38,22 +38,26 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
@@ -126,12 +130,13 @@ public class CalendrierController {
 						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
 					}
 					docWriter.setStrictImageSequence(true);
+					docWriter.setPageEvent(new CalendrierFooter());
 					creerPdfCalendrier(document,MainUI.getCurrent().getEtudiant());
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfCalendrierSignature()) {
+					if(configController.isSignaturePdfCalendrier()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfCalendrier(), configController.getSignatureAltPositionCalendrier()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());
@@ -167,37 +172,8 @@ public class CalendrierController {
 		//configuration des fonts
 		Font normal = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.NORMAL);
 		Font normalbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 11, Font.BOLD);
-		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
-
-		//pieds de pages:
-		Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		String date = dateFormat.format(d);
-		//alignement des libellés du pied de page:
-		String partie1 = applicationContext.getMessage("pdf.calendrier.title", null, Locale.getDefault());
-		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+" : " + date;
-		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
-			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
-			for (int i = 0; i < diff; i++) {
-				partie1 = partie1 + " ";
-
-			}
-		} 
-		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
-			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
-			for (int i = 0; i < diff; i++) {
-				partie2 = " " + partie2;
-			}
-		}
-
-		//création du pied de page:
-		Phrase phra = new Phrase(partie1 + " -"+applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
-		Phrase phra2 = new Phrase("- "+partie2, legerita);
-		HeaderFooter hf = new HeaderFooter(phra, phra2);
-		hf.setAlignment(HeaderFooter.ALIGN_CENTER);
-		document.setFooter(hf);	 
 
 
 		//ouverte du document.
@@ -244,7 +220,7 @@ public class CalendrierController {
 				document.add(p03);
 			}
 
-			Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + date, normal);
+			Paragraph p03 = new Paragraph(applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault()) + " : " + Utils.getDateString(), normal);
 			p03.setIndentationLeft(15);
 			document.add(p03);
 			document.add(new Paragraph("\n"));
@@ -257,7 +233,7 @@ public class CalendrierController {
 			table.setWidthPercentage(98);
 			PdfPCell cell = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.calendrier.subtitle", null, Locale.getDefault()).toUpperCase()+" ", header));
 			cell.setBorder(Rectangle.NO_BORDER);
-			cell.setBackgroundColor(new Color(153, 153, 255));
+			cell.setBackgroundColor(new BaseColor(153, 153, 255));
 			table.addCell(cell);
 
 
@@ -316,17 +292,17 @@ public class CalendrierController {
 			PdfPCell ct10 = new PdfPCell(p10);
 			PdfPCell ct11 = new PdfPCell(p11);
 
-			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct3.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct4.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct5.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct6.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct7.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct8.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.black);
-			ct9.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct10.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct11.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
+			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
+			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct3.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct4.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
+			ct5.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct6.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct7.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct8.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
+			ct9.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
+			ct10.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
+			ct11.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
 
 			table2.addCell(ct1);
 			table2.addCell(ct2);
@@ -406,19 +382,10 @@ public class CalendrierController {
 					table2.addCell(celltext11);
 				}
 
-				/*PdfPCell celltext4 = new PdfPCell(table3);
-				celltext4.setBorder(Rectangle.NO_BORDER);
-				table2.addCell(celltext4);*/
-
 			}
 			document.add(table);
 			document.add(table2);
 			document.add(new Paragraph("\n"));
-
-
-
-
-
 
 
 		} catch (BadElementException e) {
@@ -452,10 +419,46 @@ public class CalendrierController {
 
 		document.setPageSize(PageSize.A4.rotate());
 		float marginPage = (margin / 2.54f) * 72f;
-		document.setMargins(marginPage, marginPage, marginPage, marginPage);
+		document.setMargins(marginPage, marginPage, marginPage, marginPage * 2);
 
 		return document;
 	}
 
+	class CalendrierFooter extends PdfPageEventHelper {
+       
+        private Phrase generateContent(PdfWriter writer) {
+        	Font ffont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
+            
+    		//alignement des libellés du pied de page:
+    		String partie1 = applicationContext.getMessage("pdf.calendrier.title", null, Locale.getDefault());
+    		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+" : " + Utils.getDateString();
+    		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
+    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
+    			for (int i = 0; i < diff; i++) {
+    				partie1 = partie1 + " ";
+
+    			}
+    		} 
+    		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
+    			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
+    			for (int i = 0; i < diff; i++) {
+    				partie2 = " " + partie2;
+    			}
+    		}
+
+    		//création du pied de page:
+    		Phrase p = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + writer.getPageNumber() +"- " + partie2, ffont);
+
+            return p;
+        }
+        
+        public void onEndPage(PdfWriter writer, Document document) {
+        	PdfContentByte cb = writer.getDirectContent();
+            ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, generateContent(writer),
+                (document.right() - document.left()) / 2 + document.leftMargin(),
+                document.bottom() - 30, 0);
+        }
+        
+	}
 
 }

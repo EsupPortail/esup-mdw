@@ -37,20 +37,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 
@@ -139,9 +139,9 @@ public class InscriptionController {
 					creerPdfCertificatScolarite(document,GenericUI.getCurrent().getEtudiant(), inscription);
 					docWriter.close();
 					baosPDF.close();
-					if(PropertyUtils.isEnablePdfCertificatSignature()) {
+					if(configController.isSignaturePdfCertificat()) {
 						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd)).toByteArray());
+						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfCertificat(), configController.getSignatureAltPositionCertificat()).toByteArray());
 					} else {
 						//Creation de l'export
 						return new ByteArrayInputStream(baosPDF.toByteArray());
