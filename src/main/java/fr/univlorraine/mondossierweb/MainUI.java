@@ -124,6 +124,8 @@ public class MainUI extends GenericUI {
 	 */
 	private static final int TENTATIVES_RECO = 3;
 
+	private static final String FRAGMENT_PREFIX = "!";
+
 	/* Redirige java.util.logging vers SLF4j */
 	static {
 		SLF4JBridgeHandler.install();
@@ -301,16 +303,15 @@ public class MainUI extends GenericUI {
 
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
-					!source.getUriFragment().contains(AccesBloqueView.NAME) &&
-					!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
-
+						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
+						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
 					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
 
 					reloadIfUriFragmentError(source.getUriFragment());
 
 					if(source.getUriFragment().contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) 
-						&& userController.isEnseignant()){
+							&& userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
 
 					}
@@ -425,136 +426,146 @@ public class MainUI extends GenericUI {
 
 		//Si utilisateur enseignant ou étudiant
 		if(userController.isEnseignant() || userController.isEtudiant()){
-			if(!applicationActive()){
-				displayViewFullScreen(AccesBloqueView.NAME);
-			}else{
-				//On récupère l'IP du client
-				GenericUI.getCurrent().getIpClient();
-				/* Parametre le layoutDossierEtudiant */
-				menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
-				//Le contentLayout est scrollable si besoin
-				contentLayout.addStyleName("v-scrollable");
-				//contentLayout prend toute la place possible
-				contentLayout.setSizeFull();
-				//le contentLayout prend toute la place disponible dans le layoutDossierEtudiant
-				layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
-				//layoutDossierEtudiant prend toute la place possible
-				layoutDossierEtudiant.setSizeFull();
+			String fragment = Page.getCurrent().getUriFragment();
 
+			// Si dans le cas d'un admin voulant accéder à l'adminView
+			if(fragmentVersView(fragment, adminView.NAME) && userController.userCanAccessAdminView()){
+				displayViewFullScreen(AdminView.NAME);
+			} else {
 
-				//Si user enseignant
-				if(userController.isEnseignant()){
-					//On consultera les notes en vue enseignant
-					vueEnseignantNotesEtResultats=true;
-
-					//Construit le menu horizontal pour les enseignants
-					tabSheetGlobal.setSizeFull();
-					tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
-
-					rangTabRecherche=0;
-					rangTabDossierEtudiant = 1;
-
-					//ajout de l'onglet principal 'recherche'
-					layoutOngletRecherche = new VerticalLayout();
-					ajoutOngletRecherche();
-					layoutOngletRecherche.setSizeFull();
-					tabSheetGlobal.addTab(layoutOngletRecherche, applicationContext.getMessage("mainUI.recherche.title", null, getLocale()), FontAwesome.SEARCH);
-
-					//ajout de l'onglet principal 'assistance'
-					tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
-
-
-					//ajout de l'onglet dossier étudiant
-					addTabDossierEtudiant();
-
-					//Ce tabSheet sera aligné à droite
-					tabSheetGlobal.addStyleName("right-aligned-tabs");
-
-					//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
-					mainVerticalLayout.addComponent(tabSheetGlobal);
-					mainVerticalLayout.setSizeFull();
-					mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
+				// Si application non active 
+				if(!applicationActive()){
+					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
-					//On consultera les notes en vue etudiant
-					vueEnseignantNotesEtResultats=false;
-
-					//User Etudiant
-					//Le Dossier est définit comme étant le contenu de la page
-					mainVerticalLayout.addComponent(layoutDossierEtudiant);
-					mainVerticalLayout.setSizeFull();
-					mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
-
-					//On renseigne l'étudiant dont on consulte le dossier
-					//Récupération du cod_etu
-					etudiant = new Etudiant(userController.getCodetu());
-					LOG.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
-					//Récupération de l'état-civil (et les adresses)
-					etudiantController.recupererEtatCivil();
-					//On construit le menu affiché à l'étudiant
-					buildMainMenuEtudiant();
-				}
+					//On récupère l'IP du client
+					GenericUI.getCurrent().getIpClient();
+					/* Parametre le layoutDossierEtudiant */
+					menuLayout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
+					//Le contentLayout est scrollable si besoin
+					contentLayout.addStyleName("v-scrollable");
+					//contentLayout prend toute la place possible
+					contentLayout.setSizeFull();
+					//le contentLayout prend toute la place disponible dans le layoutDossierEtudiant
+					layoutDossierEtudiant.setExpandRatio(contentLayout, 1);
+					//layoutDossierEtudiant prend toute la place possible
+					layoutDossierEtudiant.setSizeFull();
 
 
-				/* Enregistre l'UI pour la réception de notifications */
-				uiController.registerUI(this);
+					//Si user enseignant
+					if(userController.isEnseignant()){
+						//On consultera les notes en vue enseignant
+						vueEnseignantNotesEtResultats=true;
 
-				boolean navigationComplete=false;
-				String fragment = Page.getCurrent().getUriFragment();
+						//Construit le menu horizontal pour les enseignants
+						tabSheetGlobal.setSizeFull();
+						tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
-				if (fragment != null && !fragment.isEmpty()) {
-					//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est géré dans le listener du navigator
-					if(fragment.contains("adminView") && userController.userCanAccessAdminView()){
-						//Afficher la vue admin
-						navigator.navigateTo(AdminView.NAME);
-						navigationComplete=true;
-					}
-					if(fragment.contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) && userController.isEnseignant()){
-						rechercheController.accessToDossierEtudiantDeepLinking(fragment);
-						navigationComplete=true;
-					}
-				}
+						rangTabRecherche=0;
+						rangTabDossierEtudiant = 1;
 
-				if(!navigationComplete){
-					//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
-					//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
-					if(!applicationActive()){
-						displayViewFullScreen(AccesBloqueView.NAME);
+						//ajout de l'onglet principal 'recherche'
+						layoutOngletRecherche = new VerticalLayout();
+						ajoutOngletRecherche();
+						layoutOngletRecherche.setSizeFull();
+						tabSheetGlobal.addTab(layoutOngletRecherche, applicationContext.getMessage("mainUI.recherche.title", null, getLocale()), FontAwesome.SEARCH);
+
+						//ajout de l'onglet principal 'assistance'
+						tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
+
+
+						//ajout de l'onglet dossier étudiant
+						addTabDossierEtudiant();
+
+						//Ce tabSheet sera aligné à droite
+						tabSheetGlobal.addStyleName("right-aligned-tabs");
+
+						//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
+						mainVerticalLayout.addComponent(tabSheetGlobal);
+						mainVerticalLayout.setSizeFull();
+						mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
 					}else{
-						//Si utilisateur enseignant
-						if(userController.isEnseignant()){
-							//Récupération des favoris pour l'utilisateur
-							List<Favoris> lfav = favorisController.getFavoris();
-							if(lfav!=null && lfav.size()>0){
-								//On affiche la vue des favoris
-								navigator.navigateTo(FavorisView.NAME);
-							}else{
-								//On affiche la vue de recherche rapide
-								navigator.navigateTo(RechercheRapideView.NAME);
-							}
-							//Affichage du message d'intro si besoin
-							afficherMessageIntroEnseignants(false, true);
+						//On consultera les notes en vue etudiant
+						vueEnseignantNotesEtResultats=false;
+
+						//User Etudiant
+						//Le Dossier est définit comme étant le contenu de la page
+						mainVerticalLayout.addComponent(layoutDossierEtudiant);
+						mainVerticalLayout.setSizeFull();
+						mainVerticalLayout.setExpandRatio(layoutDossierEtudiant, 1);
+
+						//On renseigne l'étudiant dont on consulte le dossier
+						//Récupération du cod_etu
+						etudiant = new Etudiant(userController.getCodetu());
+						LOG.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
+						//Récupération de l'état-civil (et les adresses)
+						etudiantController.recupererEtatCivil();
+						//On construit le menu affiché à l'étudiant
+						buildMainMenuEtudiant();
+					}
+
+
+					/* Enregistre l'UI pour la réception de notifications */
+					uiController.registerUI(this);
+
+					boolean navigationComplete=false;
+
+
+					if (fragment != null && !fragment.isEmpty()) {
+						//Cas de l'appel initial de l'application via l'url vers la vue admin (sinon le cas est géré dans le listener du navigator
+						if(fragmentVersView(fragment, adminView.NAME) && userController.userCanAccessAdminView()){
+							//Afficher la vue admin
+							navigator.navigateTo(AdminView.NAME);
+							navigationComplete=true;
+						}
+						if(fragment.contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) && userController.isEnseignant()){
+							rechercheController.accessToDossierEtudiantDeepLinking(fragment);
+							navigationComplete=true;
+						}
+					}
+
+					if(!navigationComplete){
+						//PROBLEME DU F5 : on passe ici (init()) que quand on reinitialise l'UI ou en cas d'erreur. 
+						//On ne peut donc pas rediriger vers des vues qui utilisent des variables non initialisées (ex : Main.getCurrent.getEtudiant)
+						if(!applicationActive()){
+							LOG.info("44444444");
+							displayViewFullScreen(AccesBloqueView.NAME);
 						}else{
-							//Si utilisateur étudiant
-							if(userController.isEtudiant()){
-								//Si on demande à accéder directement à la vue notesView
-								if(fragment!=null && fragment.contains(NotesView.NAME)){
-									//On affiche la vue notes
-									navigator.navigateTo(NotesView.NAME);
+							//Si utilisateur enseignant
+							if(userController.isEnseignant()){
+								//Récupération des favoris pour l'utilisateur
+								List<Favoris> lfav = favorisController.getFavoris();
+								if(lfav!=null && lfav.size()>0){
+									//On affiche la vue des favoris
+									navigator.navigateTo(FavorisView.NAME);
 								}else{
-									//Si on demande à accéder directement à la vue calendrier et que la vue est activée
-									if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiant()){
-										//On affiche la vue Calendrier
-										navigator.navigateTo(CalendrierView.NAME);
-									}else{
-										//On affiche la vue de l'état-civil
-										navigator.navigateTo(EtatCivilView.NAME);
-										//Affichage du message d'intro si besoin
-										afficherMessageIntroEtudiants();
-									}
+									//On affiche la vue de recherche rapide
+									navigator.navigateTo(RechercheRapideView.NAME);
 								}
+								//Affichage du message d'intro si besoin
+								afficherMessageIntroEnseignants(false, true);
 							}else{
-								//On affiche la vue d'erreur
-								displayViewFullScreen(ErreurView.NAME);
+								//Si utilisateur étudiant
+								if(userController.isEtudiant()){
+									//Si on demande à accéder directement à la vue notesView
+									if(fragment!=null && fragment.contains(NotesView.NAME)){
+										//On affiche la vue notes
+										navigator.navigateTo(NotesView.NAME);
+									}else{
+										//Si on demande à accéder directement à la vue calendrier et que la vue est activée
+										if(fragment!=null && fragment.contains(CalendrierView.NAME) && configController.isAffCalendrierEpreuvesEtudiant()){
+											//On affiche la vue Calendrier
+											navigator.navigateTo(CalendrierView.NAME);
+										}else{
+											//On affiche la vue de l'état-civil
+											navigator.navigateTo(EtatCivilView.NAME);
+											//Affichage du message d'intro si besoin
+											afficherMessageIntroEtudiants();
+										}
+									}
+								}else{
+									//On affiche la vue d'erreur
+									displayViewFullScreen(ErreurView.NAME);
+								}
 							}
 						}
 					}
@@ -565,6 +576,10 @@ public class MainUI extends GenericUI {
 			//On affiche la vue accès refusé
 			displayViewFullScreen(AccesRefuseView.NAME);
 		}
+	}
+
+	private boolean fragmentVersView(String fragment, String viewName) {
+		return fragment != null && fragment.equals(FRAGMENT_PREFIX + viewName);
 	}
 
 	/**
@@ -820,8 +835,8 @@ public class MainUI extends GenericUI {
 
 			//info annuelles 
 			if(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
-				(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire())){
+					(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
+					(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire())){
 				//visibles que si l'étudiant a des infos annuelles à afficher
 				if(!etudiant.getInfosAnnuelles().isEmpty()){
 					addItemMenu(applicationContext.getMessage(InformationsAnnuellesView.NAME + ".title", null, getLocale()), InformationsAnnuellesView.NAME, FontAwesome.INFO_CIRCLE);
@@ -830,8 +845,8 @@ public class MainUI extends GenericUI {
 
 			/* Adresses */
 			if(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffAdressesEnseignant()) || 
-				(userController.isGestionnaire() && configController.isAffAdressesGestionnaire())){
+					(userController.isEnseignant() && configController.isAffAdressesEnseignant()) || 
+					(userController.isGestionnaire() && configController.isAffAdressesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(AdressesView.NAME + ".title", null, getLocale()), AdressesView.NAME, FontAwesome.HOME);
 			}
 
@@ -841,15 +856,15 @@ public class MainUI extends GenericUI {
 
 			/* Calendrier */
 			if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())  || 
-				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) || 
-				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
+					(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) || 
+					(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(CalendrierView.NAME + ".title", null, getLocale()), CalendrierView.NAME, FontAwesome.CALENDAR);
 			}
 
 			/* Notes et Résultats */
 			if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
-				(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
-				(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
+					(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+					(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
 				addItemMenu(applicationContext.getMessage(NotesView.NAME + ".title", null, getLocale()), NotesView.NAME, FontAwesome.LIST);
 			}
 
@@ -1048,9 +1063,9 @@ public class MainUI extends GenericUI {
 
 	private boolean applicationActive(){
 		return configController.isApplicationActive() && ((userController.isEtudiant() && configController.isPartieEtudiantActive()) 
-			|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
-			|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
-			|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
+				|| (!userController.isEnseignant() && !userController.isEtudiant() && !userController.isGestionnaire()) 
+				|| (userController.isEnseignant() && configController.isPartieEnseignantActive())
+				|| (userController.isGestionnaire() && configController.isProfilGestionnaireActif()));
 	}
 
 	/**

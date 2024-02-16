@@ -170,9 +170,10 @@ public class Initializer implements WebApplicationInitializer {
 
 
 		/* Servlet REST */
-		ServletRegistration.Dynamic restServlet = servletContext.addServlet("link", new DispatcherServlet(springContext));
+		ServletRegistration.Dynamic restServlet = servletContext.addServlet("deepLinking", new DispatcherServlet(springContext));
 		restServlet.setLoadOnStartup(1);
-		restServlet.addMapping("/link", "/link/*");
+		restServlet.addMapping("/link", "/link/*", "/adminView");
+		
 	}
 
 

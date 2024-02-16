@@ -27,15 +27,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.AdminView;
 
 
 /**
- * Contrôleur REST pour la gestion de l'acces a un dossier
+ * Contrôleur REST pour la gestion de l'acces a un dossier et à l'adminView
  */
 @Controller
-@RequestMapping("/"+Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT)
-public class DeepLinkingDossierEtudiant {
+public class DeepLinking {
 
+	private static final String VAADIN_FRAGMENT_PREFIX = "#!";
+	
 	@Resource
 	private Environment environment;
 
@@ -43,12 +45,20 @@ public class DeepLinkingDossierEtudiant {
 	/**
 	 * redirige vers la bonne url (apres être passé par le CAS)
 	 */
-	@RequestMapping(value="/{codEtu}", method=RequestMethod.GET)
+	@RequestMapping(value= "/" + Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT + "/{codEtu}", method=RequestMethod.GET)
 	public String accesDossier(@PathVariable String codEtu) {
 
-		String path = environment.getRequiredProperty("app.url")+"#!"+Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT+"/"+codEtu;
+		String path = environment.getRequiredProperty("app.url") + VAADIN_FRAGMENT_PREFIX + Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT + "/" + codEtu;
 		
-		return "redirect:"+path;
+		return "redirect:" + path;
+	}
+	
+	@RequestMapping(value="/" + AdminView.NAME, method=RequestMethod.GET)
+	public String accesAdminView() {
+
+		String path = environment.getRequiredProperty("app.url") + VAADIN_FRAGMENT_PREFIX + AdminView.NAME;
+		
+		return "redirect:" + path;
 	}
 }
 
