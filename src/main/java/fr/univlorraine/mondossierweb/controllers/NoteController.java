@@ -218,7 +218,7 @@ public class NoteController {
 						//On ajoute le filigramme
 						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb, signataire, imageSignature);
+					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb);
 					docWriter.close();
 					baosPDF.close();
 					if(configController.isSignaturePdfDetailNote()) {
@@ -743,18 +743,16 @@ public class NoteController {
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String libEtb, Signataire signataire, Image imageSignature) {
+	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String libEtb) {
 
 		//configuration des fonts
 		Font normal = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.NORMAL);
 		Font normalbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 11, Font.BOLD);
-		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
 		if (formatPortrait) {
 			normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
 			normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
-			legerita = FontFactory.getFont("Arial", 7, Font.ITALIC);
 			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
 			header = FontFactory.getFont("Arial", 11, Font.BOLD);
 		}
@@ -784,33 +782,6 @@ public class NoteController {
 			for (int i = 0; i < diff; i++) {
 				partie2 = " " + partie2;
 			}
-		}
-
-		//Si on doit apposer une signature
-		if (configController.isNotesPDFsignature()) {
-
-			try {
-				if (signataire != null && signataire.getImg_sig_std() != null){
-
-					Paragraph para2 = new Paragraph();
-					para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + date + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),normal));
-
-					if(imageSignature != null) {
-
-						int largeurSignature = configController.getNotePDFSignatureDimension();
-						float scaleRatio = largeurSignature / imageSignature.getWidth(); 
-						float newHeight=scaleRatio * imageSignature.getHeight();
-						imageSignature.scaleAbsolute(largeurSignature, newHeight);
-
-					}
-
-
-				} 
-			} catch (Exception e) {
-				LOG.error("Erreur lors de l'ajout de la signature sur le relevé de note ",e);
-			}
-
-
 		}
 
 		//ouverte du document.
@@ -1439,6 +1410,12 @@ public class NoteController {
 				// Format portrait avec signature
 				Paragraph para = new Paragraph();
 				para.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + Utils.getDateString() + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),font));
+				// taille de la signature
+				int largeurSignature = configController.getNotePDFSignatureDimension();
+				float scaleRatio = largeurSignature / imageSignature.getWidth(); 
+				float newHeight=scaleRatio * imageSignature.getHeight();
+				imageSignature.scaleAbsolute(largeurSignature, newHeight);
+				// Ajout de la signature
 				Chunk ck = new Chunk (imageSignature, 0, -10, true);
 				para.add(ck);
 				return new Phrase(para);
