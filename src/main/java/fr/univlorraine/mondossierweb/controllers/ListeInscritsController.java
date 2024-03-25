@@ -1120,7 +1120,6 @@ public class ListeInscritsController {
 							Paragraph pinscrit = new Paragraph();
 							pinscrit.add(ph);
 							pinscrit.add(ph2);
-							// TODO Ajouter marge
 							PdfPCell celltext = new PdfPCell(pinscrit);
 							celltext.cloneNonPositionParameters(border);
 							celltext.setPaddingBottom(15);
