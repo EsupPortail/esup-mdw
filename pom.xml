@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.7.1</version>
+	<version>1.7.2</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -1289,11 +1289,11 @@
 		</dependency>
 		
 		<!-- JPA implementation (JDK11) -->
-		<dependency>
+		<!-- <dependency>
     			<groupId>org.eclipse.persistence</groupId>
     			<artifactId>javax.persistence</artifactId>
     			  <version>2.2.1</version> 
-		</dependency>
+		</dependency> -->
 				
 		<!-- JPA implementation -->
 		<dependency>
