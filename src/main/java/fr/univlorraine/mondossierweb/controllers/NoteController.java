@@ -18,6 +18,28 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.pdf.*;
+import com.vaadin.server.StreamResource;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.Resultat;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PdfUtils;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,50 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.GrayColor;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.vaadin.server.StreamResource;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
-import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.beans.Resultat;
-import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
-import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
-import fr.univlorraine.mondossierweb.utils.PdfUtils;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Gestion des notes
@@ -1381,6 +1359,7 @@ public class NoteController {
 		private Phrase generateFooterContent(int page) {
 			Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 
+			// Si format paysage
 			if(!formatPortrait) {
 				
 				String partie1 = applicationContext.getMessage("pdf.notes.detail", null, Locale.getDefault()); 
@@ -1403,9 +1382,15 @@ public class NoteController {
 
 				return new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + page +"- " + partie2, font);
 			}
-			
+
+			// --------------------------
+			//  C'est un format portrait
+			// --------------------------
+
+			// Mise à jour de la Font
 			font = FontFactory.getFont("Arial", 8, Font.NORMAL);
-			
+
+			// Si on doit ajouter la signature
 			if(avecSignature && imageSignature != null) {
 				// Format portrait avec signature
 				Paragraph para = new Paragraph();
