@@ -1390,6 +1390,19 @@ public class NoteController {
 			// Mise à jour de la Font
 			font = FontFactory.getFont("Arial", 8, Font.NORMAL);
 
+
+			// Pour forcer la signature en bas de page (en cas de TEST uniquement) : Décommenter le code ci-dessous
+			/*avecSignature = true;
+			signataire = new Signataire();
+			signataire.setQua_sig("Président");
+			signataire.setNom_sig("John Doe");
+			try {
+				imageSignature = Image.getInstance(configController.getLogoUniversitePdf());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}*/
+
+
 			// Si on doit ajouter la signature
 			if(avecSignature && imageSignature != null) {
 				// Format portrait avec signature
@@ -1398,10 +1411,10 @@ public class NoteController {
 				// taille de la signature
 				int largeurSignature = configController.getNotePDFSignatureDimension();
 				float scaleRatio = largeurSignature / imageSignature.getWidth(); 
-				float newHeight=scaleRatio * imageSignature.getHeight();
+				float newHeight = scaleRatio * imageSignature.getHeight();
 				imageSignature.scaleAbsolute(largeurSignature, newHeight);
 				// Ajout de la signature
-				Chunk ck = new Chunk (imageSignature, 0, -10, true);
+				Chunk ck = new Chunk (imageSignature, 0, -20, true);
 				para.add(ck);
 				return new Phrase(para);
 			}
@@ -1427,7 +1440,7 @@ public class NoteController {
 			} else {
 				ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, generateFooterContent(writer.getPageNumber()),
 					document.left(),
-					document.bottom() - 20, 0);
+					document.bottom() - 15, 0);
 			}
 
 		}
