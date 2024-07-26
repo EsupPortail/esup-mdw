@@ -18,30 +18,26 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApogeeRepository;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Repository
+@Slf4j
 public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
-
-	private Logger LOG = LoggerFactory.getLogger(ElementPedagogiqueServiceImpl.class);
 
 	@Resource
 	private ElementPedagogiqueApogeeRepository elpRepository;
@@ -71,10 +67,10 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
 		if(StringUtils.hasText(requestUtils.getInscritsFromElp())){
 			//On utilise la requête indiquée dans le fichier XML
-			LOG.info("getInscritsFromElp => Utilisation de la requête du fichier apogeeRequest.xml");
+			log.info("getInscritsFromElp => Utilisation de la requête du fichier apogeeRequest.xml");
 			requeteSQL = requestUtils.getInscritsFromElp().replaceAll("#COD_ELP#", codElp).replaceAll("#COD_ANU#", codAnu);
 		}else{
-			LOG.info("getInscritsFromElp => Utilisation de la requête intégrée à MDW");
+			log.info("getInscritsFromElp => Utilisation de la requête intégrée à MDW");
 			requeteSQL = "select rownum, i.cod_ind,i.cod_etu, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, i.lib_pr1_ind, "+
 				" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,  "+
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_elp),null,rj.not_sub_elp,to_char(rj.not_elp)),' ')) notej,  "+
@@ -128,10 +124,10 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
 		if(StringUtils.hasText(requestUtils.getCodIndInscritsFromGroupe())){
 			//On utilise la requête indiquée dans le fichier XML
-			LOG.info("getCodIndInscritsFromGroupe => Utilisation de la requête du fichier apogeeRequest.xml");
+			log.info("getCodIndInscritsFromGroupe => Utilisation de la requête du fichier apogeeRequest.xml");
 			requeteSQL = requestUtils.getCodIndInscritsFromGroupe().replaceAll("#COD_GPE#", codGpe).replaceAll("#COD_ANU#", codAnnu);
 		}else{
-			LOG.info("getCodIndInscritsFromGroupe => Utilisation de la requête intégrée à MDW");
+			log.info("getCodIndInscritsFromGroupe => Utilisation de la requête intégrée à MDW");
 			requeteSQL = "select distinct ind.cod_ind "+
 				"from IND_AFFECTE_GPE ind, GROUPE g "+
 				"where ind.COD_GPE = g.cod_gpe  "+

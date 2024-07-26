@@ -18,44 +18,34 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.math.BigDecimal;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.entities.apogee.*;
+import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.ResultType;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.ResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
-import fr.univlorraine.mondossierweb.entities.apogee.Examen;
-import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
-import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
-import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
-import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
-import fr.univlorraine.mondossierweb.utils.RequestUtils;
-import fr.univlorraine.mondossierweb.utils.Utils;
-import lombok.Data;
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 
 
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Data
+@Slf4j
 public class MultipleApogeeServiceImpl implements MultipleApogeeService {
-
-	private Logger LOG = LoggerFactory.getLogger(MultipleApogeeServiceImpl.class);
 
 
 	@PersistenceContext (unitName="entityManagerFactoryApogee")
@@ -170,7 +160,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			" where sig.COD_SIG = std.COD_SIG (+) "+
 			" and sig.COD_SIG = '"+codeSignataire+"'";
 		
-		LOG.info("getSignataireQuittance Request : " + request);
+		log.info("getSignataireQuittance Request : " + request);
 		Signataire signataire = (Signataire)entityManagerApogee.createNativeQuery(request, Signataire.class).getSingleResult();
 		return signataire;
 	}
@@ -212,85 +202,57 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		return info;
 	}
 
-/*
 	@Override
-	public String getCodCivFromCodInd(String cod_ind) {
-		@SuppressWarnings("unchecked")
-		String codCiv = (String)entityManagerApogee.createNativeQuery("select i.cod_civ "+
-				" from apogee.individu i  "+
-				" where i.cod_ind ="+cod_ind).getSingleResult();
-		return codCiv;
-	}
+	public List<Inscrit> getInscritsEtapeJuinSep(Etape etape) {
 
-	@Override
-	public boolean getTemPrUsageFromCodInd(String cod_ind) {
-		@SuppressWarnings("unchecked")
-		String tem = (String) entityManagerApogee.createNativeQuery("select i.tem_pr_usage "+
-				" from apogee.individu i  "+
-				" where i.cod_ind ="+cod_ind).getSingleResult();
-		return (tem!=null && tem.equals("O"));
-	}
+		String requeteSQL="";
 
-	@Override
-	public String getCodSexEtaCivFromCodInd(String cod_ind) {
-		@SuppressWarnings("unchecked")
-		String codSexEtaCiv = (String)entityManagerApogee.createNativeQuery("select i.cod_sex_eta_civ "+
-				" from apogee.individu i  "+
-				" where i.cod_ind ="+cod_ind).getSingleResult();
-		return codSexEtaCiv;
-	}
+		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
+		if(StringUtils.hasText(requestUtils.getInscritsEtapeJuinSep())){
+			//On utilise la requête indiquée dans le fichier XML
+			log.info("getInscritsEtapeJuinSep => Utilisation de la requête du fichier apogeeRequest.xml");
+			requeteSQL = requestUtils.getInscritsEtapeJuinSep().replaceAll("#COD_ETP#", etape.getCode()).replaceAll("#COD_VRS_VET#", etape.getVersion()).replaceAll("#COD_ANU#", etape.getAnnee());
+		} else {
+			log.info("getInscritsEtapeJuinSep => Utilisation de la requête intégrée à MDW");
+			requeteSQL = "select rownum, i.cod_ind,i.cod_etu, i.lib_pr1_ind, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, "+
+					" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,   "+
+					" decode(rj.tem_iae_ko_vet,0,'O','N') iae, "+
+					" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_vet),null,rj.not_sub_vet,to_char(rj.not_vet)),' ')) notej ,  "+
+					" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj , "+
+					" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_vet),null,rs.not_sub_vet,to_char(rs.not_vet)),' ')) notes , "+
+					" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress  "+
+					" from apogee.individu i , apogee.resultat_vet rj  "+
+					" left outer join apogee.resultat_vet rs on ( rs.cod_ind = rj.cod_ind   "+
+					" and rs.tem_iae_ko_vet in ('0','2')  "+
+					" and rs.cod_etp = rj.cod_etp  "+
+					" and rs.cod_vrs_vet = rj.cod_vrs_vet  "+
+					" and rs.cod_anu = rj.cod_anu  "+
+					" and rs.cod_ses = '2'  "+
+					" and rs.cod_adm = '1')  "+
+					" left outer join AVCT_OBJ_ANO avc on (avc.COD_ANU=rj.COD_ANU "+
+					" and avc.COD_OBJ_AOA=rj.cod_etp "+
+					" and avc.COD_SES_OBJ_AOA=rj.COD_SES "+
+					" and avc.COD_ADM_OBJ_AOA=rj.COD_ADM "+
+					" and avc.TYP_OBJ_AOA='VET' "+
+					" and avc.COD_VRS_OBJ_AOA=rj.cod_vrs_vet "+
+					" and avc.ETA_ANO_OBJ_AOA='V' ) "+
+					" left outer join AVCT_OBJ_ANO avc2 on (avc2.COD_ANU=rj.COD_ANU "+
+					" and avc2.COD_OBJ_AOA=rj.cod_etp "+
+					" and avc2.COD_SES_OBJ_AOA='2' "+
+					" and avc2.COD_ADM_OBJ_AOA='1' "+
+					" and avc2.TYP_OBJ_AOA='VET' "+
+					" and avc2.COD_VRS_OBJ_AOA=rj.cod_vrs_vet "+
+					" and avc2.ETA_ANO_OBJ_AOA='V')     "+
+					" where rj.tem_iae_ko_vet in ('0','2')  "+
+					" and rj.cod_etp = '"+etape.getCode()+"' "+
+					" and rj.cod_vrs_vet = "+etape.getVersion()+" "+
+					" and rj.cod_anu = "+etape.getAnnee()+ " "+
+					" and rj.cod_ses in ('0','1') and rj.cod_adm = '1'  "+
+					" and i.cod_ind = rj.cod_ind  "+
+					" order by NOM,i.lib_pr1_ind,i.date_nai_ind ";
+		}
 
-	@Override
-	public String getLibPrEtaCivFromCodInd(String cod_ind) {
-		@SuppressWarnings("unchecked")
-		String libPrEtaCiv = (String)entityManagerApogee.createNativeQuery("select i.lib_pr_eta_civ "+
-				" from apogee.individu i  "+
-				" where i.cod_ind ="+cod_ind).getSingleResult();
-		return libPrEtaCiv;
-	}*/
-
-	@Override
-	public List<Inscrit> getInscritsEtapeJuinSep(Etape e) {
-		@SuppressWarnings("unchecked")
-		List<Inscrit> linscrits = (List<Inscrit>)entityManagerApogee.createNativeQuery("select rownum, i.cod_ind,i.cod_etu, i.lib_pr1_ind, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, "+
-			" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,   "+
-			" decode(rj.tem_iae_ko_vet,0,'O','N') iae, "+
-			" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_vet),null,rj.not_sub_vet,to_char(rj.not_vet)),' ')) notej ,  "+
-			" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj , "+
-			" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_vet),null,rs.not_sub_vet,to_char(rs.not_vet)),' ')) notes , "+
-			" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress  "+
-			" from apogee.individu i , apogee.resultat_vet rj  "+
-			" left outer join apogee.resultat_vet rs on ( rs.cod_ind = rj.cod_ind   "+
-			" and rs.tem_iae_ko_vet in ('0','2')  "+
-			" and rs.cod_etp = rj.cod_etp  "+
-			" and rs.cod_vrs_vet = rj.cod_vrs_vet  "+
-			" and rs.cod_anu = rj.cod_anu  "+
-			" and rs.cod_ses = '2'  "+
-			" and rs.cod_adm = '1')  "+
-			" left outer join AVCT_OBJ_ANO avc on (avc.COD_ANU=rj.COD_ANU "+
-			" and avc.COD_OBJ_AOA=rj.cod_etp "+
-			" and avc.COD_SES_OBJ_AOA=rj.COD_SES "+
-			" and avc.COD_ADM_OBJ_AOA=rj.COD_ADM "+
-			" and avc.TYP_OBJ_AOA='VET' "+
-			" and avc.COD_VRS_OBJ_AOA=rj.cod_vrs_vet "+
-			" and avc.ETA_ANO_OBJ_AOA='V' ) "+
-			" left outer join AVCT_OBJ_ANO avc2 on (avc2.COD_ANU=rj.COD_ANU "+
-			" and avc2.COD_OBJ_AOA=rj.cod_etp "+
-			" and avc2.COD_SES_OBJ_AOA='2' "+
-			" and avc2.COD_ADM_OBJ_AOA='1' "+
-			" and avc2.TYP_OBJ_AOA='VET' "+
-			" and avc2.COD_VRS_OBJ_AOA=rj.cod_vrs_vet "+
-			" and avc2.ETA_ANO_OBJ_AOA='V')     "+    
-			" where rj.tem_iae_ko_vet in ('0','2')  "+
-			" and rj.cod_etp = '"+e.getCode()+"' "+
-			" and rj.cod_vrs_vet = "+e.getVersion()+" "+
-			" and rj.cod_anu = "+e.getAnnee()+ " "+
-			" and rj.cod_ses in ('0','1') and rj.cod_adm = '1'  "+
-			" and i.cod_ind = rj.cod_ind  "+
-			" order by NOM,i.lib_pr1_ind,i.date_nai_ind ", Inscrit.class).getResultList();
-
-		return linscrits;
-
+		return (List<Inscrit>)entityManagerApogee.createNativeQuery(requeteSQL, Inscrit.class).getResultList();
 	}
 
 
@@ -304,7 +266,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
 			return libelle;
 		}catch(NoResultException | EmptyResultDataAccessException ex){
-			LOG.info("Aucun lib_web_vet trouvé pour étape : "+e.getCode()+"/"+e.getVersion());
+			log.info("Aucun lib_web_vet trouvé pour étape : "+e.getCode()+"/"+e.getVersion());
 		}
 		return null;
 	}
@@ -318,7 +280,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" where cod_etp = '"+codeEtp+"'").getSingleResult();
 			return libelle;
 		}catch(NoResultException | EmptyResultDataAccessException ex){
-			LOG.info("Aucun lic_etp trouvé pour étape : "+codeEtp);
+			log.info("Aucun lic_etp trouvé pour étape : "+codeEtp);
 		}
 		return null;
 	}
@@ -345,7 +307,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			}
 
 		}catch(NumberFormatException nfe){
-			LOG.debug("Aucune année valide trouvée pour cette vet : "+e.getCode()+"/"+e.getVersion(), nfe);
+			log.debug("Aucune année valide trouvée pour cette vet : "+e.getCode()+"/"+e.getVersion(), nfe);
 		}
 		return lannee;
 
@@ -379,7 +341,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					"and elp.COD_ELP='"+codElp+"'", NatureElp.class).getSingleResult();
 				return nature.getLib_nel();
 			}catch(NoResultException | EmptyResultDataAccessException e){
-				LOG.info("Aucune nature trouvee pour ELP : "+codElp);
+				log.info("Aucune nature trouvee pour ELP : "+codElp);
 			}
 		}
 		return null;
@@ -525,10 +487,10 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			if(temDosIaaPj != null && temDosIaaPj.equals("O")) {
 				return true;
 			} else {
-				LOG.info("isDossierInscriptionValide - Dossier IAA non valide pour " + cod_ind + " en " + cod_anu);
+				log.info("isDossierInscriptionValide - Dossier IAA non valide pour " + cod_ind + " en " + cod_anu);
 			}
 		}catch(NoResultException nre) {
-			LOG.info("isDossierInscriptionValide - Aucune IAA pour " + cod_ind + " en " + cod_anu);
+			log.info("isDossierInscriptionValide - Aucune IAA pour " + cod_ind + " en " + cod_anu);
 		}
 		return false;
 	}*/
@@ -551,7 +513,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
 				String temSesUni = (String) query.getSingleResult();
-				LOG.debug("getTemSesUniVet "+codEtp + "/" + codVrsVet +" => " + temSesUni);
+				log.debug("getTemSesUniVet "+codEtp + "/" + codVrsVet +" => " + temSesUni);
 				if(StringUtils.hasText(temSesUni) && temSesUni.equals(Utils.TEM_SES_UNI)) {
 					return true;
 				}
