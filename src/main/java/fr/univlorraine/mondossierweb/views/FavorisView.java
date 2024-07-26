@@ -18,44 +18,32 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.FavorisController;
-import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
-import fr.univlorraine.mondossierweb.controllers.RechercheController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.controllers.*;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Favoris
@@ -235,7 +223,7 @@ public class FavorisView extends VerticalLayout implements View {
 			btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
 			btnfav.addStyleName("deletefavbutton");
 			btnfav.setDescription("Supprimer des favoris");
-			//Gestion du clic sur le bouton favori
+			//Gestion du clic sur le bouton de suppression du favori
 			btnfav.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -258,7 +246,7 @@ public class FavorisView extends VerticalLayout implements View {
 			});
 			boutonActionLayout.addComponent(btnfav);
 
-
+			// Si on peut accéder à l'arborescence depuis le favori
 			if(typeObj!=null && liste_type_arbo!=null && liste_type_arbo.contains(typeObj)){
 				Button btnArbo=new Button();
 				btnArbo.setIcon(FontAwesome.SITEMAP);
@@ -268,6 +256,7 @@ public class FavorisView extends VerticalLayout implements View {
 				});
 				boutonActionLayout.addComponent(btnArbo);
 			}
+			// Si on peut accéder à la liste des inscrits depuis le favori
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
 				Button btnListeInscrits=new Button();
 				btnListeInscrits.setIcon(FontAwesome.USERS);
