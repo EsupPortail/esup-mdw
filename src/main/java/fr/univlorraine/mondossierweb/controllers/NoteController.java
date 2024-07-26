@@ -18,6 +18,28 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.pdf.*;
+import com.vaadin.server.StreamResource;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.Resultat;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PdfUtils;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,50 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.GrayColor;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.vaadin.server.StreamResource;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
-import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.beans.Resultat;
-import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
-import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
-import fr.univlorraine.mondossierweb.utils.PdfUtils;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import fr.univlorraine.mondossierweb.utils.Utils;
 
 /**
  * Gestion des notes
@@ -218,7 +196,7 @@ public class NoteController {
 						//On ajoute le filigramme
 						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
 					}
-					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb, signataire, imageSignature);
+					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb);
 					docWriter.close();
 					baosPDF.close();
 					if(configController.isSignaturePdfDetailNote()) {
@@ -243,7 +221,6 @@ public class NoteController {
 		// Création de la ressource 
 		StreamResource resource = new StreamResource(source, nomFichier);
 		resource.getStream().setParameter("Content-Disposition", "attachment; filename="+nomFichier);
-		//resource.setMIMEType("application/unknow");
 		resource.setMIMEType("application/force-download;charset=UTF-8");
 		resource.setCacheTime(0);
 		return resource;
@@ -296,38 +273,6 @@ public class NoteController {
 
 		String[] color = configController.getHeaderColorPdf();
 		BaseColor headerColor = new BaseColor(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
-
-
-		//pieds de pages:
-		/*Date d = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		String date = dateFormat.format(d);
-		String partie1 = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()); 
-		String partie2 = applicationContext.getMessage("pdf.edition.date", null, Locale.getDefault())+ " : " + date;
-		if (partie1.length() < ECARTEMENT_PIED_PAGE_PDF) {
-			int diff = ECARTEMENT_PIED_PAGE_PDF - partie1.length();
-			for (int i = 0; i < diff; i++) {
-				partie1 = partie1 + " ";
-
-			}
-		} 
-		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
-			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
-			for (int i = 0; i < diff; i++) {
-				partie2 = " " + partie2;
-			}
-		}*/
-
-		//TODO FOOTER
-		/*
-		Phrase phra = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
-		Phrase phra2 = new Phrase("- "+partie2, legerita);
-		HeaderFooter hf = new HeaderFooter(phra, phra2);
-		hf.setAlignment(HeaderFooter.ALIGN_CENTER);
-		if(!formatPortrait){
-			document.setFooter(hf);	 
-		}*/
-
 
 
 		//ouverte du document.
@@ -408,16 +353,6 @@ public class NoteController {
 				document.add(p03);
 			}
 			document.add(new Paragraph("\n"));
-
-			//TODO FOOTER
-			/*
-			if (formatPortrait) {
-				HeaderFooter headerdi = new HeaderFooter(phraheader,false);
-				headerdi.setAlignment(HeaderFooter.ALIGN_LEFT);
-				document.setHeader(headerdi);
-				document.add(new Paragraph("\n",normal));
-			}
-			 */
 
 			//Partie DIPLOMES
 			PdfPTable table = new PdfPTable(1);
@@ -606,13 +541,9 @@ public class NoteController {
 
 			}
 
-
-
 			document.add(table);
 			document.add(table2);
 			document.add(new Paragraph("\n"));
-
-
 
 			//Partie ETAPES
 			PdfPTable tabletape = new PdfPTable(1);
@@ -737,11 +668,9 @@ public class NoteController {
 
 			}
 
-
 			document.add(tabletape);
 			document.add(tabletape2);
 			document.add(new Paragraph("\n"));
-
 
 			//Partie Informations
 			if (etudiant.isSignificationResultatsUtilisee()) {
@@ -752,7 +681,6 @@ public class NoteController {
 				cellquestions.setBackgroundColor(headerColor);
 
 				tablequestions.addCell(cellquestions);
-
 
 				String grilleSignficationResultats = "";
 				Set<String> ss = etudiant.getSignificationResultats().keySet();
@@ -785,9 +713,6 @@ public class NoteController {
 		// step 6: fermeture du document.
 		document.close();
 
-
-
-
 	}
 
 
@@ -796,29 +721,23 @@ public class NoteController {
 	 * 
 	 * @param document pdf
 	 */
-	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String libEtb, Signataire signataire, Image imageSignature) {
-
-
+	public void creerPdfDetail(final Document document, Etudiant etudiant, Etape etape, boolean formatPortrait, String libEtb) {
 
 		//configuration des fonts
 		Font normal = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.NORMAL);
 		Font normalbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 11, Font.BOLD);
-		Font legerita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 		Font headerbig = FontFactory.getFont(FontFactory.TIMES_ROMAN, 16, Font.BOLD);
 		Font header = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD);
 		if (formatPortrait) {
 			normal = FontFactory.getFont("Arial", 8, Font.NORMAL);
 			normalbig = FontFactory.getFont("Arial", 8, Font.BOLD);
-			legerita = FontFactory.getFont("Arial", 7, Font.ITALIC);
 			headerbig = FontFactory.getFont("Arial", 16, Font.BOLD);
 			header = FontFactory.getFont("Arial", 11, Font.BOLD);
 		}
 
 		String[] color = configController.getHeaderColorPdf();
 		BaseColor headerColor = new BaseColor(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
-		/*if(formatPortrait){
-			headerColor = new Color(142, 142, 142);
-		}*/
+
 
 		//pieds de pages:
 		Date d = new Date();
@@ -834,85 +753,13 @@ public class NoteController {
 				partie1 = partie1 + " ";
 
 			}
-		} 
+		}
+		
 		if (partie2.length() < ECARTEMENT_PIED_PAGE_PDF) {
 			int diff = ECARTEMENT_PIED_PAGE_PDF - partie2.length();
 			for (int i = 0; i < diff; i++) {
 				partie2 = " " + partie2;
 			}
-		}
-
-		//Si on doit apposer une signature
-		if (configController.isNotesPDFsignature()) {
-
-			try {
-				if (signataire != null && signataire.getImg_sig_std() != null){
-					/*float[] widthsSignataire = {2f, 1.3f};
-					PdfPTable tableSignataire = new PdfPTable(widthsSignataire);
-
-					tableSignataire.setWidthPercentage(100f);
-					tableSignataire.addCell(makeCellSignataire("", normal));
-					tableSignataire.addCell(makeCellSignataire(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" " + date , normal));
-					tableSignataire.addCell(makeCellSignataire("", normal));
-
-					tableSignataire.addCell(makeCellSignataire(signataire.getNom_sig(), normal));
-					tableSignataire.addCell(makeCellSignataire("", normal));*/
-
-
-					Paragraph para2 = new Paragraph();
-					para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + date + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),normal));
-
-					if(imageSignature != null) {
-
-						int largeurSignature = configController.getNotePDFSignatureDimension();
-						float scaleRatio = largeurSignature / imageSignature.getWidth(); 
-						float newHeight=scaleRatio * imageSignature.getHeight();
-						imageSignature.scaleAbsolute(largeurSignature, newHeight);
-
-						/*PdfPCell cellSignature = new PdfPCell();
-						cellSignature.setBorder(0);
-						cellSignature.setImage(imageSignature);
-						cellSignature.setFixedHeight(72f/(float)300 * imageSignature.getHeight());
-						cellSignature.setHorizontalAlignment(Element.ALIGN_CENTER);
-						tableSignataire.addCell(cellSignature);
-
-						Chunk ck = new Chunk (imageSignature, 0, -10, true);
-						para2.add(ck);*/
-
-					}
-
-					//TODO FOOTER
-					/*
-						HeaderFooter footer = new HeaderFooter(para2,false);
-						footer.setAlignment(HeaderFooter.ALIGN_LEFT);
-						document.setFooter(footer);*/
-
-				} else {
-					//TODO FOOTER
-					/*
-					Paragraph para2 = new Paragraph();
-					para2.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+" "+ date, normal));
-					para2.add(new Phrase("\n"+applicationContext.getMessage("pdf.notes.info.original", null, Locale.getDefault()),normal));
-
-					HeaderFooter footer = new HeaderFooter(para2,false);
-					footer.setAlignment(HeaderFooter.ALIGN_LEFT);
-					document.setFooter(footer);*/
-
-				}
-			} catch (Exception e) {
-				LOG.error("Erreur lors de l'ajout de la signature sur le relevé de note ",e);
-			}
-
-
-		}else{
-			//TODO FOOTER
-			/*
-			Phrase phra = new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()), legerita);
-			Phrase phra2 = new Phrase("- "+partie2, legerita);
-			HeaderFooter hf = new HeaderFooter(phra, phra2);
-			hf.setAlignment(HeaderFooter.ALIGN_CENTER);
-			document.setFooter(hf);	 
-			 */
 		}
 
 		//ouverte du document.
@@ -934,8 +781,6 @@ public class NoteController {
 				}
 				document.add(imageLogo);
 			}
-
-
 
 			//nouveau paragraphe
 			Paragraph p = new Paragraph(applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + "\n\n", headerbig);
@@ -1019,16 +864,9 @@ public class NoteController {
 				Phrase pAnnee = new Phrase(applicationContext.getMessage("pdf.year", null, Locale.getDefault()) + " : " + annee + "                                                                                                                                                                                                     page ", normal);
 				Phrase pAfter = new Phrase(" ", normal);
 				phraheader.add(pAnnee);
-				//TODO FOOTER
-				/*
-				HeaderFooter headerp = new HeaderFooter(phraheader,pAfter);
-				headerp.setAlignment(HeaderFooter.ALIGN_LEFT);
-				document.setHeader(headerp);
-				 */
 
 				document.add(new Paragraph("\n",normal));
 			}
-
 
 			//Partie des notes
 			PdfPTable table = new PdfPTable(1);
@@ -1079,6 +917,7 @@ public class NoteController {
 
 			table2= new PdfPTable(afficherSession2 ? tabWidth.length : (tabWidth.length - 2));
 			table2.setWidthPercentage(98);
+			
 			//Si on n'affiche pas la session2
 			if(!afficherSession2) {
 				int[] tabWidth2 = new int[tabWidth.length - 2];
@@ -1128,7 +967,6 @@ public class NoteController {
 
 
 			if (formatPortrait) {
-				//table2.addCell(ct1);
 				table2.addCell(ct2);
 				table2.addCell(ct3);
 				if((affRangEtudiant|| afficherRangElpEpr)){
@@ -1144,8 +982,6 @@ public class NoteController {
 					table2.addCell(ct7);
 				}
 			} else {
-
-				//table2.addCell(ct1);
 				table2.addCell(ct2);
 				table2.addCell(ct3);
 				table2.addCell(ct4);
@@ -1295,11 +1131,6 @@ public class NoteController {
 		// step 6: fermeture du document.
 		document.close();
 
-
-
-
-
-
 	}
 
 	private String getNote1(ElementPedagogique el) {
@@ -1330,7 +1161,6 @@ public class NoteController {
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		return cell;
 	}
-
 
 	private String getCodeSignataire(Etape et,Etudiant etudiant){
 
@@ -1529,6 +1359,7 @@ public class NoteController {
 		private Phrase generateFooterContent(int page) {
 			Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Font.ITALIC);
 
+			// Si format paysage
 			if(!formatPortrait) {
 				
 				String partie1 = applicationContext.getMessage("pdf.notes.detail", null, Locale.getDefault()); 
@@ -1551,14 +1382,39 @@ public class NoteController {
 
 				return new Phrase(partie1 + " -" + applicationContext.getMessage("pdf.page", null, Locale.getDefault()) + " " + page +"- " + partie2, font);
 			}
-			
+
+			// --------------------------
+			//  C'est un format portrait
+			// --------------------------
+
+			// Mise à jour de la Font
 			font = FontFactory.getFont("Arial", 8, Font.NORMAL);
-			
+
+
+			// Pour forcer la signature en bas de page (en cas de TEST uniquement) : Décommenter le code ci-dessous
+			/*avecSignature = true;
+			signataire = new Signataire();
+			signataire.setQua_sig("Président");
+			signataire.setNom_sig("John Doe");
+			try {
+				imageSignature = Image.getInstance(configController.getLogoUniversitePdf());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}*/
+
+
+			// Si on doit ajouter la signature
 			if(avecSignature && imageSignature != null) {
 				// Format portrait avec signature
 				Paragraph para = new Paragraph();
 				para.add(new Phrase(applicationContext.getMessage("pdf.notes.fait1", null, Locale.getDefault())+" "+configController.getNotesPDFLieuEdition()+applicationContext.getMessage("pdf.notes.fait2", null, Locale.getDefault())+ " " + Utils.getDateString() + ", "+ signataire.getQua_sig() + " " + signataire.getNom_sig(),font));
-				Chunk ck = new Chunk (imageSignature, 0, -10, true);
+				// taille de la signature
+				int largeurSignature = configController.getNotePDFSignatureDimension();
+				float scaleRatio = largeurSignature / imageSignature.getWidth(); 
+				float newHeight = scaleRatio * imageSignature.getHeight();
+				imageSignature.scaleAbsolute(largeurSignature, newHeight);
+				// Ajout de la signature
+				Chunk ck = new Chunk (imageSignature, 0, -20, true);
 				para.add(ck);
 				return new Phrase(para);
 			}
@@ -1584,7 +1440,7 @@ public class NoteController {
 			} else {
 				ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, generateFooterContent(writer.getPageNumber()),
 					document.left(),
-					document.bottom() - 20, 0);
+					document.bottom() - 15, 0);
 			}
 
 		}

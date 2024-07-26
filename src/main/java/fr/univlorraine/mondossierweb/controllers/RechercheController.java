@@ -18,28 +18,27 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.FavorisMobileView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsView;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Gestion de la recherche
@@ -77,7 +76,8 @@ public class RechercheController {
 			parameterMap.replace("type",Utils.VET);
 		if(type.equals(Utils.TYPE_ELP))
 			parameterMap.replace("type",Utils.ELP);
-		MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
+		//MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
+		MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
 	}
 
 
@@ -118,7 +118,8 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
-				MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
+				//MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
+				MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
 			}
 		}
 
@@ -128,7 +129,8 @@ public class RechercheController {
 					parameterMap.replace("type",Utils.VET);
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
-				MainUI.getCurrent().navigateToListeInscrits(parameterMap);	
+				//MainUI.getCurrent().navigateToListeInscrits(parameterMap);
+				MainUI.getCurrent().goTo(ListeInscritsView.NAME, parameterMap);
 			}
 		}
 

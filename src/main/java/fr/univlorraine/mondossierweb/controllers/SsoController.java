@@ -461,7 +461,7 @@ public class SsoController {
 				pNNE.setAlignment(Element.ALIGN_LEFT);
 				Chunk nneText = new Chunk(etudiant.getCod_nne().toLowerCase(), normalBig);
 				pNNE.add(nneText);
-				Chunk codetuText = new Chunk("\t\t\t"+applicationContext.getMessage("pdf.quittance.codetu", null, Locale.getDefault())+" : ", normal);
+				Chunk codetuText = new Chunk("\t\t\t "+applicationContext.getMessage("pdf.quittance.codetu", null, Locale.getDefault())+" : ", normal);
 				pNNE.add(codetuText);
 				Chunk codetuVal = new Chunk(etudiant.getCod_etu(), normalBig);
 				pNNE.add(codetuVal);

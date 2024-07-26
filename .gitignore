@@ -1,7 +1,11 @@
+# Eclipse
 /.checkstyle
 /.classpath
 /.project
 /.settings/
+
+# IntelliJ
+.idea/
+
 /target/
-/MON BUREAU/
 /**/favicon.ico
