@@ -18,14 +18,13 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
-import java.util.List;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import lombok.Data;
+import java.util.List;
 
 /**
  * représente un étudiant inscrit lors de la rechercher dans la partie enseignant.
@@ -97,6 +96,11 @@ public class Inscrit {
 	 */
 	@Column(name="ress")
 	private String ress;
+	/**
+	 * Temoin IP VET
+	 */
+	@Column(name="ipe")
+	private String ipe;
 	/**
 	 * le code étape où l'étudiant est incrit.
 	 */

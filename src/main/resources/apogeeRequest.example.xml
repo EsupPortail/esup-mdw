@@ -194,7 +194,8 @@ and iaa.cod_ind=#COD_IND# and iaa.cod_anu=#COD_ANU#</entry>
     decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_vet),null,rj.not_sub_vet,to_char(rj.not_vet)),' ')) notej ,
     decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj ,
     decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_vet),null,rs.not_sub_vet,to_char(rs.not_vet)),' ')) notes ,
-    decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress
+    decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress,
+    case rj.tem_ip_vet when 'S' then 'Non' when 'N' then 'Oui' when 'D' then 'Dette' when 'A' then 'Crédit' else ' ' end as ipe
     from apogee.individu i , apogee.resultat_vet rj
     left outer join apogee.resultat_vet rs on ( rs.cod_ind = rj.cod_ind
     and rs.tem_iae_ko_vet in ('0','2')

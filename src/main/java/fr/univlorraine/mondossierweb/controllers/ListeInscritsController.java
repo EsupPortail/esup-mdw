@@ -18,69 +18,13 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.awt.Color;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 import com.vaadin.ui.ComboBox;
-
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
-import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
-import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
-import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.beans.Groupe;
-import fr.univlorraine.mondossierweb.controllers.CalendrierController.CalendrierFooter;
+import fr.univlorraine.mondossierweb.beans.*;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
@@ -90,14 +34,27 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.CollectionDTO4;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.ElementPedagogiDTO3;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.GroupeDTO3;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.OffreFormationMetierServiceInterface;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.RecupererGroupeDTO3;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauCollection4;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauElementPedagogi3;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauGroupe3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -697,6 +654,9 @@ public class ListeInscritsController {
 			//colonne IAE
 			sheet.setColumnWidth((short) colonne , (short) (1200));
 			colonne++;
+			//colonne IP
+			sheet.setColumnWidth((short) colonne , (short) (1200));
+			colonne++;
 		} 
 		if (!isTraiteEtape && withEtape) {
 			// colonne codetp
@@ -783,9 +743,14 @@ public class ListeInscritsController {
 		rang_cellule++;
 
 		if (isTraiteEtape) {
-			XSSFCell cellLib6 = row.createCell((short) rang_cellule);
-			cellLib6.setCellStyle(headerStyle);
-			cellLib6.setCellValue(applicationContext.getMessage("xls.iae", null, Locale.getDefault()).toUpperCase()+"?" );
+			XSSFCell cellLib6a = row.createCell((short) rang_cellule);
+			cellLib6a.setCellStyle(headerStyle);
+			cellLib6a.setCellValue(applicationContext.getMessage("xls.iae", null, Locale.getDefault()).toUpperCase()+"?" );
+			rang_cellule++;
+
+			XSSFCell cellLib6b = row.createCell((short) rang_cellule);
+			cellLib6b.setCellStyle(headerStyle);
+			cellLib6b.setCellValue(applicationContext.getMessage("xls.ipe", null, Locale.getDefault()).toUpperCase()+"?" );
 			rang_cellule++;
 		}
 		if (!isTraiteEtape && withEtape) {
@@ -874,9 +839,14 @@ public class ListeInscritsController {
 				rang_cellule_inscrit++;
 
 				if (isTraiteEtape) {
-					XSSFCell cellLibInscrit5 = rowInscrit.createCell((short) rang_cellule_inscrit);
-					cellLibInscrit5.setCellValue(inscrit.getIae());
-					cellLibInscrit5.setCellStyle(alignTopStyle);
+					XSSFCell cellLibInscrit5a = rowInscrit.createCell((short) rang_cellule_inscrit);
+					cellLibInscrit5a.setCellValue(inscrit.getIae());
+					cellLibInscrit5a.setCellStyle(alignTopStyle);
+					rang_cellule_inscrit++;
+
+					XSSFCell cellLibInscrit5b = rowInscrit.createCell((short) rang_cellule_inscrit);
+					cellLibInscrit5b.setCellValue(inscrit.getIpe());
+					cellLibInscrit5b.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
 				}
 				if (!isTraiteEtape && withEtape) {
