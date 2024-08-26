@@ -18,26 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -53,23 +33,9 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
@@ -88,6 +54,20 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailGroupesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -105,11 +85,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	public static final String[] INS_FIELDS_ELP = {"nom","prenom","date_nai_ind"};
 
-	public static final String[] INS_FIELDS_VET = {"nom","prenom","date_nai_ind","iae"};
+	public static final String[] INS_FIELDS_VET = {"nom","prenom","date_nai_ind","iae", "ipe"};
 
 	public static final String[] INS_FIELDS_TO_DISPLAY_ELP = {"cod_etu","nom","prenom","date_nai_ind","email","etape","notes1","notes2","groupe"};
 
-	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","nom","prenom","date_nai_ind","email","iae","notes1","notes2","groupe"};
+	public static final String[] INS_FIELDS_TO_DISPLAY_VET = {"cod_etu","nom","prenom","date_nai_ind","email","iae","ipe","notes1","notes2","groupe"};
 
 	public static final String TOUTES_LES_ETAPES_LABEL = "toutes";
 
@@ -591,21 +571,17 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnExportExcel.setDescription(applicationContext.getMessage(NAME + ".excel.link", null, getLocale()));
 					String nomFichierExcel = applicationContext.getMessage("excel.listeinscrits.title", null, Locale.getDefault())+"_" + panelFormInscrits.getCaption() +  ".xlsx";
 					nomFichierExcel = nomFichierExcel.replaceAll(" ","_");
-
 					StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
-
 						@Override
 						public InputStream getStream() {
-
 							//recuperation de l'année sélectionnée et du libellé de l'ELP
 							String annee=(String)listeAnnees.getValue();
 							String libObj=panelFormInscrits.getCaption();
-
+							// Récupération des paramètres d'affichage du tableau
 							boolean etp = collapseEtp != null && collapseEtp.getValue();
 							boolean s1 = collapseResultatsS1 != null && collapseResultatsS1.getValue();
 							boolean s2 = collapseResultatsS2 !=null && collapseResultatsS2.getValue();
 							boolean grp = collapseGrp != null && collapseGrp.getValue();
-							
 							//création du trombi en pdf
 							return listeInscritsController.getXlsStream(linscrits, listecodind, listeGroupes, libObj, annee, typeFavori, etp, s1, s2, grp);
 						}
@@ -799,8 +775,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						inscritstable.addGeneratedColumn("etape", new EtapeColumnGenerator());
 						inscritstable.setColumnHeader("etape", applicationContext.getMessage(NAME+".table.etape", null, getLocale()));
 					}
-
-
 
 					String[] fields_to_display = INS_FIELDS_TO_DISPLAY_ELP;
 					if(typeIsVet()){

@@ -18,16 +18,15 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import lombok.Data;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-
-import lombok.Data;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Charlie Dubois
@@ -155,7 +154,6 @@ public class RequestUtils {
 		return properties.getProperty("inscritsFromElp");
 	}
 
-
 	public String getCodIndInscritsFromGroupe() {
 		return properties.getProperty("codIndInscritsFromGroupe");
 	}
@@ -164,6 +162,8 @@ public class RequestUtils {
 	public String getTemSesUniVet() {
 		return properties.getProperty("temSesUniVet");
 	}
+
+	public String getInscritsEtapeJuinSep() { return properties.getProperty("inscritsEtapeJuinSep"); }
 	
 
 }

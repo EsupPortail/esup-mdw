@@ -18,45 +18,30 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.NoteController;
-import fr.univlorraine.mondossierweb.controllers.ResultatController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.controllers.*;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Fenêtre du détail des notes
@@ -97,11 +82,15 @@ public class DetailNotesWindow extends Window {
 	public void init(Etape et) {
 		etape = et;
 
+		/* Titre */
+		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
+
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null && 
-			((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
-				(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
-				(userController.isGestionnaire() && configController.isAffNotesGestionnaire()))  ){
+		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent() != null && MainUI.getCurrent().getEtudiant() != null &&
+			(((userController.isEtudiant() || ((isUserEnseignantWithAccess() || isUserGestionnaireWithAccess()) && !voirCommeEnseignant()))
+					&& configController.isAffNotesEtudiant() && !MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) ||
+					(isUserEnseignantWithAccess() && voirCommeEnseignant()) ||
+					(isUserGestionnaireWithAccess() && voirCommeEnseignant()))  ){
 
 			/* Style */
 			setWidth(80, Unit.PERCENTAGE);
@@ -111,7 +100,7 @@ public class DetailNotesWindow extends Window {
 
 
 			//Test si user enseignant et en vue Enseignant
-			if(userController.isEnseignant() && MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
+			if(userController.isEnseignant() && voirCommeEnseignant()){
 				//On recupere les notes pour un enseignant
 				resultatController.renseigneDetailNotesEtResultats(etape, userController.isGestionnaire());
 			}else{
@@ -125,10 +114,6 @@ public class DetailNotesWindow extends Window {
 			layout.setMargin(true);
 			layout.setSpacing(true);
 
-			/* Titre */
-			setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-
-
 			List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
 
 			//Sous titre avec l'année
@@ -141,28 +126,9 @@ public class DetailNotesWindow extends Window {
 			titleLayout.addComponent(messageLabel);
 			titleLayout.setExpandRatio(messageLabel, 1);
 			titleLayout.setComponentAlignment(messageLabel, Alignment.MIDDLE_LEFT);
-			
-			//Test si user enseignant
-			if(userController.isEnseignant() && lelp!=null && lelp.size()>0){
-				//Bouton pour afficher les filtres
-				btnDisplayFiltres=new Button();
-				btnDisplayFiltres.setWidth("52px");
-				btnDisplayFiltres.setHeight("32px");
-				btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
-					btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_FRIENDLY);
-				}
-				btnDisplayFiltres.setIcon(FontAwesome.FILTER);
-				btnDisplayFiltres.setDescription(applicationContext.getMessage(NAME+".btn.displayFilters", null, getLocale()));
-				btnDisplayFiltres.addClickListener(e->{
-					btnDisplayFiltres.setVisible(false);
-					panelVue.setVisible(true);
-				});
-				titleLayout.addComponent(btnDisplayFiltres);
-				titleLayout.setComponentAlignment(btnDisplayFiltres, Alignment.MIDDLE_RIGHT);
-				//titleLayout.setExpandRatio(btnDisplayFiltres, 1);
-				btnDisplayFiltres.setVisible(true);
-			}
+
+			ajouterVoirCommeUnEtudiant(titleLayout);
+
 			
 			if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
 				Button pdfButton = new Button();
@@ -186,44 +152,7 @@ public class DetailNotesWindow extends Window {
 			}
 			layout.addComponent(titleLayout);
 
-
-
-			//Test si user enseignant
-			if(userController.isEnseignant() && lelp!=null && lelp.size()>0){
-				panelVue= new Panel();
-
-				HorizontalLayout vueLayout = new HorizontalLayout();
-				vueLayout.setMargin(true);
-				vueLayout.setSpacing(true);
-				vueLayout.setSizeFull();
-
-				Button changerVueButton = new Button(applicationContext.getMessage(NAME+".button.vueEnseignant", null, getLocale()));
-				changerVueButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
-					changerVueButton.setStyleName(ValoTheme.BUTTON_FRIENDLY);
-					changerVueButton.setCaption(applicationContext.getMessage(NAME+".button.vueEtudiant", null, getLocale()));
-				}
-				//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
-				changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init(etape);});
-
-				Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
-				if(MainUI.getCurrent().isVueEnseignantNotesEtResultats()){
-					vueLabel.setValue(applicationContext.getMessage(NAME+".label.vueEnseignant", null, getLocale()));
-				}
-				vueLabel.setContentMode(ContentMode.HTML); 
-				vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
-
-				vueLayout.addComponent(changerVueButton);
-				vueLayout.setComponentAlignment(changerVueButton, Alignment.MIDDLE_CENTER);
-				vueLayout.addComponent(vueLabel);
-				vueLayout.setExpandRatio(vueLabel, 1);
-
-				panelVue.setContent(vueLayout);
-				layout.addComponent(panelVue);
-				panelVue.setVisible(false);
-			}
-
-
+			ajouterPanelVoirCommeUnEtudiant(layout);
 
 			Panel panelDetailNotes= new Panel(etape.getLibelle()+" - "+applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" "+ etape.getAnnee());
 			panelDetailNotes.addStyleName("small-font-element");
@@ -322,8 +251,106 @@ public class DetailNotesWindow extends Window {
 			/* Centre la fenêtre */
 			center();
 
+		} else {
+			// Acces non autorise
+			VerticalLayout layout = new VerticalLayout();
+
+			HorizontalLayout titleLayout = new HorizontalLayout();
+			// Ajouter bloc "Voir comme un étudiant" si nécessaire
+			ajouterVoirCommeUnEtudiant(titleLayout);
+			ajouterPanelVoirCommeUnEtudiant(layout);
+			layout.addComponent(titleLayout);
+
+			//Si on est dans le cas d'un blocage apogée
+			if(UI.getCurrent() instanceof MainUI
+					&& MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null
+					&& (userController.isEtudiant() || ((isUserEnseignantWithAccess() || isUserGestionnaireWithAccess()) && !voirCommeEnseignant()))
+					&& MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()){
+				//message non autorisé.
+				HorizontalLayout refusLayout = new HorizontalLayout();
+				refusLayout.setWidth("100%");
+				Label msg = new Label(applicationContext.getMessage(NAME + ".blocage.msg", null, getLocale()));
+				refusLayout.addComponent(msg);
+				refusLayout.setComponentAlignment(msg,Alignment.MIDDLE_LEFT);
+				layout.addComponent(refusLayout);
+
+			}
+			setContent(layout);
 		}
 
+	}
+
+	private void ajouterPanelVoirCommeUnEtudiant(VerticalLayout layout) {
+		//Test si user enseignant
+		if(userController.isEnseignant()){
+			panelVue= new Panel();
+
+			HorizontalLayout vueLayout = new HorizontalLayout();
+			vueLayout.setMargin(true);
+			vueLayout.setSpacing(true);
+			vueLayout.setSizeFull();
+
+			Button changerVueButton = new Button(applicationContext.getMessage(NAME+".button.vueEnseignant", null, getLocale()));
+			changerVueButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			if(voirCommeEnseignant()){
+				changerVueButton.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+				changerVueButton.setCaption(applicationContext.getMessage(NAME+".button.vueEtudiant", null, getLocale()));
+			}
+			//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
+			changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init(etape);});
+
+			Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
+			if(voirCommeEnseignant()){
+				vueLabel.setValue(applicationContext.getMessage(NAME+".label.vueEnseignant", null, getLocale()));
+			}
+			vueLabel.setContentMode(ContentMode.HTML);
+			vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
+
+			vueLayout.addComponent(changerVueButton);
+			vueLayout.setComponentAlignment(changerVueButton, Alignment.MIDDLE_CENTER);
+			vueLayout.addComponent(vueLabel);
+			vueLayout.setExpandRatio(vueLabel, 1);
+
+			panelVue.setContent(vueLayout);
+			layout.addComponent(panelVue);
+			panelVue.setVisible(false);
+		}
+	}
+
+	private boolean voirCommeEnseignant() {
+		return MainUI.getCurrent().isVueEnseignantNotesEtResultats();
+	}
+
+	private void ajouterVoirCommeUnEtudiant(HorizontalLayout titleLayout) {
+		//Test si user enseignant
+		if(userController.isEnseignant()){
+			//Bouton pour afficher les filtres
+			btnDisplayFiltres=new Button();
+			btnDisplayFiltres.setWidth("52px");
+			btnDisplayFiltres.setHeight("32px");
+			btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			if(voirCommeEnseignant()){
+				btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+			}
+			btnDisplayFiltres.setIcon(FontAwesome.FILTER);
+			btnDisplayFiltres.setDescription(applicationContext.getMessage(NAME+".btn.displayFilters", null, getLocale()));
+			btnDisplayFiltres.addClickListener(e->{
+				btnDisplayFiltres.setVisible(false);
+				panelVue.setVisible(true);
+			});
+			titleLayout.addComponent(btnDisplayFiltres);
+			titleLayout.setComponentAlignment(btnDisplayFiltres, Alignment.MIDDLE_RIGHT);
+			//titleLayout.setExpandRatio(btnDisplayFiltres, 1);
+			btnDisplayFiltres.setVisible(true);
+		}
+	}
+
+	private boolean isUserGestionnaireWithAccess() {
+		return userController.isGestionnaire() && configController.isAffNotesGestionnaire();
+	}
+
+	private boolean isUserEnseignantWithAccess() {
+		return userController.isEnseignant() && configController.isAffNotesEnseignant();
 	}
 
 	private boolean contientElpObtenusPrecedemment(List<ElementPedagogique> lelp) {
