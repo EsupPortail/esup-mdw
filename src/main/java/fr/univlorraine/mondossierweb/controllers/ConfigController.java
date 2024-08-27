@@ -18,17 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationCategorie;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
@@ -37,6 +26,14 @@ import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationCate
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationValeursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Gestion de la config en base de données
@@ -628,6 +625,10 @@ public class ConfigController {
 	public String[] getHeaderColorPdf() {
 		String color = getValeurForParameter("headerColorPdf");
 		return color.split(",");
+	}
+
+	public String getRegexMailUniv() {
+		return getValeurForParameter("regexMailUniv");
 	}
 	
 	public int getNbAnneesInfosAnnuelles() {
