@@ -154,7 +154,10 @@ public class MainUI extends GenericUI {
 	private int rangTabRecherche;
 
 	// Variable permettant de stocker les paramètres lors du passage d'une vue à l'autre
-	private Map<String, String> urlParameterMap;
+	private Map<String, String> urlParameterMapRechArb;
+
+	// Variable permettant de stocker les paramètres lors du passage d'une vue à l'autre
+	private Map<String, String> urlParameterMapListeInscrits;
 
 	//Le composant principal de la page (contient tabSheetGlobal ou layoutDossierEtudiant en fonction du type de l'utilisateur)
 	private VerticalLayout mainVerticalLayout=new VerticalLayout();
@@ -359,7 +362,7 @@ public class MainUI extends GenericUI {
 							return true;
 						}
 						if(event.getViewName().equals(RechercheArborescenteView.NAME)){
-							navigateToRechercheArborescente(null);
+							navigateToRechercheArborescente();
 							return true;
 						}
 
@@ -903,16 +906,15 @@ public class MainUI extends GenericUI {
 
 	/**
 	 * Affichage de la vue Recherche Arborescente
-	 * @param parameterMap
 	 */
-	private void navigateToRechercheArborescente(Map<String, String> parameterMap) {
+	private void navigateToRechercheArborescente() {
 		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
 		//récupération de l'onglet qui affiche la vue RechercheArborescente
 		int numtab = viewEnseignantTab.get(rechercheArborescenteView.NAME);
 		//Si on a des paramètres renseignés
-		if(parameterMap!=null){
+		if(urlParameterMapRechArb!=null){
 			//initialisation de la vue avec les paramètres (on se place sur un élément précis de l'arborescence)
-			rechercheArborescenteView.initFromParameters(parameterMap);
+			rechercheArborescenteView.initFromParameters(urlParameterMapRechArb);
 		}
 		//On sélectionne l'onglet pour afficher la vue
 		tabSheetEnseignant.setSelectedTab(numtab);
@@ -927,9 +929,9 @@ public class MainUI extends GenericUI {
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 
 		//Si on a des paramètres renseignés
-		if(urlParameterMap != null){
+		if(urlParameterMapListeInscrits != null){
 			//Récupération de la liste des inscrits en fonction des paramètres
-			listeInscritsController.recupererLaListeDesInscrits(urlParameterMap, null, this);
+			listeInscritsController.recupererLaListeDesInscrits(urlParameterMapListeInscrits, null, this);
 			//initialisation de la vue avec la liste des inscrits
 			listeInscritsView.initListe();
 		}
@@ -950,7 +952,12 @@ public class MainUI extends GenericUI {
 	}
 
 	public void goTo(String view, Map<String, String> parameterMap) {
-		urlParameterMap = parameterMap;
+		if(view != null && view.equals(RechercheArborescenteView.NAME)) {
+			urlParameterMapRechArb = parameterMap;
+		}
+		if(view != null && view.equals(ListeInscritsView.NAME)) {
+			urlParameterMapListeInscrits = parameterMap;
+		}
 		navigator.navigateTo(view);
 	}
 
