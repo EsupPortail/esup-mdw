@@ -18,43 +18,31 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Favoris sur mobile
@@ -137,22 +125,10 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			infoButton.setIcon(FontAwesome.INFO);
 			infoButton.setStyleName("v-menu-nav-button");
 			infoButton.addClickListener(e->{
-				/**
-				 * NOUVELLE VERSION
-				 */
 				Notification note = new Notification(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()), "", Notification.TYPE_TRAY_NOTIFICATION, true);
 				note.setPosition(Position.MIDDLE_CENTER);
 				note.setDelayMsec(6000);
 				note.show(UI.getCurrent().getPage());
-				/**
-				 * ANCIENNE VERSION
-				 */
-				/*
-				//afficher message
-				HelpMobileWindow hbw = new HelpMobileWindow(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),false);
-
-				UI.getCurrent().addWindow(hbw);
-				*/
 			});
 			navbar.addComponent(infoButton);
 			navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
