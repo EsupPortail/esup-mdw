@@ -18,20 +18,16 @@
  */
 package fr.univlorraine.mondossierweb.repositories.mdw;
 
-import java.util.List;
-
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
+import java.util.List;
 
 @Repository
 public interface PreferencesApplicationValeursRepository extends JpaRepository<PreferencesApplicationValeurs, Integer> {
-
-	
-	
-	@Query(name="PreferencesApplicationValeurs.findValeursFromPref", value="SELECT v " +
+	@Query(value="SELECT v " +
 			"FROM PreferencesApplicationValeurs v " +
 			"WHERE v.preferencesApplication.prefId = ?1")
 	public List<PreferencesApplicationValeurs> findValeursFromPrefId(String prefid);

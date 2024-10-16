@@ -18,19 +18,18 @@
  */
 package fr.univlorraine.mondossierweb.repositories.mdw;
 
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateurPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateurPK;
 
 @Repository
 public interface PreferencesUtilisateurRepository extends JpaRepository<PreferencesUtilisateur, PreferencesUtilisateurPK> {
 
 	
 	
-	@Query(name="PreferencesUtilisateur.findOnePrefFromLoginAndPrefid", value="SELECT p " +
+	@Query(value="SELECT p " +
 			"FROM PreferencesUtilisateur p " +
 			"WHERE p.id.login = ?1 "+
 			"AND p.id.prefid = ?2")
