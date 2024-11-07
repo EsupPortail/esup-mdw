@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.7.6</version>
+	<version>1.7.7</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -50,7 +50,8 @@
 		<maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
 		<tomcat.version>7.0.109</tomcat.version>
 		<!-- WS Apogee AMUE -->
-		<apo.ws.version>6.50.00</apo.ws.version>
+		<!-- <apo.ws.version>6.50.00</apo.ws.version> -->
+		<apo.ws.version>6.50.30</apo.ws.version>
 	</properties>
 
 	<distributionManagement>
