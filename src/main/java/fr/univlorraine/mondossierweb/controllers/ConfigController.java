@@ -351,7 +351,14 @@ public class ConfigController {
 	public boolean isAffNotesGestionnaire() {
 		return getBooleanValueForParameter("affNotesGestionnaire");
 	}
-	
+
+	public boolean isAffInfoNaissanceEnseignant() {
+		return getBooleanValueForParameter("affInfoNaissanceEnseignant");
+	}
+	public boolean isAffInfoNaissanceGestionnaire() {
+		return getBooleanValueForParameter("affInfoNaissanceGestionnaire");
+	}
+
 	public boolean isCertificatScolariteCarteEditee() {
 		return getBooleanValueForParameter("certificatScolariteEditionCarte");
 	}
