@@ -676,12 +676,17 @@ public class ResultatController {
 
                                                 // Récupération des crédits ECTS version 5.20.laa
                                                 // Si on a un crédit ECTS de référence et si crédit ECTS pas déjà renseigné via la session de juin.
-                                                if (creditEctsElp != null && (elp.getEcts() == null || elp.getEcts().equals(""))) {
+                                                if (creditEctsElp != null && !StringUtils.hasText(elp.getEcts())) {
                                                     //Si on a un crédit acquis
-                                                    if (rpd.getNbrCrdElp() != null && rpd.getNbrCrdElp().toString() != null && !rpd.getNbrCrdElp().toString().equals("")) {
+                                                    if (rpd.getNbrCrdElp() != null && StringUtils.hasText(rpd.getNbrCrdElp().toString())) {
                                                         elp.setEcts(Utils.getEctsToDisplay(rpd.getNbrCrdElp()) + "/" + creditEctsElp);
                                                     } else {
-                                                        elp.setEcts("0/" + creditEctsElp);
+                                                        // Si on masque les ECTS null
+                                                        if(configController.isMasqueECTSnull()) {
+                                                            elp.setEcts("");
+                                                        } else {
+                                                            elp.setEcts("0/" + creditEctsElp);
+                                                        }
                                                     }
                                                 }
 
@@ -720,13 +725,17 @@ public class ResultatController {
                                                 // Si on a un crédit ECTS de référence
                                                 if (creditEctsElp != null) {
                                                     //Si on a un crédit acquis
-                                                    if (rpd.getNbrCrdElp() != null && rpd.getNbrCrdElp().toString() != null && !rpd.getNbrCrdElp().toString().equals("")) {
+                                                    if (rpd.getNbrCrdElp() != null &&  StringUtils.hasText(rpd.getNbrCrdElp().toString())) {
                                                         elp.setEcts(Utils.getEctsToDisplay(rpd.getNbrCrdElp()) + "/" + creditEctsElp);
                                                     } else {
-                                                        elp.setEcts("0/" + creditEctsElp);
+                                                        // Si on masque les ECTS null
+                                                        if(configController.isMasqueECTSnull()) {
+                                                            elp.setEcts("");
+                                                        } else {
+                                                            elp.setEcts("0/" + creditEctsElp);
+                                                        }
                                                     }
                                                 }
-
                                                 elp.setRes2(result);
                                             }
                                         }

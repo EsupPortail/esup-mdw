@@ -190,6 +190,8 @@ public class ConfigController {
 	public boolean isAffECTSIPEtudiant() {
 		return getBooleanValueForParameter("affECTSIPEtudiant");
 	}
+
+	public boolean isMasqueECTSnull() {return getBooleanValueForParameter("masqueECTSnull"); }
 	
 	public boolean isMasqueSession2Vide() {
 		return getBooleanValueForParameter("masqueSession2Vide");
@@ -787,7 +789,4 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
-
-
-
 }
