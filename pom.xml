@@ -500,8 +500,8 @@
 								file.newWriter()
 
 								def reflections = new XmlParser().parse(new File(project.build.directory + '/generated-persistenceinfo/reflections.xml'))
-								def entityClasses = reflections.TypeAnnotationsScanner.entry.find{it.key.text() == 'javax.persistence.Entity'}?.values?.value
-								def converterClasses = reflections.TypeAnnotationsScanner.entry.find{it.key.text() == 'javax.persistence.Converter'}?.values?.value
+								def entityClasses = reflections.TypesAnnotated.entry.find{it.key.text() == 'javax.persistence.Entity'}?.values?.value
+								def converterClasses = reflections.TypesAnnotated.entry.find{it.key.text() == 'javax.persistence.Converter'}?.values?.value
 
 								file &lt;&lt; '&lt;?xml version="1.0" encoding="UTF-8"?&gt;'
 								file &lt;&lt; '\n&lt;persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_1.xsd"&gt;'
