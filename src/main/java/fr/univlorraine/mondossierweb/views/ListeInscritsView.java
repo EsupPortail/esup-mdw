@@ -40,10 +40,7 @@ import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
-import fr.univlorraine.mondossierweb.controllers.FavorisController;
-import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
-import fr.univlorraine.mondossierweb.controllers.RechercheController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.controllers.*;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
@@ -100,6 +97,8 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
+	@Resource
+	private transient ConfigController configController;
 
 
 	@Resource
@@ -583,7 +582,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							boolean s2 = collapseResultatsS2 !=null && collapseResultatsS2.getValue();
 							boolean grp = collapseGrp != null && collapseGrp.getValue();
 							//création du trombi en pdf
-							return listeInscritsController.getXlsStream(linscrits, listecodind, listeGroupes, libObj, annee, typeFavori, etp, s1, s2, grp);
+							return listeInscritsController.getXlsStream(linscrits, listecodind, listeGroupes, libObj, annee, typeFavori, etp, s1, s2, grp, afficherInfoNaissance());
 						}
 					}, nomFichierExcel);
 					resourceXls.setMIMEType("application/force-download;charset=UTF-8");
@@ -752,10 +751,15 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					if(typeIsVet()){
 						fields = INS_FIELDS_VET;
 					}
+					if(!afficherInfoNaissance()){
+						// supprimer la valeur date_nai_ind du tableau fields
+						fields = Arrays.stream(fields)
+								.filter(val -> !val.equals("date_nai_ind"))
+								.toArray(String[]::new);
+					}
 					for (String fieldName : fields) {
 						inscritstable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
 					}
-
 
 					inscritstable.addGeneratedColumn("cod_etu", new CodEtuColumnGenerator());
 					inscritstable.setColumnHeader("cod_etu", applicationContext.getMessage(NAME+".table.cod_etu", null, getLocale()));
@@ -780,7 +784,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					if(typeIsVet()){
 						fields_to_display = INS_FIELDS_TO_DISPLAY_VET;
 					}
-
+					if(!afficherInfoNaissance()){
+						// supprimer la valeur date_nai_ind du tableau fields_to_display
+						fields_to_display = Arrays.stream(fields_to_display)
+								.filter(val -> !val.equals("date_nai_ind"))
+								.toArray(String[]::new);
+					}
 					inscritstable.setVisibleColumns((Object[]) fields_to_display);
 
 					inscritstable.setColumnCollapsingAllowed(true);
@@ -796,11 +805,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setSelectable(false);
 					inscritstable.setImmediate(true);
 					inscritstable.addStyleName("scrollabletable");
-					//Si on n'a pas déjà demandé à afficher le trombinoscope
-					//if(!afficherTrombinoscope){
-					//la layout contient la table
 					dataLayout.addComponent(inscritstable);
-					//}
 
 					//Layout contenant le gridLayout correspondant au trombinoscope
 					verticalLayoutForTrombi = new VerticalLayout();
@@ -814,11 +819,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					verticalLayoutForTrombi.setSizeFull();
 					verticalLayoutForTrombi.setHeight(null);
 
-					//Si on a demandé à afficher le trombinoscope
-					/*if(afficherTrombinoscope){
-						//Le layout contient le trombi à afficher
-						dataLayout.addComponent(verticalLayoutForTrombi);
-					}*/
 					infoLayout.addComponent(dataLayout);
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
@@ -841,6 +841,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			}
 		}
+	}
+
+	private boolean afficherInfoNaissance() {
+		return (userController.isEnseignant() && configController.isAffInfoNaissanceEnseignant())
+				|| (userController.isGestionnaire() && configController.isAffInfoNaissanceGestionnaire());
 	}
 
 	//met à jour la liste des inscrit sans avoir à lever un événement

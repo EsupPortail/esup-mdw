@@ -216,7 +216,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			log.info("getInscritsEtapeJuinSep => Utilisation de la requête intégrée à MDW");
 			requeteSQL = "select rownum, i.cod_ind,i.cod_etu, i.lib_pr1_ind, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, "+
 					" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,   "+
-					" decode(rj.tem_iae_ko_vet,0,'O','N') iae, "+
+					" decode(rj.tem_iae_ko_vet,0,'Oui','Non') iae, "+
 					" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rj.not_vet),null,rj.not_sub_vet,to_char(rj.not_vet)),' ')) notej ,  "+
 					" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj , "+
 					" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_vet),null,rs.not_sub_vet,to_char(rs.not_vet)),' ')) notes , "+

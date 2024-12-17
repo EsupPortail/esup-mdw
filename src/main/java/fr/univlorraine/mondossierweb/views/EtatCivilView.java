@@ -18,11 +18,20 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -32,31 +41,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Page d'accueil
@@ -162,26 +149,30 @@ public class EtatCivilView extends VerticalLayout implements View {
 					mailLabel.setSizeFull();
 					formGeneralitesLayout.addComponent(mailLabel);
 
+					// Si on doit afficher les infos de naissance
+					if(userController.isEtudiant()
+							|| (userController.isEnseignant() && configController.isAffInfoNaissanceEnseignant())
+							|| (userController.isGestionnaire() && configController.isAffInfoNaissanceGestionnaire())) {
+						String captionNationalite = applicationContext.getMessage(NAME + ".nationalite.title", null, getLocale());
+						Label fieldNationalite = new Label();
+						formatLabel(fieldNationalite, captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
+						formGeneralitesLayout.addComponent(fieldNationalite);
 
-					String captionNationalite = applicationContext.getMessage(NAME+".nationalite.title", null, getLocale());
-					Label fieldNationalite = new Label();
-					formatLabel(fieldNationalite, captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
-					formGeneralitesLayout.addComponent(fieldNationalite);
+						String captionDateNaissance = applicationContext.getMessage(NAME + ".naissance.title", null, getLocale());
+						Label fieldDateNaissance = new Label();
+						formatLabel(fieldDateNaissance, captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
+						formGeneralitesLayout.addComponent(fieldDateNaissance);
 
-					String captionDateNaissance = applicationContext.getMessage(NAME+".naissance.title", null, getLocale());
-					Label fieldDateNaissance = new Label();
-					formatLabel(fieldDateNaissance, captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
-					formGeneralitesLayout.addComponent(fieldDateNaissance);
+						String captionLieuNaissance = applicationContext.getMessage(NAME + ".lieunaissance.title", null, getLocale());
+						Label fieldLieuNaissance = new Label();
+						formatLabel(fieldLieuNaissance, captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
+						formGeneralitesLayout.addComponent(fieldLieuNaissance);
 
-					String captionLieuNaissance = applicationContext.getMessage(NAME+".lieunaissance.title", null, getLocale());
-					Label fieldLieuNaissance = new Label();
-					formatLabel(fieldLieuNaissance, captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
-					formGeneralitesLayout.addComponent(fieldLieuNaissance);
-
-					String captionDepNaissance = applicationContext.getMessage(NAME+".depnaissance.title", null, getLocale());
-					Label fieldDepNaissance = new Label();
-					formatLabel(fieldDepNaissance, captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
-					formGeneralitesLayout.addComponent(fieldDepNaissance);
+						String captionDepNaissance = applicationContext.getMessage(NAME + ".depnaissance.title", null, getLocale());
+						Label fieldDepNaissance = new Label();
+						formatLabel(fieldDepNaissance, captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
+						formGeneralitesLayout.addComponent(fieldDepNaissance);
+					}
 
 					panelGeneralites.setContent(formGeneralitesLayout);
 

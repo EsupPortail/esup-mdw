@@ -125,7 +125,7 @@
 	<!-- Ne prend pas en compte les warn sur ServerRpcHandler(Resynchronizing client) -->
 	<logger name="com.vaadin.server.communication.PushHandler" level="off" />
 	<logger name="com.vaadin.server.communication.PushAtmosphereHandler" level="off" />
-	
+
 	<logger name="org.apache.catalina.core.ContainerBase" level="warn" additivity="false" >
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />

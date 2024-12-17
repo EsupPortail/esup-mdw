@@ -18,23 +18,6 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import java.net.URISyntaxException;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.Environment;
-import org.springframework.mobile.device.Device;
-import org.springframework.mobile.device.DeviceUtils;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Component;
-
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -60,36 +43,33 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UI;
-
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.FavorisController;
-import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
-import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
-import fr.univlorraine.mondossierweb.controllers.ResultatController;
-import fr.univlorraine.mondossierweb.controllers.UiController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.controllers.*;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.AccesBloqueView;
-import fr.univlorraine.mondossierweb.views.AccesRefuseView;
-import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
-import fr.univlorraine.mondossierweb.views.ErreurView;
-import fr.univlorraine.mondossierweb.views.FavorisMobileView;
-import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
-import fr.univlorraine.mondossierweb.views.NavigationManagerView;
-import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
-import fr.univlorraine.mondossierweb.views.NotesMobileView;
-import fr.univlorraine.mondossierweb.views.RechercheMobileView;
+import fr.univlorraine.mondossierweb.views.*;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 
 @Scope("prototype")
@@ -441,45 +421,6 @@ public class MdwTouchkitUI extends GenericUI{
 		note.setDelayMsec(6000);
 		note.show(this.getPage());
 
-
-		/**
-		 * ANCIENNE VERSION AVEC POPUP WINDOW
-		 */
-		/*
-		//Recuperer dans la base si l'utilisateur a une préférence pour l'affichage le message
-		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
-
-		//Par défaut on affiche le message
-		boolean afficherMessage = true;
-
-		//Si on a une préférence pour l'utilisateur en ce qui concerne l'affichage du message d'accueil mobile
-		if(StringUtils.hasText(val)){
-			//On récupère ce choix dans afficherMessage
-			afficherMessage = Boolean.valueOf(val);
-		}
-
-		//Si on doit afficher le message
-		if(afficherMessage){
-
-			//Création de la pop-pup contenant le message
-			HelpMobileWindow hbw = new HelpMobileWindow(text,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
-
-			//Sur la fermeture de la fenêtre
-			hbw.addCloseListener(g->{
-				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
-				boolean choix = hbw.getCheckBox().getValue();
-				//Test si l'utilisateur a coché la case pour ne plus afficher le message
-				if(choix){
-					//mettre a jour dans la base de données
-					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
-				}
-			});
-
-			//Affichage de la pop_up
-			UI.getCurrent().addWindow(hbw);
-
-		}
-		 */
 	}
 
 	/**

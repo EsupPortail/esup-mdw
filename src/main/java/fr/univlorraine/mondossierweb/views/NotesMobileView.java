@@ -18,32 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -54,6 +34,17 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Page des notes sur mobile
@@ -399,37 +390,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 	private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
 		//Appel de la window contenant le détail des notes
 		b.addClickListener(e->{
-
-
 			rechercheController.accessToMobileNotesDetail(etape);
-
-
-			/*
-			 DetailNotesMobileWindow dnw = new DetailNotesMobileWindow(etape); 
-			UI.getCurrent().addWindow(dnw);
-
-
-			//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
-			String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
-			boolean afficherMessage = true;
-			if(StringUtils.hasText(val)){
-				afficherMessage = Boolean.valueOf(val);
-			}
-
-			if(afficherMessage){
-				String message =applicationContext.getMessage(NAME+".window.message.info", null, getLocale());
-				HelpMobileWindow hbw = new HelpMobileWindow(message,applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()));
-				hbw.addCloseListener(g->{
-					boolean choix = hbw.getCheckBox().getValue();
-					//Test si l'utilisateur a coché la case pour ne plus afficher le message
-					if(choix){
-						//mettre a jour dans la base de données
-						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE, "false");
-					}
-				});
-				UI.getCurrent().addWindow(hbw);
-			}
-			 */
 		});
 	}
 

@@ -18,21 +18,20 @@
  */
 package fr.univlorraine.mondossierweb.repositories.mdw;
 
-import java.util.List;
-
+import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
+import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
-import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
+import java.util.List;
 
 @Repository
 public interface FavorisRepository extends JpaRepository<Favoris, FavorisPK> {
 
 	
 	
-	@Query(name="Favoris.findFavorisFromLogin", value="SELECT f " +
+	@Query(value="SELECT f " +
 			"FROM Favoris f " +
 			"WHERE f.id.login = ?1")
 	public List<Favoris> findFavorisFromLogin(String login);

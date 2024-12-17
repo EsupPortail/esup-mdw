@@ -615,12 +615,12 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
 
 		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp);
+			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp, avecInfoNaissance);
 			wb.write(baos);
 			byte[] bytes = baos.toByteArray();
 			return new ByteArrayInputStream(bytes);
@@ -638,7 +638,7 @@ public class ListeInscritsController {
 	 * @return le fichier excel de la liste des inscrits.
 	 */
 	@SuppressWarnings("deprecation")
-	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape, boolean withEtape, boolean withSession1, boolean withSession2, boolean withGroupe) {
+	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape, boolean withEtape, boolean withSession1, boolean withSession2, boolean withGroupe, boolean withInfoNaissance) {
 		//	creation du fichier excel
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet("page1");
@@ -647,9 +647,14 @@ public class ListeInscritsController {
 		sheet.setColumnWidth((short) 0, (short) (4000));
 		sheet.setColumnWidth((short) 1, (short) (6000));
 		sheet.setColumnWidth((short) 2, (short) (5120));
-		sheet.setColumnWidth((short) 3, (short) (4000));
-		sheet.setColumnWidth((short) 4, (short) (12000));
-		int colonne = 5;
+		int colonne = 3;
+		if(withInfoNaissance) {
+			sheet.setColumnWidth((short) colonne, (short) (4000));
+			colonne++;
+		}
+		sheet.setColumnWidth((short) colonne, (short) (12000));
+		colonne++;
+
 		if (isTraiteEtape) {
 			//colonne IAE
 			sheet.setColumnWidth((short) colonne , (short) (1200));
@@ -732,10 +737,12 @@ public class ListeInscritsController {
 		cellLib3.setCellValue(applicationContext.getMessage("xls.prenom", null, Locale.getDefault()).toUpperCase() );
 		rang_cellule++;
 
-		XSSFCell cellLib4 = row.createCell((short) rang_cellule);
-		cellLib4.setCellStyle(headerStyle);
-		cellLib4.setCellValue(applicationContext.getMessage("xls.naissance", null, Locale.getDefault()).toUpperCase() );
-		rang_cellule++;
+		if(withInfoNaissance) {
+			XSSFCell cellLib4 = row.createCell((short) rang_cellule);
+			cellLib4.setCellStyle(headerStyle);
+			cellLib4.setCellValue(applicationContext.getMessage("xls.naissance", null, Locale.getDefault()).toUpperCase());
+			rang_cellule++;
+		}
 
 		XSSFCell cellLib5 = row.createCell((short) rang_cellule);
 		cellLib5.setCellStyle(headerStyle);
@@ -828,10 +835,12 @@ public class ListeInscritsController {
 				cellLibInscrit3.setCellStyle(alignTopStyle);
 				rang_cellule_inscrit++;
 
-				XSSFCell cellLibInscrit31 = rowInscrit.createCell((short) rang_cellule_inscrit);
-				cellLibInscrit31.setCellValue(inscrit.getDate_nai_ind());
-				cellLibInscrit31.setCellStyle(alignTopStyle);
-				rang_cellule_inscrit++;
+				if(withInfoNaissance) {
+					XSSFCell cellLibInscrit31 = rowInscrit.createCell((short) rang_cellule_inscrit);
+					cellLibInscrit31.setCellValue(inscrit.getDate_nai_ind());
+					cellLibInscrit31.setCellStyle(alignTopStyle);
+					rang_cellule_inscrit++;
+				}
 
 				XSSFCell cellLibInscrit4 = rowInscrit.createCell((short) rang_cellule_inscrit);
 				cellLibInscrit4.setCellValue(inscrit.getEmail());
