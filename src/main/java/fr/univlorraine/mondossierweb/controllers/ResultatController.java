@@ -293,7 +293,7 @@ public class ResultatController {
                         d.setCod_dip(rdto.getDiplome().getCodDip());
                         d.setCod_vrs_vdi(rdto.getDiplome().getCodVrsVdi().toString());
 
-                        int annee2 = new Integer(rdto.getAnnee()) + 1;
+                        int annee2 = Integer.valueOf(rdto.getAnnee()) + 1;
 
 
                         d.setAnnee(rdto.getAnnee() + "/" + annee2);
@@ -370,7 +370,7 @@ public class ResultatController {
                         for (EtapeResVdiVetDTO2 etape : etapes.getItem()) {
 
                             Etape et = new Etape();
-                            int anneeEtape = new Integer(etape.getCodAnu());
+                            int anneeEtape = Integer.valueOf(etape.getCodAnu());
                             et.setAnnee(anneeEtape + "/" + (anneeEtape + 1));
                             et.setCode(etape.getEtape().getCodEtp());
                             et.setVersion(etape.getEtape().getCodVrsVet().toString());
@@ -501,10 +501,10 @@ public class ResultatController {
 
         boolean insere = false;
         int rang = 0;
-        int anneeEtape = new Integer(et.getAnnee().substring(0, 4));
+        int anneeEtape = Integer.valueOf(et.getAnnee().substring(0, 4));
         while (!insere && rang < e.getEtapes().size()) {
 
-            int anneeEtapeEnCours = new Integer(e.getEtapes().get(rang).getAnnee().substring(0, 4));
+            int anneeEtapeEnCours = Integer.valueOf(e.getEtapes().get(rang).getAnnee().substring(0, 4));
             if (anneeEtape > anneeEtapeEnCours) {
                 e.getEtapes().add(rang, et);
                 insere = true;
@@ -611,7 +611,7 @@ public class ResultatController {
 
                                             int codsession = 0;
                                             if (rpd.getSession() != null) {
-                                                codsession = new Integer(rpd.getSession().getCodSes());
+                                                codsession = Integer.valueOf(rpd.getSession().getCodSes());
                                             } else {
                                                 //Pour info, on arrive ici car on peut etre en VAC: validation d'acquis
                                             }
@@ -829,7 +829,7 @@ public class ResultatController {
 
                             if (repdto != null && repdto.getItem() != null && !repdto.getItem().isEmpty()) {
                                 for (ResultatEprDTO red : repdto.getItem()) {
-                                    int codsession = new Integer(red.getSession().getCodSes());
+                                    int codsession = Integer.valueOf(red.getSession().getCodSes());
                                     //09/01/13
                                     //On recupere la note si :
                                     //  On a reseigné une liste de type épreuve à afficher et le type de l'épreuve en fait partie
@@ -1007,7 +1007,7 @@ public class ResultatController {
                     //on note les rangs des éléments à supprimer
                     for (ElementPedagogique el : e.getElementsPedagogiques()) {
                         if (el.getTemSemestre() != null && !el.getTemSemestre().equals("") && el.getTemSemestre().equals("O")) {
-                            curSemLevel = new Integer(el.getLevel());
+                            curSemLevel = Integer.valueOf(el.getLevel());
                             supDesc = el.getEtatDelib() != null && !el.getEtatDelib().equals("") && !el.getEtatDelib().equals("T");
                         } else if (el.getLevel() <= curSemLevel) {
                             supDesc = false;
@@ -1296,12 +1296,12 @@ public class ResultatController {
 
     public boolean utilisationExtractionApogee(String annee) {
 
-        int anneeEnCours = new Integer(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
-        int anneeDemandee = new Integer(annee);
+        int anneeEnCours = Integer.valueOf(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
+        int anneeDemandee = Integer.valueOf(annee);
 
         // Si l'application est paramétrée pour utiliser les extractions sur la dernière année ouverte au résultats
         if (configController.isNotesAnneeOuverteResExtractionApogee()) {
-            int anneeRes = new Integer(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
+            int anneeRes = Integer.valueOf(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
             // Si l'année en question est la dernière ouverte aux résultats
             if (anneeDemandee == anneeRes) {
                 return true;
@@ -1344,7 +1344,7 @@ public class ResultatController {
             ajouterCacheResultatVdiVet(true, e);
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheResultatVdiVet(new Integer(rang), e);
+            recupererCacheResultatVdiVet(Integer.valueOf(rang), e);
         }
     }
 
@@ -1357,7 +1357,7 @@ public class ResultatController {
             ajouterCacheResultatVdiVet(false, e);
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheResultatVdiVet(new Integer(rang), e);
+            recupererCacheResultatVdiVet(Integer.valueOf(rang), e);
         }
     }
 
@@ -1380,7 +1380,7 @@ public class ResultatController {
                 ajouterCacheDetailInscription(etape, GenericUI.getCurrent().getEtudiant());
             } else {
                 //on récupére les infos du cache grace au rang :
-                recupererCacheDetailInscription(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+                recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
             }
 
         } else {
@@ -1409,7 +1409,7 @@ public class ResultatController {
                 ajouterCacheDetailInscription(etape, GenericUI.getCurrent().getEtudiant());
             } else {
                 //on récupére les infos du cache grace au rang :
-                recupererCacheDetailInscription(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+                recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
             }
         } else {
             LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
@@ -1430,7 +1430,7 @@ public class ResultatController {
             ajouterCacheDetailNotesEtResultats(etape, true, GenericUI.getCurrent().getEtudiant());
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheDetailNotesEtResultats(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
         }
     }
 
@@ -1444,7 +1444,7 @@ public class ResultatController {
             ajouterCacheDetailNotesEtResultats(etape, false, GenericUI.getCurrent().getEtudiant());
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheDetailNotesEtResultats(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
         }
     }
 

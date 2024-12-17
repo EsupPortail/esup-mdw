@@ -18,37 +18,27 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBaseCollectionGroupe;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Fenêtre du détail des groupes
@@ -289,7 +279,7 @@ public class DetailGroupesWindow extends Window {
 			if(StringUtils.hasText(el.getLibelle())){
 
 				//indentation des libelles dans la liste:
-				int rg = new Integer(el.getLevel());
+				int rg = Integer.valueOf(el.getLevel());
 				String libelp = el.getLibelle();
 				String lib = "";
 				for (int j = 2; j <= rg; j++) {

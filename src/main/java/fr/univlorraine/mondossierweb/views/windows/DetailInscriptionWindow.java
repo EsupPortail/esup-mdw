@@ -18,30 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -49,6 +31,14 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Fenêtre du détail de l'inscription
@@ -230,7 +220,7 @@ public class DetailInscriptionWindow extends Window {
 			if(StringUtils.hasText(el.getLibelle())){
 
 				//indentation des libelles dans la liste:
-				int rg = new Integer(el.getLevel());
+				int rg = Integer.valueOf(el.getLevel());
 				String libelp = el.getLibelle();
 				String lib = "";
 				for (int j = 2; j <= rg; j++) {

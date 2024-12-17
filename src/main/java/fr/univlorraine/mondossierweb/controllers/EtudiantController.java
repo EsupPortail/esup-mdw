@@ -661,7 +661,7 @@ public class EtudiantController {
 					if (insdto.getEtatIae()!=null && insdto.getEtatIae().getCodeEtatIAE()!=null && insdto.getEtatIae().getCodeEtatIAE().equals("E")){
 
 						//récupération de l'année
-						int annee = new Integer(insdto.getAnneeIAE());
+						int annee = Integer.valueOf(insdto.getAnneeIAE());
 						int annee2 = annee + 1;
 						insc.setCod_anu(annee + "/" + annee2);
 
@@ -725,7 +725,7 @@ public class EtudiantController {
 
 						Inscription insc = new Inscription();
 
-						int annee = new Integer(cext.getAnnee());
+						int annee = Integer.valueOf(cext.getAnnee());
 						int annee2 = annee + 1;
 						insc.setCod_anu(annee + "/" + annee2);
 

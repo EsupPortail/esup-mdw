@@ -449,7 +449,7 @@ public class DetailNotesWindow extends Window {
 			if(StringUtils.hasText(el.getLibelle())){
 
 				//indentation des libelles dans la liste:
-				int rg = new Integer(el.getLevel());
+				int rg = Integer.valueOf(el.getLevel());
 				String libelp = el.getLibelle();
 				String lib = "";
 				for (int j = 2; j <= rg; j++) {
