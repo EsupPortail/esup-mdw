@@ -50,7 +50,6 @@
 		<mysql.connector.version>5.1.49</mysql.connector.version>
 		<ojdbc7.version>12.1.3-0-0</ojdbc7.version>  
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-		<maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
 		<tomcat.version>7.0.109</tomcat.version>
 		<!-- WS Apogee AMUE -->
 		<!-- <apo.ws.version>6.50.00</apo.ws.version> -->
@@ -842,7 +841,8 @@
 			<!-- Assemblement de l'appli -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${maven-assembly-plugin.version}</version><!--$NO-MVN-MAN-VER$-->
+				<!-- <version>2.5.5</version> -->
+				<version>3.7.1</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/resources/assembly/distribution.xml</descriptor>
