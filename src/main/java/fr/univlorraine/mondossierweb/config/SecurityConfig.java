@@ -117,10 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/* Configuration CAS */
 	@Bean
 	public SingleSignOutFilter singleSignOutFilter() {
-		SingleSignOutFilter filter = new SingleSignOutFilter();
-		/*filter.setLogoutCallbackPath();
-		filter.setCasServerUrlPrefix(environment.getRequiredProperty("app.url"));*/
-		return filter;
+		return new SingleSignOutFilter();
 	}
 
 	@Bean
