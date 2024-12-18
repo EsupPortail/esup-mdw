@@ -18,10 +18,9 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import java.util.UUID;
-
-import javax.annotation.Resource;
-
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
+import net.sf.ehcache.CacheManager;
 import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
@@ -45,10 +44,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
-import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
-//import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
-import net.sf.ehcache.CacheManager;
+import javax.annotation.Resource;
+import java.util.UUID;
 
 
 
@@ -121,7 +118,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public SingleSignOutFilter singleSignOutFilter() {
 		SingleSignOutFilter filter = new SingleSignOutFilter();
-		filter.setCasServerUrlPrefix(environment.getRequiredProperty("app.url"));
+		/*filter.setLogoutCallbackPath();
+		filter.setCasServerUrlPrefix(environment.getRequiredProperty("app.url"));*/
 		return filter;
 	}
 
