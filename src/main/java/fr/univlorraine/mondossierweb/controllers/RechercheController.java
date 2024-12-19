@@ -177,24 +177,27 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 				parameterMap.replace("type",Utils.ETU);
 
-				if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
+				if (MdwTouchkitUI.getCurrent().getEtudiant() == null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)) {
 					MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 					etudiantController.recupererEtatCivil();
-					if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
-						(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
-						(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
-						etudiantController.recupererCalendrierExamens();
+					// S'il n'y a pas eu d'anomalie pendant la récupération de l'état civil
+					if (MdwTouchkitUI.getCurrent().getEtudiant() != null) {
+						if ((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) ||
+								(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+								(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())) {
+							etudiantController.recupererCalendrierExamens();
+						}
+						if ((userController.isEtudiant() && configController.isAffNotesEtudiant()) ||
+								(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+								(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) {
+							resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
+						}
+						if (fromSearch) {
+							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();
+						} else {
+							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
+						}
 					}
-					if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
-						(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
-						(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
-					resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
-					}
-				}
-				if(fromSearch){
-					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();
-				}else{
-					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
 				}
 		}
 	}

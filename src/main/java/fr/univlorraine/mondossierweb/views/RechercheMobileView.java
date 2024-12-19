@@ -18,20 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -49,18 +35,9 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
@@ -68,8 +45,21 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -148,7 +138,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
 			navbar.setSizeFull();
-			navbar.setHeight("40px");
+			navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 			navbar.setStyleName("navigation-bar");
 
 			//Bouton retour
@@ -307,8 +297,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				checkBoxElpLayout.setSizeFull();
 				checkBoxEtuLayout.setSizeFull();
 
-
-
 				if(casesAcocherVet){
 					checkBoxVetLayout.setStyleName("layout-checkbox-checked");
 					etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
@@ -388,8 +376,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				checkBoxLayout.addComponent(checkBoxVetLayout);
 				checkBoxLayout.addComponent(checkBoxElpLayout);
 				checkBoxLayout.addComponent(checkBoxEtuLayout);
-
-
 
 				mainVerticalLayout.addComponent(checkBoxLayout);
 
@@ -656,8 +642,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			b.addClickListener(e->{
 				rechercheController.accessToMobileDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(),true);
 			});
-			
-			
+
 			VerticalLayout vl = new VerticalLayout();
 			vl.setSizeFull();
 			vl.addComponent(b);

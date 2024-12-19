@@ -18,15 +18,20 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
+import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -35,29 +40,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.annotations.JavaScript;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MdwTouchkitUI;
-import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
-import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.NoteController;
-import fr.univlorraine.mondossierweb.controllers.ResultatController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Page du détail des notes sur mobile
@@ -156,7 +145,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				//NAVBAR
 				HorizontalLayout navbar=new HorizontalLayout();
 				navbar.setSizeFull();
-				navbar.setHeight("40px");
+				navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 				navbar.setStyleName("navigation-bar");
 
 				//Bouton retour

@@ -16,9 +16,10 @@
 	$ul_pantone_325_C: rgb(122,198,197); /* Turquoise clair */
 	$ul_pantone_638_U: rgb(60,173,202); /* Turquoise */
 	$ul_pantone_7451_C: rgb(177,194,225); /* Bleu clair */
+	$ul_new_main_color: #343a40;
 
 /* Parametrage Valo */
-	$v-focus-color: $ul_pantone_2726_C; /* Changer ici la couleur principale en fonction du domaine métier */
+	$v-focus-color: $ul_new_main_color; /* Changer ici la couleur principale en fonction du domaine métier */
 	$v-border-radius: 2px;
 /*	$v-font-size: 15px;*/
 	$v-bevel: false;
@@ -51,7 +52,7 @@
 		margin-bottom: 0;
 	}
 
-/* Changement couleur des titres de menu */
+    /* Changement couleur des titres de menu */
 	.valo-menu-subtitle {
 		color: mix(valo-font-color($valo-menu-background-color), $v-selection-color);
 	}
@@ -115,22 +116,6 @@
 	html & .v-window {
 		min-width: 0 !important;
 	}
-	
-	
-	/*.v-loading-indicator,  
- .v-loading-indicator-delay,  
- .v-loading-indicator-wait {  
-   width: 100%;  
-   height: 100%;  
-   margin: 0;  
-   background-position: 50%;  
-   background-color: gray;  
-   background-repeat: no-repeat;  
-   background-attachment: fixed;   
-   opacity: .8;  
-   -ms-filter: alpha(opacity=80);  
-   filter: alpha(opacity=80);  
- }  */
  
  .v-loading-indicator,  
  .v-loading-indicator-delay,  

@@ -116,12 +116,12 @@ color: #008000 !important;
 }
 
 .valo-ul .v-panel-caption {
-background-color: #6E6E6E !important;
-background-image: none !important;
-color: white !important;
- font-size: inherit !important;
- border-top-right-radius: 5px !important;
-border-top-left-radius: 5px !important;
+	background-color: #6E6E6E !important;
+	background-image: none !important;
+	color: white !important;
+ 	font-size: inherit !important;
+	border-top-right-radius: 5px !important;
+	border-top-left-radius: 5px !important;
 }
 
 
