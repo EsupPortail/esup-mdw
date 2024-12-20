@@ -1,12 +1,13 @@
 /* ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium */
 
-.valo-ul.v-app {
+.valo-ul {
 	/* background: #F0F0F0 !important; */
 	/* --mobile_main_color: #343a40; */
 	--mobile_main_color: rgb(71,74, 77);
 	--light_gray: rgb(197, 197, 197);
 	--pastel_green: #0da50d73;
 	--pastel_blue: #3057ed8a;
+	font-size: small;
 }
 
 .valo-ul .v-slot-btn-reset {
@@ -78,13 +79,13 @@ border-bottom: 1px solid var(--light_gray) !important;
 }
 
 .valo-ul .v-horizontallayout-v-layout-multiline {
-height: 100% !important;
-width: 100% !important;
+	height: 100% !important;
+	width: 100% !important;
 }
 
 .valo-ul .v-slot-v-layout-multiline {
-height: 100% !important;
-width: 100% !important;
+	height: 100% !important;
+	width: 100% !important;
 }
 
 
@@ -162,20 +163,26 @@ background-color: var(--mobile_main_color) !important;
 line-height: normal !important;
 white-space: normal !important;
 height: 100% !important;
-font-size: 15px !important;
+font-size: small !important;
 }
 
 .valo-ul .v-disabled {
 opacity: 1.0 !important;
 }
 
-
-.valo-ul .v-panel-caption-v-colored-panel-caption {
-	background: var(--mobile_main_color) !important;
-	color: white !important;
+.valo-ul .v-label-small {
+	font-size: small !important;
 }
-.valo-ul .v-panel-centertitle-panel {
-	width: 100% !important;
+
+.valo-ul .v-panel-caption-v-medium-panel-caption {
+	/* background: var(--mobile_main_color) !important;*/
+	/* color: white !important; */
+	background: white !important;
+	font-size: medium !important;
+}
+
+.valo-ul .text-size-medium {
+	font-size: medium !important;
 }
 
 .valo-ul .layout-rang-mobile {
@@ -204,6 +211,13 @@ opacity: 1.0 !important;
 	font-weight: bold;
 }
 
+.valo-ul .v-panel-lefttitle-panel {
+	width: 100% !important;
+	text-align: left !important;
+}
+.valo-ul .v-panel-centertitle-panel {
+	width: 100% !important;
+}
 
 .valo-ul .v-panel-caption-centertitle-panel {
   text-align: center !important;
@@ -432,7 +446,7 @@ text-shadow: none !important;
 	line-height: 0.7 !important;
 }
 .valo-ul .v-touchkit-toolbar .v-button-wrap .v-button-caption {
-	font-size: 12px !important;
+	font-size: small !important;
 	height: 12px !important;
 }
 .valo-ul .v-touchkit-toolbar .v-button-wrap .v-icon {

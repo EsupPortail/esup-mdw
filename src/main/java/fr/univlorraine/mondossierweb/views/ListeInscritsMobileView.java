@@ -56,9 +56,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 	public static final String NAME = "listeInscritsMobileView";
 
-
-
-
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
@@ -74,7 +71,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	private transient ListeInscritsController listeInscritsController;
 	@Resource
 	private transient ObjectFactory<FiltreInscritsMobileWindow> filtreInscritsMobileWindowFactory;
-
 
 	private String typeFavori;
 
@@ -180,9 +176,10 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			//Si l'objet n'est pas déjà en favori
 			if(lfav!=null && !lfav.contains(favori)){
 				//Création du bouton pour ajouter l'objet aux favoris
-				Button btnAjoutFavori = new Button("+");
+				Button btnAjoutFavori = new Button();
 				btnAjoutFavori.setIcon(FontAwesome.STAR_O);
 				btnAjoutFavori.setStyleName("v-menu-nav-button");
+				btnAjoutFavori.setHeight("100%");
 				btnAjoutFavori.addClickListener(e->{
 
 					//creation du favori en base sur le clic du bouton
@@ -198,7 +195,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Ajout du bouton à l'interface
 				navbar.addComponent(btnAjoutFavori);
 			}
-
 
 
 			//Bouton Filtre
@@ -233,10 +229,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			addComponent(navbar);
 
 
-
-
-
-
 			//Test si la liste contient des étudiants
 			if(linscrits!=null && linscrits.size()>0){
 
@@ -258,7 +250,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Layout avec le Libelle
 				HorizontalLayout resumeLayout=new HorizontalLayout();
 				resumeLayout.setWidth("100%");
-				resumeLayout.setHeight("20px");
 				//Label affichant le nb d'inscrits
 				infoLibelleObj = new Label(libelleObj);
 				infoLibelleObj.setStyleName(ValoTheme.LABEL_SMALL);
@@ -266,8 +257,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				resumeLayout.addComponent(infoLibelleObj);
 				resumeLayout.setComponentAlignment(infoLibelleObj, Alignment.TOP_CENTER);
 				infoLayout.addComponent(resumeLayout);
-
-
 
 				//Layout qui contient la liste des inscrits et le trombinoscope
 				dataLayout = new VerticalLayout();
@@ -424,6 +413,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					// Bouton contenant le nom/prénom
 					Button btnNomEtudiant = new Button(inscrit.getPrenom()+" "+inscrit.getNom());
 					Utils.setButtonStyle(btnNomEtudiant);
+					btnNomEtudiant.addStyleName("text-size-medium");
 
 					// Ajout du bouton au layout
 					nomCodeLayout.addComponent(btnNomEtudiant);

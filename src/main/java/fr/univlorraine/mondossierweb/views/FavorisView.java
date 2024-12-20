@@ -53,14 +53,8 @@ import java.util.concurrent.Executors;
 public class FavorisView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = 6309734175451108885L;
-
-
 	public static final String NAME = "favorisView";
-
-
 	public static final String[] FAV_FIELDS_ORDER = {"Type","id", "Libelle", "Actions"};
-
-
 
 	/* Injections */
 	@Resource
@@ -75,7 +69,6 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient ConfigController configController;
-
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -102,7 +95,6 @@ public class FavorisView extends VerticalLayout implements View {
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
 
-
 			removeAllComponents();
 			/* Style */
 			setMargin(true);
@@ -121,8 +113,6 @@ public class FavorisView extends VerticalLayout implements View {
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
-
-
 
 			if(lfav!=null && lfav.size()>0){
 				bic = new BeanItemContainer<>(Favoris.class,lfav);
@@ -165,9 +155,7 @@ public class FavorisView extends VerticalLayout implements View {
 				labelAucunFavoriLayout.setVisible(true);
 			}
 
-
 			addComponent(globalLayout);
-
 		}
 	}
 

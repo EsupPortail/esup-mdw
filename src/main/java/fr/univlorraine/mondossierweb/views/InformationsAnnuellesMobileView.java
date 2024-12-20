@@ -238,7 +238,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				//Etudiant non inscrit pour l'année en cours
 				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
 				panelInfos.setStyleName("centertitle-panel");
-				panelInfos.addStyleName("v-colored-panel-caption");
+				panelInfos.addStyleName("v-medium-panel-caption");
 
 				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
 				labelNonInscritLayout.setMargin(true);
@@ -255,7 +255,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				
 				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+infos.getLibelle());
 				panelInfos.setStyleName("centertitle-panel");
-				panelInfos.addStyleName("v-colored-panel-caption");
+				panelInfos.addStyleName("v-medium-panel-caption");
 
 				FormLayout formInfosLayout = new FormLayout();
 				formInfosLayout.setSpacing(true);

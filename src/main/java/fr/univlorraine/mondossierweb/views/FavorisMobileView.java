@@ -152,19 +152,15 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			navbar.setExpandRatio(labelFav, 1);
 			addComponent(navbar);
 
-
-
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
 			globalLayout.setMargin(true);
 
-
 			FormLayout labelLayout = new FormLayout();
 			labelLayout.setSizeFull();
 			labelLayout.setMargin(false);
 			labelLayout.setSpacing(false);
-
 
 			Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
 			infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
@@ -174,118 +170,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelLayout.addComponent(infoLabel);
 			globalLayout.addComponent(labelLayout);
 
-			if(lfav!=null && lfav.size()>0){
-				if(favorisContientVet(lfav)){
-
-					Panel vetPanel = new Panel(applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
-					vetPanel.setStyleName("centertitle-panel");
-					vetPanel.addStyleName("v-colored-panel-caption");
-					vetPanel.setSizeFull();
-
-					VerticalLayout vetLayout = new VerticalLayout();
-					vetLayout.setSizeFull();
-					vetLayout.setHeight(null);
-					int i=0;
-					for(Favoris fav :  lfav){
-						if(fav.getId().getTypfav().equals(Utils.VET)){
-							i++;
-
-							HorizontalLayout favVetLayout = new HorizontalLayout();
-							favVetLayout.setSizeFull();
-							favVetLayout.setMargin(true);
-							favVetLayout.setSpacing(true);
-							favVetLayout.setStyleName("v-layout-multiline");
-							favVetLayout.setWidth("100%");
-							favVetLayout.setHeight("100%");
-
-							Button codeButton = new Button(fav.getId().getIdfav());
-							codeButton.setCaption(fav.getId().getIdfav());
-							Utils.setButtonStyle(codeButton);
-							codeButton.setWidth("90px");
-							codeButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-
-
-
-							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							Utils.setButtonStyle(libButton);
-							libButton.setHeight("100%");
-							libButton.setWidth("100%");
-							libButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-							
-
-							favVetLayout.addComponent(codeButton);
-							//favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
-							favVetLayout.addComponent(libButton);
-							favVetLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-							favVetLayout.setExpandRatio(libButton, 1);
-							vetLayout.addComponent(favVetLayout);
-							if(i>1){
-								favVetLayout.addStyleName("line-separator");
-							}
-						}
-					}
-					vetPanel.setContent(vetLayout);
-					globalLayout.addComponent(vetPanel);
-
-				}
-
-				if(favorisContientElp(lfav)){
-					Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
-					elpPanel.setStyleName("centertitle-panel");
-					elpPanel.addStyleName("v-colored-panel-caption");
-					elpPanel.setSizeFull();
-
-					VerticalLayout elpLayout = new VerticalLayout();
-					elpLayout.setSizeFull();
-					elpLayout.setHeight(null);
-					int i=0;
-					for(Favoris fav :  lfav){
-						if(fav.getId().getTypfav().equals(Utils.ELP)){
-							i++;
-							HorizontalLayout favElpLayout = new HorizontalLayout();
-							favElpLayout.setSizeFull();
-							favElpLayout.setMargin(true);
-							favElpLayout.setSpacing(true);
-							favElpLayout.setStyleName("v-layout-multiline");
-							favElpLayout.setWidth("100%");
-							favElpLayout.setHeight("100%");
-
-
-							Button codeButton = new Button(fav.getId().getIdfav());
-							Utils.setButtonStyle(codeButton);
-							codeButton.setWidth("90px");
-							codeButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-
-							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							Utils.setButtonStyle(libButton);
-							libButton.setHeight("100%");
-							libButton.setWidth("100%");
-							libButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-
-							favElpLayout.addComponent(codeButton);
-							favElpLayout.addComponent(libButton);
-							favElpLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-							favElpLayout.setExpandRatio(libButton, 1);
-							elpLayout.addComponent(favElpLayout);
-							if(i>1){
-								favElpLayout.addStyleName("line-separator");
-							}
-						}
-					}
-					elpPanel.setContent(elpLayout);
-					globalLayout.addComponent(elpPanel);
-				}
-
-
-
+			if(lfav != null && lfav.size()>0){
+				ajouteTypeFav(globalLayout, lfav, Utils.VET, applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
+				ajouteTypeFav(globalLayout, lfav, Utils.ELP, applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
 			}
 
 			labelAucunFavoriLayout = new HorizontalLayout();
@@ -315,6 +202,59 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		}
 	}
 
+	private void ajouteTypeFav(VerticalLayout globalLayout, List<Favoris> lfav, String typeFav, String titre) {
+		if(favorisContientTypeFav(lfav, typeFav)){
+			Panel favPanel = new Panel(titre);
+			favPanel.setStyleName("lefttitle-panel");
+			favPanel.addStyleName("v-medium-panel-caption");
+			favPanel.setSizeFull();
+			favPanel.setContent(getFavLayout(lfav,typeFav));
+			globalLayout.addComponent(favPanel);
+		}
+	}
+
+	private com.vaadin.ui.Component getFavLayout(List<Favoris> lfav, String typeFav) {
+
+		VerticalLayout favLayout = new VerticalLayout();
+		favLayout.setSizeFull();
+		favLayout.setHeight(null);
+		for(Favoris fav :  lfav) {
+			if (fav.getId().getTypfav().equals(typeFav)) {
+
+				HorizontalLayout favVetLayout = new HorizontalLayout();
+				favVetLayout.setSizeFull();
+				favVetLayout.setMargin(true);
+				favVetLayout.setSpacing(true);
+				favVetLayout.setStyleName("v-layout-multiline");
+				favVetLayout.setWidth("100%");
+				favVetLayout.setHeight("100%");
+
+				VerticalLayout liblayout = new VerticalLayout();
+				liblayout.addComponent(new Label(fav.getId().getIdfav()));
+				Label libelle = new Label(favorisController.getLibObjFavori(fav.getId().getTypfav(), fav.getId().getIdfav()));
+				libelle.setStyleName(ValoTheme.LABEL_SMALL);
+				liblayout.addComponent(libelle);
+
+				HorizontalLayout blayout = new HorizontalLayout();
+				Button actionButton = new Button();
+				actionButton.setIcon(FontAwesome.USERS);
+				actionButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				actionButton.addClickListener(e -> {
+					accessToDetail(fav.getId().getIdfav(), fav.getId().getTypfav());
+				});
+				blayout.addComponent(actionButton);
+				//blayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
+
+				favVetLayout.addComponent(liblayout);
+				favVetLayout.addComponent(blayout);
+				favVetLayout.setExpandRatio(liblayout, 1);
+
+				favLayout.addComponent(favVetLayout);
+			}
+		}
+		return favLayout;
+	}
+
 
 	private void accessToDetail(String id, String type) {
 			//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
@@ -324,18 +264,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 
 
-	private boolean favorisContientVet(List<Favoris> lfav) {
+	private boolean favorisContientTypeFav(List<Favoris> lfav, String typeFacv) {
 		for(Favoris fav :  lfav){
-			if(fav.getId().getTypfav().equals(Utils.VET)){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean favorisContientElp(List<Favoris> lfav) {
-		for(Favoris fav :  lfav){
-			if(fav.getId().getTypfav().equals(Utils.ELP)){
+			if(fav.getId().getTypfav().equals(typeFacv)){
 				return true;
 			}
 		}
