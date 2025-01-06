@@ -177,7 +177,6 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 				parameterMap.replace("type",Utils.ETU);
 
-				if (MdwTouchkitUI.getCurrent().getEtudiant() == null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)) {
 					MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 					etudiantController.recupererEtatCivil();
 					// S'il n'y a pas eu d'anomalie pendant la récupération de l'état civil
@@ -198,7 +197,6 @@ public class RechercheController {
 							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
 						}
 					}
-				}
 		}
 	}
 

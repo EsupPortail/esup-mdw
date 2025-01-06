@@ -221,23 +221,13 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			slimLayout.addComponent(etuPanel);
 			slimLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);
 
-
-
-
 			globalLayout.addComponent(slimLayout);
 
-
-
-
-
-
-
-
-			//Si l'étudiant est inscrit pour l'année en cours
+			// Si l'étudiant n'est pas inscrit pour l'année en cours
 			if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
 				//Etudiant non inscrit pour l'année en cours
 				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
-				panelInfos.setStyleName("centertitle-panel");
+				panelInfos.setStyleName("lefttitle-panel");
 				panelInfos.addStyleName("v-medium-panel-caption");
 
 				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
@@ -253,8 +243,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			} 
 			for(InfosAnnuelles infos : MdwTouchkitUI.getCurrent().getEtudiant().getInfosAnnuelles()) {
 				
-				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+infos.getLibelle());
-				panelInfos.setStyleName("centertitle-panel");
+				Panel panelInfos = new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" " + infos.getLibelle());
+				panelInfos.setStyleName("lefttitle-panel");
 				panelInfos.addStyleName("v-medium-panel-caption");
 
 				FormLayout formInfosLayout = new FormLayout();
@@ -273,6 +263,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					//Si on a au moins une inscription
 					if(MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae() !=null &&
 						!MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().isEmpty()){
+
 						// Récupération de la première inscription de la liste
 						Inscription inscription = MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().get(0);
 
