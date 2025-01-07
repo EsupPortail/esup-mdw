@@ -18,47 +18,23 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import fr.univlorraine.mondossierweb.views.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-
-import fr.univlorraine.mondossierweb.views.AccesBloqueView;
-import fr.univlorraine.mondossierweb.views.AccesRefuseView;
-import fr.univlorraine.mondossierweb.views.AdminView;
-import fr.univlorraine.mondossierweb.views.AdressesView;
-import fr.univlorraine.mondossierweb.views.AssistanceView;
-import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
-import fr.univlorraine.mondossierweb.views.CalendrierView;
-import fr.univlorraine.mondossierweb.views.ErreurView;
-import fr.univlorraine.mondossierweb.views.EtatCivilView;
-import fr.univlorraine.mondossierweb.views.FavorisMobileView;
-import fr.univlorraine.mondossierweb.views.FavorisView;
-import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
-import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
-import fr.univlorraine.mondossierweb.views.InscriptionsView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsView;
-import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
-import fr.univlorraine.mondossierweb.views.NotesMobileView;
-import fr.univlorraine.mondossierweb.views.NotesView;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
-import fr.univlorraine.mondossierweb.views.RechercheMobileView;
-import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 
 /**
  * @author Charlie Dubois
@@ -340,7 +316,7 @@ public class Utils {
 	}
 
 	//Formate bouton/lien pour appli mobile
-	public static void setButtonStyle(Button b){
+	public static void setButtonStyle(Component b){
 		b.setStyleName("v-nav-button");
 		b.addStyleName("link"); 
 		b.addStyleName("v-link");

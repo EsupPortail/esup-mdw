@@ -109,11 +109,13 @@ border-bottom: 1px solid var(--light_gray) !important;
 
 .valo-ul .bold-label{
 	font-weight: bold !important;
+	font-size: small;
 }
 
 .valo-ul .bold-italic-label{
 	font-weight: bold !important;
 	font-style: italic !important;
+	font-size: small;
 }
 
 .valo-ul .main-layout-bottom-line-separator{
@@ -182,6 +184,11 @@ background-color: var(--mobile_main_color) !important;
 	font-size: small;
 }
 
+.valo-ul .v-small {
+	font-size: small;
+}
+
+
 .valo-ul .v-button .v-button-wrap .v-button-caption {
 	line-height: normal !important;
 	white-space: normal !important;
@@ -195,6 +202,19 @@ opacity: 1.0 !important;
 
 .valo-ul .v-label-small {
 	font-size: small !important;
+}
+
+.valo-ul .layout-dip-etp-mobile {
+	margin-bottom: 0.6em;
+}
+
+.valo-ul .layout-aucun-res-mobile {
+	margin-bottom: 0.6em;
+}
+
+.valo-ul .layout-lib-note-mobile {
+	padding-left: 0.6em;
+	padding-right: 0.5em;
 }
 
 .valo-ul .v-panel-caption-v-medium-panel-caption {
@@ -213,22 +233,26 @@ opacity: 1.0 !important;
 	text-align: right;
 	padding-right: 0.5em;
 	font-weight: bold;
+	font-size: small;
 }
 
 .valo-ul .value-rang-mobile {
 	padding-left: 0.3em;
 	font-weight: 500;
+	font-size: small;
 }
 
 .valo-ul .libelle-rang-mobile-detail {
 	text-align: right;
 	padding-right: 0.5em;
 	font-weight: 500;
+	font-size: small;
 }
 
 .valo-ul .value-rang-mobile-detail {
 	padding-left: 0.3em;
 	font-weight: bold;
+	font-size: small;
 }
 
 .valo-ul .v-panel-lefttitle-panel {
@@ -440,6 +464,7 @@ content: none !important;
 
 .valo-ul .label-bold-with-bottom{
 	font-weight: bold !important;
+	font-size: small;
 	border-bottom: 1px solid var(--light_gray) !important;
 }
 

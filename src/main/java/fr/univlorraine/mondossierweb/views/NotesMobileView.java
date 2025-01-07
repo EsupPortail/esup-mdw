@@ -200,7 +200,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 				Panel panelEnCours = null;
 				VerticalLayout notesLayout = null;
 				for(Diplome diplome : ldiplomes){
-
 					if(panelEnCours == null || anneeEnCours == null || !anneeEnCours.equals(diplome.getAnnee())) {
 						panelEnCours = new Panel();
 						notesLayout = new VerticalLayout();
@@ -211,72 +210,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 						panelEnCours.addStyleName("v-medium-panel-caption");
 						panelEnCours.setContent(notesLayout);
 					}
-
-					HorizontalLayout diplomeLayout = new HorizontalLayout();
-					diplomeLayout.setSizeFull();
-					diplomeLayout.setSpacing(true);
-
-					VerticalLayout libelleLayout = new VerticalLayout();
-					libelleLayout.setSizeFull();
-
-					Label libelleDiplome = new Label(diplome.getLib_web_vdi());
-					libelleDiplome.setHeight("100%");
-					libelleDiplome.setWidth("100%");
-					libelleDiplome.setStyleName(ValoTheme.LABEL_SMALL);
-
-					// Si le diplôme a des résultats
-					if(diplome.getResultats() != null && diplome.getResultats().size() > 0){
-						// on saute une ligne au niveau du libellé
-						libelleLayout.addComponent(new Label(""));
-					}
-					libelleLayout.addComponent(libelleDiplome);
-
-					VerticalLayout globalResultatLayout = new VerticalLayout();
-					globalResultatLayout.setSizeFull();
-					globalResultatLayout.setSpacing(false);
-
-					HorizontalLayout notesessionLayout = new HorizontalLayout();
-					notesessionLayout.setSizeFull();
-					notesessionLayout.setSpacing(true);
-
-					if(diplome.getResultats()!=null && diplome.getResultats().size()>0){
-						int i=0;
-						for(Resultat r : diplome.getResultats()){
-							i++;
-							VerticalLayout resultatLayout = new VerticalLayout();
-							resultatLayout.setSizeFull();
-							Label session = new Label(r.getSession());
-							session.setStyleName("label-bold-with-bottom");
-							resultatLayout.addComponent(session);
-							Label note = new Label(r.getNote());
-							resultatLayout.addComponent(note);
-							Label resultat = new Label(r.getAdmission());
-							resultatLayout.addComponent(resultat);
-							//Si c'est la dernière session
-							if(i==diplome.getResultats().size()){
-								//On affiche les infos en gras
-								note.setStyleName(ValoTheme.LABEL_BOLD);
-								resultat.setStyleName(ValoTheme.LABEL_BOLD);
-							}
-							notesessionLayout.addComponent(resultatLayout);
-						}
-					}else{
-						Label resultat = new Label("Aucun résultat");
-						resultat.setStyleName(ValoTheme.LABEL_SMALL);
-						notesessionLayout.addComponent(resultat);
-					}
-
-					diplomeLayout.addComponent(libelleLayout);
-					
-					globalResultatLayout.addComponent(notesessionLayout);
-					//noteLayout.addComponent(notesessionLayout);
-					// Si on doit afficher le rang
-					if(MdwTouchkitUI.getCurrent().getEtudiant().isAfficherRang() &&
-						diplome.isAfficherRang() && StringUtils.hasText(diplome.getRang())){
-						globalResultatLayout.addComponent(getRangComponent(diplome.getRang()));
-					}
-					diplomeLayout.addComponent(globalResultatLayout);
-					notesLayout.addComponent(diplomeLayout);
+					addInfoToLayout(notesLayout, diplome.getLib_web_vdi(), diplome.getAnnee(),diplome.getResultats(),diplome.isAfficherRang(), diplome.getRang(), null);
 				}
 				globalLayout.addComponent(this.diplomesLayout);
 			}
@@ -285,87 +219,21 @@ public class NotesMobileView extends VerticalLayout implements View {
 			List<Etape> letapes=MdwTouchkitUI.getCurrent().getEtudiant().getEtapes();
 
 			if(letapes!=null && letapes.size()>0){
-				
 				String anneeEnCours = null;
+				Panel panelEnCours = null;
+				VerticalLayout notesLayout = null;
 				for(Etape etape : letapes){
-					Panel panelEnCours = new Panel();
-					if(anneeEnCours == null || !anneeEnCours.equals(etape.getAnnee())) {
+					if(panelEnCours == null || anneeEnCours == null || !anneeEnCours.equals(etape.getAnnee())) {
+						panelEnCours = new Panel();
+						notesLayout = new VerticalLayout();
+						elpsLayout.addComponent(panelEnCours);
 						panelEnCours.setCaption(applicationContext.getMessage(NAME+".annee", null, getLocale())+" " + etape.getAnnee());
 						anneeEnCours = etape.getAnnee();
+						panelEnCours.setStyleName("lefttitle-panel");
+						panelEnCours.addStyleName("v-medium-panel-caption");
+						panelEnCours.setContent(notesLayout);
 					}
-					// panelEnCours.setStyleName("v-panel-caption-lefttitle-panel");
-					panelEnCours.setStyleName("lefttitle-panel");
-					panelEnCours.addStyleName("v-medium-panel-caption");
-
-					HorizontalLayout noteLayout = new HorizontalLayout();
-					noteLayout.setSizeFull();
-					noteLayout.setSpacing(true);
-
-
-					VerticalLayout libelleLayout = new VerticalLayout();
-					libelleLayout.setSizeFull();
-
-					Button libelleButton = new Button(etape.getLibelle());
-					Utils.setButtonStyle(libelleButton);
-					libelleButton.setHeight("100%");
-					libelleButton.setWidth("100%");
-
-					//Appel de la window contenant le détail des notes
-					prepareBoutonAppelDetailDesNotes( libelleButton, etape);
-					if(etape.getResultats()!=null && etape.getResultats().size()>0){
-						libelleLayout.addComponent(new Label(""));
-					}
-					libelleLayout.addComponent(libelleButton);
-					libelleLayout.setComponentAlignment(libelleButton, Alignment.MIDDLE_CENTER);
-
-					VerticalLayout globalResultatLayout = new VerticalLayout();
-					globalResultatLayout.setSizeFull();
-					globalResultatLayout.setSpacing(false);
-
-					HorizontalLayout notesessionLayout = new HorizontalLayout();
-					notesessionLayout.setSizeFull();
-					notesessionLayout.setSpacing(true);
-
-					if(etape.getResultats()!=null && etape.getResultats().size()>0){
-						int i=0;
-						for(Resultat r : etape.getResultats()){
-							i++;
-							VerticalLayout resultatLayout = new VerticalLayout();
-							resultatLayout.setSizeFull();
-							Label session = new Label(r.getSession());
-							session.setStyleName("label-bold-with-bottom");
-							resultatLayout.addComponent(session);
-							Label note = new Label(r.getNote());
-							resultatLayout.addComponent(note);
-							Label resultat = new Label(r.getAdmission());
-							resultatLayout.addComponent(resultat);
-							//Si c'est la dernière session
-							if(i==etape.getResultats().size()){
-								//On affiche les infos en gras
-								note.setStyleName(ValoTheme.LABEL_BOLD);
-								resultat.setStyleName(ValoTheme.LABEL_BOLD);
-							}
-							notesessionLayout.addComponent(resultatLayout);
-						}
-					}else{
-						Label resultat = new Label("Aucun résultat");
-						resultat.setStyleName(ValoTheme.LABEL_SMALL);
-						notesessionLayout.addComponent(resultat);
-					}
-
-					noteLayout.addComponent(libelleLayout);
-					
-					globalResultatLayout.addComponent(notesessionLayout);
-					//noteLayout.addComponent(notesessionLayout);
-					// Si on doit afficher le rang
-					if(MdwTouchkitUI.getCurrent().getEtudiant().isAfficherRang() &&
-						etape.isAfficherRang() && StringUtils.hasText(etape.getRang())){
-						globalResultatLayout.addComponent(getRangComponent(etape.getRang()));
-					}
-					noteLayout.addComponent(globalResultatLayout);
-
-					panelEnCours.setContent(noteLayout);
-					elpsLayout.addComponent(panelEnCours);
+					addInfoToLayout(notesLayout, etape.getLibelle(), etape.getAnnee(),etape.getResultats(),etape.isAfficherRang(), etape.getRang(), etape);
 				}
 				globalLayout.addComponent(this.elpsLayout);
 
@@ -390,6 +258,15 @@ public class NotesMobileView extends VerticalLayout implements View {
 			}
 			
 		}
+	}
+
+	private void ajoutMessageAucunResultat(HorizontalLayout notesessionLayout) {
+		Label resultat = new Label("Aucun résultat");
+		resultat.setStyleName(ValoTheme.LABEL_SMALL);
+		resultat.addStyleName("layout-aucun-res-mobile");
+		resultat.setWidthUndefined();
+		notesessionLayout.addComponent(resultat);
+		notesessionLayout.setComponentAlignment(resultat, Alignment.MIDDLE_CENTER);
 	}
 
 	private HorizontalLayout createSelectButton(String message, boolean first) {
@@ -436,13 +313,92 @@ public class NotesMobileView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 	}
 
-	private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
+	/*private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
 		//Appel de la window contenant le détail des notes
 		b.addClickListener(e->{
 			rechercheController.accessToMobileNotesDetail(etape);
 		});
+	}*/
+	private void prepareBoutonAppelDetailDesNotes(VerticalLayout vl, Etape etape){
+		//Appel de la window contenant le détail des notes
+		vl.addListener(new LayoutEvents.LayoutClickListener() {
+			public void layoutClick(LayoutEvents.LayoutClickEvent event) { rechercheController.accessToMobileNotesDetail(etape); }
+		});
 	}
 
+	private void addInfoToLayout(VerticalLayout notesLayout, String libelle , String annee, List<Resultat> resultats, boolean afficherRang, String rang, Etape etape) {
 
+		HorizontalLayout objLayout = new HorizontalLayout();
+		objLayout.setSizeFull();
+		objLayout.setSpacing(false);
+		objLayout.addStyleName("layout-dip-etp-mobile");
+
+		VerticalLayout libelleLayout = new VerticalLayout();
+		libelleLayout.addStyleName("layout-lib-note-mobile");
+		libelleLayout.setSizeFull();
+
+		Label libelleObj = new Label(libelle);
+		libelleObj.setHeight("100%");
+		libelleObj.setWidth("100%");
+		if(etape != null) {
+			//Appel de la window contenant le détail des notes
+			prepareBoutonAppelDetailDesNotes(libelleLayout, etape);
+			Utils.setButtonStyle(libelleObj);
+		}
+		libelleObj.addStyleName("v-small");
+
+		// Si l'objet a des résultats
+		if(resultats != null && resultats.size() > 0){
+			// on saute une ligne au niveau du libellé
+			libelleLayout.addComponent(new Label(""));
+		}
+		libelleLayout.addComponent(libelleObj);
+
+		VerticalLayout globalResultatLayout = new VerticalLayout();
+		globalResultatLayout.setSizeFull();
+		globalResultatLayout.setSpacing(false);
+
+		HorizontalLayout noteSessionLayout = new HorizontalLayout();
+		noteSessionLayout.setSizeFull();
+		noteSessionLayout.setSpacing(true);
+
+		if(resultats != null && !resultats.isEmpty()){
+			int i=0;
+			for(Resultat resultat : resultats){
+				i++;
+				VerticalLayout resultatLayout = new VerticalLayout();
+				resultatLayout.setSizeFull();
+				Label session = new Label(resultat.getSession());
+				session.setStyleName("label-bold-with-bottom");
+				resultatLayout.addComponent(session);
+				Label note = new Label(resultat.getNote());
+				resultatLayout.addComponent(note);
+				Label res = new Label(resultat.getAdmission());
+				resultatLayout.addComponent(res);
+				//Si c'est la dernière session
+				if (i == resultats.size()) {
+					//On affiche les infos en gras
+					note.setStyleName(ValoTheme.LABEL_BOLD);
+					res.setStyleName(ValoTheme.LABEL_BOLD);
+				}
+				note.addStyleName("v-small");
+				res.addStyleName("v-small");
+				noteSessionLayout.addComponent(resultatLayout);
+			}
+		}else{
+			ajoutMessageAucunResultat(noteSessionLayout);
+		}
+
+		objLayout.addComponent(libelleLayout);
+
+		globalResultatLayout.addComponent(noteSessionLayout);
+		// Si on doit afficher le rang
+		if(MdwTouchkitUI.getCurrent().getEtudiant().isAfficherRang() &&
+				afficherRang && StringUtils.hasText(rang)){
+			globalResultatLayout.addComponent(getRangComponent(rang));
+		}
+		objLayout.addComponent(globalResultatLayout);
+		notesLayout.addComponent(objLayout);
+	}
 
 }

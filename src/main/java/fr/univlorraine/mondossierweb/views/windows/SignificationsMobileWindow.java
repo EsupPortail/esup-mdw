@@ -18,26 +18,17 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import javax.annotation.Resource;
+import java.util.Set;
 
 /**
  * Fenêtre pour afficher les significations des codes de résultats en version mobile
@@ -102,8 +93,10 @@ public class SignificationsMobileWindow extends Window {
 					Label codeLabel = new Label(k);
 					codeLabel.setStyleName(ValoTheme.LABEL_BOLD);
 					codeLabel.addStyleName("v-label-align-right");
+					codeLabel.addStyleName("v-small");
 					signLayout.addComponent(codeLabel);
 					Label valueLabel = new Label(""+MdwTouchkitUI.getCurrent().getEtudiant().getSignificationResultats().get(k));
+					valueLabel.addStyleName("v-small");
 					signLayout.addComponent(valueLabel);
 					significationLayout.addComponent(signLayout);
 				}
@@ -126,125 +119,10 @@ public class SignificationsMobileWindow extends Window {
 			significationLayout.setSpacing(true);
 			significationLayout.setWidth("100%");
 
-			//1er NIVEAU
-			HorizontalLayout levelLayout1 = new HorizontalLayout();
-			levelLayout1.setWidth("100%");
-			HorizontalLayout levelMainLayout1 = new HorizontalLayout();
-			levelMainLayout1.setWidth("100%");
-			levelMainLayout1.setSpacing(true);
-			levelMainLayout1.setStyleName("level-indicator-layout");
-			int k=0;
-			for(int i=0; i<1;i++){
-				//Ajout d'un level
-				k++;
-				Label libLevelLayout = new Label();
-				libLevelLayout.setSizeFull();
-				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-primary-indicator");
-				levelMainLayout1.addComponent(libLevelLayout);
-			}
-			//On pense avoir 7 level maxi 
-			for(int j=k; j<8;j++){
-				Label libLevelSpaceLayout = new Label();
-				libLevelSpaceLayout.setSizeFull();
-				libLevelSpaceLayout.setHeight("8px");
-				levelMainLayout1.addComponent(libLevelSpaceLayout);
+			for (int level = 1; level < 5; level++) {
+				significationLayout.addComponent(createInfoLevelLayout(level));
 			}
 
-			levelLayout1.addComponent(levelMainLayout1);
-			levelLayout1.addComponent(new Label("1er niveau"));
-			significationLayout.addComponent(levelLayout1);
-			
-			//2em NIVEAU
-			HorizontalLayout levelLayout2 = new HorizontalLayout();
-			levelLayout2.setSizeFull();
-			HorizontalLayout levelMainLayout2 = new HorizontalLayout();
-			levelMainLayout2.setSizeFull();
-			levelMainLayout2.setSpacing(true);
-			levelMainLayout2.setStyleName("level-indicator-layout");
-			k=0;
-			for(int i=0; i<2;i++){
-				//Ajout d'un level
-				k++;
-				Label libLevelLayout = new Label();
-				libLevelLayout.setSizeFull();
-				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-primary-indicator");
-				levelMainLayout2.addComponent(libLevelLayout);
-			}
-			//On pense avoir 7 level maxi 
-			for(int j=k; j<8;j++){
-				Label libLevelSpaceLayout = new Label();
-				libLevelSpaceLayout.setSizeFull();
-				libLevelSpaceLayout.setHeight("8px");
-				levelMainLayout2.addComponent(libLevelSpaceLayout);
-			}
-
-			levelLayout2.addComponent(levelMainLayout2);
-			levelLayout2.addComponent(new Label("2em niveau"));
-			significationLayout.addComponent(levelLayout2);
-			
-			
-			//3em NIVEAU
-			HorizontalLayout levelLayout3 = new HorizontalLayout();
-			levelLayout3.setSizeFull();
-			HorizontalLayout levelMainLayout3 = new HorizontalLayout();
-			levelMainLayout3.setSizeFull();
-			levelMainLayout3.setSpacing(true);
-			levelMainLayout3.setStyleName("level-indicator-layout");
-			k=0;
-			for(int i=0; i<3;i++){
-				//Ajout d'un level
-				k++;
-				Label libLevelLayout = new Label();
-				libLevelLayout.setSizeFull();
-				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-primary-indicator");
-				levelMainLayout3.addComponent(libLevelLayout);
-			}
-			//On pense avoir 7 level maxi 
-			for(int j=k; j<8;j++){
-				Label libLevelSpaceLayout = new Label();
-				libLevelSpaceLayout.setSizeFull();
-				libLevelSpaceLayout.setHeight("8px");
-				levelMainLayout3.addComponent(libLevelSpaceLayout);
-			}
-
-			levelLayout3.addComponent(levelMainLayout3);
-			levelLayout3.addComponent(new Label("3em niveau"));
-			significationLayout.addComponent(levelLayout3);
-			
-			
-			
-			//4em NIVEAU
-			HorizontalLayout levelLayout4 = new HorizontalLayout();
-			levelLayout4.setSizeFull();
-			HorizontalLayout levelMainLayout4 = new HorizontalLayout();
-			levelMainLayout4.setSizeFull();
-			levelMainLayout4.setSpacing(true);
-			levelMainLayout4.setStyleName("level-indicator-layout");
-			k=0;
-			for(int i=0; i<4;i++){
-				//Ajout d'un level
-				k++;
-				Label libLevelLayout = new Label();
-				libLevelLayout.setSizeFull();
-				libLevelLayout.setHeight("8px");
-				libLevelLayout.setStyleName("layout-level-primary-indicator");
-				levelMainLayout4.addComponent(libLevelLayout);
-			}
-			//On pense avoir 7 level maxi 
-			for(int j=k; j<8;j++){
-				Label libLevelSpaceLayout = new Label();
-				libLevelSpaceLayout.setSizeFull();
-				libLevelSpaceLayout.setHeight("8px");
-				levelMainLayout4.addComponent(libLevelSpaceLayout);
-			}
-
-			levelLayout4.addComponent(levelMainLayout4);
-			levelLayout4.addComponent(new Label("4em niveau"));
-			significationLayout.addComponent(levelLayout4);
-			
 			//ETC
 			HorizontalLayout levelLayoutEtc = new HorizontalLayout();
 			levelLayoutEtc.setSizeFull();
@@ -252,9 +130,7 @@ public class SignificationsMobileWindow extends Window {
 			levelLayoutEtc.addComponent(new Label("..."));
 			levelLayoutEtc.addComponent(new Label(""));
 			significationLayout.addComponent(levelLayoutEtc);
-			
-	
-			
+
 			panelSignificationIndicateurs.setContent(significationLayout);
 			panelLayout.addComponent(panelSignificationIndicateurs);
 
@@ -288,7 +164,43 @@ public class SignificationsMobileWindow extends Window {
        
 	}
 
+	private com.vaadin.ui.Component createInfoLevelLayout(int level) {
+		HorizontalLayout levelLayout = new HorizontalLayout();
+		levelLayout.setWidth("100%");
+		HorizontalLayout levelMainLayout1 = new HorizontalLayout();
+		levelMainLayout1.setWidth("100%");
+		levelMainLayout1.setSpacing(true);
+		levelMainLayout1.setStyleName("level-indicator-layout");
+		int k=0;
+		for(int i=0; i<level;i++){
+			//Ajout d'un level
+			k++;
+			Label libLevelLayout = new Label();
+			libLevelLayout.setSizeFull();
+			libLevelLayout.setHeight("8px");
+			libLevelLayout.setStyleName("layout-level-primary-indicator");
+			levelMainLayout1.addComponent(libLevelLayout);
+		}
+		//On pense avoir 7 level maxi
+		for(int j=k; j<8;j++){
+			Label libLevelSpaceLayout = new Label();
+			libLevelSpaceLayout.setSizeFull();
+			libLevelSpaceLayout.setHeight("8px");
+			levelMainLayout1.addComponent(libLevelSpaceLayout);
+		}
 
+		levelLayout.addComponent(levelMainLayout1);
+		String rang = level + "er";
+		if(level == 2){
+			rang = "2nd";
+		}
+		if(level > 2){
+			rang = level + "eme";
+		}
+		levelLayout.addComponent(new Label(rang + " niveau"));
+		levelLayout.addStyleName("v-small");
+		return levelLayout;
+	}
 
 
 }
