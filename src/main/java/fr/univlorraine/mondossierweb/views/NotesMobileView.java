@@ -201,14 +201,10 @@ public class NotesMobileView extends VerticalLayout implements View {
 				VerticalLayout notesLayout = null;
 				for(Diplome diplome : ldiplomes){
 					if(panelEnCours == null || anneeEnCours == null || !anneeEnCours.equals(diplome.getAnnee())) {
-						panelEnCours = new Panel();
 						notesLayout = new VerticalLayout();
+						panelEnCours = createNotePanel(notesLayout, diplome.getAnnee());
 						diplomesLayout.addComponent(panelEnCours);
-						panelEnCours.setCaption(applicationContext.getMessage(NAME+".annee", null, getLocale())+" " + diplome.getAnnee());
 						anneeEnCours = diplome.getAnnee();
-						panelEnCours.setStyleName("lefttitle-panel");
-						panelEnCours.addStyleName("v-medium-panel-caption");
-						panelEnCours.setContent(notesLayout);
 					}
 					addInfoToLayout(notesLayout, diplome.getLib_web_vdi(), diplome.getAnnee(),diplome.getResultats(),diplome.isAfficherRang(), diplome.getRang(), null);
 				}
@@ -224,14 +220,10 @@ public class NotesMobileView extends VerticalLayout implements View {
 				VerticalLayout notesLayout = null;
 				for(Etape etape : letapes){
 					if(panelEnCours == null || anneeEnCours == null || !anneeEnCours.equals(etape.getAnnee())) {
-						panelEnCours = new Panel();
 						notesLayout = new VerticalLayout();
+						panelEnCours = createNotePanel(notesLayout, etape.getAnnee());
 						elpsLayout.addComponent(panelEnCours);
-						panelEnCours.setCaption(applicationContext.getMessage(NAME+".annee", null, getLocale())+" " + etape.getAnnee());
 						anneeEnCours = etape.getAnnee();
-						panelEnCours.setStyleName("lefttitle-panel");
-						panelEnCours.addStyleName("v-medium-panel-caption");
-						panelEnCours.setContent(notesLayout);
 					}
 					addInfoToLayout(notesLayout, etape.getLibelle(), etape.getAnnee(),etape.getResultats(),etape.isAfficherRang(), etape.getRang(), etape);
 				}
@@ -258,6 +250,14 @@ public class NotesMobileView extends VerticalLayout implements View {
 			}
 			
 		}
+	}
+
+	private Panel createNotePanel(VerticalLayout notesLayout, String annee) {
+		Panel panel = new Panel(applicationContext.getMessage(NAME+".annee", null, getLocale())+" " + annee);
+		panel.setStyleName("lefttitle-panel");
+		panel.addStyleName("v-medium-panel-caption");
+		panel.setContent(notesLayout);
+		return panel;
 	}
 
 	private void ajoutMessageAucunResultat(HorizontalLayout notesessionLayout) {
