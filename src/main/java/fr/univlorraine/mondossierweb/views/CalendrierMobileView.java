@@ -104,7 +104,6 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 			if(userController.isEnseignant()){
 				returnButton = new Button();
 				returnButton.setIcon(FontAwesome.ARROW_LEFT);
-				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
@@ -176,12 +175,14 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					}
 					detailLayout.addComponent(salleLabel);
 					salleLabel.setStyleName("v-label-align-right");
+					salleLabel.addStyleName("v-small");
 					
 					//ajout de la place
 					if(configController.isAffNumPlaceExamen() && StringUtils.hasText(exam.getPlace())){
 						Label placeLabel = new Label(applicationContext.getMessage(NAME+".place", null, getLocale())+ " " +exam.getPlace());
 						detailLayout.addComponent(placeLabel);
 						placeLabel.setStyleName("v-label-align-right");
+						placeLabel.addStyleName("v-small");
 					}
 
 					//Libelle de l'épreuve

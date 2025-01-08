@@ -207,15 +207,13 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 
 				if(lelp!=null && lelp.size()>0){
-					//Panel notesPanel = new Panel();
-					//notesPanel.setSizeFull();
-
 					VerticalLayout notesLayout = new VerticalLayout();
-					//notesLayout.setSpacing(true);
 
 					HorizontalLayout libSessionLayout = new HorizontalLayout();
 					libSessionLayout.setSizeFull();
-					libSessionLayout.addComponent(new Label());
+					Label emptyLabel = new Label();
+					libSessionLayout.addComponent(emptyLabel);
+					libSessionLayout.setExpandRatio(emptyLabel, 0.6f);
 
 					HorizontalLayout sessionLayout = new HorizontalLayout();
 					sessionLayout.setSizeFull();
@@ -234,6 +232,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					}
 
 					libSessionLayout.addComponent(sessionLayout);
+					libSessionLayout.setExpandRatio(sessionLayout, 0.4f);
 
 					notesLayout.addComponent(libSessionLayout);
 
@@ -247,7 +246,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					int nbFils=0;
 
 					LOG.info("Liste des ELP à afficher : ");
-					for(ElementPedagogique elp : lelp){
+					for (ElementPedagogique elp : lelp) {
 
 						compteurElp++;
 
@@ -260,11 +259,11 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						HorizontalLayout libElpLayout = new HorizontalLayout();
 
 						//Le premier élément est ignoré car c'est un rappel de l'étape sélectionée
-						if(compteurElp>1){
-							if(elp.getLevel()==1){
+						if (compteurElp > 1) {
+							if (elp.getLevel() == 1) {
 
 								//Si l'ELP de niveau 1 précédent n'avait aucun fils
-								if(layoutPere!=null && nbFils==0){
+								if (layoutPere != null && nbFils == 0) {
 									//C'est un élément de niveau 1 non cliquable
 									//Fond blanc et une ligne en border-bottom
 									layoutPere.setStyleName("layout-bottom-line-separator");
@@ -281,14 +280,14 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 								libElpLayout.setId("layout_pere_"+elp.getCode());
 
-							}else{
+							} else {
 								libElpLayout.addStyleName("layout-bottom-line-separator");
 								if(!StringUtils.hasText(elpPere)){
 									// ANOMALIE , Arborescence non complete
-									// TODO On affichera toute la liste des ELP sans les indicateurs de niveau ni JS pour déplier
+									// On affichera toute la liste des ELP sans les indicateurs de niveau ni JS pour déplier
 									libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_");
 									arborescenceValide=false;
-								}else{
+								} else {
 									nbFils++;
 									libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_"+elpPere);
 									//ajout dans la hashMap
@@ -296,7 +295,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 								}
 
 							}
-						}else{
+						} else {
 							//on affiche la racine (qui est un rappel de l'etape) en blanc sur un fond très sombre
 							libElpLayout.addStyleName("root-layout-bottom-line-separator");
 						}
@@ -312,7 +311,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							libElpLabel.setStyleName("bold-label");
 						}
 
-
 						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
 						if(arborescenceValide && compteurElp>1){
 							HorizontalLayout levelMainLayout = new HorizontalLayout();
@@ -321,7 +319,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							levelMainLayout.setStyleName("level-indicator-layout");
 
 							int k=0;
-							for(int i=0; i<elp.getLevel();i++){
+							for (int i = 0; i < elp.getLevel(); i++) {
 								//Ajout d'un level
 								k++;
 								Label libLevelLayout = new Label();
@@ -335,7 +333,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 								levelMainLayout.addComponent(libLevelLayout);
 							}
 							//On pense avoir 7 level maxi 
-							for(int j=k; j<8;j++){
+							for (int j = k; j < 8; j++) {
 								Label libLevelSpaceLayout = new Label();
 								libLevelSpaceLayout.setSizeFull();
 								libLevelSpaceLayout.setHeight("8px");
@@ -346,8 +344,8 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						}
 						//Ajout du libellé dans le layout
 						libVerticalLayout.addComponent(libElpLabel);
-
 						libElpLayout.addComponent(libVerticalLayout);
+						libElpLayout.setExpandRatio(libVerticalLayout, 0.6f);
 
 						HorizontalLayout noteLayout = new HorizontalLayout();
 						noteLayout.setSizeFull();
@@ -408,9 +406,8 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						if((configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) && StringUtils.hasText(elp.getRang())){
 							globalResultatLayout.addComponent(getRangComponent(elp.getRang()));
 						}
-						
 						libElpLayout.addComponent(globalResultatLayout);
-
+						libElpLayout.setExpandRatio(globalResultatLayout, 0.4f);
 						notesLayout.addComponent(libElpLayout);
 
 						//Au départ, on cache les éléments de niveau supérieur à 1
@@ -455,11 +452,9 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					labelAucunResultat.setStyleName(ValoTheme.LABEL_BOLD);
 					messageLayout.addComponent(labelAucunResultat);
 					layout.addComponent(messageLayout);
-
 				}
 
 				addComponent(layout);
-
 				setExpandRatio(layout, 1);
 
 			}else{
