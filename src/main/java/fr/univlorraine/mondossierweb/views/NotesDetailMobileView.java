@@ -175,7 +175,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					significationButton.addClickListener(e->{
 						//afficher les significations
 						SignificationsMobileWindow w = significationsMobileWindowFactory.getObject();
-						w.init(true);
+						w.init(!configController.isIndentNiveauElpMobile());
 						UI.getCurrent().addWindow(w);
 					});
 					navbar.addComponent(significationButton);
@@ -213,7 +213,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					libSessionLayout.setSizeFull();
 					Label emptyLabel = new Label();
 					libSessionLayout.addComponent(emptyLabel);
-					libSessionLayout.setExpandRatio(emptyLabel, 0.6f);
+					libSessionLayout.setExpandRatio(emptyLabel, 0.65f);
 
 					HorizontalLayout sessionLayout = new HorizontalLayout();
 					sessionLayout.setSizeFull();
@@ -232,7 +232,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					}
 
 					libSessionLayout.addComponent(sessionLayout);
-					libSessionLayout.setExpandRatio(sessionLayout, 0.4f);
+					libSessionLayout.setExpandRatio(sessionLayout, 0.35f);
 
 					notesLayout.addComponent(libSessionLayout);
 
@@ -313,39 +313,19 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
 						if(arborescenceValide && compteurElp>1){
-							HorizontalLayout levelMainLayout = new HorizontalLayout();
-							levelMainLayout.setSizeFull();
-							levelMainLayout.setSpacing(true);
-							levelMainLayout.setStyleName("level-indicator-layout");
-
-							int k=0;
-							for (int i = 0; i < elp.getLevel(); i++) {
-								//Ajout d'un level
-								k++;
-								Label libLevelLayout = new Label();
-								libLevelLayout.setSizeFull();
-								libLevelLayout.setHeight("8px");
-								if(blueLevel){
-									libLevelLayout.setStyleName("layout-level-blue-indicator");
-								}else{
-									libLevelLayout.setStyleName("layout-level-green-indicator");
-								}
-								levelMainLayout.addComponent(libLevelLayout);
+							if(!configController.isIndentNiveauElpMobile()){
+								//Ajout des indicateurs dans le layout
+								libVerticalLayout.addComponent(getLevelIndicator(elp.getLevel(), blueLevel));
+							} else {
+								// Ajout identation
+								libElpLabel.addStyleName("indent-" + elp.getLevel() + "-em");
 							}
-							//On pense avoir 7 level maxi 
-							for (int j = k; j < 8; j++) {
-								Label libLevelSpaceLayout = new Label();
-								libLevelSpaceLayout.setSizeFull();
-								libLevelSpaceLayout.setHeight("8px");
-								levelMainLayout.addComponent(libLevelSpaceLayout);
-							}
-							//Ajout des indicateurs dans le layout
-							libVerticalLayout.addComponent(levelMainLayout);
 						}
+
 						//Ajout du libellé dans le layout
 						libVerticalLayout.addComponent(libElpLabel);
 						libElpLayout.addComponent(libVerticalLayout);
-						libElpLayout.setExpandRatio(libVerticalLayout, 0.6f);
+						libElpLayout.setExpandRatio(libVerticalLayout, 0.65f);
 
 						HorizontalLayout noteLayout = new HorizontalLayout();
 						noteLayout.setSizeFull();
@@ -407,7 +387,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							globalResultatLayout.addComponent(getRangComponent(elp.getRang()));
 						}
 						libElpLayout.addComponent(globalResultatLayout);
-						libElpLayout.setExpandRatio(globalResultatLayout, 0.4f);
+						libElpLayout.setExpandRatio(globalResultatLayout, 0.35f);
 						notesLayout.addComponent(libElpLayout);
 
 						//Au départ, on cache les éléments de niveau supérieur à 1
@@ -463,7 +443,37 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 		}
 	}
 
-	
+	private com.vaadin.ui.Component getLevelIndicator(int niveau, boolean isBlue) {
+		HorizontalLayout levelMainLayout = new HorizontalLayout();
+		levelMainLayout.setSizeFull();
+		levelMainLayout.setSpacing(true);
+		levelMainLayout.setStyleName("level-indicator-layout");
+
+		int k=0;
+		for (int i = 0; i < niveau; i++) {
+			//Ajout d'un level
+			k++;
+			Label libLevelLayout = new Label();
+			libLevelLayout.setSizeFull();
+			libLevelLayout.setHeight("8px");
+			if(isBlue){
+				libLevelLayout.setStyleName("layout-level-blue-indicator");
+			}else{
+				libLevelLayout.setStyleName("layout-level-green-indicator");
+			}
+			levelMainLayout.addComponent(libLevelLayout);
+		}
+		//On pense avoir 7 level maxi
+		for (int j = k; j < 8; j++) {
+			Label libLevelSpaceLayout = new Label();
+			libLevelSpaceLayout.setSizeFull();
+			libLevelSpaceLayout.setHeight("8px");
+			levelMainLayout.addComponent(libLevelSpaceLayout);
+		}
+		return levelMainLayout;
+	}
+
+
 	private com.vaadin.ui.Component getRangComponent(String r) {
 		HorizontalLayout rl = new HorizontalLayout();
 		rl.setStyleName("layout-rang-mobile");

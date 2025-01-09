@@ -618,6 +618,9 @@ public class ConfigController {
 	public String getNotesAnneePivotExtractionApogee() {
 		return  getValeurForParameter("notesAnneePivotExtractionApogee");
 	}
+	public boolean isIndentNiveauElpMobile() {
+		return  getBooleanValueForParameter("indentNiveauElpMobile");
+	}
 	public boolean isNotesAnneeOuverteResExtractionApogee() {
 		return getBooleanValueForParameter("notesAnneeOuverteResExtractionApogee");
 	}
@@ -789,4 +792,6 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+
 }

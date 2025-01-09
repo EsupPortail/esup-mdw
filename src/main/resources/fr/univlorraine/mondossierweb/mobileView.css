@@ -270,6 +270,28 @@ opacity: 1.0 !important;
   border-bottom: 0px !important;
 }
 
+.valo-ul .indent-2-em {
+	padding-left: 1em;
+}
+.valo-ul .indent-3-em {
+	padding-left: 2em;
+}
+.valo-ul .indent-4-em {
+	padding-left: 3em;
+}
+.valo-ul .indent-5-em {
+	padding-left: 4em;
+}
+.valo-ul .indent-6-em {
+	padding-left: 5em;
+}
+.valo-ul .indent-7-em {
+	padding-left: 6em;
+}
+.valo-ul .indent-8-em {
+	padding-left: 7em;
+}
+
 .valo-ul .v-panel-caption-v-panel-caption-lefttitle-panel {
 text-align: left !important;
 font-size: medium !important;
