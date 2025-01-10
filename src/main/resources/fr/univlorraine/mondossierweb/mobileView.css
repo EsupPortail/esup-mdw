@@ -416,6 +416,10 @@ content: none !important;
 
 }
 
+.valo-ul .v-window-header {
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
 .valo-ul .v-tabsheet-tabs-menu-mobile {
 	width: 100%;
 }
@@ -460,15 +464,9 @@ width: 100% !important;
 	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0) !important;
 }
 
-
 .valo-ul .v-nav-button:before {
 content: none !important;
 
-}
-
-.valo-ul .info-mobile-window {
-	background-color: var(--mobile_main_color) !important;
-	color: white !important;
 }
 
 .valo-ul .v-popover-blank {

@@ -22,7 +22,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -33,6 +32,8 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,6 +71,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	private transient FavorisController favorisController;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -126,10 +129,10 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			infoButton.setIcon(FontAwesome.INFO);
 			infoButton.setStyleName("v-menu-nav-button");
 			infoButton.addClickListener(e->{
-				Notification note = new Notification(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()), "", Notification.TYPE_TRAY_NOTIFICATION, true);
-				note.setPosition(Position.MIDDLE_CENTER);
-				note.setDelayMsec(6000);
-				note.show(UI.getCurrent().getPage());
+				String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
+				HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+				hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),false);
+				UI.getCurrent().addWindow(hbw);
 			});
 			navbar.addComponent(infoButton);
 			navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);

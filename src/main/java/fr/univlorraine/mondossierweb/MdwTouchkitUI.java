@@ -49,8 +49,8 @@ import fr.univlorraine.mondossierweb.controllers.*;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.*;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
-import fr.univlorraine.mondossierweb.views.windows.MessageIntroMobileWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
@@ -100,7 +100,7 @@ public class MdwTouchkitUI extends GenericUI{
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
-	private transient ObjectFactory<MessageIntroMobileWindow> messageIntroMobileWindowFactory;
+	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
 	@Resource
 	private transient Environment environment;
 	@Resource
@@ -421,20 +421,19 @@ public class MdwTouchkitUI extends GenericUI{
 
 		//Si on doit afficher le message
 		if(afficherMessage) {
-
-			MessageIntroMobileWindow w = messageIntroMobileWindowFactory.getObject();
-			w.init();
-			//Sur la fermeture de la fenêtre
-			w.addCloseListener(g->{
+			String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
+			HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+			hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),true);
+			hbw.addCloseListener(g->{
 				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
-				boolean choix = w.getCheckBox().getValue();
+				boolean choix = hbw.getCheckBox().getValue();
 				//Test si l'utilisateur a coché la case pour ne plus afficher le message
 				if(choix){
 					//mettre a jour dans la base de données
 					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
 				}
 			});
-			UI.getCurrent().addWindow(w);
+			UI.getCurrent().addWindow(hbw);
 		}
 	}
 
