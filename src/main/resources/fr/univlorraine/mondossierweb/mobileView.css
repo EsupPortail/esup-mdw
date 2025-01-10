@@ -466,6 +466,10 @@ content: none !important;
 
 }
 
+.valo-ul .info-mobile-window {
+	background-color: var(--mobile_main_color) !important;
+	color: white !important;
+}
 
 .valo-ul .v-popover-blank {
 	background-color: white !important;

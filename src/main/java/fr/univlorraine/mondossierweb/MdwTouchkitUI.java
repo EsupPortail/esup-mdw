@@ -50,6 +50,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.*;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
+import fr.univlorraine.mondossierweb.views.windows.MessageIntroMobileWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
@@ -58,6 +59,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -65,6 +67,7 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -97,21 +100,17 @@ public class MdwTouchkitUI extends GenericUI{
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
+	private transient ObjectFactory<MessageIntroMobileWindow> messageIntroMobileWindowFactory;
+	@Resource
 	private transient Environment environment;
 	@Resource
 	private transient UserController userController;
-	@Resource
-	private transient UiController uiController;
-	@Resource
-	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient EtudiantController etudiantController;
 	@Resource(name="${resultat.implementation}")
 	private transient ResultatController resultatController;
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
-	@Resource
-	private transient FavorisController favorisController;
 	@Resource
 	private transient ConfigController configController;
 	@Resource
@@ -407,13 +406,39 @@ public class MdwTouchkitUI extends GenericUI{
 	 * Affiche du message d'intro pour les enseignants
 	 */
 	private void afficherMessageIntroEnseignants() {
-		afficherMessageIntro(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()));
 
+		//On Recupere dans la base si l'utilisateur a indiqué une préférence pour l'affichage du message d'introduction
+		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
+
+		//Par défaut, on affiche le message
+		boolean afficherMessage = true;
+
+		//Si on a une préférence indiquée par l'utilisateur en ce qui concerne l'affichage du message d'intro
+		if(StringUtils.hasText(val)){
+			//On récupère ce choix dans afficherMessage
+			afficherMessage = Boolean.valueOf(val);
+		}
+
+		//Si on doit afficher le message
+		if(afficherMessage) {
+
+			MessageIntroMobileWindow w = messageIntroMobileWindowFactory.getObject();
+			w.init();
+			//Sur la fermeture de la fenêtre
+			w.addCloseListener(g->{
+				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
+				boolean choix = w.getCheckBox().getValue();
+				//Test si l'utilisateur a coché la case pour ne plus afficher le message
+				if(choix){
+					//mettre a jour dans la base de données
+					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
+				}
+			});
+			UI.getCurrent().addWindow(w);
+		}
 	}
 
-	/**
-	 * Affiche du message d'intro
-	 */
+	/*
 	private void afficherMessageIntro(String text){
 
 		Notification note = new Notification(text, "", Notification.TYPE_TRAY_NOTIFICATION, true);
@@ -421,7 +446,7 @@ public class MdwTouchkitUI extends GenericUI{
 		note.setDelayMsec(6000);
 		note.show(this.getPage());
 
-	}
+	}*/
 
 	/**
 	 * Affichage de la vue Liste Inscrits depuis la vue Search
