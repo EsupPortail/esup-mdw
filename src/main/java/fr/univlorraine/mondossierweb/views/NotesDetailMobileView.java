@@ -213,7 +213,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					libSessionLayout.setSizeFull();
 					Label emptyLabel = new Label();
 					libSessionLayout.addComponent(emptyLabel);
-					libSessionLayout.setExpandRatio(emptyLabel, 0.65f);
+					libSessionLayout.setExpandRatio(emptyLabel, CssUtils.RATIO_LIB_NOTE);
 
 					HorizontalLayout sessionLayout = new HorizontalLayout();
 					sessionLayout.setSizeFull();
@@ -232,7 +232,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					}
 
 					libSessionLayout.addComponent(sessionLayout);
-					libSessionLayout.setExpandRatio(sessionLayout, 0.35f);
+					libSessionLayout.setExpandRatio(sessionLayout, CssUtils.RATIO_NOTES_NOTE);
 
 					notesLayout.addComponent(libSessionLayout);
 
@@ -325,7 +325,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						//Ajout du libellé dans le layout
 						libVerticalLayout.addComponent(libElpLabel);
 						libElpLayout.addComponent(libVerticalLayout);
-						libElpLayout.setExpandRatio(libVerticalLayout, 0.65f);
+						libElpLayout.setExpandRatio(libVerticalLayout, CssUtils.RATIO_LIB_NOTE);
 
 						HorizontalLayout noteLayout = new HorizontalLayout();
 						noteLayout.setSizeFull();
@@ -387,7 +387,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							globalResultatLayout.addComponent(getRangComponent(elp.getRang()));
 						}
 						libElpLayout.addComponent(globalResultatLayout);
-						libElpLayout.setExpandRatio(globalResultatLayout, 0.35f);
+						libElpLayout.setExpandRatio(globalResultatLayout, CssUtils.RATIO_NOTES_NOTE);
 						notesLayout.addComponent(libElpLayout);
 
 						//Au départ, on cache les éléments de niveau supérieur à 1

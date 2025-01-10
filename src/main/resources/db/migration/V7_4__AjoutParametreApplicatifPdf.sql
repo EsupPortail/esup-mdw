@@ -18,5 +18,5 @@
 -- Ajout de parametres affDatenaissanceEnseignant et affDatenaissanceGestionnaire
 -----------------------------------------------------------
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`,`CAT_ID`,`VALEUR`) VALUES 
-('indentNiveauElpMobile', 'Indentation des ELPs en remplacement des indicateurs de niveau colorés sur l''affichage mobile du détail des notes', 'BOOLEAN','2','false');
+('indentNiveauElpMobile', 'Indentation des ELPs en remplacement des indicateurs de niveau colorés sur l''affichage mobile du détail des notes', 'BOOLEAN','2','true');
 

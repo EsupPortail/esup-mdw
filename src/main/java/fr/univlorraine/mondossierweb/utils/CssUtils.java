@@ -26,5 +26,7 @@ package fr.univlorraine.mondossierweb.utils;
 public class CssUtils {
 
 	public final static String NAVBAR_HEIGHT = "3.4em";
+    public static final float RATIO_LIB_NOTE = 0.65f;
+    public static final float RATIO_NOTES_NOTE = 0.35f;
 }
 

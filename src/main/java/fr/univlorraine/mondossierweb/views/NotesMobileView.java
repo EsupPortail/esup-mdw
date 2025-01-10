@@ -390,6 +390,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 		}
 
 		objLayout.addComponent(libelleLayout);
+		objLayout.setExpandRatio(libelleLayout, CssUtils.RATIO_LIB_NOTE);
 
 		globalResultatLayout.addComponent(noteSessionLayout);
 		// Si on doit afficher le rang
@@ -398,6 +399,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			globalResultatLayout.addComponent(getRangComponent(rang));
 		}
 		objLayout.addComponent(globalResultatLayout);
+		objLayout.setExpandRatio(globalResultatLayout, CssUtils.RATIO_NOTES_NOTE);
 		notesLayout.addComponent(objLayout);
 	}
 
