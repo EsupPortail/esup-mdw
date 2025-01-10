@@ -18,13 +18,14 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
+import com.vaadin.server.FileResource;
+import com.vaadin.ui.*;
 import fr.univlorraine.mondossierweb.views.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -388,5 +389,15 @@ public class Utils {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		return dateFormat.format(d);
 	}
+
+    public static void ajoutLogoBandeau(String pathLogo, HorizontalLayout navbar) {
+		if(StringUtils.hasText(pathLogo)) {
+			FileResource resource = new FileResource(new File(pathLogo));
+			Image logo = new Image(null, resource);
+			logo.setStyleName("logo-mobile");
+			navbar.addComponent(logo);
+			navbar.setComponentAlignment(logo, Alignment.MIDDLE_LEFT);
+		}
+    }
 }
 

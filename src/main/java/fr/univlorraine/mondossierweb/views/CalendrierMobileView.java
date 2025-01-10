@@ -118,6 +118,8 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 				});
 				navbar.addComponent(returnButton);
 				navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+			} else {
+				Utils.ajoutLogoBandeau(configController.getLogoUniversiteMobile(), navbar);
 			}
 
 			//Title

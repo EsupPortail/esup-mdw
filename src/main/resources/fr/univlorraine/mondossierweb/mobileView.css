@@ -298,6 +298,10 @@ font-size: medium !important;
 /* font-weight: bold !important; */
 }
 
+.valo-ul .logo-mobile {
+	height: 2.5em;
+	margin-left: 0.4em;
+}
 
 .valo-ul .label-centre {
 	text-align: center !important;

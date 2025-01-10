@@ -120,6 +120,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				});
 				navbar.addComponent(returnButton);
 				navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+			} else {
+				Utils.ajoutLogoBandeau(configController.getLogoUniversiteMobile(), navbar);
 			}
 
 			//Title
