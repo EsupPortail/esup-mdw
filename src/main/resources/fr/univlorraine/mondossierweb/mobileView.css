@@ -474,6 +474,19 @@ content: none !important;
 	background-image: none !important;
 }
 
+.valo-ul .v-menubar-mobile {
+	border: none !important;
+	color: white !important;
+}
+
+.valo-ul .v-menubar-menuitem-ellipsis-icon .v-menubar-submenu-indicator + .v-menubar-menuitem-caption:after {
+	content: none !important;
+}
+
+.valo-ul .v-menubar-menuitem-ellipsis-icon {
+	background-color: var(--mobile_main_color) !important;
+}
+
 .valo-ul .v-label-navbar {
 	color: white !important;
 	text-align: center !important;

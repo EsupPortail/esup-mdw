@@ -205,7 +205,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Si on a des éléments à afficher dans la popup filtre
 				if((w.getListeEtapes()!=null && w.getListeEtapes().size()>0) || (w.getListeGroupes()!=null && w.getListeGroupes().size()>0)){
 					filterButton = new Button();
-					filterButton.setIcon(FontAwesome.ELLIPSIS_V);
+					filterButton.setIcon(FontAwesome.FILTER);
 					filterButton.setStyleName("v-menu-nav-button");
 
 					filterButton.addClickListener(e->{

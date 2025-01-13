@@ -49,21 +49,20 @@ public class SignificationsMobileWindow extends Window {
 	 * Crée une fenêtre
 	 */
 	public void init(boolean afficherSignificationIndicateurProfondeur){
-		
-		setWidth("95%");
-		setHeight("95%");
 
-
-		setCaption(applicationContext.getMessage("significationsWindow.title", null, getLocale()));
-        setModal(true);
+		setWidth("90%");
+		setModal(true);
 		setResizable(false);
 		setClosable(false);
-        setStyleName("v-popover-blank");
 
         VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
+		layout.setMargin(true);
+		layout.setSpacing(true);
         setContent(layout);
-        
+
+		// Titre
+		setCaption(applicationContext.getMessage("significationsWindow.title", null, getLocale()));
+		// setStyleName("v-popover-blank");
 
         VerticalLayout panelLayout = new VerticalLayout();
         panelLayout.setWidth("100%");

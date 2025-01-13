@@ -26,6 +26,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -72,14 +73,13 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	@Resource
 	private transient RechercheController rechercheController;
 	@Resource
+	private transient ConfigController configController;
+	@Resource
 	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-	private Button infoButton;
-	
-	private Button searchButton;
+	private MenuBar menuBar;
 
 	private List<String> liste_types_inscrits;
 
@@ -124,18 +124,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 			navbar.setStyleName("navigation-bar");
 
-			//Bouton info
-			infoButton = new Button();
-			infoButton.setIcon(FontAwesome.INFO);
-			infoButton.setStyleName("v-menu-nav-button");
-			infoButton.addClickListener(e->{
-				String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
-				HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
-				hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),false);
-				UI.getCurrent().addWindow(hbw);
-			});
-			navbar.addComponent(infoButton);
-			navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
+			Utils.ajoutLogoBandeau(configController.getLogoUniversiteMobile(), navbar);
 
 			//Title
 			Label labelFav = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
@@ -143,17 +132,33 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			navbar.addComponent(labelFav);
 			navbar.setComponentAlignment(labelFav, Alignment.MIDDLE_CENTER);
 
-			//Bouton Search
-			searchButton = new Button();
-			searchButton.setIcon(FontAwesome.SEARCH);
-			searchButton.setStyleName("v-menu-nav-button");
-			navbar.addComponent(searchButton);
-			navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
-			searchButton.addClickListener(e->{
-				((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche(NAME);
-			});
 			navbar.setExpandRatio(labelFav, 1);
 			addComponent(navbar);
+
+			menuBar = new MenuBar();
+			menuBar.setStyleName("v-menubar-mobile");
+			MenuBar.MenuItem ellipsisItem = menuBar.addItem("",FontAwesome.ELLIPSIS_V, null);
+			ellipsisItem.setStyleName("ellipsis-icon");
+
+			MenuBar.MenuItem rechercheItem = ellipsisItem.addItem(applicationContext.getMessage(NAME + ".menu.recherche", null, getLocale()),FontAwesome.SEARCH, new MenuBar.Command() {
+				@Override
+				public void menuSelected(MenuBar.MenuItem selectedItem) {
+					((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche(NAME);
+				}
+			});
+
+			MenuBar.MenuItem informationItem = ellipsisItem.addItem(applicationContext.getMessage(NAME + ".menu.information", null, getLocale()), FontAwesome.INFO, new MenuBar.Command() {
+				@Override
+				public void menuSelected(MenuBar.MenuItem selectedItem) {
+					String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
+					HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+					hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),false);
+					UI.getCurrent().addWindow(hbw);
+				}
+			});
+
+			navbar.addComponent(menuBar);
+			navbar.setComponentAlignment(menuBar, Alignment.MIDDLE_RIGHT);
 
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
