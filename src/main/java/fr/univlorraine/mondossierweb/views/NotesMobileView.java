@@ -233,8 +233,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 			}
 
-
-
 			addComponent(globalLayout);
 			setExpandRatio(globalLayout, 1);
 		}else{
@@ -250,7 +248,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 				addComponent(refusLayout);
 				setExpandRatio(refusLayout, 1);
 			}
-			
 		}
 	}
 
