@@ -18,5 +18,5 @@
 -- Ajout de parametres affDatenaissanceEnseignant et affDatenaissanceGestionnaire
 -----------------------------------------------------------
 INSERT INTO `PREFERENCES_APPLICATION` (`PREF_ID`, `PREF_DESC`, `TYPE`,`CAT_ID`,`VALEUR`) VALUES 
-('logoUniversiteMobile', 'Path ou URL vers le logo de l''Université pour le bandeau étudiant sur mobile. A laisser vide pour ne pas afficher de logo.', 'STRING','5','');
+('logoUniversiteMobile', 'Path ou URL vers le logo de l''Université pour le bandeau sur mobile. A laisser vide pour ne pas afficher de logo.', 'STRING','5','');
 
