@@ -29,7 +29,7 @@
 	<!-- Base MySQL propre à l'application -->
 	<Resource name="jdbc/dbMdw" type="javax.sql.DataSource" username="usermdw"
 		password="xxxxx" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw"
-		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
+			  maxTotal="20" maxIdle="4" maxWaitMillis="10000" removeAbandonedOnBorrow="true"
 		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1'" />
 
 	<!-- Connexion sur Apogée -->
@@ -39,10 +39,10 @@
 		password="xxxxx"
 		driverClassName="oracle.jdbc.driver.OracleDriver"
 		url="jdbc:oracle:thin:@apogee.univ.fr:1521:APOGEE"
-		maxActive="20"
+			  maxTotal="20"
 		maxIdle="4"
-		maxWait="10000"
-		removeAbandoned="true"
+			  maxWaitMillis="10000"
+		removeAbandonedOnBorrow="true"
 		removeAbandonedTimeout="600"
 		logAbandoned="true"
 		validationQuery="select '1' from dual" />

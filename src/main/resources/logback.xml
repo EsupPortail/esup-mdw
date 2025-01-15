@@ -20,11 +20,18 @@
 
 -->
 <configuration scan="true">
-	
+
 	<property name="logsPath" value="${catalina.base}/logs" />
 
 	<property name="defaultPattern" value="%date{HH:mm:ss.SSS} [%thread] %-5level %mdc{username} %logger - %message%n" />
-	
+
+	<property name="appUrl" value="${context.app.url}" />
+	<property name="smtpHost" value="${context.mail.smtpHost}" />
+	<property name="mailFrom" value="${context.mail.from}" />
+	<property name="mailTo" value="${context.mail.to}" />
+	<property name="mailStartDisabling" value="${context.mail.startDisabling}" />
+	<property name="mailStopDisabling" value="${context.mail.stopDisabling}" />
+
 
 	<!-- increases performances for jul -->
 	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
@@ -53,7 +60,7 @@
 			<pattern>${defaultPattern}</pattern>
 		</encoder>
 	</appender>
-	
+
 	<appender name="securityFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${logsPath}/mondossierweb-security.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -76,16 +83,16 @@
 		<!-- Délai des mails en secondes (1 par défaut) -->
 		<mailDelaySeconds>60</mailDelaySeconds>
 
-		<smtpHost>${context.mail.smtpHost}</smtpHost>
-		<from>${context.mail.from}</from>
-		<to>${context.mail.to}</to>
-		<subject>[mondossierweb] Logback Message from ${context.app.url}</subject>
+		<smtpHost>${smtpHost}</smtpHost>
+		<from>${mailFrom}</from>
+		<to>${mailTo}</to>
+		<subject>[mondossierweb] Logback Message from ${appUrl}</subject>
 		<asynchronousSending>false</asynchronousSending>
 
-		 <filter class="fr.univlorraine.tools.logback.TimeFilter">
-			<startDisabling>${context.mail.startDisabling}</startDisabling>
-			<stopDisabling>${context.mail.stopDisabling}</stopDisabling>
-		</filter> 
+		<filter class="fr.univlorraine.tools.logback.TimeFilter">
+			<startDisabling>${mailStartDisabling}</startDisabling>
+			<stopDisabling>${mailStopDisabling}</stopDisabling>
+		</filter>
 
 		<layout class="ch.qos.logback.classic.html.HTMLLayout" />
 	</appender>
@@ -100,24 +107,24 @@
 			<logger name="fr.univlorraine.mondossierweb" level="error" />
 		</else>
 	</if>
-	
+
 	<logger name="fr.univlorraine.mondossierweb.security" level="info" additivity="false">
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="securityFileAppender" />
 		<appender-ref ref="mailAppender" />
 	</logger>
-	
+
 
 	<root level="warn">
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
 		<appender-ref ref="mailAppender" />
 	</root>
-	
+
 	<logger name="org.springframework" level="warn" />
 
 	<logger name="com.vaadin" level="error" />
-	
+
 	<!-- Ne mail pas les erreurs push -->
 	<logger name="com.vaadin.server.DefaultErrorHandler" level="off" />
 
