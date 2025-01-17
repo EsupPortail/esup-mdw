@@ -43,7 +43,9 @@
 		<!-- <spring.security.version>4.2.20.RELEASE</spring.security.version> -->
 		<spring.security.version>5.8.16</spring.security.version>
 		<aspectj.version>1.8.2</aspectj.version>
-		<slf4j.version>1.7.32</slf4j.version>
+		<!--  <slf4j.version>1.7.32</slf4j.version> -->
+		<slf4j.version>1.7.36</slf4j.version>
+		<!-- <slf4j.version>2.0.16</slf4j.version> -->
 		<!-- <gmavenplus.version>1.5</gmavenplus.version> -->
 		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<!-- <groovy.version>2.3.6</groovy.version> -->
@@ -1335,9 +1337,11 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<!--  <version>1.1.9</version> -->
-			<version>1.2.8</version>
-			<scope>runtime</scope>
+			 <version>1.2.8</version> <!-- ok  -->
+			<!-- <version>1.2.13</version> -->
+			<!--<version>1.4.14</version> Aucun fichier créé -->
+			<!--<version>1.5.16</version>-->
+			<!-- <scope>runtime</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.janino</groupId>

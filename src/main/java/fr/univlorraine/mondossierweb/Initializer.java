@@ -18,20 +18,17 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
-
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import com.vaadin.server.Constants;
+import com.vaadin.shared.communication.PushMode;
+import fr.univlorraine.mondossierweb.config.SpringConfig;
+import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
+import fr.univlorraine.tools.logback.UserMdcServletFilter;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.SessionSupport;
+import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.DeviceResolverRequestFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -40,12 +37,14 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.vaadin.server.Constants;
-import com.vaadin.shared.communication.PushMode;
-
-import fr.univlorraine.mondossierweb.config.SpringConfig;
-import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
-import fr.univlorraine.tools.logback.UserMdcServletFilter;
+import javax.servlet.*;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Initialisation de l'application web
@@ -72,11 +71,41 @@ public class Initializer implements WebApplicationInitializer {
 	}
 
 	/**
+	 * Ajoute les paramètres de contexte aux propriétés Logback.
+	 * @see https://logback.qos.ch/faq.html#sharedConfiguration
+	 * @param servletContext the {@code ServletContext} to initialize
+	 */
+	private void addContextParametersToLogbackConfig(final ServletContext servletContext) {
+		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		final JoranConfigurator jc = new JoranConfigurator();
+		jc.setContext(loggerContext);
+		loggerContext.reset();
+
+		final Enumeration<String> parameterNames = servletContext.getInitParameterNames();
+		while (parameterNames.hasMoreElements()) {
+			final String parameterName = parameterNames.nextElement();
+			loggerContext.putProperty("context." + parameterName, servletContext.getInitParameter(parameterName));
+		}
+
+		// loggerContext.putProperty("context.log.level", productionMode ? "info" : "trace");
+
+		try {
+			final InputStream logbackConfig = getClass().getResourceAsStream("/logback-mdw.xml");
+			jc.doConfigure(logbackConfig);
+			logbackConfig.close();
+		} catch (final JoranException | IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	/**
 	 * @see org.springframework.web.WebApplicationInitializer#onStartup(javax.servlet.ServletContext)
 	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		addContextParametersToSystemProperties(servletContext);
+
+		addContextParametersToLogbackConfig(servletContext);
 
 		/* Configure les sessions */
 		Set<SessionTrackingMode> sessionTrackingModes = new HashSet<SessionTrackingMode>();
