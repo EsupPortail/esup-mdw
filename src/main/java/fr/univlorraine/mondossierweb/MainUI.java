@@ -240,10 +240,9 @@ public class MainUI extends GenericUI {
 					return;
 				}
 
-				if(cause!=null && cause.getClass()!=null){
+				if (cause != null && cause.getClass() != null) {
 					String simpleName = cause.getClass().getSimpleName();
-
-					/* Gérer les erreurs à ignorer */
+					/* Gére les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
 						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
 						displayViewFullScreen(ErreurView.NAME);
