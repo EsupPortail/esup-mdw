@@ -36,9 +36,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<vaadin.version>7.7.44</vaadin.version>
-		<spring.version>5.3.39</spring.version>
-		<spring.data.jpa.version>2.6.3</spring.data.jpa.version>
-		<spring.security.version>5.8.16</spring.security.version>
+
+		<!-- <spring.version>5.3.39</spring.version> -->
+		<!-- <spring.data.jpa.version>2.6.3</spring.data.jpa.version>-->
+		<!-- <spring.security.version>5.8.16</spring.security.version> -->
+		<!-- <hibernate-validator.version>6.1.0.Final</hibernate-validator.version> -->
+
+		<spring.version>6.2.2</spring.version>
+		<!-- <spring.version>6.1.16</spring.version> -->
+		<spring.data.jpa.version>3.4.2</spring.data.jpa.version>
+		<!-- <spring.security.version>6.4.2</spring.security.version> -->
+		<spring.security.version>6.3.6</spring.security.version>
+		<hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
+
 		<aspectj.version>1.8.2</aspectj.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<gmavenplus.version>3.0.2</gmavenplus.version>
@@ -47,6 +57,7 @@
 		<ojdbc7.version>12.1.3-0-0</ojdbc7.version>  
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 		<tomcat.version>7.0.109</tomcat.version>
+
 		<!-- WS Apogee AMUE -->
 		<!-- <apo.ws.version>6.50.00</apo.ws.version> -->
 		<apo.ws.version>6.50.30</apo.ws.version>
@@ -956,12 +967,19 @@
 		</dependency>
 
 		<!-- Servlet 3 -->
-		<dependency>
+		<!--<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
 			<scope>provided</scope>
+		</dependency> -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.1.0</version>
+			<scope>provided</scope>
 		</dependency>
+
 
 		<!-- Annotation API (nécessaire pour JDK11) -->
 		<dependency>
@@ -1119,10 +1137,9 @@
 			<version>1.1.0.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<!-- <version>5.1.2.Final</version>  -->
-			<version>6.1.0.Final</version>
+			<version>${hibernate-validator.version}</version>
 		</dependency>
 
 		<!-- AOP -->
@@ -1242,7 +1259,7 @@
 		
 		<!-- EHCACHE -->
 		<dependency>
-    		<groupId>ehcache</groupId>
+    		<groupId>net.sf.ehcache</groupId>
     		<artifactId>ehcache</artifactId>
     		<version>1.2.3</version>
 		</dependency>

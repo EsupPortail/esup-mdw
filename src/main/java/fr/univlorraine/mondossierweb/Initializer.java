@@ -26,6 +26,9 @@ import com.vaadin.shared.communication.PushMode;
 import fr.univlorraine.mondossierweb.config.SpringConfig;
 import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
 import fr.univlorraine.tools.logback.UserMdcServletFilter;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.SessionSupport;
 import org.slf4j.LoggerFactory;
@@ -37,9 +40,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
