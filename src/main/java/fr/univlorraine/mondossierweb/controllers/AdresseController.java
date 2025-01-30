@@ -18,22 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
-
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import fr.univlorraine.apowsutils.ServiceProvider;
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.utils.Utils;
@@ -47,6 +32,18 @@ import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.GeographieMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Gestion des adresses
@@ -316,7 +313,8 @@ public class AdresseController {
 			CoordonneesMajDTO cdtomaj = new CoordonneesMajDTO();
 			cdtomaj.setAnnee(annee);
 			cdtomaj.setTypeHebergement(adresseAnnuelle.getType());
-			cdtomaj.setEmail(cdto.getEmail());
+			// Si email = null le WS Apogée génère un NPE
+			cdtomaj.setEmail(cdto.getEmail() != null ? cdto.getEmail() : "");
 			cdtomaj.setNumTelPortable(cdto.getNumTelPortable());
 			cdtomaj.setAdresseAnnuelle(adanmaj);
 			cdtomaj.setAdresseFixe(adfixmaj);
