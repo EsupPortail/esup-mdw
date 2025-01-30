@@ -18,40 +18,21 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
-import fr.univlorraine.mondossierweb.MdwTouchkitUI;
-import fr.univlorraine.mondossierweb.beans.Diplome;
-import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.beans.Resultat;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.RechercheController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 
 /**
  * Page des notes sur mobile
@@ -128,7 +109,7 @@ public class NavigationManagerView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 	
 	public void setFirstComponent(VerticalLayout currentView) {
@@ -146,10 +127,5 @@ public class NavigationManagerView extends VerticalLayout implements View {
 	public void navigateBack() {
 		refresh();
 	}
-	
-
-	
-
-	
 
 }

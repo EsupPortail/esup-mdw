@@ -18,48 +18,31 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.util.filter.Or;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TreeTable;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -70,6 +53,18 @@ import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeServ
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Page d'accueil
@@ -148,7 +143,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			mainVerticalLayout = new VerticalLayout();
 			champRechercheLayout = new HorizontalLayout();
-			mainVerticalLayout.setImmediate(true);
+			// mainVerticalLayout.setImmediate(true);
 			mainVerticalLayout.setSizeFull();
 
 
@@ -169,10 +164,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				champRecherche.setImmediate(true);
 				champRecherche.setMaxLength(100);
 				champRecherche.focus();
-				champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
-				champRecherche.addTextChangeListener(new TextChangeListener() {
+				champRecherche.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.EAGER);
+				champRecherche.addTextChangeListener(new FieldEvents.TextChangeListener() {
 					@Override
-					public void textChange(TextChangeEvent event) {
+					public void textChange(FieldEvents.TextChangeEvent event) {
 						if(event.getText()!=null){
 							resetButton.setIcon(FontAwesome.TIMES);
 						}
@@ -504,7 +499,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		}else{
 			if(StringUtils.hasText(value) && value.length()<=1){
 				//afficher message erreur
-				Notification.show("Merci d'indiquer au moins 2 lettres",Type.ERROR_MESSAGE);
+				Notification.show("Merci d'indiquer au moins 2 lettres", Notification.Type.ERROR_MESSAGE);
 			}
 		}
 
@@ -568,7 +563,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		if(rrContainer!=null){
 			rrContainer.removeAllContainerFilters();
 
-			Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
+			Container.Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
 			SimpleStringFilter compFilter;
 			SimpleStringFilter vetFilter;
 			SimpleStringFilter elpFilter;
@@ -606,7 +601,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 

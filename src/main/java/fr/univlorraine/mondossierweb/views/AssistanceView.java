@@ -18,28 +18,26 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.BrowserWindowOpener;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.BrowserWindowOpener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -141,7 +139,7 @@ public class AssistanceView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View${symbol_pound}enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 }

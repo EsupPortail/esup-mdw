@@ -18,18 +18,26 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
+
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
@@ -163,7 +171,7 @@ public class FavorisView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		//LOG.debug("ENTER FAVORIS VIEW");
 	}
 
@@ -212,9 +220,9 @@ public class FavorisView extends VerticalLayout implements View {
 			btnfav.addStyleName("deletefavbutton");
 			btnfav.setDescription("Supprimer des favoris");
 			//Gestion du clic sur le bouton de suppression du favori
-			btnfav.addClickListener(new ClickListener() {
+			btnfav.addClickListener(new Button.ClickListener() {
 				@Override
-				public void buttonClick(ClickEvent event) {
+				public void buttonClick(Button.ClickEvent event) {
 					FavorisPK fpk = new FavorisPK();
 					fpk.setIdfav(idObj);
 					fpk.setLogin(userController.getCurrentUserName());

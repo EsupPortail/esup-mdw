@@ -18,42 +18,36 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.controllers.AdresseController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.Adresse;
-import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.controllers.AdresseController;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
-import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
-import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
+import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -109,8 +103,8 @@ public class ModificationAdressesWindow extends Window {
 
 	/**
 	 * Crée une fenêtre de confirmation
-	 * @param message
-	 * @param titre
+	 * @param etudiant
+	 * @param modificationTelephoneAutorisee
 	 */
 	public void init(Etudiant etudiant, boolean modificationTelephoneAutorisee) {
 		/* Style */
@@ -159,9 +153,9 @@ public class ModificationAdressesWindow extends Window {
 			lhebergement.setItemCaption(h.getCodTypeHebergement(), h.getLibWebTypeHebergement());
 		}
 		lhebergement.setValue(etudiant.getAdresseAnnuelle().getType());
-		lhebergement.addValueChangeListener(new ValueChangeListener() {
+		lhebergement.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				String selectedValue = (String) event.getProperty().getValue();
 
 				//Si un hébergement autre que la Domicile parental a été choisi
@@ -220,9 +214,9 @@ public class ModificationAdressesWindow extends Window {
 			lpays1.setItemCaption(p.getCodePay(),p.getLibPay());
 		}
 		lpays1.setValue(etudiant.getAdresseAnnuelle().getCodPays());
-		lpays1.addValueChangeListener(new ValueChangeListener() {
+		lpays1.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				String selectedValue = (String) event.getProperty().getValue();
 
 				//Si un pays autre que France a été choisi
@@ -253,9 +247,9 @@ public class ModificationAdressesWindow extends Window {
 		fieldCodePostal1.setMaxLength(5);
 		fieldCodePostal1.setRequired(true);
 		//fieldCodePostal1.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		fieldCodePostal1.addTextChangeListener(new TextChangeListener() {
+		fieldCodePostal1.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
-			public void textChange(TextChangeEvent event) {
+			public void textChange(FieldEvents.TextChangeEvent event) {
 				updateListeVillesAnnuelle(event.getText());
 			}
 		});
@@ -275,9 +269,9 @@ public class ModificationAdressesWindow extends Window {
 		}
 		codePostalVillesAnnu = etudiant.getAdresseAnnuelle().getCodePostal();
 		lville1.setValue(etudiant.getAdresseAnnuelle().getVille());
-		lville1.addValueChangeListener(new ValueChangeListener() {
+		lville1.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				updateCodePostalVilleAnnuelle();
 			}
 		});
@@ -363,9 +357,9 @@ public class ModificationAdressesWindow extends Window {
 			lpays2.setItemCaption(p.getCodePay(),p.getLibPay());
 		}
 		lpays2.setValue(etudiant.getAdresseFixe().getCodPays());
-		lpays2.addValueChangeListener(new ValueChangeListener() {
+		lpays2.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				String selectedValue = (String) event.getProperty().getValue();
 
 				//Si un pays autre que France a été choisi
@@ -396,9 +390,9 @@ public class ModificationAdressesWindow extends Window {
 		fieldCodePostal2.setMaxLength(5);
 		fieldCodePostal2.setRequired(true);
 		//fieldCodePostal1.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		fieldCodePostal2.addTextChangeListener(new TextChangeListener() {
+		fieldCodePostal2.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
-			public void textChange(TextChangeEvent event) {
+			public void textChange(FieldEvents.TextChangeEvent event) {
 				updateListeVillesFixe(event.getText());
 			}
 		});
@@ -418,9 +412,9 @@ public class ModificationAdressesWindow extends Window {
 		}
 		codePostalVillesFixe = etudiant.getAdresseFixe().getCodePostal();
 		lville2.setValue(etudiant.getAdresseFixe().getVille());
-		lville2.addValueChangeListener(new ValueChangeListener() {
+		lville2.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				updateCodePostalVilleFixe();
 			}
 		});

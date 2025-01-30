@@ -18,11 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.converters;
 
-import java.util.*;
-
-import com.vaadin.data.util.converter.Converter;
-
+import com.vaadin.v7.data.util.converter.Converter;
 import fr.univlorraine.mondossierweb.utils.Utils;
+
+import java.util.Date;
+import java.util.Locale;
 
 @SuppressWarnings("serial")
 public class DateToStringConverter implements Converter<String, Date> {

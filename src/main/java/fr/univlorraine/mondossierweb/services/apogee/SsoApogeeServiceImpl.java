@@ -18,15 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
+import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ResultType;
 import org.slf4j.Logger;
@@ -36,7 +32,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")

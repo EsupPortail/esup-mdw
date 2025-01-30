@@ -18,30 +18,26 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
+import lombok.Getter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import lombok.Getter;
+import javax.annotation.Resource;
+import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Fenêtre de saisie
@@ -72,11 +68,11 @@ public class InputWindow extends Window {
 		btnOkListeners.remove(btnOkListener);
 	}
 
-	public void addBtnCancelListener(ClickListener clickListener) {
+	public void addBtnCancelListener(Button.ClickListener clickListener) {
 		btnCancel.addClickListener(clickListener);
 	}
 
-	public void removeBtnCancelListener(ClickListener clickListener) {
+	public void removeBtnCancelListener(Button.ClickListener clickListener) {
 		btnCancel.removeClickListener(clickListener);
 	}
 

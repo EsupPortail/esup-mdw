@@ -19,9 +19,18 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
 import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.entities.apogee.*;
+import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
+import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
+import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
+import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
+import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.persistence.config.QueryHints;
@@ -31,10 +40,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;

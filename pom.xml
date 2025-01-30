@@ -35,13 +35,17 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<vaadin.version>7.7.44</vaadin.version>
 
+		<vaadin.version>7.7.44</vaadin.version>
+		<!--<vaadin.spring.version>1.0.2></vaadin.spring.version>-->
 		<!-- <spring.version>5.3.39</spring.version> -->
 		<!-- <spring.data.jpa.version>2.6.3</spring.data.jpa.version>-->
 		<!-- <spring.security.version>5.8.16</spring.security.version> -->
 		<!-- <hibernate-validator.version>6.1.0.Final</hibernate-validator.version> -->
 
+		<!--<vaadin.version>8.27.5</vaadin.version>-->
+		<vaadin-compatibility-server-version>8.27.5</vaadin-compatibility-server-version>
+		<vaadin.spring.version>4.0.0</vaadin.spring.version>
 		<spring.version>6.2.2</spring.version>
 		<!-- <spring.version>6.1.16</spring.version> -->
 		<spring.data.jpa.version>3.4.2</spring.data.jpa.version>
@@ -901,11 +905,33 @@
 	<dependencies>
 		
 		<!-- Vaadin dependencies -->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 			<version>${vaadin.version}</version>
+		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-compatibility-server-mpr-jakarta -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-compatibility-server-mpr-jakarta</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
 		</dependency>
+		<dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-compatibility-shared</artifactId>
+            <version>${vaadin-compatibility-server-version}</version>
+        </dependency>
+      <!--  <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-compatibility-client</artifactId>
+            <version>${vaadin-compatibility-server-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-compatibility-themes</artifactId>
+            <version>${vaadin-compatibility-server-version}</version>
+        </dependency>-->
 		<dependency>
     		<groupId>com.vaadin</groupId>
     		<artifactId>vaadin-client-compiler</artifactId>
@@ -963,7 +989,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring</artifactId>
-			<version>1.0.2</version>
+			<version>${vaadin.spring.version}</version>
 		</dependency>
 
 		<!-- Servlet 3 -->
@@ -1119,7 +1145,8 @@
 		<dependency>
     		<groupId>org.springframework.mobile</groupId>
     		<artifactId>spring-mobile-device</artifactId>
-    		<version>1.1.2.RELEASE</version>
+    		<!--<version>1.1.2.RELEASE</version>-->
+			<version>1.1.5.RELEASE</version>
 		</dependency>
 				
 		<!-- JPA implementation -->
@@ -1128,7 +1155,20 @@
 			<artifactId>eclipselink</artifactId>
 			<!--<version>2.7.6</version> (JDK11)  -->
 			<version>2.7.15</version><!-- (JDK21)  -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>jakarta.persistence</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+
+
 
 		<!-- Beans validator -->
 		<dependency>
@@ -1197,12 +1237,11 @@
 		</dependency>
 		
 		<!-- Tools UnivLorraine -->
-	  	<dependency>
+	  <dependency>
 			<groupId>fr.univlorraine</groupId>
 			<artifactId>tools</artifactId>
-			<!-- <version>1.5.9</version> -->
 			<version>1.5.11</version>
-		</dependency> 
+		</dependency>
 		
 		<!-- Lombok eclipse plugin -->
 		<dependency>

@@ -19,26 +19,22 @@
 package fr.univlorraine.mondossierweb.uicomponents;
 
 
-import java.util.List;
-
-import com.vaadin.data.Item;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.PopupView.PopupVisibilityEvent;
-import com.vaadin.ui.PopupView.PopupVisibilityListener;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TextField;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
-public class AutoComplete extends TextField{
+import java.util.List;
 
-	protected  PopupView choicesPopup;
+public class AutoComplete extends TextField {
+
+	protected PopupView choicesPopup;
 	protected Table choices;
 
 	protected Integer selectedItem=0;
@@ -78,7 +74,7 @@ public class AutoComplete extends TextField{
 				choices.setImmediate(true);
 
 				//Gestion du clic sur une ligne de la table -> on met la valeut de la ligne dans le textField de saisie
-				choices.addItemClickListener(new ItemClickListener() {
+				choices.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 					@Override
 					public void itemClick(ItemClickEvent event) {
 						Item i = event.getItem();
@@ -120,9 +116,9 @@ public class AutoComplete extends TextField{
 				choicesPopup.setWidth(getWidth(), getWidthUnits());
 				choices.setSelectable(true);
 				choices.setImmediate(true);
-				choicesPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
+				choicesPopup.addPopupVisibilityListener(new PopupView.PopupVisibilityListener() {
 					@Override
-					public void popupVisibilityChange(PopupVisibilityEvent event) {
+					public void popupVisibilityChange(PopupView.PopupVisibilityEvent event) {
 						if (!event.isPopupVisible()) {
 							//On masque la popup quand on perd le focus sur le champ texte
 							choicesPopup.setVisible(false);

@@ -18,14 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
-import java.util.Locale;
 
-import javax.servlet.ServletException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.ServiceException;
@@ -33,8 +26,14 @@ import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringVaadinServlet;
-
 import fr.univlorraine.mondossierweb.MdwTouchkitUIProvider;
+import jakarta.servlet.ServletException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import java.util.Locale;
 
 @SuppressWarnings("serial")
 public class MDWTouchkitServlet extends SpringVaadinServlet {

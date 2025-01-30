@@ -18,11 +18,16 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.NativeSelect;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
@@ -127,9 +132,9 @@ public class FiltreInscritsMobileWindow extends Window {
 					listeEtapes.setValue( TOUTES_LES_ETAPES_LABEL);
 				}
 				//Gestion de l'événement sur le changement d'étape
-				listeEtapes.addValueChangeListener(new ValueChangeListener() {
+				listeEtapes.addValueChangeListener(new Property.ValueChangeListener() {
 					@Override
-					public void valueChange(ValueChangeEvent event) {
+					public void valueChange(Property.ValueChangeEvent event) {
 						vetSelectionnee = (String) event.getProperty().getValue();
 						if(vetSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
 							vetSelectionnee = null;
@@ -188,9 +193,9 @@ public class FiltreInscritsMobileWindow extends Window {
 
 
 				//Gestion de l'événement sur le changement de groupe
-				listeGroupes.addValueChangeListener(new ValueChangeListener() {
+				listeGroupes.addValueChangeListener(new Property.ValueChangeListener() {
 					@Override
-					public void valueChange(ValueChangeEvent event) {
+					public void valueChange(Property.ValueChangeEvent event) {
 						groupeSelectionne = (String) event.getProperty().getValue();
 						if(groupeSelectionne.equals(TOUS_LES_GROUPES_LABEL)){
 							groupeSelectionne = null;

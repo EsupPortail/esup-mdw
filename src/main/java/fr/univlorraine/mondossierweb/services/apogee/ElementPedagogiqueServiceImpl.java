@@ -22,14 +22,14 @@ import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.repositories.apogee.ElementPedagogiqueApogeeRepository;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.List;
 

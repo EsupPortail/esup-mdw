@@ -18,13 +18,22 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.data.util.BeanItemContainer;
+
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
@@ -137,7 +146,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 			menuBar = new MenuBar();
 			menuBar.setStyleName("v-menubar-mobile");
-			MenuBar.MenuItem ellipsisItem = menuBar.addItem("",FontAwesome.ELLIPSIS_V, null);
+			MenuBar.MenuItem ellipsisItem = menuBar.addItem("", FontAwesome.ELLIPSIS_V, null);
 			ellipsisItem.setStyleName("ellipsis-icon");
 
 			MenuBar.MenuItem rechercheItem = ellipsisItem.addItem(applicationContext.getMessage(NAME + ".menu.recherche", null, getLocale()),FontAwesome.SEARCH, new MenuBar.Command() {
@@ -285,7 +294,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		//LOG.debug("ENTER FAVORIS VIEW");
 	}
 

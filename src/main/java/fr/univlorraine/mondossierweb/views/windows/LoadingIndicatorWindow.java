@@ -18,10 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
+
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.ProgressBar;
+import com.vaadin.v7.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class LoadingIndicatorWindow extends Window {

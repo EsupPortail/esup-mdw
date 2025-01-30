@@ -18,29 +18,45 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.filter.SimpleStringFilter;
+
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
@@ -62,7 +78,12 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -268,9 +289,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					listeAnnees.setValue( MainUI.getCurrent().getAnneeInscrits());
 
 					//Gestion de l'événement sur le changement d'année
-					listeAnnees.addValueChangeListener(new ValueChangeListener() {
+					listeAnnees.addValueChangeListener(new Property.ValueChangeListener() {
 						@Override
-						public void valueChange(ValueChangeEvent event) {
+						public void valueChange(Property.ValueChangeEvent event) {
 							String selectedValue = (String) event.getProperty().getValue();
 
 							//faire le changement
@@ -322,9 +343,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						}
 
 						//Gestion de l'événement sur le changement d'étape
-						listeEtapes.addValueChangeListener(new ValueChangeListener() {
+						listeEtapes.addValueChangeListener(new Property.ValueChangeListener() {
 							@Override
-							public void valueChange(ValueChangeEvent event) {
+							public void valueChange(Property.ValueChangeEvent event) {
 								String vetSelectionnee = (String) event.getProperty().getValue();
 								if(vetSelectionnee.equals(TOUTES_LES_ETAPES_LABEL)){
 									vetSelectionnee = null;
@@ -368,9 +389,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 
 						//Gestion de l'événement sur le changement de groupe
-						listeGroupes.addValueChangeListener(new ValueChangeListener() {
+						listeGroupes.addValueChangeListener(new Property.ValueChangeListener() {
 							@Override
-							public void valueChange(ValueChangeEvent event) {
+							public void valueChange(Property.ValueChangeEvent event) {
 								String grpSelectionnee = (String) event.getProperty().getValue();
 								if(grpSelectionnee.equals(TOUS_LES_GROUPES_LABEL)){
 									grpSelectionnee = null;
@@ -439,7 +460,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnAjoutFavori.setVisible(false);
 
 					//Affichage d'un message de confirmation
-					Notification.show(applicationContext.getMessage(NAME+".message.favoriAjoute", null, getLocale()), Type.TRAY_NOTIFICATION );
+					Notification.show(applicationContext.getMessage(NAME+".message.favoriAjoute", null, getLocale()), Notification.Type.TRAY_NOTIFICATION );
 				});
 
 				//Ajout du bouton à l'interface
@@ -972,7 +993,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		//LOG.debug("enter listeInscritsView");
 	}
 
@@ -1181,12 +1202,12 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				ic.removeAllContainerFilters();
 				try{
 					if(StringUtils.hasText(idEtape)){
-						Filter filterStringToSearch =  new SimpleStringFilter("id_etp",idEtape, true, false);
+						Container.Filter filterStringToSearch =  new SimpleStringFilter("id_etp",idEtape, true, false);
 						ic.addContainerFilter(filterStringToSearch);
 					}
 
 					if(StringUtils.hasText(idgroupe)){
-						Filter filterStringToSearch =  new SimpleStringFilter("codes_groupes",idgroupe, true, false);
+						Container.Filter filterStringToSearch =  new SimpleStringFilter("codes_groupes",idgroupe, true, false);
 						ic.addContainerFilter(filterStringToSearch);
 					}
 

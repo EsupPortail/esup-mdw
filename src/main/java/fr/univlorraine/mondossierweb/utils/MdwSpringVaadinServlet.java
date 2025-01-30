@@ -18,7 +18,14 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
-import com.vaadin.server.*;
+
+import com.vaadin.server.CustomizedSystemMessages;
+import com.vaadin.server.DefaultUIProvider;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.UIProvider;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import fr.univlorraine.mondossierweb.MdwUIProvider;

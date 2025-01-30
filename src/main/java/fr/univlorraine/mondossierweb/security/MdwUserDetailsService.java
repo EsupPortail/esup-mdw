@@ -18,28 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.security;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.esupportail.portal.ws.client.PortalGroup;
-import org.esupportail.portal.ws.client.PortalUser;
-import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.ldap.search.LdapUserSearch;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
@@ -52,7 +30,22 @@ import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.esupportail.portal.ws.client.PortalGroup;
+import org.esupportail.portal.ws.client.PortalUser;
+import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 
 

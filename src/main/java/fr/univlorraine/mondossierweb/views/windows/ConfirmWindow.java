@@ -18,22 +18,22 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import javax.annotation.Resource;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.annotation.Resource;
+
+
 
 /**
  * Fenêtre de confirmation
@@ -51,19 +51,19 @@ public class ConfirmWindow extends Window {
 	private Button btnOui = new Button();
 	private Button btnNon = new Button();
 
-	public void addBtnOuiListener(ClickListener clickListener) {
+	public void addBtnOuiListener(Button.ClickListener clickListener) {
 		btnOui.addClickListener(clickListener);
 	}
 
-	public void removeBtnOuiListener(ClickListener clickListener) {
+	public void removeBtnOuiListener(Button.ClickListener clickListener) {
 		btnOui.removeClickListener(clickListener);
 	}
 
-	public void addBtnNonListener(ClickListener clickListener) {
+	public void addBtnNonListener(Button.ClickListener clickListener) {
 		btnNon.addClickListener(clickListener);
 	}
 
-	public void removeBtnNonListener(ClickListener clickListener) {
+	public void removeBtnNonListener(Button.ClickListener clickListener) {
 		btnNon.removeClickListener(clickListener);
 	}
 

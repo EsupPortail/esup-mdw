@@ -18,13 +18,20 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.event.LayoutEvents;
+
+import com.vaadin.event.ContextClickEvent;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.Diplome;
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -97,7 +104,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 	public void refresh(){
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null && 
+		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null &&
 				((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
 					(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
 					(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) ){
@@ -184,16 +191,16 @@ public class NotesMobileView extends VerticalLayout implements View {
 			selectLayout.setHeight("2em");
 			selectLayout.addComponents(showDiplomesLayout, showEtapesLayout);
 			globalLayout.addComponent(selectLayout);
-			showDiplomesLayout.addListener(new LayoutEvents.LayoutClickListener() {
-				public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+			/*showDiplomesLayout.addListener(new LayoutClickListener() {
+				public void layoutClick(LayoutClickEvent event) {
 					showDiplomes();
 				}
 			});
-			showEtapesLayout.addListener(new LayoutEvents.LayoutClickListener() {
-				public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+			showEtapesLayout.addListener(new LayoutClickListener() {
+				public void layoutClick(LayoutClickEvent event) {
 					showElps();
 				}
-			});
+			});*/
 			showDiplomes();
 
 			List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
@@ -309,7 +316,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 	/*private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
@@ -320,8 +327,12 @@ public class NotesMobileView extends VerticalLayout implements View {
 	}*/
 	private void prepareBoutonAppelDetailDesNotes(VerticalLayout vl, Etape etape){
 		//Appel de la window contenant le détail des notes
-		vl.addListener(new LayoutEvents.LayoutClickListener() {
-			public void layoutClick(LayoutEvents.LayoutClickEvent event) { rechercheController.accessToMobileNotesDetail(etape); }
+		vl.addContextClickListener(new ContextClickEvent.ContextClickListener() {
+			@Override
+			public void contextClick(ContextClickEvent event) {
+				rechercheController.accessToMobileNotesDetail(etape);
+			}
+			//	public void layoutClick(LayoutEvents.LayoutClickEvent event) { rechercheController.accessToMobileNotesDetail(etape); }
 		});
 	}
 

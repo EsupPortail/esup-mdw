@@ -30,7 +30,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.Component;
 
-
 /**
  * @author Marcus Hellberg (marcus@vaadin.com) 
  *  Further modified by Johannes Tuikkala (johannes@vaadin.com)
@@ -71,7 +70,7 @@ public class JMeterServlet extends SpringVaadinServlet {
         private static final long serialVersionUID = -5874716650679865909L;
 
         public JMeterService(VaadinServlet servlet,
-                DeploymentConfiguration deploymentConfiguration)
+                             DeploymentConfiguration deploymentConfiguration)
                 throws ServiceException {
             super(servlet, deploymentConfiguration);
         }

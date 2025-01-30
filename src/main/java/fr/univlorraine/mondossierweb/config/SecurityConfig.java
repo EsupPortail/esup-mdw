@@ -146,7 +146,7 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
 		CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
-		casAuthenticationFilter.setAuthenticationManager(authenticationManager);
+		casAuthenticationFilter.setAuthenticationManager(authenticationManager());
 		return casAuthenticationFilter;
 	}
 

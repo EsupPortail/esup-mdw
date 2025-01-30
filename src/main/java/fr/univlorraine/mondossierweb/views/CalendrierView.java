@@ -18,35 +18,25 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
@@ -56,6 +46,15 @@ import fr.univlorraine.mondossierweb.converters.DateToStringConverter;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -127,7 +126,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 			title.addStyleName(ValoTheme.LABEL_H1);
 			titleLayout.addComponent(title);
-			titleLayout.setComponentAlignment(title,Alignment.MIDDLE_LEFT);
+			titleLayout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
 			//Test si on a des diplomes ou des etapes
 			if(MainUI.getCurrent().getEtudiant().getCalendrier()!=null && MainUI.getCurrent().getEtudiant().getCalendrier().size()>0){
 				Button pdfButton = new Button();
@@ -165,7 +164,7 @@ public class CalendrierView extends VerticalLayout implements View {
 				vueLayout.setSizeFull();
 
 				Label vueLabel=new Label(applicationContext.getMessage(NAME+".message.info", null, getLocale()));
-				vueLabel.setContentMode(ContentMode.HTML); 
+				vueLabel.setContentMode(ContentMode.HTML);
 				vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
 				vueLayout.addComponent(vueLabel);
 				vueLayout.setExpandRatio(vueLabel, 1);
@@ -242,7 +241,7 @@ public class CalendrierView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 

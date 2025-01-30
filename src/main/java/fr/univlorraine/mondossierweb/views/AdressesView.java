@@ -18,9 +18,27 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -28,28 +46,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -83,7 +81,7 @@ public class AdressesView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent() != null && MainUI.getCurrent().getEtudiant() != null && 
+		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent() != null && MainUI.getCurrent().getEtudiant() != null &&
 			(userController.isEtudiant() || 
 				(userController.isEnseignant() && configController.isAffAdressesEnseignant()) ||
 				(userController.isGestionnaire() && configController.isAffAdressesGestionnaire()))){
@@ -259,7 +257,7 @@ public class AdressesView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 }

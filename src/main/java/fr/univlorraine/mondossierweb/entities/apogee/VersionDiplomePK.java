@@ -18,11 +18,10 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
-import java.io.Serializable;
-
-import javax.persistence.Embeddable;
-
+import jakarta.persistence.Embeddable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Embeddable
 @Data

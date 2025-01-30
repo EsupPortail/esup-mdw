@@ -18,48 +18,27 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.CellStyleGenerator;
-import com.vaadin.ui.Tree.ExpandEvent;
-import com.vaadin.ui.Tree.ExpandListener;
-import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.HierarchicalContainer;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.Tree;
+import com.vaadin.v7.ui.TreeTable;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
@@ -83,6 +62,19 @@ import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.utils.miscellaneous.ReferencedButton;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Recherche arborescente
@@ -217,7 +209,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	/**
 	 * reinitialise la vue pour pointer sur les données en paramètres
-	 * @param parameterMap
 	 */
 	public void initFromScratch(){
 		removeAllComponents();
@@ -379,7 +370,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 			//gestion du style pour les lignes en favori
-			table.setCellStyleGenerator(new CellStyleGenerator() {
+			table.setCellStyleGenerator(new Table.CellStyleGenerator() {
 				@Override
 				public String getStyle(final Table source, final Object itemId,final Object propertyId) {
 					String style = null;
@@ -390,7 +381,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				}
 			});
 
-			table.addItemClickListener(new ItemClickListener() {
+			table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 
 				@Override
 				public void itemClick(ItemClickEvent event) {
@@ -400,10 +391,10 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			});
 
 			//gestion du clic sur la fleche pour déplier une entrée
-			table.addExpandListener(new ExpandListener() {
+			table.addExpandListener(new Tree.ExpandListener() {
 				private static final long serialVersionUID = 8532342540008245348L;
 				@Override
-				public void nodeExpand(ExpandEvent event) {
+				public void nodeExpand(Tree.ExpandEvent event) {
 					if(event!=null && event.getItemId()!=null && hc!=null && hc.getItem(event.getItemId())!=null
 							&& hc.getItem(event.getItemId()).getItemProperty(TYPE_PROPERTY)!=null){
 						selectionnerLigne(event.getItemId());
@@ -516,7 +507,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		//LOG.debug("enter");
 	}
 
@@ -565,9 +556,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				}
 
 				//Gestion du clic sur le bouton favori
-				btnfav.addClickListener(new ClickListener() {
+				btnfav.addClickListener(new Button.ClickListener() {
 					@Override
-					public void buttonClick(ClickEvent event) {
+					public void buttonClick(Button.ClickEvent event) {
 						//if(markedRows.contains((String)itemId)){
 						if(markedRows.contains(idFav)){
 							//creation du favori

@@ -18,17 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-
 import com.vaadin.server.WebBrowser;
-
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
@@ -37,6 +27,14 @@ import fr.univnancy2.PhotoClient.beans.Category;
 import fr.univnancy2.PhotoClient.beans.PhotoClient;
 import fr.univnancy2.PhotoClient.beans.TicketClient;
 import fr.univnancy2.PhotoClient.exception.PhotoClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 

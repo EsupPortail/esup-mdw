@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
+
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -25,23 +26,52 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
-import com.vaadin.server.*;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
+import fr.univlorraine.mondossierweb.controllers.UiController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.*;
+import fr.univlorraine.mondossierweb.views.AccesBloqueView;
+import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.AdminView;
+import fr.univlorraine.mondossierweb.views.AdressesView;
+import fr.univlorraine.mondossierweb.views.AssistanceView;
+import fr.univlorraine.mondossierweb.views.CalendrierView;
+import fr.univlorraine.mondossierweb.views.ErreurView;
+import fr.univlorraine.mondossierweb.views.EtatCivilView;
+import fr.univlorraine.mondossierweb.views.FavorisView;
+import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
+import fr.univlorraine.mondossierweb.views.InscriptionsView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsView;
+import fr.univlorraine.mondossierweb.views.NotesView;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
+import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
@@ -148,7 +178,7 @@ public class MainUI extends GenericUI {
 	private int rangTabDossierEtudiant;
 
 	//tab Dossier Etudiant
-	private Tab tabDossierEtu;
+	private TabSheet.Tab tabDossierEtu;
 
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
@@ -235,7 +265,7 @@ public class MainUI extends GenericUI {
 				}
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
-					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+					Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
@@ -244,7 +274,7 @@ public class MainUI extends GenericUI {
 					String simpleName = cause.getClass().getSimpleName();
 					/* Gére les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
-						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+						Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
 						displayViewFullScreen(ErreurView.NAME);
 						return;
 					}
@@ -266,8 +296,8 @@ public class MainUI extends GenericUI {
 
 		//Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 		//car le fragment ne correspond pas à une vue existante)
-		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
-			public void uriFragmentChanged(UriFragmentChangedEvent source) {
+		getPage().addUriFragmentChangedListener(new Page.UriFragmentChangedListener() {
+			public void uriFragmentChanged(Page.UriFragmentChangedEvent source) {
 
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
@@ -644,7 +674,7 @@ public class MainUI extends GenericUI {
 		//On gère le changement d'onglet effectué par l'utilisateur
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {
 
-			public void selectedTabChange(SelectedTabChangeEvent event){
+			public void selectedTabChange(TabSheet.SelectedTabChangeEvent event){
 				//On récupère le tabSheet
 				TabSheet tabsheet = event.getTabSheet();
 
@@ -847,7 +877,8 @@ public class MainUI extends GenericUI {
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			HelpBasicWindow hbw = helpBasicWindowFactory.getObject();
 			hbw.init(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
-			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(hbw);});
+			helpBtn.addClickListener(e -> {
+				UI.getCurrent().addWindow(hbw);});
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */

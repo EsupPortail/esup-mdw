@@ -16,19 +16,17 @@
  *  limitations under the License. 
  * 
  */ 
-package fr.univlorraine.mondossierweb.security; 
- 
-import java.util.Optional; 
- 
-import org.springframework.security.core.context.SecurityContext; 
-import org.springframework.security.core.context.SecurityContextHolderStrategy; 
-import org.springframework.security.core.context.SecurityContextImpl; 
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository; 
-import org.springframework.util.Assert; 
- 
-import com.vaadin.server.VaadinSession; 
- 
-import lombok.extern.slf4j.Slf4j; 
+package fr.univlorraine.mondossierweb.security;
+
+import com.vaadin.server.VaadinSession;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.util.Assert;
+
+import java.util.Optional;
  
 /** A custom {@link SecurityContextHolderStrategy} that stores the {@link SecurityContext} in the Vaadin Session and in an InheritableThreadLocal CONTEXT_HOLDER. 
  * 
@@ -50,7 +48,7 @@ public class VaadinSecurityContextHolderStrategy implements SecurityContextHolde
 		STARTUP_CONTEXT_HOLDER.remove(); 
 		CONTEXT_HOLDER.remove(); 
  
-		Optional.ofNullable(VaadinSession.getCurrent()).ifPresent(httpSession -> { 
+		Optional.ofNullable(VaadinSession.getCurrent()).ifPresent(httpSession -> {
 			try { 
 				httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, null); 
 			} catch (final IllegalStateException e) { 

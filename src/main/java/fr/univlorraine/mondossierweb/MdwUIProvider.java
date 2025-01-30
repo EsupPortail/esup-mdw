@@ -18,10 +18,6 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.mobile.device.Device;
-import org.springframework.mobile.device.DeviceUtils;
 
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -30,14 +26,16 @@ import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
-
+import fr.univlorraine.mondossierweb.utils.DeviceUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mobile.device.Device;
 
 @SuppressWarnings("serial")
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
 @Slf4j
-public class MdwUIProvider extends SpringUIProvider  {
+public class MdwUIProvider extends SpringUIProvider {
 	
 	private boolean startServletMobile;
 

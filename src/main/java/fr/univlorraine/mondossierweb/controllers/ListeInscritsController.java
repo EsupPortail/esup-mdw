@@ -18,13 +18,32 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import com.vaadin.ui.ComboBox;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.vaadin.v7.ui.ComboBox;
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.*;
+import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
@@ -34,9 +53,25 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.*;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.CollectionDTO4;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.ElementPedagogiDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.GroupeDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.OffreFormationMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.RecupererGroupeDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauCollection4;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauElementPedagogi3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauGroupe3;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -221,8 +256,7 @@ public class ListeInscritsController {
 	 * Récupération des inscrits à un ELP
 	 * @param parameterMap
 	 * @param annee
-	 * @param etape
-	 * @param groupe
+	 * @param ui
 	 */
 	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee, GenericUI ui) {
 
@@ -515,16 +549,16 @@ public class ListeInscritsController {
 	
 	/**
 	 * renseigne l'url photo d'un inscrit
-	 * @param listeInscrits
+	 * @param inscrit
 	 */
-	public String getUrlPhoto(Inscrit i) {
+	public String getUrlPhoto(Inscrit inscrit) {
 		// Si la photo est valuée et stockée directement dans la chaine de caracteres
-		if(i.getUrlphoto() != null && i.getUrlphoto().startsWith(Utils.DATA_IMAGE)) {
+		if(inscrit.getUrlphoto() != null && inscrit.getUrlphoto().startsWith(Utils.DATA_IMAGE)) {
 			// on ne recalcule pas la photo
-			return i.getUrlphoto();
+			return inscrit.getUrlphoto();
 		}
 		
-		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
+		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 
 
@@ -615,7 +649,7 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
 
 		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
@@ -966,8 +1000,6 @@ public class ListeInscritsController {
 
 	/**
 	 * configure le document pdf.
-	 * @param width
-	 * @param height
 	 * @param margin
 	 * @return doc
 	 */

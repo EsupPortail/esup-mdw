@@ -19,22 +19,20 @@
 package fr.univlorraine.mondossierweb;
 
 
-import javax.annotation.Resource;
-
+import com.vaadin.annotations.StyleSheet;
+import com.vaadin.annotations.Theme;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.annotations.StyleSheet;
-import com.vaadin.annotations.Theme;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import javax.annotation.Resource;
 
 @Scope("prototype")
 @Component

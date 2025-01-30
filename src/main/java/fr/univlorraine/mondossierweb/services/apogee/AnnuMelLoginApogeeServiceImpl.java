@@ -18,18 +18,16 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-
+import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 import lombok.Data;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import javax.annotation.Resource;
 
 
 
