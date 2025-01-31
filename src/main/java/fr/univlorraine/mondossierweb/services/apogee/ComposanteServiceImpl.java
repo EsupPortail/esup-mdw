@@ -28,7 +28,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 @Component

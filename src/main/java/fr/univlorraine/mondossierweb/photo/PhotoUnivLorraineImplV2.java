@@ -18,14 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
-import java.security.Key;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterface;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
+import lombok.Synchronized;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +41,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
-import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterface;
-import fr.univlorraine.mondossierweb.utils.Utils;
-import lombok.Synchronized;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Calendar;
+import java.util.Date;
 
 
 @Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)

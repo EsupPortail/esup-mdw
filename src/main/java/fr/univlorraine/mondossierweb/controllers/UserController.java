@@ -20,7 +20,7 @@ package fr.univlorraine.mondossierweb.controllers;
 
 import java.util.Collection;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.ApplicationContext;

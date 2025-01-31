@@ -58,8 +58,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

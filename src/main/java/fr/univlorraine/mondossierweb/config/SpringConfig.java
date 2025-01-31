@@ -39,7 +39,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 

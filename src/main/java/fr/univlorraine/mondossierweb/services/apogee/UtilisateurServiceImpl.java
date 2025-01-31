@@ -25,7 +25,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")

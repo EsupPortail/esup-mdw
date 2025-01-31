@@ -41,8 +41,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

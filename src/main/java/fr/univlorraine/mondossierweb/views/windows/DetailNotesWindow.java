@@ -52,7 +52,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 

@@ -18,38 +18,18 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
-import java.security.Key;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
-import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterface;
-import fr.univlorraine.mondossierweb.utils.Utils;
 
 @Component(value="photoEsupSgc")
 public class PhotoEsupSgcImpl implements IPhoto {

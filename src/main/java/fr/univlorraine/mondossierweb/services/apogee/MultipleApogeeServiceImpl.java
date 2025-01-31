@@ -39,7 +39,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;

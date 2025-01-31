@@ -57,7 +57,8 @@
 		<slf4j.version>1.7.36</slf4j.version>
 		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<groovy.version>4.0.15</groovy.version>
-		<mysql.connector.version>5.1.49</mysql.connector.version>
+		<!--<mysql.connector.version>5.1.49</mysql.connector.version>-->
+		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
 		<ojdbc7.version>12.1.3-0-0</ojdbc7.version>  
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 		<tomcat.version>7.0.109</tomcat.version>
@@ -761,11 +762,16 @@
             		<baselineOnMigrate>true</baselineOnMigrate>
         		</configuration>
         		<dependencies>
-            		<dependency>
+            		<!--<dependency>
                 		<groupId>mysql</groupId>
                 		<artifactId>mysql-connector-java</artifactId>
                 		<version>${mysql.connector.version}</version>
-            		</dependency>
+            		</dependency>-->
+					<dependency>
+						<groupId>com.mysql</groupId>
+						<artifactId>mysql-connector-j</artifactId>
+						<version>${mysql.connector.j.version}</version>
+					</dependency>
         		</dependencies>
     		</plugin>
 
@@ -974,11 +980,19 @@
     		<scope>provided</scope>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-push</artifactId>
 			<version>${vaadin.version}</version>
+		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-push-jakarta -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push-jakarta</artifactId>
+			<version>8.27.5</version>
+			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes</artifactId>
@@ -1008,20 +1022,33 @@
 
 
 		<!-- Annotation API (nécessaire pour JDK11) -->
-		<dependency>
+		<!--<dependency>
         	<groupId>javax.annotation</groupId>
         	<artifactId>javax.annotation-api</artifactId>
         	<version>1.3.2</version>
-    	</dependency>
-    	
-    	<!-- Jaxb API (nécessaire pour JDK11) -->
-    	<dependency>
+    	</dependency>-->
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+
+		<!-- Jaxb API (nécessaire pour JDK11) -->
+    	<!--<dependency>
     		<groupId>javax.xml.bind</groupId>
     		<artifactId>jaxb-api</artifactId>
     		<version>2.3.1</version>
+		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>4.0.2</version>
 		</dependency>
-		
-		   <!-- Javax SOAP (nécessaire pour JDK11) -->
+
+
+		<!-- Javax SOAP (nécessaire pour JDK11) -->
 		 <dependency>
     		<groupId>javax.xml.soap</groupId>
     		<artifactId>javax.xml.soap-api</artifactId>
@@ -1219,9 +1246,9 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<!-- <version>1.2.8</version> -->
-			<version>1.2.13</version>
+			<!--<version>1.2.13</version>-->
 			<!-- <version>1.4.14</version> probleme CCE error slf4j -->
-			<!-- <version>1.5.16</version> probleme CCE error slf4j -->
+			 <version>1.5.16</version> <!--probleme CCE error slf4j -->
 			<!-- <scope>runtime</scope> -->
 		</dependency>
 		<dependency>
@@ -1229,11 +1256,21 @@
 			<artifactId>janino</artifactId>
 			<version>2.7.6</version>
 		</dependency>
-		<dependency>
+	<!--	<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<!-- La version 1.4.* est celle requise par logback -->
+			 La version 1.4.* est celle requise par logback
 			<version>1.4.7</version>
+		</dependency>-->
+		<dependency>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
+			<version>2.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>jakarta.mail</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		
 		<!-- Tools UnivLorraine -->
@@ -1304,10 +1341,15 @@
 		</dependency>
 
 		<!-- MYSQL -->
-			<dependency>
+		<!--	<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.connector.version}</version>
+		</dependency>-->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql.connector.j.version}</version>
 		</dependency>
 		
 		<!-- XLSX -->

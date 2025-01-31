@@ -90,4 +90,10 @@ public class RecoverSecurityContextAtmosphereInterceptor implements AtmosphereIn
 		logger.trace("Username removed from MDC");
 	}
 
+	@Override
+	public void destroy() {
+		MDC.remove(UserMdcServletFilter.USER_KEY);
+		logger.trace("Username removed from MDC");
+	}
+
 }

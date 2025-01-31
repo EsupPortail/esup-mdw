@@ -20,7 +20,6 @@ package fr.univlorraine.mondossierweb;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;
 import fr.univlorraine.mondossierweb.config.SpringConfig;
@@ -44,7 +43,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -97,7 +95,7 @@ public class Initializer implements WebApplicationInitializer {
 			final InputStream logbackConfig = getClass().getResourceAsStream("/logback-mdw.xml");
 			jc.doConfigure(logbackConfig);
 			logbackConfig.close();
-		} catch (final JoranException | IOException e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 	}

@@ -18,10 +18,8 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
+import fr.univlorraine.mondossierweb.repositories.mdw.FavorisRepository;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
@@ -39,8 +37,8 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
-import fr.univlorraine.mondossierweb.repositories.mdw.FavorisRepository;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Configuration JPA

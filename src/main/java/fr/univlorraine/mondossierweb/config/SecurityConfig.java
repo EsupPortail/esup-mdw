@@ -46,7 +46,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.UUID;
 
 

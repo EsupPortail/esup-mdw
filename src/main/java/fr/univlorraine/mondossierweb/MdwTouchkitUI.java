@@ -79,7 +79,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.Map;
 

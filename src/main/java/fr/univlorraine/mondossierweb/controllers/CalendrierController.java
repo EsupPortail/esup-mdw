@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
