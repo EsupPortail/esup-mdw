@@ -191,7 +191,7 @@
 							<exclude>i18n/*messages.properties</exclude>
 							<exclude>images/logo.png</exclude>
 							<exclude>**/*.scss</exclude>
-							<exclude>**/favicon.ico</exclude>
+							<exclude>**/*/favicon.ico</exclude>
 							<exclude>configUrlServices.properties</exclude>
 							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
@@ -362,6 +362,7 @@
             		<exclude>src/main/java/com/vaadin/ui/ConnectorTracker.java</exclude>
             		<exclude>**/*.gwt.xml</exclude>
             		<exclude>**/*.properties</exclude>
+					<exclude>.smarttomcat/mdw-vaadin/conf/*.*</exclude>
         		</excludes>
     			</configuration>
     			<executions>
@@ -545,7 +546,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css,VAADIN/gwt-unitCache/**</packagingExcludes>
+					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css,VAADIN/gwt-unitCache/**, .smarttomcat/**, .gitignore, **/favicon.ico</packagingExcludes>
 					<webResources>
             			<resource>
               			<!-- this is relative to the pom.xml directory -->
