@@ -49,9 +49,6 @@ public class UserMdcServletFilter implements Filter {
     public void destroy() {
     }
 
-    /**
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
         boolean successfulRegistration = false;
