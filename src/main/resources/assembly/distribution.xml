@@ -42,6 +42,9 @@
         <exclude>**/favicon.ico</exclude>
         <exclude>**/logo.png</exclude>
         <exclude>**/context.xml</exclude>
+        <exclude>**/.smarttomcat/**</exclude>
+        <exclude>**/.idea/**</exclude>
+        <exclude>**/.gitignore</exclude>
         <exclude>.project</exclude>
         <exclude>.classpath</exclude>
       </excludes>
