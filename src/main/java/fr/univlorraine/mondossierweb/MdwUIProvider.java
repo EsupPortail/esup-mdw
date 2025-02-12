@@ -48,9 +48,7 @@ public class MdwUIProvider extends SpringUIProvider {
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
 		//Récupération du userAgent
-		if(startServletMobile && event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
-			//String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-
+		if(startServletMobile && event!=null && event.getRequest()!=null){
 			// on teste que l'utilisateur est sur mobile
 			if( DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())){
 				//On affiche la page proposant une redirection vers la version Mobile
@@ -73,18 +71,13 @@ public class MdwUIProvider extends SpringUIProvider {
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		//Nom de la classe UI à utiliser
-		String uiBeanNameObj = "";
-		//Récupération du userAgent
-		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
+		log.debug("-uiBeanNameObj = mainUI");
+		String uiBeanNameObj = "mainUI";
 
 		if (DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())) {
 			//On affiche la page proposant une redirection vers la version Mobile
-			log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
+			log.debug("-FallbackTouchkit UI ");
 			uiBeanNameObj = "mdwFallbackTouchkitUI";
-		}else{
-			//On va vers la version desktop
-			log.debug("-uiBeanNameObj = mainUI");
-			uiBeanNameObj = "mainUI";
 		}
 
 		//Stored in VaadinSession to use it in
