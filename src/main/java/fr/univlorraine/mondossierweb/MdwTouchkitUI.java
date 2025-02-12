@@ -45,7 +45,6 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.utils.DeviceUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
@@ -64,7 +63,7 @@ import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -74,12 +73,10 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -271,15 +268,6 @@ public class MdwTouchkitUI extends GenericUI{
 
 			}
 		});
-
-		/* Ex de Device Detection */
-		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) request);
-		if(currentDevice.isMobile())
-			LOG.debug("device : mobile");
-		if(currentDevice.isTablet())
-			LOG.debug("device : tablet");
-		if(currentDevice.isNormal())
-			LOG.debug("device : normal");
 
 		//Paramétrage du comportement en cas de perte de connexion
 		configReconnectDialog();

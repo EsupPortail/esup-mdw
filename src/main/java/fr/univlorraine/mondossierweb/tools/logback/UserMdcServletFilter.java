@@ -42,9 +42,6 @@ public class UserMdcServletFilter implements Filter {
      */
     public static final String USER_KEY = "username";
 
-    /**
-     * @see javax.servlet.Filter#destroy()
-     */
     @Override
     public void destroy() {
     }
@@ -55,7 +52,7 @@ public class UserMdcServletFilter implements Filter {
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth instanceof Authentication) {
+        if (auth != null) {
             final String username = auth.getName();
             successfulRegistration = registerUsername(username);
         }
@@ -69,9 +66,6 @@ public class UserMdcServletFilter implements Filter {
         }
     }
 
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
     @Override
     public void init(final FilterConfig config) throws ServletException {
     }

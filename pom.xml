@@ -36,7 +36,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 
-		<vaadin.version>7.7.44</vaadin.version>
+		<vaadin.version>7.7.45</vaadin.version>
 		<!--<vaadin.spring.version>1.0.2></vaadin.spring.version>-->
 		<!-- <spring.version>5.3.39</spring.version> -->
 		<!-- <spring.data.jpa.version>2.6.3</spring.data.jpa.version>-->
@@ -134,7 +134,7 @@
 		</repository>
 		
 		<!-- Oracle -->
-	<!--  	 <repository>
+		<!--<repository>
             <id>maven.oracle.com</id>
             <releases>
                   <enabled>true</enabled>
@@ -144,7 +144,7 @@
             </snapshots>
             <url>https://maven.oracle.com</url>
             <layout>default</layout>
-          </repository> -->
+          </repository>-->
 			
 	</repositories>
 	
@@ -187,7 +187,7 @@
 		<profile>
 			<id>deploiement-national</id>
 			<build>
-				<finalName>${project.name}-${project-distribution.version}</finalName>
+				<finalName>${project.name}-${project.version}</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources</directory>
@@ -618,7 +618,7 @@
 					</execution>
 					
 					<!-- Le numero de version n'integre pas le snapshot. Cela créé une variable project-distribution.version -->
-					<execution>
+					<!--<execution>
 						<id>regex-property</id>
 						<goals>
 							<goal>regex-property</goal>
@@ -630,7 +630,7 @@
 							<replacement>$1.$2.$3</replacement>
 							<failIfNoMatch>false</failIfNoMatch>
 						</configuration>
-					</execution>
+					</execution>-->
 				</executions>
 			</plugin>
 
@@ -945,7 +945,7 @@
             <artifactId>vaadin-compatibility-themes</artifactId>
             <version>${vaadin-compatibility-server-version}</version>
         </dependency>-->
-		<dependency>
+		<!--<dependency>
     		<groupId>com.vaadin</groupId>
     		<artifactId>vaadin-client-compiler</artifactId>
     		<version>${vaadin.version}</version>
@@ -960,14 +960,13 @@
                   <artifactId>gwt-elemental</artifactId>
               	</exclusion>
     		</exclusions>
-		</dependency>
-		<dependency>
+		</dependency>-->
+		<!--<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client</artifactId>
 			<version>${vaadin.version}</version>
 			<scope>provided</scope>
 			<exclusions>
-				<!-- exclusion pour mettre à la main GWT 2.8 à la place de 2.7 -->
              	<exclusion>
                    <groupId>com.vaadin.external.gwt</groupId>
                    <artifactId>gwt-elemental</artifactId>
@@ -985,6 +984,16 @@
     		<artifactId>gwt-dev</artifactId>
     		<version>2.8.2</version>
     		<scope>provided</scope>
+		</dependency>-->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiler</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client</artifactId>
+			<version>${vaadin.version}</version>
 		</dependency>
 
 		<!--<dependency>
@@ -1174,12 +1183,11 @@
 		</dependency>
 
 		<!-- Spring Mobile -->
-		<dependency>
+		<!--<dependency>
     		<groupId>org.springframework.mobile</groupId>
     		<artifactId>spring-mobile-device</artifactId>
-    		<!--<version>1.1.2.RELEASE</version>-->
 			<version>1.1.5.RELEASE</version>
-		</dependency>
+		</dependency>-->
 				
 		<!-- JPA implementation -->
 		<dependency>
@@ -1427,6 +1435,12 @@
     		<artifactId>jackson-dataformat-smile</artifactId>
         	<version>${fasterxml.jackson.version}</version>
 		</dependency>
+
+		<!--<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc11</artifactId>
+			<version>23.7.0.25.01</version>
+		</dependency>-->
 
 	</dependencies>
 

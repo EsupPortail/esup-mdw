@@ -29,7 +29,6 @@ import com.vaadin.ui.UI;
 import fr.univlorraine.mondossierweb.utils.DeviceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mobile.device.Device;
 
 @SuppressWarnings("serial")
 @Theme("valo-ul")
@@ -52,16 +51,8 @@ public class MdwUIProvider extends SpringUIProvider {
 		if(startServletMobile && event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
 			//String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 
-			/* Device Detection */
-			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
-			boolean isMobile =currentDevice.isMobile();
-			
-			// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-			/*if(isMobile && (userAgent.contains("webkit")
-					|| userAgent.contains("windows phone 8")
-					|| userAgent.contains("windows phone 9"))){*/
 			// on teste que l'utilisateur est sur mobile
-			if(isMobile){
+			if( DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())){
 				//On affiche la page proposant une redirection vers la version Mobile
 				return MdwFallbackTouchkitUI.class;
 			}else{
@@ -86,15 +77,7 @@ public class MdwUIProvider extends SpringUIProvider {
 		//Récupération du userAgent
 		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
 
-		/* Device Detection */
-		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
-		boolean isMobile =currentDevice.isMobile();
-		
-		// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-		/*if(startServletMobile && isMobile && (userAgent.contains("webkit")
-				|| userAgent.contains("windows phone 8")
-				|| userAgent.contains("windows phone 9"))){*/
-		if(isMobile) {
+		if (DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())) {
 			//On affiche la page proposant une redirection vers la version Mobile
 			log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
 			uiBeanNameObj = "mdwFallbackTouchkitUI";
@@ -111,11 +94,7 @@ public class MdwUIProvider extends SpringUIProvider {
 		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);
 
 		//On retourne l'UI décidée plus haut (desktop ou mobile)
-		if (uiBeanNameObj instanceof String) {
-			String uiBeanName = uiBeanNameObj.toString();
-			return (UI) this.getWebApplicationContext().getBean(uiBeanName);
-		}
-		return super.createInstance(event);
-	}
+        return (UI) this.getWebApplicationContext().getBean(uiBeanNameObj);
+    }
 
 }

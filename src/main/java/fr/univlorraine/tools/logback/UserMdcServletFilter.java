@@ -41,9 +41,6 @@ public class UserMdcServletFilter implements Filter {
 	 */
 	public static final String USER_KEY = "username";
 
-	/**
-	 * @see javax.servlet.Filter#destroy()
-	 */
 	@Override
 	public void destroy() {
 	}
@@ -68,9 +65,6 @@ public class UserMdcServletFilter implements Filter {
 		}
 	}
 
-	/**
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-	 */
 	@Override
 	public void init(final FilterConfig config) throws ServletException {
 	}

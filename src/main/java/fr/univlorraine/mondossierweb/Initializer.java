@@ -35,7 +35,6 @@ import jakarta.servlet.http.HttpSessionListener;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.SessionSupport;
 import org.slf4j.LoggerFactory;
-import org.springframework.mobile.device.DeviceResolverRequestFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
@@ -74,8 +73,6 @@ public class Initializer implements WebApplicationInitializer {
 
 	/**
 	 * Ajoute les paramètres de contexte aux propriétés Logback.
-	 * @see https://logback.qos.ch/faq.html#sharedConfiguration
-	 * @param servletContext the {@code ServletContext} to initialize
 	 */
 	private void addContextParametersToLogbackConfig(final ServletContext servletContext) {
 		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -100,9 +97,6 @@ public class Initializer implements WebApplicationInitializer {
 		}
 	}
 
-	/**
-	 * @see org.springframework.web.WebApplicationInitializer#onStartup(javax.servlet.ServletContext)
-	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		addContextParametersToSystemProperties(servletContext);
@@ -146,8 +140,8 @@ public class Initializer implements WebApplicationInitializer {
 		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");
 
 		/* Filtre Spring Mobile permettant de détecter le device */
-		FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
-		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");
+		/*FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
+		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");*/
 
 		/* Filtre qui gère les erreurs de fragment */
 		/*FilterRegistration.Dynamic fragmentErrorFilter = servletContext.addFilter("fragmentErrorFilter", FragmentErrorFilter.class);

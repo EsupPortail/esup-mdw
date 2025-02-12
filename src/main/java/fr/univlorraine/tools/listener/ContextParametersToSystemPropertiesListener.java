@@ -33,9 +33,6 @@ public class ContextParametersToSystemPropertiesListener implements ServletConte
 	/** 'context.' prefix. */
 	private static final String CONTEXT_PREFIX = "context.";
 
-	/**
-	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
-	 */
 	@Override
 	public void contextInitialized(final ServletContextEvent servletContextEvent) {
 		final ServletContext context = servletContextEvent.getServletContext();
@@ -48,9 +45,6 @@ public class ContextParametersToSystemPropertiesListener implements ServletConte
 		}
 	}
 
-	/**
-	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
-	 */
 	@Override
 	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 	}
