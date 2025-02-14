@@ -30,6 +30,8 @@ import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import fr.univlorraine.mondossierweb.MdwUIProvider;
 import jakarta.servlet.ServletException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -40,8 +42,12 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class MdwSpringVaadinServlet extends SpringVaadinServlet {
 
+	private Logger LOG = LoggerFactory.getLogger(MdwSpringVaadinServlet.class);
+
 	@Override
     protected void servletInitialized() throws ServletException {
+		System.out.println("################## MdwSpringVaadinServlet servletInitialized... ##################");
+		super.servletInitialized();
 
 		getService().setSystemMessagesProvider(smi -> {
 			WebApplicationContext webApplicationContext = WebApplicationContextUtils
@@ -70,31 +76,38 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
         getService().addSessionInitListener(new SessionInitListener() {
 
             @Override
-            public void sessionInit(SessionInitEvent sessionInitEvent)
-                    throws ServiceException {
-                WebApplicationContext webApplicationContext = WebApplicationContextUtils
-                        .getWebApplicationContext(getServletContext());
+            public void sessionInit(SessionInitEvent event) throws ServiceException {
+				System.out.println("#### sessionInit ... ####");
+                // WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 
                 // remove DefaultUIProvider instances to avoid mapping
                 // extraneous UIs if e.g. a servlet is declared as a nested
                 // class in a UI class
-                VaadinSession session = sessionInitEvent.getSession();
-                List<UIProvider> uiProviders = new ArrayList<UIProvider>(
-                        session.getUIProviders());
+               	VaadinSession session = event.getSession();
+				System.out.println("#### sessionInit 2 ... #### " + session);
+               List<UIProvider> uiProviders = new ArrayList<UIProvider>(session.getUIProviders());
+				System.out.println("#### 3");
                 for (UIProvider provider : uiProviders) {
+					System.out.println("#### 4 " + provider.getClass().getCanonicalName());
                     // use canonical names as these may have been loaded with
                     // different classloaders
-                    if (DefaultUIProvider.class.getCanonicalName().equals(
-                            provider.getClass().getCanonicalName())) {
+                   if (DefaultUIProvider.class.getCanonicalName().equals(provider.getClass().getCanonicalName())
+				   || SpringUIProvider.class.getCanonicalName().equals(provider.getClass().getCanonicalName())) {
                         session.removeUIProvider(provider);
                     }
-                }
 
+                }
+				System.out.println("#### 5");
                 // add Spring UI provider
-                SpringUIProvider uiProvider = new MdwUIProvider(session);
+				MdwUIProvider uiProvider = new MdwUIProvider(session);
+				System.out.println("#### 6");
                 session.addUIProvider(uiProvider);
+
+				System.out.println("####UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders() + " ####");
             }
         });
+
+		System.out.println("################## MdwSpringVaadinServlet servletInitialized DONE ##################");
     }
 	
 }

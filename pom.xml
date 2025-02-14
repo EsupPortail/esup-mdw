@@ -985,7 +985,7 @@
     		<version>2.8.2</version>
     		<scope>provided</scope>
 		</dependency>-->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiler</artifactId>
 			<version>${vaadin.version}</version>
@@ -994,7 +994,7 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client</artifactId>
 			<version>${vaadin.version}</version>
-		</dependency>
+		</dependency>-->
 
 		<!--<dependency>
 			<groupId>com.vaadin</groupId>

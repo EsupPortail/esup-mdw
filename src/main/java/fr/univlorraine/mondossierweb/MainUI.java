@@ -32,6 +32,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ui.Transport;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -78,6 +79,7 @@ import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +92,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -107,6 +108,7 @@ import java.util.Map;
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
 @SuppressWarnings("serial")
+@SpringUI(path = "")
 @Push(transport = Transport.WEBSOCKET_XHR)
 public class MainUI extends GenericUI {
 
@@ -1108,4 +1110,5 @@ public class MainUI extends GenericUI {
 		getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
 		getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
 	}
+
 }

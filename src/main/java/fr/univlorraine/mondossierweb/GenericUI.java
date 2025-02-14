@@ -30,13 +30,13 @@ import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.photo.IPhoto;
 import fr.univlorraine.tools.vaadin.IAnalyticsTracker;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

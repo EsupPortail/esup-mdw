@@ -30,7 +30,7 @@ public class DateToStringConverter implements Converter<String, Date> {
 	@Override
 	public Date convertToModel(String value, Class<? extends Date> targetType,
 			Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
+			throws ConversionException {
 
 
 		 if (value == null) {
@@ -43,7 +43,7 @@ public class DateToStringConverter implements Converter<String, Date> {
 	@Override
 	public String convertToPresentation(Date value,
 			Class<? extends String> targetType, Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
+			throws ConversionException {
 		if (value == null) {
             return null;
         } else {

@@ -33,6 +33,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.ui.Transport;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
@@ -86,6 +87,7 @@ import java.util.Map;
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
 @SuppressWarnings("serial")
+@SpringUI(path = "m")
 //@OfflineModeEnabled(false)
 @Push(transport = Transport.WEBSOCKET_XHR)
 @Viewport("user-scalable=no,initial-scale=1.0")

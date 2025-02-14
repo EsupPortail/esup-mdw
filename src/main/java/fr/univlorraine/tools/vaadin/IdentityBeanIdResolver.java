@@ -18,7 +18,8 @@
  */
 package fr.univlorraine.tools.vaadin;
 
-import com.vaadin.data.util.AbstractBeanContainer.BeanIdResolver;
+
+import com.vaadin.v7.data.util.AbstractBeanContainer;
 
 /**
  * BeanIdResolver utilisant l'identityHashCode du bean, à utiliser avec les BeanContainer.
@@ -26,11 +27,8 @@ import com.vaadin.data.util.AbstractBeanContainer.BeanIdResolver;
  * @param <BEANTYPE> type du bean
  */
 @SuppressWarnings("serial")
-public class IdentityBeanIdResolver<BEANTYPE> implements BeanIdResolver<Integer, BEANTYPE> {
+public class IdentityBeanIdResolver<BEANTYPE> implements AbstractBeanContainer.BeanIdResolver<Integer, BEANTYPE> {
 
-	/**
-	 * @see com.vaadin.data.util.AbstractBeanContainer.BeanIdResolver#getIdForBean(Object)
-	 */
 	@Override
 	public Integer getIdForBean(final BEANTYPE bean) {
 		return System.identityHashCode(bean);

@@ -18,7 +18,8 @@
  */
 package fr.univlorraine.tools.vaadin;
 
-import com.vaadin.data.util.BeanContainer;
+
+import com.vaadin.v7.data.util.BeanContainer;
 
 /**
  * BeanContainer utilisant l'IdentityBeanIdResolver.
@@ -34,7 +35,7 @@ public class IdentityBeanContainer<BEANTYPE> extends BeanContainer<Integer, BEAN
 	 */
 	public IdentityBeanContainer(final Class<? super BEANTYPE> type) {
 		super(type);
-		setBeanIdResolver(new IdentityBeanIdResolver<BEANTYPE>());
+		setBeanIdResolver((BeanIdResolver<Integer, BEANTYPE>) new IdentityBeanIdResolver<BEANTYPE>());
 	}
 
 }

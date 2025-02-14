@@ -23,7 +23,6 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import com.vaadin.server.Constants;
 import com.vaadin.shared.communication.PushMode;
 import fr.univlorraine.mondossierweb.config.SpringConfig;
-import fr.univlorraine.mondossierweb.tools.logback.UserMdcServletFilter;
 import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.ServletContext;
@@ -136,8 +135,8 @@ public class Initializer implements WebApplicationInitializer {
 		springSecurityFilterChain.addMappingForUrlPatterns(null, false, "/*");
 		
 		/* Filtre passant l'utilisateur courant à Logback */
-		FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
-		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");
+		/*FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
+		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");*/
 
 		/* Filtre Spring Mobile permettant de détecter le device */
 		/*FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
@@ -154,20 +153,17 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");
 		/* Défini le bean UI */
-		//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
+		// springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		//springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
 		springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
-
 		/* Configure le Push */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
-
 		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 		springVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
-		
 		/* Active le support des requêtes asynchrones */
 		springVaadinServlet.setAsyncSupported(true);
 

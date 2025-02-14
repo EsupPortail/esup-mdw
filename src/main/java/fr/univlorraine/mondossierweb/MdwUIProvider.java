@@ -24,8 +24,10 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.internal.UIID;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
+import com.vaadin.util.CurrentInstance;
 import fr.univlorraine.mondossierweb.utils.DeviceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 @StyleSheet("mainView.css")
 @Slf4j
 public class MdwUIProvider extends SpringUIProvider {
-	
-	private boolean startServletMobile;
 
-	
+	private final boolean startServletMobile;
+
 	public MdwUIProvider(VaadinSession vaadinSession) {
 		super(vaadinSession);
-		startServletMobile = Boolean.valueOf(getWebApplicationContext().getEnvironment().getProperty("startServletMobile"));
+		System.out.println("#### new MdwUIProvider #### ");
+		startServletMobile = Boolean.parseBoolean(getWebApplicationContext().getEnvironment().getProperty("startServletMobile"));
 	}
 	
 	@Override
@@ -72,22 +74,42 @@ public class MdwUIProvider extends SpringUIProvider {
 	public UI createInstance(UICreateEvent event) {
 		//Nom de la classe UI à utiliser
 		log.debug("-uiBeanNameObj = mainUI");
-		String uiBeanNameObj = "mainUI";
+
+		final Class<UIID> key = UIID.class;
+		final UIID identifier = new UIID(event);
+		CurrentInstance.set(key, identifier);
+
+
+		boolean mobile = false;
 
 		if (DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())) {
 			//On affiche la page proposant une redirection vers la version Mobile
 			log.debug("-FallbackTouchkit UI ");
-			uiBeanNameObj = "mdwFallbackTouchkitUI";
+			mobile = true;
 		}
 
 		//Stored in VaadinSession to use it in
 		// the ApplicationScope later to initialize vaadin application scope beans
-		final Integer uiId = event.getUiId();
-		log.debug("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
-		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);
+		/*final Integer uiId = event.getUiId();
+		System.out.println("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
+		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);*/
 
-		//On retourne l'UI décidée plus haut (desktop ou mobile)
-        return (UI) this.getWebApplicationContext().getBean(uiBeanNameObj);
+		try {
+			logger.debug(
+					"Creating a new UI bean of class [{}] with identifier [{}]",
+					mobile ? MdwFallbackTouchkitUI.class.getCanonicalName() : MainUI.class.getCanonicalName(), identifier);
+			UI ui = null;
+			if(mobile) {
+				ui = getWebApplicationContext().getBean(MdwFallbackTouchkitUI.class);
+			} else {
+				ui = getWebApplicationContext().getBean(MainUI.class);
+			}
+			configureNavigator(ui);
+			//On retourne l'UI décidée plus haut (desktop ou mobile)
+			return ui;
+		} finally {
+			CurrentInstance.set(key, null);
+		}
     }
 
 }
