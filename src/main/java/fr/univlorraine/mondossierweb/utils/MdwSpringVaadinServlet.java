@@ -46,7 +46,6 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
 
 	@Override
     protected void servletInitialized() throws ServletException {
-		System.out.println("################## MdwSpringVaadinServlet servletInitialized... ##################");
 		super.servletInitialized();
 
 		getService().setSystemMessagesProvider(smi -> {
@@ -77,18 +76,14 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
 
             @Override
             public void sessionInit(SessionInitEvent event) throws ServiceException {
-				System.out.println("#### sessionInit ... ####");
                 // WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 
                 // remove DefaultUIProvider instances to avoid mapping
                 // extraneous UIs if e.g. a servlet is declared as a nested
                 // class in a UI class
                	VaadinSession session = event.getSession();
-				System.out.println("#### sessionInit 2 ... #### " + session);
                List<UIProvider> uiProviders = new ArrayList<UIProvider>(session.getUIProviders());
-				System.out.println("#### 3");
                 for (UIProvider provider : uiProviders) {
-					System.out.println("#### 4 " + provider.getClass().getCanonicalName());
                     // use canonical names as these may have been loaded with
                     // different classloaders
                    if (DefaultUIProvider.class.getCanonicalName().equals(provider.getClass().getCanonicalName())
@@ -97,17 +92,15 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
                     }
 
                 }
-				System.out.println("#### 5");
                 // add Spring UI provider
 				MdwUIProvider uiProvider = new MdwUIProvider(session);
-				System.out.println("#### 6");
                 session.addUIProvider(uiProvider);
 
-				System.out.println("####UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders() + " ####");
+				LOG.info("####UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders() + " ####");
             }
         });
 
-		System.out.println("################## MdwSpringVaadinServlet servletInitialized DONE ##################");
+		LOG.info("################## MdwSpringVaadinServlet servletInitialized DONE ##################");
     }
 	
 }

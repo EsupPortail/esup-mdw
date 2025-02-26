@@ -53,7 +53,7 @@ public class RequestUtils {
 //			while (enuKeys.hasMoreElements()) {
 //				String key = (String) enuKeys.nextElement();
 //				String value = properties.getProperty(key);
-//				System.out.println(key + ": " + value);
+//				LOG.info(key + ": " + value);
 //			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

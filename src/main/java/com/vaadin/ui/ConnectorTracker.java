@@ -15,6 +15,19 @@
  */
 package com.vaadin.ui;
 
+import com.vaadin.server.AbstractClientConnector;
+import com.vaadin.server.ClientConnector;
+import com.vaadin.server.DragAndDropService;
+import com.vaadin.server.GlobalResourceHandler;
+import com.vaadin.server.LegacyCommunicationManager;
+import com.vaadin.server.StreamVariable;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.communication.ConnectorHierarchyWriter;
+import elemental.json.Json;
+import elemental.json.JsonException;
+import elemental.json.JsonObject;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,20 +43,6 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.vaadin.server.AbstractClientConnector;
-import com.vaadin.server.ClientConnector;
-import com.vaadin.server.DragAndDropService;
-import com.vaadin.server.GlobalResourceHandler;
-import com.vaadin.server.LegacyCommunicationManager;
-import com.vaadin.server.StreamVariable;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.communication.ConnectorHierarchyWriter;
-
-import elemental.json.Json;
-import elemental.json.JsonException;
-import elemental.json.JsonObject;
 
 /**
  * A class which takes care of book keeping of {@link ClientConnector}s for a
@@ -448,8 +447,6 @@ public class ConnectorTracker implements Serializable {
     	GlobalResourceHandler globalResourceHandler = null;
     	if(uI!=null && uI.getSession()!=null ){
     		globalResourceHandler = uI.getSession().getGlobalResourceHandler(false);
-    	}else{
-    		System.out.println("RemoveUnregisteredConnectors => uI is null : "+(uI==null)+" - Session is null : "+(uI.getSession()==null));
     	}
     	//Fin code UL
     	

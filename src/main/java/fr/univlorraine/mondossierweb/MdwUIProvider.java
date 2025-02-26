@@ -42,7 +42,6 @@ public class MdwUIProvider extends SpringUIProvider {
 
 	public MdwUIProvider(VaadinSession vaadinSession) {
 		super(vaadinSession);
-		System.out.println("#### new MdwUIProvider #### ");
 		startServletMobile = Boolean.parseBoolean(getWebApplicationContext().getEnvironment().getProperty("startServletMobile"));
 	}
 	
@@ -91,7 +90,7 @@ public class MdwUIProvider extends SpringUIProvider {
 		//Stored in VaadinSession to use it in
 		// the ApplicationScope later to initialize vaadin application scope beans
 		/*final Integer uiId = event.getUiId();
-		System.out.println("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
+		LOG.info("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
 		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);*/
 
 		try {
