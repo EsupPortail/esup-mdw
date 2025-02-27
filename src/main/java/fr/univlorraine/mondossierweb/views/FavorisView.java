@@ -42,12 +42,12 @@ import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -77,6 +77,7 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient ConfigController configController;
+	private RechercheControllerThread rct;
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -264,8 +265,13 @@ public class FavorisView extends VerticalLayout implements View {
 					if(PropertyUtils.isPushEnabled() && PropertyUtils.isShowLoadingIndicator()){
 						//affichage de la pop-up de loading
 						MainUI.getCurrent().startBusyIndicator();
+						MainUI.getCurrent().push();
 
 						//Execution de la méthode en parallèle dans un thread
+						rct = new RechercheControllerThread(MainUI.getCurrent(),rechercheController,idObj,typeObj);
+						rct.start();
+
+						/*
 						executorService.execute(new Runnable() {
 							public void run() {
 								MainUI.getCurrent().access(new Runnable() {
@@ -277,10 +283,10 @@ public class FavorisView extends VerticalLayout implements View {
 									}
 								} );
 							}
-						});
+						});*/
 					}else{
 						//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
-						rechercheController.accessToDetail(idObj,typeObj,null);
+						rechercheController.accessToDetail(idObj,typeObj,null, MainUI.getCurrent());
 					}
 
 				});
@@ -315,6 +321,33 @@ public class FavorisView extends VerticalLayout implements View {
 			//Recuperer le libelle de l'objet dans Apogée
 
 			return boutonActionLayout;
+		}
+	}
+
+	private static class RechercheControllerThread extends Thread {
+		private final MainUI mainUI;
+		private final RechercheController rechercheController;
+		private final String typeObj;
+		private final String idObj;
+
+		public RechercheControllerThread(MainUI mainUI, RechercheController rechercheController, String idObj, String typeObj) {
+			this.mainUI = mainUI;
+			this.rechercheController = rechercheController;
+			this.idObj = idObj;
+			this.typeObj = typeObj;
+		}
+		@Override
+		public void run() {
+			//try   {
+				// Thread.sleep(2000);
+				rechercheController.accessToDetail(idObj,typeObj,null, mainUI);
+				//close de la pop-up de loading
+				//mainUI.stopBusyIndicator();
+				mainUI.stopBusyIndicator();
+				mainUI.push();
+			//} catch (InterruptedException e) {
+			//	e.printStackTrace();
+			//}
 		}
 	}
 }

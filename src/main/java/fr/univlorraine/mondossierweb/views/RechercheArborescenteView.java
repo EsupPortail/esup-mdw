@@ -62,13 +62,13 @@ import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.utils.miscellaneous.ReferencedButton;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -643,7 +643,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
-					rechercheController.accessToDetail(idObj,typeObj,(String)comboBoxAnneeUniv.getValue());
+					rechercheController.accessToDetail(idObj,typeObj,(String)comboBoxAnneeUniv.getValue(), MainUI.getCurrent());
 				});
 
 				boutonActionLayout.addComponent(btnListeInscrits);

@@ -299,23 +299,18 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
-			
+
+			<!--
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
 				<version>${vaadin.version}</version>
 				<configuration>
 					<generatedWidgetsetDirectory>${basedir}/src/main/java/fr/univlorraine/mondossierweb</generatedWidgetsetDirectory>
-						<!--  <modules>
-                                <module>fr.univlorraine.mondossierweb.AppWidgetset</module>
-                            </modules>-->
                             <extraJvmArgs>-Xmx512M -Xss4096k</extraJvmArgs>
-					<!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
-						way compatible with Vaadin eclipse plugin. -->
 					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
 					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
 					<noServer>true</noServer>
-					<!-- Remove draftCompile when project is ready -->
 					<draftCompile>false</draftCompile>
 					<compileReport>true</compileReport>
 					<style>OBF</style>
@@ -323,18 +318,8 @@
 					<runTarget>http://localhost:18080/</runTarget>
 					<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
 				</configuration>
-				<!-- <executions>
-					<execution>
-						<goals>
-							<goal>resources</goal>
-							<goal>update-widgetset</goal>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions> -->
-			</plugin>
-			<!--  GWT compiler plugin -->
-			<plugin>
+			</plugin> -->
+			<!--<plugin>
    				<groupId>org.codehaus.mojo</groupId>
    				<artifactId>gwt-maven-plugin</artifactId>
    				<version>2.8.2</version>
@@ -348,7 +333,7 @@
            				</goals>
        				</execution>
    				</executions>
-			</plugin>
+			</plugin>-->
 			
 			<plugin>
     			<groupId>com.mycila</groupId>
@@ -635,118 +620,6 @@
 			</plugin>
 
 			
-
-			<!-- Embedded Tomcat -->
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-          		<artifactId>tomcat7-maven-plugin</artifactId> 
-				<version>2.2</version>
-				<configuration>
-					<path>/</path>
-					<contextFile>src/main/webapp/META-INF/context.xml</contextFile>
-					<warDirectory>${project.build.directory}/${project.build.finalName}</warDirectory>
-					<protocol>org.apache.coyote.http11.Http11NioProtocol</protocol>
-				</configuration>
-				<dependencies>
-					<!-- Tomcat (JDK11) -->
-			    	<dependency>
-			        	<groupId>org.apache.tomcat.embed</groupId>
-			        	<artifactId>tomcat-embed-core</artifactId>
-			        	<version>${tomcat.version}</version>
-			    	</dependency>
-			    	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-util</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			     	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-coyote</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			     	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-api</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			     	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-jdbc</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			      	<dependency>
-			         	<groupId>org.apache.tomcat</groupId>
-			         	<artifactId>tomcat-dbcp</artifactId>
-			         	<version>${tomcat.version}</version>
-			      	</dependency>
-			       	<dependency>
-			          	<groupId>org.apache.tomcat</groupId>
-			          	<artifactId>tomcat-servlet-api</artifactId>
-			          	<version>${tomcat.version}</version>
-			       	</dependency>
-			       <dependency>
-			          <groupId>org.apache.tomcat</groupId>
-			          <artifactId>tomcat-jsp-api</artifactId>
-			          <version>${tomcat.version}</version>
-			        </dependency>
-			        <dependency>
-			           <groupId>org.apache.tomcat</groupId>
-			           <artifactId>tomcat-jasper</artifactId>
-			           <version>${tomcat.version}</version>
-			        </dependency>
-			        <dependency>
-			           <groupId>org.apache.tomcat</groupId>
-			           <artifactId>tomcat-jasper-el</artifactId>
-			           <version>${tomcat.version}</version>
-			        </dependency>
-			        <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-el-api</artifactId>
-			            <version>${tomcat.version}</version>
-			        </dependency>
-			         <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-catalina</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-tribes</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			         <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-catalina-ha</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-annotations-api</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-juli</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          <dependency>
-			            <groupId>org.apache.tomcat.embed</groupId>
-			            <artifactId>tomcat-embed-logging-juli</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          <dependency>
-			            <groupId>org.apache.tomcat.embed</groupId>
-			            <artifactId>tomcat-embed-logging-log4j</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          <dependency>
-			    		<groupId>javax.xml.bind</groupId>
-			    		<artifactId>jaxb-api</artifactId>
-			    		<version>2.3.1</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			
 			<!-- Assemblement de l'appli -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -934,12 +807,17 @@
             <artifactId>vaadin-compatibility-shared</artifactId>
             <version>${vaadin-compatibility-server-version}</version>
         </dependency>
-      <!--  <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-compatibility-client</artifactId>
-            <version>${vaadin-compatibility-server-version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-compatibility-client-compiled</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-compatibility-client</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
+		</dependency>
+      <!--
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-compatibility-themes</artifactId>
@@ -1020,13 +898,6 @@
 			<version>${vaadin.spring.version}</version>
 		</dependency>
 
-		<!-- Servlet 3 -->
-		<!--<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>

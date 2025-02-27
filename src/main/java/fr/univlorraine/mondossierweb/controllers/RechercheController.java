@@ -29,6 +29,7 @@ import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +37,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +102,7 @@ public class RechercheController {
 		//On vérifie que l'étudiant avec ce code existe
 		if(etudiantController.isEtudiantExiste(code)){
 			//On accède au dossier
-			accessToDetail(code,Utils.ETU, null);
+			accessToDetail(code,Utils.ETU, null, MainUI.getCurrent());
 		}else{
 			Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()), Notification.Type.WARNING_MESSAGE);
 		}
@@ -110,16 +110,16 @@ public class RechercheController {
 	}
 
 
-	public void accessToDetail(String code, String type, String annee) {
+	public void accessToDetail(String code, String type, String annee, MainUI mainUI) {
 		Map<String, String> parameterMap = new HashMap<>();
-		parameterMap.put("code",code);
-		parameterMap.put("type",type);
-		parameterMap.put("annee",annee);
+		parameterMap.put("code", code);
+		parameterMap.put("type", type);
+		parameterMap.put("annee", annee);
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
 				//MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
-				MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
+				mainUI.goTo(RechercheArborescenteView.NAME, parameterMap);
 			}
 		}
 
@@ -130,7 +130,8 @@ public class RechercheController {
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
 				//MainUI.getCurrent().navigateToListeInscrits(parameterMap);
-				MainUI.getCurrent().goTo(ListeInscritsView.NAME, parameterMap);
+				//mainUI.access(() -> mainUI.goTo(ListeInscritsView.NAME, parameterMap));
+				mainUI.goTo(ListeInscritsView.NAME, parameterMap);
 			}
 		}
 
@@ -138,16 +139,17 @@ public class RechercheController {
 			//Si l'utilisateur est enseignant ou si il s'agit bien de l'étudiant concerné
 			//if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
 				parameterMap.replace("type",Utils.ETU);
-				MainUI.getCurrent().setEtudiant(new Etudiant(code));
+				mainUI.setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
 				//Si l'étudiant n'existe pas
-				if(MainUI.getCurrent().getEtudiant()==null){
-					MainUI.getCurrent().afficherErreurView();
+				if(mainUI.getEtudiant()==null){
+					mainUI.afficherErreurView();
 				}else{
-					MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+					mainUI.navigateToDossierEtudiant(parameterMap);
 				}
 			//}
 		}
+		// mainUI.push();
 	}
 
 	public void accessToMobileDetail(String code, String type, boolean fromSearch) {

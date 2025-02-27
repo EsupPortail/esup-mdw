@@ -67,6 +67,8 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailGroupesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -75,8 +77,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -945,7 +945,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
 					fotoEtudiant.addStyleName("photo-mdw");
 					fotoEtudiant.addClickListener(e->{
-						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,null);
+						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,null, MainUI.getCurrent());
 					});
 
 					photoLayout.addComponent(fotoEtudiant);
@@ -965,7 +965,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnNomEtudiant.addStyleName("v-link");
 				nomCodeLayout.addComponent(btnNomEtudiant);
 				btnNomEtudiant.addClickListener(e->{
-					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU, null);
+					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU, null, MainUI.getCurrent());
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
 				//nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
@@ -1146,7 +1146,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnCodEtu.setStyleName("link"); 
 				btnCodEtu.addStyleName("v-link");
 				btnCodEtu.addClickListener(e->{
-					rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null);
+					rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null, MainUI.getCurrent());
 				});
 
 				return btnCodEtu;
