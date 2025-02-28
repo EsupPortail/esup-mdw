@@ -945,7 +945,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					fotoEtudiant.setStyleName(ValoTheme.BUTTON_LINK);
 					fotoEtudiant.addStyleName("photo-mdw");
 					fotoEtudiant.addClickListener(e->{
-						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,null, MainUI.getCurrent());
+						rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU,null);
 					});
 
 					photoLayout.addComponent(fotoEtudiant);
@@ -965,7 +965,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnNomEtudiant.addStyleName("v-link");
 				nomCodeLayout.addComponent(btnNomEtudiant);
 				btnNomEtudiant.addClickListener(e->{
-					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU, null, MainUI.getCurrent());
+					rechercheController.accessToDetail(inscrit.getCod_etu().toString(),Utils.TYPE_ETU, null);
 				});
 				nomCodeLayout.setComponentAlignment(btnNomEtudiant, Alignment.MIDDLE_CENTER);
 				//nomCodeLayout.setExpandRatio(btnNomEtudiant, 1);
@@ -1146,7 +1146,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				btnCodEtu.setStyleName("link"); 
 				btnCodEtu.addStyleName("v-link");
 				btnCodEtu.addClickListener(e->{
-					rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null, MainUI.getCurrent());
+					rechercheController.accessToDetail(i.getCod_etu().toString(),Utils.TYPE_ETU, null);
 				});
 
 				return btnCodEtu;

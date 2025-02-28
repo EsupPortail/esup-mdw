@@ -43,7 +43,6 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.TreeTable;
 import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -489,7 +488,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				//la recherche porte sur une suggestion proposée par la pop_up et on a bien un seul résultat
 				if(suggestionValidee && lobjresult.size()==1 && rrContainer.size()==1 && code!=null && type!=null){
 					//On accède directemet au détail
-					rechercheController.accessToDetail(code,type, null, MainUI.getCurrent());
+					rechercheController.accessToDetail(code,type, null);
 
 				}
 			}
@@ -533,7 +532,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			b.setStyleName("link"); 
 			b.addStyleName("v-link");
 
-			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(), null, MainUI.getCurrent()));
+			b.addClickListener(e->rechercheController.accessToDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(), null));
 
 			if(item.getItemProperty("info") !=null && item.getItemProperty("info").getValue()!=null  && 
 					StringUtils.hasText(item.getItemProperty("info").getValue().toString())){

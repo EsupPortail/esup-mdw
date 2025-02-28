@@ -643,7 +643,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
-					rechercheController.accessToDetail(idObj,typeObj,(String)comboBoxAnneeUniv.getValue(), MainUI.getCurrent());
+					rechercheController.accessToDetail(idObj,typeObj,(String)comboBoxAnneeUniv.getValue());
 				});
 
 				boutonActionLayout.addComponent(btnListeInscrits);

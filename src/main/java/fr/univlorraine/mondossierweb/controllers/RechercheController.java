@@ -102,7 +102,7 @@ public class RechercheController {
 		//On vérifie que l'étudiant avec ce code existe
 		if(etudiantController.isEtudiantExiste(code)){
 			//On accède au dossier
-			accessToDetail(code,Utils.ETU, null, MainUI.getCurrent());
+			accessToDetail(code,Utils.ETU, null);
 		}else{
 			Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()), Notification.Type.WARNING_MESSAGE);
 		}
@@ -110,7 +110,7 @@ public class RechercheController {
 	}
 
 
-	public void accessToDetail(String code, String type, String annee, MainUI mainUI) {
+	public void accessToDetail(String code, String type, String annee) {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code", code);
 		parameterMap.put("type", type);
@@ -118,7 +118,7 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
-				mainUI.goTo(RechercheArborescenteView.NAME, parameterMap);
+				MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
 			}
 		}
 
@@ -128,7 +128,7 @@ public class RechercheController {
 					parameterMap.replace("type",Utils.VET);
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
-				mainUI.goTo(ListeInscritsView.NAME, parameterMap);
+				MainUI.getCurrent().goTo(ListeInscritsView.NAME, parameterMap);
 			}
 		}
 
@@ -136,13 +136,13 @@ public class RechercheController {
 			//Si l'utilisateur est enseignant ou si il s'agit bien de l'étudiant concerné
 			//if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
 				parameterMap.replace("type",Utils.ETU);
-				mainUI.setEtudiant(new Etudiant(code));
+			MainUI.getCurrent().setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
 				//Si l'étudiant n'existe pas
-				if(mainUI.getEtudiant()==null){
-					mainUI.afficherErreurView();
+				if(MainUI.getCurrent().getEtudiant()==null){
+					MainUI.getCurrent().afficherErreurView();
 				}else{
-					mainUI.navigateToDossierEtudiant(parameterMap);
+					MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
 				}
 			//}
 		}
