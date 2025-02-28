@@ -339,12 +339,13 @@ public class FavorisView extends VerticalLayout implements View {
 		@Override
 		public void run() {
 			//try   {
-				// Thread.sleep(2000);
-				rechercheController.accessToDetail(idObj,typeObj,null, mainUI);
-				//close de la pop-up de loading
-				//mainUI.stopBusyIndicator();
-				mainUI.stopBusyIndicator();
-				mainUI.push();
+			// Thread.sleep(2000);
+			// A TESTER SI OK (pas erreur trombinoscope)
+			mainUI.access(() -> rechercheController.accessToDetail(idObj,typeObj,null, mainUI));
+			//close de la pop-up de loading
+			//mainUI.stopBusyIndicator();
+			mainUI.access(() -> mainUI.stopBusyIndicator());
+			//mainUI.push();
 			//} catch (InterruptedException e) {
 			//	e.printStackTrace();
 			//}

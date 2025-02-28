@@ -118,7 +118,6 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
-				//MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
 				mainUI.goTo(RechercheArborescenteView.NAME, parameterMap);
 			}
 		}
@@ -129,8 +128,6 @@ public class RechercheController {
 					parameterMap.replace("type",Utils.VET);
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
-				//MainUI.getCurrent().navigateToListeInscrits(parameterMap);
-				//mainUI.access(() -> mainUI.goTo(ListeInscritsView.NAME, parameterMap));
 				mainUI.goTo(ListeInscritsView.NAME, parameterMap);
 			}
 		}
@@ -149,7 +146,6 @@ public class RechercheController {
 				}
 			//}
 		}
-		// mainUI.push();
 	}
 
 	public void accessToMobileDetail(String code, String type, boolean fromSearch) {
