@@ -20,6 +20,7 @@ package fr.univlorraine.mondossierweb.views;
 
 
 import com.vaadin.event.ContextClickEvent;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -43,6 +44,8 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +54,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**
@@ -191,16 +192,16 @@ public class NotesMobileView extends VerticalLayout implements View {
 			selectLayout.setHeight("2em");
 			selectLayout.addComponents(showDiplomesLayout, showEtapesLayout);
 			globalLayout.addComponent(selectLayout);
-			/*showDiplomesLayout.addListener(new LayoutClickListener() {
-				public void layoutClick(LayoutClickEvent event) {
+			showDiplomesLayout.addListener(new LayoutEvents.LayoutClickListener() {
+				public void layoutClick(LayoutEvents.LayoutClickEvent event) {
 					showDiplomes();
 				}
 			});
-			showEtapesLayout.addListener(new LayoutClickListener() {
-				public void layoutClick(LayoutClickEvent event) {
+			showEtapesLayout.addListener(new LayoutEvents.LayoutClickListener() {
+				public void layoutClick(LayoutEvents.LayoutClickEvent event) {
 					showElps();
 				}
-			});*/
+			});
 			showDiplomes();
 
 			List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
