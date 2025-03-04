@@ -110,12 +110,10 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 			removeAllComponents();
 
-			/* Style */
+			// Style
 			setMargin(false);
 			setSpacing(false);
 			setSizeFull();
-
-
 
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
@@ -172,8 +170,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 			addComponent(navbar);
 
-
-
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSpacing(true);
 			globalLayout.setMargin(true);
@@ -190,22 +186,9 @@ public class NotesMobileView extends VerticalLayout implements View {
 			selectLayout.setHeight("2em");
 			selectLayout.addComponents(showDiplomesLayout, showEtapesLayout);
 			globalLayout.addComponent(selectLayout);
-			/*showDiplomesLayout.addListener(new LayoutClickListener() {
-				public void layoutClick(LayoutClickEvent event) {
-					showDiplomes();
-				}
-			});
-			showEtapesLayout.addListener(new LayoutClickListener() {
-				public void layoutClick(LayoutClickEvent event) {
-					showElps();
-				}
-			});*/
-			showDiplomesLayout.addLayoutClickListener(e->{
-				showDiplomes();
-			});
-			showEtapesLayout.addLayoutClickListener(e->{
-				showElps();
-			});
+
+			showDiplomesLayout.addLayoutClickListener(e -> showDiplomes());
+			showEtapesLayout.addLayoutClickListener(e -> showElps());
 			showDiplomes();
 
 			List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
@@ -324,26 +307,9 @@ public class NotesMobileView extends VerticalLayout implements View {
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
-	/*private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape){
-		//Appel de la window contenant le détail des notes
-		b.addClickListener(e->{
-			rechercheController.accessToMobileNotesDetail(etape);
-		});
-	}*/
 	private void prepareBoutonAppelDetailDesNotes(VerticalLayout vl, Etape etape){
 		//Appel de la window contenant le détail des notes
-		/*
-		vl.addContextClickListener(new ContextClickListener() {
-			@Override
-			public void contextClick(ContextClickEvent event) {
-				rechercheController.accessToMobileNotesDetail(etape);
-			}
-			//	public void layoutClick(LayoutEvents.LayoutClickEvent event) { rechercheController.accessToMobileNotesDetail(etape); }
-		});
-		*/
-		vl.addLayoutClickListener(e->{
-			rechercheController.accessToMobileNotesDetail(etape);
-		});
+		vl.addLayoutClickListener(e -> rechercheController.accessToMobileNotesDetail(etape));
 	}
 
 	private void addInfoToLayout(VerticalLayout notesLayout, String libelle , String annee, List<Resultat> resultats, boolean afficherRang, String rang, Etape etape) {
