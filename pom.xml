@@ -34,45 +34,30 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- JAVA -->
 		<java.version>21</java.version>
-
+		<!-- VAADIN -->
 		<vaadin.version>7.7.45</vaadin.version>
-		<!--<vaadin.spring.version>1.0.2></vaadin.spring.version>-->
-		<!-- <spring.version>5.3.39</spring.version> -->
-		<!-- <spring.data.jpa.version>2.6.3</spring.data.jpa.version>-->
-		<!-- <spring.security.version>5.8.16</spring.security.version> -->
-		<!-- <hibernate-validator.version>6.1.0.Final</hibernate-validator.version> -->
-
-		<!--<vaadin.version>8.27.5</vaadin.version>-->
 		<vaadin-compatibility-server-version>8.27.5</vaadin-compatibility-server-version>
 		<vaadin.spring.version>4.0.0</vaadin.spring.version>
+		<!-- SPRING -->
 		<spring.version>6.2.2</spring.version>
-		<!-- <spring.version>6.1.16</spring.version> -->
 		<spring.data.jpa.version>3.4.2</spring.data.jpa.version>
-		<!-- <spring.security.version>6.4.2</spring.security.version> -->
 		<spring.security.version>6.3.6</spring.security.version>
+		<!-- JPA -->
 		<hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
-		<!--<eclipselink.version>2.7.6</eclipselink.version> (JDK11)  -->
-		<!--<eclipselink.version>2.7.15</eclipselink.version> JDK 21 -->
 		<eclipselink.version>4.0.5</eclipselink.version>
-		<!--<fasterxml.jackson.version>2.13.4</fasterxml.jackson.version>-->
-		<!--<fasterxml.jackson.version>2.13.5</fasterxml.jackson.version>-->
+		<!-- MYSQL -->
+		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
+		<!-- OTHERS -->
 		<fasterxml.jackson.version>2.16.1</fasterxml.jackson.version>
-
 		<aspectj.version>1.8.2</aspectj.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<groovy.version>4.0.15</groovy.version>
-		<!--<mysql.connector.version>5.1.49</mysql.connector.version>-->
-		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
-		<ojdbc7.version>12.1.3-0-0</ojdbc7.version>  
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-		<tomcat.version>7.0.109</tomcat.version>
-
 		<!-- WS Apogee AMUE -->
-		<!-- <apo.ws.version>6.50.30</apo.ws.version> -->
 		<apo.ws.version>6.50.50</apo.ws.version>
-
 		<!-- Lib oracle -->
 		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
 	</properties>
@@ -90,13 +75,12 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	
 	<scm>
 		<url>https://github.com/EsupPortail/esup-mdw</url>
  		<connection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</developerConnection>
 	  	<tag>HEAD</tag>
-  </scm>
+  	</scm>
 
 	<repositories>
 		<repository>
@@ -109,7 +93,6 @@
 			<id>ul-public-releases</id>
 			<url>https://maven.univ-lorraine.fr/content/repositories/public-releases</url>
 		</repository>
-		
 		
 		<repository>
 			<id>local_repository</id>
@@ -204,7 +187,7 @@
 
 		<plugins>
 		
-		<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven-javadoc-plugin.version}</version>
@@ -491,8 +474,7 @@
 				</executions>
 			</plugin>
 
-			
-			<!-- Assemblement de l'appli -->
+			<!-- Assemblage de l'appli -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.7.1</version>
@@ -698,6 +680,7 @@
 			<version>${vaadin.spring.version}</version>
 		</dependency>
 
+		<!-- Jakarta Servlet -->
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
@@ -712,7 +695,6 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-
 
 		<!-- Jaxb API -->
 		<!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
@@ -771,6 +753,7 @@
 			<artifactId>apo-webservices-client</artifactId>
 			 <version>${apo.ws.version}</version>
 		</dependency>
+
 		<!-- Utils UL Lib AMUE 2021 -->
 		 <dependency>
             <groupId>fr.univlorraine</groupId>
@@ -892,11 +875,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<!-- <version>1.2.8</version> -->
-			<!--<version>1.2.13</version>-->
-			<!-- <version>1.4.14</version> probleme CCE error slf4j -->
-			 <version>1.5.16</version> <!--probleme CCE error slf4j -->
-			<!-- <scope>runtime</scope> -->
+			 <version>1.5.16</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.janino</groupId>
@@ -915,7 +894,7 @@
 		</dependency>
 		
 		<!-- Tools UnivLorraine -->
-	  <dependency>
+	  	<dependency>
 			<groupId>fr.univlorraine</groupId>
 			<artifactId>tools</artifactId>
 			<version>1.5.11</version>
@@ -935,8 +914,7 @@
     		<artifactId>mdw-tools</artifactId>
     	        <version>2.0.5</version>
 		 </dependency>
-		
-		
+
 		<!-- esup-portal WS client -->
 		<dependency>
     		<groupId>esup</groupId>
