@@ -192,7 +192,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			showDiplomes();
 
 			List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
-			if(ldiplomes!=null && ldiplomes.size()>0){
+			if(ldiplomes != null && ldiplomes.size() > 0){
 				String anneeEnCours = null;
 				Panel panelEnCours = null;
 				VerticalLayout notesLayout = null;
@@ -209,9 +209,8 @@ public class NotesMobileView extends VerticalLayout implements View {
 			}
 
 
-			List<Etape> letapes=MdwTouchkitUI.getCurrent().getEtudiant().getEtapes();
-
-			if(letapes!=null && letapes.size()>0){
+			List<Etape> letapes = MdwTouchkitUI.getCurrent().getEtudiant().getEtapes();
+			if(letapes != null && letapes.size() > 0){
 				String anneeEnCours = null;
 				Panel panelEnCours = null;
 				VerticalLayout notesLayout = null;
@@ -232,7 +231,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			setExpandRatio(globalLayout, 1);
 		}else{
 			if(UI.getCurrent() instanceof MdwTouchkitUI 
-					&& MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null
+					&& MdwTouchkitUI.getCurrent() != null && MdwTouchkitUI.getCurrent().getEtudiant() != null
 					&& userController.isEtudiant() && MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()){
 				//message non autorisé.
 				HorizontalLayout refusLayout = new HorizontalLayout();
