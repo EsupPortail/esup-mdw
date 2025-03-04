@@ -72,6 +72,9 @@
 		<!-- WS Apogee AMUE -->
 		<!-- <apo.ws.version>6.50.30</apo.ws.version> -->
 		<apo.ws.version>6.50.50</apo.ws.version>
+
+		<!-- Lib oracle -->
+		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
 	</properties>
 
 	<distributionManagement>
@@ -101,13 +104,6 @@
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 
-		<!--  <repository>
-				<id>vaadin-prereleases</id>
-				<name>Vaadin Pre-releases</name>
-				<url>https://maven.vaadin.com/vaadin-prereleases</url>
-		</repository>  -->
-
-
 		<!-- Univ Lorraine repositories -->
 		<repository>
 			<id>ul-public-releases</id>
@@ -132,57 +128,10 @@
 			<releases>
 			</releases>
 		</repository>
-		
-		<!-- Oracle -->
-		<!--<repository>
-            <id>maven.oracle.com</id>
-            <releases>
-                  <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                  <enabled>false</enabled>
-            </snapshots>
-            <url>https://maven.oracle.com</url>
-            <layout>default</layout>
-          </repository>-->
 			
 	</repositories>
-	
-	<!-- <pluginRepositories>
-<pluginRepository>
-<id>vaadin-prereleases</id>
-<name>Vaadin Pre-releases</name>
-<url>https://maven.vaadin.com/vaadin-prereleases</url>
-</pluginRepository>
-</pluginRepositories>  -->
-	
-	<!-- <pluginRepositories>
-  <pluginRepository>
-    <id>maven.oracle.com</id>
-    <url>https://maven.oracle.com</url>
-  </pluginRepository>
-</pluginRepositories> -->
-	
+
 	<profiles>
-	
-   <!--  <profile>
-        <id>doclint-java8-disable</id>
-        <activation>
-            <jdk>[1.8,)</jdk>
-        </activation>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.1</version>
-                    <configuration>
-                        <additionalparam>-Xdoclint:none</additionalparam>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile> -->
     
 		<profile>
 			<id>deploiement-national</id>
@@ -229,32 +178,6 @@
 				</resources>
 			</build>
 		</profile>
-
-		<!-- Profile d'activation du repo oracle -->
-		<profile>
-			<id>repository-oracle</id>
-			<repositories>
-			<!-- Oracle Repository -->
-				<repository>
-		            <id>maven.oracle.com</id>
-		            <releases>
-		                  <enabled>true</enabled>
-		            </releases>
-		            <snapshots>
-		                  <enabled>false</enabled>
-		            </snapshots>
-		            <url>https://maven.oracle.com</url>
-		            <layout>default</layout>
-		          </repository>
-			</repositories>
-			<dependencies> 
-				<dependency>
-		            <groupId>com.oracle.weblogic</groupId>
-		            <artifactId>ojdbc7</artifactId>
-		            <version>${ojdbc7.version}</version>
-		        </dependency>		        
-			</dependencies>
-		</profile>
     
 </profiles>
 
@@ -299,41 +222,6 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
-
-			<!--
-			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>${vaadin.version}</version>
-				<configuration>
-					<generatedWidgetsetDirectory>${basedir}/src/main/java/fr/univlorraine/mondossierweb</generatedWidgetsetDirectory>
-                            <extraJvmArgs>-Xmx512M -Xss4096k</extraJvmArgs>
-					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
-					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
-					<noServer>true</noServer>
-					<draftCompile>false</draftCompile>
-					<compileReport>true</compileReport>
-					<style>OBF</style>
-					<strict>true</strict>
-					<runTarget>http://localhost:18080/</runTarget>
-					<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-				</configuration>
-			</plugin> -->
-			<!--<plugin>
-   				<groupId>org.codehaus.mojo</groupId>
-   				<artifactId>gwt-maven-plugin</artifactId>
-   				<version>2.8.2</version>
-   				<configuration>
-       				<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
-   				</configuration>
-   				<executions>
-       				<execution>
-           				<goals>
-               				<goal>compile</goal>
-           				</goals>
-       				</execution>
-   				</executions>
-			</plugin>-->
 			
 			<plugin>
     			<groupId>com.mycila</groupId>
@@ -525,9 +413,7 @@
 						<version>${eclipselink.version}</version>
 					</dependency>
 				</dependencies>
-			</plugin> 
-			
-
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -584,6 +470,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -601,21 +488,6 @@
 							</sources>
 						</configuration>
 					</execution>
-					
-					<!-- Le numero de version n'integre pas le snapshot. Cela créé une variable project-distribution.version -->
-					<!--<execution>
-						<id>regex-property</id>
-						<goals>
-							<goal>regex-property</goal>
-						</goals>
-						<configuration>
-							<name>project-distribution.version</name>
-							<value>${project.version}</value>
-							<regex>(\d+)\.(\d+)\.(\d+)-SNAPSHOT</regex>
-							<replacement>$1.$2.$3</replacement>
-							<failIfNoMatch>false</failIfNoMatch>
-						</configuration>
-					</execution>-->
 				</executions>
 			</plugin>
 
@@ -642,11 +514,6 @@
             		<baselineOnMigrate>true</baselineOnMigrate>
         		</configuration>
         		<dependencies>
-            		<!--<dependency>
-                		<groupId>mysql</groupId>
-                		<artifactId>mysql-connector-java</artifactId>
-                		<version>${mysql.connector.version}</version>
-            		</dependency>-->
 					<dependency>
 						<groupId>com.mysql</groupId>
 						<artifactId>mysql-connector-j</artifactId>
@@ -791,11 +658,6 @@
 	<dependencies>
 		
 		<!-- Vaadin dependencies -->
-		<!--<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-compatibility-server-mpr-jakarta -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -817,68 +679,6 @@
 			<artifactId>vaadin-compatibility-client</artifactId>
 			<version>${vaadin-compatibility-server-version}</version>
 		</dependency>
-      <!--
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-compatibility-themes</artifactId>
-            <version>${vaadin-compatibility-server-version}</version>
-        </dependency>-->
-		<!--<dependency>
-    		<groupId>com.vaadin</groupId>
-    		<artifactId>vaadin-client-compiler</artifactId>
-    		<version>${vaadin.version}</version>
-    		<scope>provided</scope>
-    		<exclusions>
-          		<exclusion>
-                  <groupId>com.vaadin.external.gwt</groupId>
-                  <artifactId>gwt-dev</artifactId>
-              	</exclusion>
-              	<exclusion>
-                  <groupId>com.vaadin.external.gwt</groupId>
-                  <artifactId>gwt-elemental</artifactId>
-              	</exclusion>
-    		</exclusions>
-		</dependency>-->
-		<!--<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-             	<exclusion>
-                   <groupId>com.vaadin.external.gwt</groupId>
-                   <artifactId>gwt-elemental</artifactId>
-             </exclusion>
-    		</exclusions>
-		</dependency>
-		<dependency>
-    		<groupId>com.google.gwt</groupId>
-    		<artifactId>gwt-elemental</artifactId>
-    		<version>2.8.2</version>
-    		<scope>provided</scope>
-		</dependency>
-		<dependency>
-    		<groupId>com.google.gwt</groupId>
-    		<artifactId>gwt-dev</artifactId>
-    		<version>2.8.2</version>
-    		<scope>provided</scope>
-		</dependency>-->
-		<!--<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiler</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>-->
-
-		<!--<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-push</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-push-jakarta -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -906,12 +706,7 @@
 		</dependency>
 
 
-		<!-- Annotation API (nécessaire pour JDK11) -->
-		<!--<dependency>
-        	<groupId>javax.annotation</groupId>
-        	<artifactId>javax.annotation-api</artifactId>
-        	<version>1.3.2</version>
-    	</dependency>-->
+		<!-- Annotation API -->
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
@@ -919,19 +714,13 @@
 		</dependency>
 
 
-		<!-- Jaxb API (nécessaire pour JDK11) -->
-    	<!--<dependency>
-    		<groupId>javax.xml.bind</groupId>
-    		<artifactId>jaxb-api</artifactId>
-    		<version>2.3.1</version>
-		</dependency>-->
+		<!-- Jaxb API -->
 		<!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>4.0.2</version>
 		</dependency>
-
 
 		<!-- Javax SOAP (nécessaire pour JDK11) -->
 		 <dependency>
@@ -1013,11 +802,6 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-		</dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
@@ -1052,33 +836,13 @@
 			<artifactId>spring-security-ldap</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-
-		<!-- Spring Mobile -->
-		<!--<dependency>
-    		<groupId>org.springframework.mobile</groupId>
-    		<artifactId>spring-mobile-device</artifactId>
-			<version>1.1.5.RELEASE</version>
-		</dependency>-->
 				
 		<!-- JPA implementation -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
 			<version>${eclipselink.version}</version>
-			<!--<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.persistence</groupId>
-					<artifactId>jakarta.persistence</artifactId>
-				</exclusion>
-			</exclusions>-->
 		</dependency>
-		<!-- <dependency>
-			<groupId>jakarta.persistence</groupId>
-			<artifactId>jakarta.persistence-api</artifactId>
-			<version>3.2.0</version>
-		</dependency> -->
-
-
 
 		<!-- Beans validator -->
 		<dependency>
@@ -1139,12 +903,6 @@
 			<artifactId>janino</artifactId>
 			<version>2.7.6</version>
 		</dependency>
-	<!--	<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			 La version 1.4.* est celle requise par logback
-			<version>1.4.7</version>
-		</dependency>-->
 		<dependency>
 			<groupId>jakarta.mail</groupId>
 			<artifactId>jakarta.mail-api</artifactId>
@@ -1214,7 +972,6 @@
 			<artifactId>wsdl4j</artifactId>
 			<version>1.6.3</version>
 		</dependency>
-		<!-- Fin dépendances liées à la perte de la lib AMUE  -->
 		
 		<!-- EHCACHE -->
 		<dependency>
@@ -1224,11 +981,6 @@
 		</dependency>
 
 		<!-- MYSQL -->
-		<!--	<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.connector.version}</version>
-		</dependency>-->
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
@@ -1239,12 +991,12 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			 <version>4.1.1</version>
+			 <version>4.1.2</version>
 		</dependency>
 		<dependency>
     		<groupId>org.apache.poi</groupId>
     		<artifactId>poi-ooxml</artifactId>
-			 <version>4.1.1</version>
+			 <version>4.1.2</version>
 		</dependency>
 
 		<dependency>
@@ -1255,7 +1007,7 @@
 		<dependency>
     		<groupId>org.bouncycastle</groupId>
     		<artifactId>bcprov-jdk15to18</artifactId>
-    		<version>1.76</version>
+    		<version>1.78</version>
 		</dependency>
 		<dependency>
     		<groupId>org.bouncycastle</groupId>
@@ -1289,13 +1041,11 @@
         	<artifactId>jackson-annotations</artifactId>
          	<version>${fasterxml.jackson.version}</version>
     	</dependency>
-
     	<dependency>
         	<groupId>com.fasterxml.jackson.core</groupId>
         	<artifactId>jackson-core</artifactId>
         	<version>${fasterxml.jackson.version}</version>
     	</dependency>
-
     	<dependency>
         	<groupId>com.fasterxml.jackson.core</groupId>
         	<artifactId>jackson-databind</artifactId>
@@ -1307,11 +1057,11 @@
         	<version>${fasterxml.jackson.version}</version>
 		</dependency>
 
-		<!--<dependency>
+		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>
-			<version>23.7.0.25.01</version>
-		</dependency>-->
+			<version>${oracle.ojdbc.version}</version>
+		</dependency>
 
 	</dependencies>
 
