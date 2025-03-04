@@ -16,12 +16,13 @@
 	$ul_pantone_325_C: rgb(122,198,197); /* Turquoise clair */
 	$ul_pantone_638_U: rgb(60,173,202); /* Turquoise */
 	$ul_pantone_7451_C: rgb(177,194,225); /* Bleu clair */
+	/* Nouvelle couleur primary pour améliorer l'affichage mobile  */
 	$ul_new_main_color: #343a40;
 
 /* Parametrage Valo */
+	/* Ancienne valeur : $v-focus-color: $ul_pantone_2726_C;  */
 	$v-focus-color: $ul_new_main_color; /* Changer ici la couleur principale en fonction du domaine métier */
 	$v-border-radius: 2px;
-/*	$v-font-size: 15px;*/
 	$v-bevel: false;
 	$v-layout-margin-top: 10px;
 	$v-layout-margin-right: 10px;
@@ -119,8 +120,7 @@
  
  .v-loading-indicator,  
  .v-loading-indicator-delay,  
- .v-loading-indicator-wait {  
-   /*background-color: black;   */
+ .v-loading-indicator-wait {
    background-color: rgb(255,237,69);
    background: rgb(255,237,69);
    opacity: .9;  

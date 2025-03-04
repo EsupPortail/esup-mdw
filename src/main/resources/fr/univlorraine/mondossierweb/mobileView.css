@@ -46,11 +46,12 @@ border-bottom: 1px solid var(--light_gray) !important;
 
 .valo-ul .v-popupview-popup-googlepopupview {
 	position: absolute;
-	left: 0px !important;
-	top: 87px !important;
-	width: 100% !important;
-	padding: 0px 0px !important;
+	left: 0em !important;
+	top: 6.3em !important;
+	width: calc(100% - 1.2em) !important;
+	padding: 0em 0em 0em 0em !important;
 	z-index: 2 !important;
+	margin-left: 0.6em !important;
 }
 
 .valo-ul .v-table-googletable{

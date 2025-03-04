@@ -543,20 +543,20 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 			//Si c'est un objet qui peut être mis en favori
 			if(typeObj!=null && liste_types_favoris!=null && liste_types_favoris.contains(typeObj)){
-				Button btnfav=new Button();
+				Button btnFav=new Button();
 				if(markedRows.contains(idFav)){	
-					btnfav.setIcon(FontAwesome.TRASH_O);
-					btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
-					btnfav.addStyleName("deletefavbutton");
-					btnfav.setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
+					btnFav.setIcon(FontAwesome.TRASH_O);
+					btnFav.setStyleName(ValoTheme.BUTTON_DANGER);
+					btnFav.addStyleName("deletefavbutton");
+					btnFav.setDescription(applicationContext.getMessage(NAME+".supprimerfavori", null, getLocale()));
 				}else{
-					btnfav.setIcon(FontAwesome.STAR_O);
-					btnfav.setStyleName(ValoTheme.BUTTON_PRIMARY);
-					btnfav.setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
+					btnFav.setIcon(FontAwesome.STAR_O);
+					btnFav.setStyleName(ValoTheme.BUTTON_PRIMARY);
+					btnFav.setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
 				}
 
 				//Gestion du clic sur le bouton favori
-				btnfav.addClickListener(new Button.ClickListener() {
+				btnFav.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
 						//if(markedRows.contains((String)itemId)){
@@ -571,8 +571,8 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//mise à jour de la liste des favoris de la vue
 							//markedRows.remove((String)itemId);
 							markedRows.remove(idFav);
-							btnfav.setIcon(FontAwesome.STAR_O);
-							btnfav.setStyleName(ValoTheme.BUTTON_PRIMARY);
+							btnFav.setIcon(FontAwesome.STAR_O);
+							btnFav.setStyleName(ValoTheme.BUTTON_PRIMARY);
 							event.getButton().setIcon(FontAwesome.STAR_O);
 						}else{
 							//creation du favori
@@ -587,9 +587,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							//mise à jour de la liste des favoris de la vue
 							//markedRows.add((String)itemId);
 							markedRows.add(idFav);
-							btnfav.setIcon(FontAwesome.TRASH_O);
-							btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
-							btnfav.addStyleName("deletefavbutton");
+							btnFav.setIcon(FontAwesome.TRASH_O);
+							btnFav.setStyleName(ValoTheme.BUTTON_DANGER);
+							btnFav.addStyleName("deletefavbutton");
 							event.getButton().setIcon(FontAwesome.TRASH_O);
 						}
 						table.markAsDirtyRecursive();
@@ -597,10 +597,10 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 					}
 				});
 				ReferencedButton rb = new ReferencedButton();
-				rb.setButton(btnfav);
+				rb.setButton(btnFav);
 				rb.setIdObj(idFav);
 				listeBoutonFavoris.add(rb);
-				boutonActionLayout.addComponent(btnfav);
+				boutonActionLayout.addComponent(btnFav);
 			}
 
 			if(typeObj!=null && liste_types_deplier!=null && liste_types_deplier.contains(typeObj)){
