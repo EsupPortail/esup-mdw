@@ -49,6 +49,10 @@
 		<eclipselink.version>4.0.5</eclipselink.version>
 		<!-- MYSQL -->
 		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
+		<!-- WS Apogee AMUE -->
+		<apo.ws.version>6.50.50</apo.ws.version>
+		<!-- Lib oracle -->
+		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
 		<!-- OTHERS -->
 		<fasterxml.jackson.version>2.16.1</fasterxml.jackson.version>
 		<aspectj.version>1.8.2</aspectj.version>
@@ -56,10 +60,7 @@
 		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<groovy.version>4.0.15</groovy.version>
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-		<!-- WS Apogee AMUE -->
-		<apo.ws.version>6.50.50</apo.ws.version>
-		<!-- Lib oracle -->
-		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
+		<cargo-maven-plugin.version>1.9.8</cargo-maven-plugin.version>
 	</properties>
 
 	<distributionManagement>
@@ -126,15 +127,39 @@
 						<excludes>
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
-							<exclude>i18n/*messages.properties</exclude>
-							<exclude>images/logo.png</exclude>
+							<exclude>images/logo-UL.png</exclude>
+							<exclude>VAADIN/themes/valo-ul/favicon.ico</exclude>
 							<exclude>**/*.scss</exclude>
-							<exclude>**/*/favicon.ico</exclude>
+							<exclude>i18n/messages.properties,</exclude>
+							<exclude>i18n/vaadin-messages.properties,</exclude>
 							<exclude>configUrlServices.properties</exclude>
+							<exclude>configUrlServicesp*.properties</exclude>
+							<exclude>configUrlServicest*.properties</exclude>
 							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
 					</resource>
 				</resources>
+				<plugins>
+				  <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.4.0</version>
+					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+						<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
+						<webResources>
+							<resource>
+								<!-- this is relative to the pom.xml directory -->
+								<directory>${basedir}</directory>
+								<includes>
+									<include>LICENSE-2.0.txt</include>
+									<include>LICENSE-VAADIN.txt</include>
+								</includes>
+							</resource>
+						</webResources>
+					</configuration>
+				  </plugin>
+				</plugins>
 			</build>
 		</profile>
 		
@@ -144,7 +169,8 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<build>		
+			<build>
+				<finalName>${project.name}-${project.version}</finalName>
 				<resources>		
 					<resource>
 						<directory>src/main/resources</directory>
@@ -152,13 +178,19 @@
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
 							<exclude>**/*.scss</exclude>
-							<!-- <exclude>**/*sample.*</exclude>  -->
-							<!--  <exclude>i18n/*sample.*</exclude> -->
-							<exclude>configUrlServices.properties</exclude>
-							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
 					</resource>
 				</resources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>3.4.0</version>
+						<configuration>
+							<failOnMissingWebXml>false</failOnMissingWebXml>
+						</configuration>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
     
@@ -167,21 +199,12 @@
 	<build>
 		<resources>
 			<resource>
-				<!-- Filtre le fichier app.properties -->
+				<!-- Filtre le fichier app.properties pour valuer app.name et app.version -->
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>app.properties</include>
 				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>assembly/</exclude>
-					<exclude>repository/</exclude>
-					<exclude>**/*.scss</exclude>
-					<exclude>**/*sample.*</exclude>
-				</excludes>
 			</resource>
 		</resources>
 
@@ -216,15 +239,14 @@
             		<owner>ESUP-Portail</owner>
         		</properties>
         		<includes>
-        		<include>**/*.java</include>
-        		<!-- <include>**/*.properties</include> -->
-        		<include>**/*.xml</include>
+        			<include>**/*.java</include>
+        			<include>**/*.xml</include>
         		</includes>
         		 <excludes>
             		<exclude>src/main/java/com/vaadin/ui/ConnectorTracker.java</exclude>
             		<exclude>**/*.gwt.xml</exclude>
             		<exclude>**/*.properties</exclude>
-					<exclude>.smarttomcat/mdw-vaadin/conf/*.*</exclude>
+					<exclude>.smarttomcat/mdw-vaadin/**/*.xml</exclude>
         		</excludes>
     			</configuration>
     			<executions>
@@ -397,28 +419,6 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<!-- <version>2.4</version> -->
-				<version>3.4.0</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css,VAADIN/gwt-unitCache/**, .smarttomcat/**, .gitignore, **/favicon.ico</packagingExcludes>
-					<webResources>
-            			<resource>
-              			<!-- this is relative to the pom.xml directory -->
-              				<directory>${basedir}</directory>
-              				 <includes>
-                				<include>LICENSE-2.0.txt</include>
-                				<include>LICENSE-VAADIN.txt</include>
-              				 </includes>
-            			</resource>
-          			</webResources>
-				</configuration>
-			</plugin>
 			
 			<plugin>
     			<artifactId>maven-scm-plugin</artifactId>
@@ -503,6 +503,41 @@
 					</dependency>
         		</dependencies>
     		</plugin>
+
+			<!-- Plugin cargo pour lancer l'appli en phase de dev -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
+				<version>${cargo-maven-plugin.version}</version>
+				<configuration>
+					<container>
+						<containerId>tomcat10x</containerId>
+						<type>embedded</type>
+					</container>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+							<cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
+						</properties>
+						<configfiles>
+							<configfile>
+								<file>src/main/webapp/META-INF/context.xml</file>
+								<todir>conf/</todir>
+							</configfile>
+						</configfiles>
+					</configuration>
+					<deployables>
+						<deployable>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<type>war</type>
+							<properties>
+								<context>/</context>
+							</properties>
+						</deployable>
+					</deployables>
+				</configuration>
+			</plugin>
 
 		</plugins>
 		<pluginManagement>
@@ -665,7 +700,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-push-jakarta</artifactId>
-			<version>8.27.5</version>
+			<version>${vaadin-compatibility-server-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
