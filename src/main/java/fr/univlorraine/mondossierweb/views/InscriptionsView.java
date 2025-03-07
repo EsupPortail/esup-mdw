@@ -48,6 +48,8 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -55,9 +57,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -156,7 +155,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 				//DAC
 				Panel panelDAC= new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
 
-				if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null && MainUI.getCurrent().getEtudiant().getLinscdac().size()>0){
+				if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null && MainUI.getCurrent().getEtudiant().getLinscdac().size() > 0){
 					Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
 					inscriptionsDAC.setWidth("100%");
 					inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);

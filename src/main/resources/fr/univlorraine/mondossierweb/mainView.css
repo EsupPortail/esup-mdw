@@ -40,11 +40,6 @@ padding: 0px 0px !important;
 	overflow-y: hidden;
 }
 
-.valo-ul .valo-menu-subtitle {
-color: silver;
-font-size: inherit;
-font-weight: bold;
-}
 
 .v-table-row-highlighted {
 	color: #ff0000;
@@ -304,4 +299,14 @@ display: inline-block;
 
 .loadingIndicatorWindow {
 	border-radius: 5px !important;
+}
+
+.valo-ul .valo-menu-item.selected .v-icon {
+	color: white !important;
+}
+
+.valo-ul .valo-menu-subtitle {
+	color: white !important;
+	font-size: inherit;
+	font-weight: bold;
 }

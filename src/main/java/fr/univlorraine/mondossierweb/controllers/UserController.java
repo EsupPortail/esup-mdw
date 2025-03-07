@@ -18,13 +18,15 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.Collection;
-
+import com.vaadin.navigator.View;
+import com.vaadin.ui.UI;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateurPK;
+import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesUtilisateurRepository;
+import fr.univlorraine.mondossierweb.security.MdwUserDetails;
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import jakarta.annotation.Resource;
-
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -38,15 +40,7 @@ import org.springframework.security.util.MethodInvocationUtils;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.navigator.View;
-import com.vaadin.ui.UI;
-
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateurPK;
-import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesUtilisateurRepository;
-import fr.univlorraine.mondossierweb.security.MdwUserDetails;
-import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
-import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import java.util.Collection;
 
 /**
  * Gestion de l'utilisateur
@@ -54,24 +48,11 @@ import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 @Component
 public class UserController {
 
-	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
-	
-	@Resource
-	private transient Environment environment;
-
 	@Resource
 	private transient MethodSecurityInterceptor methodSecurityInterceptor;
 
 	@Resource
 	private PreferencesUtilisateurRepository preferencesUtilisateurRepository;
-
-	@Resource
-	private transient ConfigController configController;
-	
-	@Resource
-	private MultipleApogeeService multipleApogeeService;
 
 	/**
 	 * Récupère le securityContext dans la session.
