@@ -771,8 +771,10 @@ public class MainUI extends GenericUI {
 			//On fixe la largeur du menu
 			mainMenu.setWidth("233px");
 
+			Utils.ajoutLogoBandeauMenu(configController.getLogoUniversiteDesktop(), mainMenu, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
+
 			//Si on a une url pour la photo de l'étudiant
-			if(etudiant.getPhoto()!=null){
+			if(etudiant.getPhoto() != null){
 				//Layout contenant la photo
 				HorizontalLayout photoLayout = new HorizontalLayout();
 

@@ -309,4 +309,28 @@ display: inline-block;
 	color: white !important;
 	font-size: inherit;
 	font-weight: bold;
+	margin-top: 0 !important;
+}
+
+.valo-ul .v-image-logo-menu {
+	height: 2em;
+	margin-bottom: 0.5em;
+	margin-right: 0.5em;
+}
+
+.valo-ul .bandeau-menu {
+	color: white !important;
+	font-size: inherit;
+	font-weight: bold;
+	margin-top: 0.5em !important;
+	/*margin-right: auto !important;
+	margin-bottom: 0.5em!important;
+	margin-left : auto !important;*/
+	border-bottom: 1px solid #666666;
+}
+
+.valo-ul .bandeau-contenu {
+	display: table;
+	margin-left: auto;
+	margin-right: auto;
 }

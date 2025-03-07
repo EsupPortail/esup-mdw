@@ -26,12 +26,12 @@ import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationCate
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationValeursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -571,6 +571,9 @@ public class ConfigController {
 
 	public String getLogoUniversiteMobile() {
 		return getValeurForParameter("logoUniversiteMobile");
+	}
+	public String getLogoUniversiteDesktop() {
+		return getValeurForParameter("logoUniversiteDesktop");
 	}
 	public int getLogoUniversitePdfDimension(){
 		return  Integer.parseInt(getValeurForParameter("logoUniversitePdfDimension"));

@@ -21,7 +21,9 @@ package fr.univlorraine.mondossierweb.utils;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.HorizontalLayout;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
@@ -424,5 +426,26 @@ public class Utils {
 			navbar.setComponentAlignment(logo, Alignment.MIDDLE_LEFT);
 		}
     }
+	public static void ajoutLogoBandeauMenu(String pathLogo, CssLayout menu, String titre) {
+		if(StringUtils.hasText(pathLogo)) {
+			FileResource resource = new FileResource(new File(pathLogo));
+			Image logo = new Image(null, resource);
+			logo.setStyleName("logo-menu");
+			logo.setWidthUndefined();
+			HorizontalLayout bandeau = new HorizontalLayout();
+			bandeau.setWidthFull();
+			HorizontalLayout contenu = new HorizontalLayout();
+			contenu.setWidthUndefined();
+			contenu.addComponent(logo);
+			Label appLabel = new Label(titre);
+			appLabel.setWidthFull();
+			contenu.addComponent(appLabel);
+			contenu.setExpandRatio(appLabel, 1);
+			contenu.addStyleName("bandeau-contenu");
+			bandeau.addStyleName("bandeau-menu");
+			bandeau.addComponent(contenu);
+			menu.addComponent(bandeau);
+		}
+	}
 }
 
