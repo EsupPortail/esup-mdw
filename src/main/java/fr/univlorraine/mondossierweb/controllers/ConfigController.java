@@ -572,8 +572,11 @@ public class ConfigController {
 	public String getLogoUniversiteMobile() {
 		return getValeurForParameter("logoUniversiteMobile");
 	}
-	public String getLogoUniversiteDesktop() {
-		return getValeurForParameter("logoUniversiteDesktop");
+	public String getLogoUniversiteEns() {
+		return getValeurForParameter("logoUniversiteEns");
+	}
+	public String getLogoUniversiteEtu() {
+		return getValeurForParameter("logoUniversiteEtu");
 	}
 	public int getLogoUniversitePdfDimension(){
 		return  Integer.parseInt(getValeurForParameter("logoUniversitePdfDimension"));

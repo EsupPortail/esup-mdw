@@ -472,14 +472,18 @@ public class MainUI extends GenericUI {
 						//ajout de l'onglet principal 'assistance'
 						tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
 
-
 						//ajout de l'onglet dossier étudiant
 						addTabDossierEtudiant();
 
 						//Ce tabSheet sera aligné à droite
 						tabSheetGlobal.addStyleName("right-aligned-tabs");
 
+						//Ce tabSheet sera decalé vers le haut
+						// tabSheetGlobal.addStyleName("top-shift-tabs");
+
 						//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
+						Utils.ajoutLogoBandeauEnseignant(configController.getLogoUniversiteEns(), mainVerticalLayout, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
+
 						mainVerticalLayout.addComponent(tabSheetGlobal);
 						mainVerticalLayout.setSizeFull();
 						mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
@@ -771,7 +775,7 @@ public class MainUI extends GenericUI {
 			//On fixe la largeur du menu
 			mainMenu.setWidth("233px");
 
-			Utils.ajoutLogoBandeauMenu(configController.getLogoUniversiteDesktop(), mainMenu, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
+			Utils.ajoutLogoBandeauMenu(configController.getLogoUniversiteEtu(), mainMenu, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
 
 			//Si on a une url pour la photo de l'étudiant
 			if(etudiant.getPhoto() != null){

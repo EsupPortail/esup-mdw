@@ -18,11 +18,10 @@
  */
 package fr.univlorraine.mondossierweb.utils.miscellaneous;
 
+import com.vaadin.ui.Button;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-
-import com.vaadin.ui.Button;
 
 @Data
 public class ReferencedButton {
@@ -34,6 +33,10 @@ public class ReferencedButton {
 	@Getter
 	@Setter
 	private String idObj;
+
+	@Getter
+	@Setter
+	private boolean singleAction;
 	
 	
 }

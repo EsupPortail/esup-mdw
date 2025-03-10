@@ -219,6 +219,7 @@ public class FavorisView extends VerticalLayout implements View {
 			btnfav.setIcon(FontAwesome.TRASH_O);
 			btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
 			btnfav.addStyleName("deletefavbutton");
+			btnfav.addStyleName("left-action-button");
 			btnfav.setDescription("Supprimer des favoris");
 			//Gestion du clic sur le bouton de suppression du favori
 			btnfav.addClickListener(new Button.ClickListener() {
@@ -237,15 +238,14 @@ public class FavorisView extends VerticalLayout implements View {
 						favorisTable.setVisible(false);
 						labelAucunFavoriLayout.setVisible(true);
 					}
-
-
 				}
 			});
 			boutonActionLayout.addComponent(btnfav);
 
+			Button btnArbo = null;
 			// Si on peut accéder à l'arborescence depuis le favori
 			if(typeObj!=null && liste_type_arbo!=null && liste_type_arbo.contains(typeObj)){
-				Button btnArbo=new Button();
+				btnArbo = new Button();
 				btnArbo.setIcon(FontAwesome.SITEMAP);
 				btnArbo.setDescription(applicationContext.getMessage(NAME+".accesarborescence", null, getLocale()));
 				btnArbo.addClickListener(e->{
@@ -255,9 +255,13 @@ public class FavorisView extends VerticalLayout implements View {
 			}
 			// Si on peut accéder à la liste des inscrits depuis le favori
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
+				if (btnArbo != null) {
+					btnArbo.addStyleName("middle-action-button");
+				}
 				Button btnListeInscrits=new Button();
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				btnListeInscrits.addStyleName("right-action-button");
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
 
@@ -291,6 +295,8 @@ public class FavorisView extends VerticalLayout implements View {
 
 				});
 				boutonActionLayout.addComponent(btnListeInscrits);
+			} else {
+				btnArbo.addStyleName("right-action-button");
 			}
 
 

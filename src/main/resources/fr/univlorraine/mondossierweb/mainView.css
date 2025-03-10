@@ -132,12 +132,17 @@ color: #008000 !important;
 	overflow-y: hidden;
 }
 
-
 .valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
-	background : rgb(85,96,164) !important;
-	color: white !important;
-	height: 37px !important;
+	/*background : #939393 !important;
+	color: white !important;*/
+	background : #dfdfdf !important;
+	color: #666666 !important;
+	height: 3em !important;
 	font: 400 12px/1.55 "Open Sans", sans-serif !important;
+}
+
+.valo-ul .v-tabsheet-tabcontainer .v-tabsheet-tabs-right-aligned-tabs {
+	margin-top: 1em;
 }
 
 .valo-ul .v-link {
@@ -204,7 +209,23 @@ width: auto !important;
 }*/
 
 .valo-ul .deletefavbutton {
-width: 52px;
+	width: 52px;
+}
+.valo-ul .single-action-button {
+	border-radius: 10px 10px 10px 10px !important;
+	width: 3.4em;
+}
+.valo-ul .left-action-button {
+	border-radius: 10px 0px 0px 10px !important;
+	width: 3.4em;
+}
+.valo-ul .middle-action-button {
+	border-radius: 0px 0px 0px 0px !important;
+	width: 3.4em;
+}
+.valo-ul .right-action-button {
+	border-radius: 0px 10px 10px 0px !important;
+	width: 3.4em;
 }
 
 .dropicon .v-icon {
@@ -312,25 +333,60 @@ display: inline-block;
 	margin-top: 0 !important;
 }
 
-.valo-ul .v-image-logo-menu {
+.valo-ul .bandeau-etu-menu {
+	color: white !important;
+	font-size: inherit;
+	font-weight: bold;
+	margin-top: 0.5em !important;
+	border-bottom: 1px solid #666666;
+}
+
+.valo-ul .bandeau-etu-contenu {
+	display: table;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.valo-ul .v-image-logo-etu-menu {
 	height: 2em;
 	margin-bottom: 0.5em;
 	margin-right: 0.5em;
 }
 
-.valo-ul .bandeau-menu {
+.valo-ul .bandeau-ens-menu {
+	position: absolute;
+	z-index: 1;
 	color: white !important;
-	font-size: inherit;
-	font-weight: bold;
-	margin-top: 0.5em !important;
-	/*margin-right: auto !important;
-	margin-bottom: 0.5em!important;
-	margin-left : auto !important;*/
-	border-bottom: 1px solid #666666;
+	/*font-weight: bold;*/
+	/*margin-top: 0.7em !important;*/
+	/* height: 3.5em; */
 }
 
-.valo-ul .bandeau-contenu {
-	display: table;
-	margin-left: auto;
-	margin-right: auto;
+.valo-ul .contenu-ens-menu {
+	display: flex;
+	height: 3.4em;
 }
+
+.valo-ul .v-image-logo-ens-menu {
+	height: 2.5em;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	margin-top: auto;
+	margin-bottom: auto;
+	padding-right: 0.5em;
+	border-right: thin solid white;
+}
+
+.valo-ul .label-ens-menu {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.valo-ul .v-tabsheet-right-aligned-tabs > .v-tabsheet-tabcontainer {
+	background-color: #343a40 !important
+}
+
+.valo-ul .v-tabsheet-top-shift-tabs {
+	margin-top: -1.6em;
+}
+

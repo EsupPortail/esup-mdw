@@ -178,8 +178,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				if(listeBoutonFavoris!=null){
 
 					for(ReferencedButton btnfav : listeBoutonFavoris){
-
-
 						if(markedRows.contains(btnfav.getIdObj())){	
 							btnfav.getButton().setIcon(FontAwesome.TRASH_O);
 							btnfav.getButton().setStyleName(ValoTheme.BUTTON_DANGER);
@@ -189,6 +187,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							btnfav.getButton().setIcon(FontAwesome.STAR_O);
 							btnfav.getButton().setStyleName(ValoTheme.BUTTON_PRIMARY);
 							btnfav.getButton().setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
+						}
+						if(btnfav.isSingleAction()) {
+							btnfav.getButton().addStyleName("single-action-button");
+						} else {
+							btnfav.getButton().addStyleName("left-action-button");
 						}
 					}
 				}
@@ -541,9 +544,10 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 			HorizontalLayout boutonActionLayout = new HorizontalLayout();
 
+			Button btnFav = new Button();
+			ReferencedButton rb = new ReferencedButton();
 			//Si c'est un objet qui peut être mis en favori
-			if(typeObj!=null && liste_types_favoris!=null && liste_types_favoris.contains(typeObj)){
-				Button btnFav=new Button();
+			if(typeObj != null && liste_types_favoris != null && liste_types_favoris.contains(typeObj)){
 				if(markedRows.contains(idFav)){	
 					btnFav.setIcon(FontAwesome.TRASH_O);
 					btnFav.setStyleName(ValoTheme.BUTTON_DANGER);
@@ -554,7 +558,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 					btnFav.setStyleName(ValoTheme.BUTTON_PRIMARY);
 					btnFav.setDescription(applicationContext.getMessage(NAME+".ajouterfavori", null, getLocale()));
 				}
-
+				btnFav.addStyleName("single-action-button");
 				//Gestion du clic sur le bouton favori
 				btnFav.addClickListener(new Button.ClickListener() {
 					@Override
@@ -596,15 +600,15 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 						//btonFavori.markAsDirty();
 					}
 				});
-				ReferencedButton rb = new ReferencedButton();
 				rb.setButton(btnFav);
 				rb.setIdObj(idFav);
 				listeBoutonFavoris.add(rb);
 				boutonActionLayout.addComponent(btnFav);
 			}
-
+			Button btnDeplier = null;
 			if(typeObj!=null && liste_types_deplier!=null && liste_types_deplier.contains(typeObj)){
-				Button btnDeplier=new Button();
+				btnDeplier=new Button();
+				btnDeplier.addStyleName("middle-action-button");
 				btnDeplier.setIcon(FontAwesome.SITEMAP);
 				btnDeplier.setDescription(applicationContext.getMessage(NAME+".deplierarbo", null, getLocale()));
 				btnDeplier.addClickListener(e->{
@@ -637,18 +641,26 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				});
 				boutonActionLayout.addComponent(btnDeplier);
 			}
+
+			Button btnListeInscrits = null;
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
-				Button btnListeInscrits=new Button();
+				btnListeInscrits=new Button();
+				btnListeInscrits.addStyleName("right-action-button");
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
 					rechercheController.accessToDetail(idObj,typeObj,(String)comboBoxAnneeUniv.getValue());
 				});
-
 				boutonActionLayout.addComponent(btnListeInscrits);
 			}
-
+			if (btnDeplier == null && btnListeInscrits == null) {
+				rb.setSingleAction(true);
+				btnFav.addStyleName("single-action-button");
+			} else {
+				rb.setSingleAction(false);
+				btnFav.addStyleName("left-action-button");
+			}
 
 			return boutonActionLayout;
 		}

@@ -219,9 +219,8 @@ opacity: 1.0 !important;
 }
 
 .valo-ul .v-panel-caption-v-medium-panel-caption {
-	/* background: var(--mobile_main_color) !important;*/
-	/* color: white !important; */
-	background: white !important;
+	background: #dfdfdf !important;
+	color: #666666 !important;
 	font-size: medium !important;
 }
 

@@ -26,6 +26,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdminView;
@@ -430,7 +431,7 @@ public class Utils {
 		if(StringUtils.hasText(pathLogo)) {
 			FileResource resource = new FileResource(new File(pathLogo));
 			Image logo = new Image(null, resource);
-			logo.setStyleName("logo-menu");
+			logo.setStyleName("logo-etu-menu");
 			logo.setWidthUndefined();
 			HorizontalLayout bandeau = new HorizontalLayout();
 			bandeau.setWidthFull();
@@ -441,11 +442,35 @@ public class Utils {
 			appLabel.setWidthFull();
 			contenu.addComponent(appLabel);
 			contenu.setExpandRatio(appLabel, 1);
-			contenu.addStyleName("bandeau-contenu");
-			bandeau.addStyleName("bandeau-menu");
+			contenu.addStyleName("bandeau-etu-contenu");
+			bandeau.addStyleName("bandeau-etu-menu");
 			bandeau.addComponent(contenu);
 			menu.addComponent(bandeau);
 		}
+	}
+
+	public static void ajoutLogoBandeauEnseignant(String pathLogo, VerticalLayout vue, String titre) {
+
+		CssLayout bandeau = new CssLayout();
+		bandeau.addStyleName("bandeau-ens-menu");
+		CssLayout contenu = new CssLayout();
+		contenu.setWidthUndefined();
+		contenu.addStyleName("contenu-ens-menu");
+
+		if (StringUtils.hasText(pathLogo)) {
+			FileResource resource = new FileResource(new File(pathLogo));
+			Image logo = new Image(null, resource);
+			logo.setStyleName("logo-ens-menu");
+			logo.setWidthUndefined();
+			contenu.addComponent(logo);
+		}
+		Label appLabel = new Label(titre);
+		appLabel.setWidthFull();
+		appLabel.setStyleName("label-ens-menu");
+		contenu.addComponent(appLabel);
+
+		bandeau.addComponent(contenu);
+		vue.addComponent(bandeau);
 	}
 }
 
