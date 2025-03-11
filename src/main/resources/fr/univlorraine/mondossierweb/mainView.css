@@ -12,7 +12,7 @@ height: 35px !important;
 }
 
 .valo-ul .textfield-resetable {
-border-radius: 0px !important;
+/*border-radius: 0px !important;*/
 border-right: 0px !important;
 border-left: 1px solid #c5c5c5 !important;
 border-top: 1px solid #c5c5c5 !important;
@@ -25,13 +25,17 @@ border-bottom: 1px solid #c5c5c5 !important;
 	/* top: 54px; */
 	/* left:137px; 
 	 top: 66px; */
-	 left:122px; 
-	 top: 61px;
+	 left:122px;
+	 top: 59px;
 	z-index: 2;
 }
 
 .valo-ul .v-popupview-popup-googlepopupview {
-padding: 0px 0px !important;
+	padding: 0px 0px !important;
+	border-radius: 0px 0px 10px 10px !important;
+	border-left: 2px solid #8b8b8b;
+	border-right: 2px solid #8b8b8b;
+	border-bottom: 2px solid #8b8b8b;
 }
 
 .v-table-body-googletable{
@@ -210,6 +214,26 @@ width: auto !important;
 
 .valo-ul .deletefavbutton {
 	width: 52px;
+}
+
+.valo-ul .v-popupview-popup-googlepopupview {
+	border-radius: 0px 0px 10px 10px !important;
+}
+
+.valo-ul .v-table-googletable{
+	border-radius: 0px 0px 10px 10px !important;
+}
+
+.valo-ul .left-input-cmp {
+	border-radius: 10px 0px 0px 10px !important;
+}
+
+.valo-ul .left-input-cmp-with-popup {
+	border-radius: 10px 0px 0px 0px !important;
+}
+
+.valo-ul .right-input-cmp {
+	border-radius: 0px 10px 10px 0px !important;
 }
 .valo-ul .single-action-button {
 	border-radius: 10px 10px 10px 10px !important;

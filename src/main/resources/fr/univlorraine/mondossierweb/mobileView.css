@@ -37,27 +37,44 @@ height: 35px !important;
 }
 
 .valo-ul .textfield-resetable {
-border-radius: 0px !important;
+/* border-radius: 0px !important; */
 border-right: 0px !important;
 border-left: 1px solid var(--light_gray) !important;
 border-top: 1px solid var(--light_gray) !important;
 border-bottom: 1px solid var(--light_gray) !important;
 }
 
+.valo-ul .left-input-cmp {
+	border-radius: 10px 0px 0px 10px !important;
+}
+
+.valo-ul .left-input-cmp-with-popup {
+	border-radius: 10px 0px 0px 0px !important;
+}
+
+.valo-ul .right-input-cmp {
+	border-radius: 0px 10px 10px 0px !important;
+}
+
 .valo-ul .v-popupview-popup-googlepopupview {
 	position: absolute;
-	left: 0em !important;
+	left: -2px !important;
 	top: 6.3em !important;
 	width: calc(100% - 1.2em) !important;
 	padding: 0em 0em 0em 0em !important;
 	z-index: 2 !important;
 	margin-left: 0.6em !important;
+	border-radius: 0px 0px 10px 10px !important;
+	border-left: 2px solid #8b8b8b;
+	border-right: 2px solid #8b8b8b;
+	border-bottom: 2px solid #8b8b8b;
 }
 
 .valo-ul .v-table-googletable{
 	 width: 100% !important;
     overflow-x: hidden !important;
 	overflow-y: hidden !important;
+	border-radius: 0px 0px 10px 10px !important;
 }
 .valo-ul .v-table-body-googletable{
      width: 100% !important;

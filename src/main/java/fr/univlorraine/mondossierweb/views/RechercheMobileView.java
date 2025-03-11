@@ -53,14 +53,14 @@ import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -172,6 +172,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			btnRecherche.addStyleName("v-popover-button");
 			btnRecherche.addStyleName("v-button-without-padding");
+			btnRecherche.addStyleName("right-input-cmp");
 			btnRecherche.setEnabled(true);
 			btnRecherche.addClickListener(e -> search(false));
 
@@ -229,6 +230,9 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					}
 				});
 
+				// Maj style css du champ de recherche
+				champRecherche.updateStyle();
+
 				champRecherche.addShortcutListener(new ShortcutListener("Top Arrow", ShortcutAction.KeyCode.ARROW_UP, null) {
 					@Override
 					public void handleAction(Object sender, Object target) {
@@ -253,7 +257,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
 
 				//BOUTON RESET
-				champRecherche.addStyleName("textfield-resetable");
 				resetButton = new Button();
 				resetButton.setIcon(FontAwesome.TIMES);
 				resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);

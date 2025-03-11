@@ -45,7 +45,7 @@ public class AutoComplete extends TextField {
 		//Si du texte est saisi
 		if(text.size()>0){
 			//Si la popup est déjà instanciée, on la masque
-			if(choicesPopup!=null){
+			if(choicesPopup != null){
 				choicesPopup.setPopupVisible(false);
 
 			}
@@ -121,16 +121,14 @@ public class AutoComplete extends TextField {
 					public void popupVisibilityChange(PopupView.PopupVisibilityEvent event) {
 						if (!event.isPopupVisible()) {
 							//On masque la popup quand on perd le focus sur le champ texte
-							choicesPopup.setVisible(false);
+							setPopUpVisible(false);
 						}
 					}
 				});
-
 			}
 
 			//On affiche la popup
-			choicesPopup.setVisible(true);
-			choicesPopup.setPopupVisible(true);
+			setPopUpVisible(true);
 			//La popup fait la même hauteur que la table qu'elle contient
 			choicesPopup.setHeight(choices.getHeight(), choices.getHeightUnits());
 
@@ -138,13 +136,20 @@ public class AutoComplete extends TextField {
 			//Aucun texte n'ai saisi
 			if(choicesPopup!=null){
 				//On masque la popup si elle est déjà instanciée
-				choicesPopup.setVisible(false);
-				choicesPopup.setPopupVisible(false);
+				setPopUpVisible(false);
 			}
 		}
 
 
 
+	}
+
+	private void setPopUpVisible(boolean b) {
+		// maj du style de la popup
+		choicesPopup.setVisible(b);
+		choicesPopup.setPopupVisible(b);
+		// maj du style du textfield
+		updateStyle();
 	}
 
 	private Object transcodeType(String type) {
@@ -162,6 +167,15 @@ public class AutoComplete extends TextField {
 			return Utils.TYPE_VET.toUpperCase();
 		}
 		return type;
+	}
+
+	public void updateStyle() {
+		this.setStyleName("textfield-resetable");
+		if(choicesPopup == null || !choicesPopup.isVisible()) {
+			this.addStyleName("left-input-cmp");
+		} else {
+			this.addStyleName("left-input-cmp-with-popup");
+		}
 	}
 
 	// Create a dynamically updating content for the popup

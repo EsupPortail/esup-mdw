@@ -149,6 +149,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 			//BOUTON DE RECHERCHE
 			btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
+			btnRecherche.addStyleName("right-input-cmp");
 			btnRecherche.setIcon(FontAwesome.SEARCH);
 			btnRecherche.setEnabled(true);
 			btnRecherche.addClickListener(e -> search(false));
@@ -223,6 +224,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					}
 				});
 
+				// Maj style css du champ de recherche
+				champRecherche.updateStyle();
+
 				//champRecherche.addBlurListener(e -> champRecherche.getChoicesPopup().setVisible(false));
 
 				HorizontalLayout layoutBordure = new HorizontalLayout();
@@ -237,7 +241,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.TOP_LEFT);
 
 				//BOUTON RESET
-				champRecherche.addStyleName("textfield-resetable");
 				resetButton = new Button();
 				resetButton.setIcon(FontAwesome.TIMES);
 				resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
