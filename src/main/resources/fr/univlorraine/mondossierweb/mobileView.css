@@ -36,6 +36,10 @@ height: 35px !important;
 	border-bottom: 0px solid var(--light_gray) !important;
 }
 
+.valo-ul .v-slot-textfield-resetable{
+	z-index : 1;
+}
+
 .valo-ul .textfield-resetable {
 /* border-radius: 0px !important; */
 border-right: 0px !important;
@@ -56,11 +60,16 @@ border-bottom: 1px solid var(--light_gray) !important;
 	border-radius: 0px 10px 10px 0px !important;
 }
 
+.valo-ul .v-textfield:focus {
+	outline: none !important;
+	box-shadow: 0 0 0 2px #8b8b8b !important;
+}
+
 .valo-ul .v-popupview-popup-googlepopupview {
 	position: absolute;
 	left: -2px !important;
 	top: 6.3em !important;
-	width: calc(100% - 1.2em) !important;
+	width: calc(100% - 7.5em) !important;
 	padding: 0em 0em 0em 0em !important;
 	z-index: 2 !important;
 	margin-left: 0.6em !important;
