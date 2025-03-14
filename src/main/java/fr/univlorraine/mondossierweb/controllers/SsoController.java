@@ -49,13 +49,13 @@ import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import jakarta.annotation.Resource;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -456,7 +456,7 @@ public class SsoController {
 			if (etudiant.getCod_nne() != null) {
 				Paragraph pNNE = new Paragraph(applicationContext.getMessage("pdf.quittance.ine", null, Locale.getDefault())+" : ", normal);
 				pNNE.setAlignment(Element.ALIGN_LEFT);
-				Chunk nneText = new Chunk(etudiant.getCod_nne().toLowerCase(), normalBig);
+				Chunk nneText = new Chunk(etudiant.getCod_nne().toUpperCase(), normalBig);
 				pNNE.add(nneText);
 				Chunk codetuText = new Chunk("\t\t\t "+applicationContext.getMessage("pdf.quittance.codetu", null, Locale.getDefault())+" : ", normal);
 				pNNE.add(codetuText);
@@ -814,7 +814,7 @@ public class SsoController {
 			if (etudiant.getCod_nne() != null) {
 				Paragraph pNNE = new Paragraph(applicationContext.getMessage("pdf.affiliationsso.ine", null, Locale.getDefault())+" : ", normal);
 				pNNE.setAlignment(Element.ALIGN_LEFT);
-				Chunk nneText = new Chunk(etudiant.getCod_nne().toLowerCase(), normalBig);
+				Chunk nneText = new Chunk(etudiant.getCod_nne().toUpperCase(), normalBig);
 				pNNE.add(nneText);
 				document.add(pNNE);
 			}

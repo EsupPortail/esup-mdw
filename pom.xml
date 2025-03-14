@@ -62,6 +62,7 @@
 		<groovy.version>4.0.15</groovy.version>
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 		<cargo-maven-plugin.version>1.9.8</cargo-maven-plugin.version>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 
 	<distributionManagement>
