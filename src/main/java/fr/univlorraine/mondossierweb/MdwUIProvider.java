@@ -87,12 +87,6 @@ public class MdwUIProvider extends SpringUIProvider {
 			mobile = true;
 		}
 
-		//Stored in VaadinSession to use it in
-		// the ApplicationScope later to initialize vaadin application scope beans
-		/*final Integer uiId = event.getUiId();
-		LOG.info("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
-		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);*/
-
 		try {
 			logger.debug(
 					"Creating a new UI bean of class [{}] with identifier [{}]",

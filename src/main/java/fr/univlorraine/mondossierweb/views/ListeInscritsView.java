@@ -84,8 +84,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**
@@ -135,8 +133,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	@Resource
 	private transient ObjectFactory<DetailGroupesWindow> detailGroupesWindowFactory;
 
-	/** Thread pool  */
-	ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private RecherchePhotoThread rpt;
 
 	//la liste des inscrits
 	private List<Inscrit> linscrits;
@@ -698,7 +695,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						btnTrombi.setIcon(FontAwesome.GROUP);
 						buttonResumeLayout.addComponent(btnTrombi);
 
-
 						//Gestion du clic sur le bouton trombinoscope
 						btnTrombi.addClickListener(e->{
 
@@ -706,20 +702,11 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
 								//affichage de la pop-up de loading
 								MainUI.getCurrent().startBusyIndicator();
+								MainUI.getCurrent().push();
 
 								//Execution de la méthode en parallèle dans un thread
-								executorService.execute(new Runnable() {
-									public void run() {
-										MainUI.getCurrent().access(new Runnable() {
-											@Override
-											public void run() {
-												executeDisplayTrombinoscope();
-												//close de la pop-up de loading
-												MainUI.getCurrent().stopBusyIndicator();
-											}
-										} );
-									}
-								});
+								rpt = new ListeInscritsView.RecherchePhotoThread(MainUI.getCurrent(), this);
+								rpt.start();
 
 							}else{
 								//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
@@ -911,14 +898,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		middleResumeLayout.setVisible(false);
 
 	}
-	/*private void majCheckbox() {
-		if(typeIsElp()){
-			collapseEtp.setValue(!inscritstable.isColumnCollapsed("etape"));
-		}
-		collapseResultatsS1.setValue(!inscritstable.isColumnCollapsed("notes1"));
-		collapseResultatsS2.setValue(!inscritstable.isColumnCollapsed("notes2"));
 
-	}*/
 	private void displayTrombinoscope() {
 		List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
 
@@ -1249,6 +1229,20 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	}
 
 
+	private static class RecherchePhotoThread extends Thread {
+		private final MainUI mainUI;
+		private final ListeInscritsView listeInscritsView;
 
+		public RecherchePhotoThread(MainUI mainUI, ListeInscritsView listeInscritsView) {
+			this.mainUI = mainUI;
+			this.listeInscritsView = listeInscritsView;
+		}
+		@Override
+		public void run() {
+			mainUI.access(() -> listeInscritsView.executeDisplayTrombinoscope());
+			//close de la pop-up de loading
+			mainUI.access(() -> mainUI.stopBusyIndicator());
+		}
+	}
 
 }

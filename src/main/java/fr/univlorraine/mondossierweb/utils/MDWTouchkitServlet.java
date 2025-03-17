@@ -78,18 +78,6 @@ public class MDWTouchkitServlet extends SpringVaadinServlet {
                 // extraneous UIs if e.g. a servlet is declared as a nested
                 // class in a UI class
                 VaadinSession session = event.getSession();
-              /*  List<UIProvider> uiProviders = new ArrayList<UIProvider>(
-                        session.getUIProviders());
-              
-                for (UIProvider provider : uiProviders) {
-                    // use canonical names as these may have been loaded with
-                    // different classloaders
-                    if (DefaultUIProvider.class.getCanonicalName().equals(
-                            provider.getClass().getCanonicalName())) {
-                        session.removeUIProvider(provider);
-                    }
-                }*/
-
                 // add Spring UI provider
                 session.addUIProvider(new MdwTouchkitUIProvider(session));
 
@@ -97,28 +85,5 @@ public class MDWTouchkitServlet extends SpringVaadinServlet {
             }
         });
     }
-	
-	/*
-	    @Override
-	    protected void servletInitialized() throws ServletException {
-	        super.servletInitialized();
-		    
-	        getService().addSessionInitListener(new SessionInitListener() {
-
-				private static final long serialVersionUID = 3292761415754953448L;
-
-				@Override
-	            public void sessionInit(SessionInitEvent event) throws ServiceException {
-					event.getSession().addUIProvider(new MdwTouchkitUIProvider(WebApplicationContextUtils.getWebApplicationContext(getServletContext())));
-	            	LOG.debug("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
-	            }
-	        });
-	        
-
-	        TouchKitSettings s = getTouchKitSettings();
-	        s.getWebAppSettings().setWebAppCapable(true);
-	        s.getApplicationCacheSettings().setCacheManifestEnabled(true);
-	        
-	    }*/
 	
 }

@@ -171,12 +171,9 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			//Actualiser de l'affiche du bouton de mise en favori
 			if(table!=null && hc!=null){
 
-
 				recuperationDesfavoris();
 
-
 				if(listeBoutonFavoris!=null){
-
 					for(ReferencedButton btnfav : listeBoutonFavoris){
 						if(markedRows.contains(btnfav.getIdObj())){	
 							btnfav.getButton().setIcon(FontAwesome.TRASH_O);
@@ -266,16 +263,12 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			liste_types_deplier.add(Utils.ELP);
 			liste_types_deplier.add(Utils.VET);
 
-
 			recuperationDesfavoris();
 
 			HorizontalLayout btnLayout = new HorizontalLayout();
 			btnLayout.setMargin(false);
 			btnLayout.setSpacing(false);
 			btnLayout.setWidth("100%");
-
-
-
 
 			comboBoxAnneeUniv = new ComboBox(applicationContext.getMessage(NAME+".anneeuniv", null, getLocale()));
 			comboBoxAnneeUniv.setPageLength(5);
@@ -304,13 +297,15 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				initFromScratch();
 			});
 			reinitButton.setStyleName(ValoTheme.BUTTON_DANGER);
+			reinitButton.addStyleName("single-action-button");
 			reinitButton.setIcon(FontAwesome.TIMES);
 			if(!StringUtils.hasText(code)){
 				reinitButton.setVisible(false);
 			}
-			labelLigneSelectionneeLabel =new Label();
+			labelLigneSelectionneeLabel=new Label();
 			labelLigneSelectionneeLabel.setValue(applicationContext.getMessage(NAME+".ligneselectionnee", null, getLocale()));
 			labelLigneSelectionneeLabel.addStyleName("label-align-right");
+			labelLigneSelectionneeLabel.addStyleName("font-small");
 			labelLigneSelectionneeLabel.setVisible(false);
 
 
@@ -336,6 +331,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			elpLayout.addComponent(vetElpSelectionneLabel);
 			elpLayout.setVisible(false);
 			VerticalLayout ligneLayout = new VerticalLayout();
+			ligneLayout.addStyleName("font-small");
 			ligneLayout.addComponent(ligneSelectionneeLabel);
 			ligneLayout.addComponent(elpLayout);
 
@@ -368,9 +364,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.setSelectable(true);
 
 			initComposantes();
-
-
-
 
 			//gestion du style pour les lignes en favori
 			table.setCellStyleGenerator(new Table.CellStyleGenerator() {
@@ -406,9 +399,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				}
 			});
 
-
-
-
 			VerticalLayout tableVerticalLayout = new VerticalLayout();
 			tableVerticalLayout.setMargin(new MarginInfo(false, true, true, true));
 			tableVerticalLayout.setSizeFull();
@@ -416,8 +406,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			tableVerticalLayout.setExpandRatio(table, 1);
 			addComponent(tableVerticalLayout);
 			setExpandRatio(tableVerticalLayout, 1);
-
-
 
 		}
 	}
@@ -459,8 +447,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 
 		}
-
-
 
 
 		//Vrai si ce n'est pas la premiere initialisation de la table
@@ -703,6 +689,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				//On passe l'ELP dans le label du bas
 				vetElpSelectionneLabel.setCaption(ligneSelectionneeLabel.getValue());
 				vetElpSelectionneLabel.setIcon(FontAwesome.ARROW_RIGHT);
+				vetElpSelectionneLabel.addStyleName("font-small");
 				vetElpSelectionneLabel.setVisible(true);
 				elpLayout.setVisible(true);
 				vetElpSelectionneLabel.setHeight("20px");

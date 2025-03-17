@@ -768,14 +768,18 @@ public class MainUI extends GenericUI {
 	private void buildMainMenuEtudiant() {
 
 		//Si l'étudiant dont on affiche le dossier est renseigné
-		if(etudiant!=null){
+		if(etudiant != null){
 
 			//Ajout du style au menu
 			mainMenu.setPrimaryStyleName(ValoTheme.MENU_PART);
 			//On fixe la largeur du menu
 			mainMenu.setWidth("233px");
 
-			Utils.ajoutLogoBandeauMenu(configController.getLogoUniversiteEtu(), mainMenu, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
+			// On affiche che le bandeau que si le user est étudiant (sinon le bandeau est déjà présent dans l'interface)
+			if (userController.isEtudiant()) {
+				//Ajout du logo de l'université et du titre de l'application
+				Utils.ajoutLogoBandeauMenu(configController.getLogoUniversiteEtu(), mainMenu, applicationContext.getMessage("mainUI.app.title", null, UI.getCurrent().getLocale()));
+			}
 
 			//Si on a une url pour la photo de l'étudiant
 			if(etudiant.getPhoto() != null){

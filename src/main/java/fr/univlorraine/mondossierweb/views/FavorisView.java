@@ -50,8 +50,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Favoris
@@ -78,9 +76,6 @@ public class FavorisView extends VerticalLayout implements View {
 	@Resource
 	private transient ConfigController configController;
 	private RechercheControllerThread rct;
-
-	/** Thread pool  */
-	ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	private List<String> liste_types_inscrits;
 
@@ -275,19 +270,6 @@ public class FavorisView extends VerticalLayout implements View {
 						rct = new RechercheControllerThread(MainUI.getCurrent(),rechercheController,idObj,typeObj);
 						rct.start();
 
-						/*
-						executorService.execute(new Runnable() {
-							public void run() {
-								MainUI.getCurrent().access(new Runnable() {
-									@Override
-									public void run() {
-										rechercheController.accessToDetail(idObj,typeObj,null);
-										//close de la pop-up de loading
-										MainUI.getCurrent().stopBusyIndicator();
-									}
-								} );
-							}
-						});*/
 					}else{
 						//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
 						rechercheController.accessToDetail(idObj,typeObj,null);

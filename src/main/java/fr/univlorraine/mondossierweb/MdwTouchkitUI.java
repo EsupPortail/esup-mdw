@@ -85,10 +85,9 @@ import java.util.Map;
 @Scope("prototype")
 @Component
 @Theme("valo-ul")
-@StyleSheet("mobileView.css")
+@StyleSheet({"mobileView.css"})
 @SuppressWarnings("serial")
 @SpringUI(path = "m")
-//@OfflineModeEnabled(false)
 @Push(transport = Transport.WEBSOCKET_XHR)
 @Viewport("user-scalable=no,initial-scale=1.0")
 public class MdwTouchkitUI extends GenericUI{

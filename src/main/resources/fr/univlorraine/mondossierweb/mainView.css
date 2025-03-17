@@ -1,4 +1,5 @@
 /* ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium */
+
 .valo-menu {
 	color: #ff0000;
 }
@@ -241,7 +242,7 @@ width: auto !important;
 	border-radius: 0px 10px 10px 0px !important;
 }
 .valo-ul .single-action-button {
-	border-radius: 10px 10px 10px 10px !important;
+	border-radius: 7px 7px 7px 7px !important;
 	width: 3.4em;
 }
 .valo-ul .left-action-button {
@@ -417,5 +418,30 @@ display: inline-block;
 
 .valo-ul .v-tabsheet-top-shift-tabs {
 	margin-top: -1.6em;
+}
+
+.valo-ul .font-small {
+	font-size: small;
+}
+
+.valo-ul .v-caption-font-small {
+	font-size: small !important;
+}
+
+.valo-ul .v-table [class*="-row"].v-selected {
+	background-color: grey !important;
+	background-image: none !important;
+}
+
+.valo-ul .v-table [class*="-row"].v-selected .v-table-cell-content {
+	border-left-color: #d4d4d4 !important;
+}
+
+.valo-ul .v-table-focus {
+	outline: none !important;
+}
+
+.valo-ul .v-tabsheet-framed > .v-tabsheet-tabcontainer .v-caption {
+	margin-left: 0px !important;
 }
 
