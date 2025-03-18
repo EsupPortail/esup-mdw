@@ -39,15 +39,14 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -204,18 +203,22 @@ public class AdressesView extends VerticalLayout implements View {
 
 			addComponent(globalLayout);
 
-			if(userController.isEtudiant() && configController.isModificationAdressesAutorisee()
-					&& MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
+			if(userController.isEtudiant() && configController.isModificationAdressesAutorisee() && MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
 				HorizontalLayout btnLayout = new HorizontalLayout();
 				btnLayout.setSizeFull();
 				btnLayout.setSpacing(true);
 
 				Button btnModifAdresses = new Button (applicationContext.getMessage(NAME+".bouton.modifieradresses", null, getLocale()));
+				// Si on ne peut pas modifier l'adresse annuelle
+				if(!configController.isModificationAdresseAnnuelleAutorisee()) {
+					// Changement du caption du bouton en conséquence
+					btnModifAdresses.setCaption(applicationContext.getMessage(NAME+".bouton.modifieradressefixe", null, getLocale()));
+				}
 				btnModifAdresses.setStyleName(ValoTheme.BUTTON_PRIMARY);
 				btnModifAdresses.setIcon(FontAwesome.EDIT);
 				btnModifAdresses.addClickListener(e->{
 					ModificationAdressesWindow maw = modificationAdressesWindowFactory.getObject();
-					maw.init(MainUI.getCurrent().getEtudiant(), configController.isModificationTelephoneAutorisee()); 
+					maw.init(MainUI.getCurrent().getEtudiant(), configController.isModificationTelephoneAutorisee(), configController.isModificationAdresseAnnuelleAutorisee());
 					maw.addCloseListener(f->init());
 					UI.getCurrent().addWindow(maw);
 				});

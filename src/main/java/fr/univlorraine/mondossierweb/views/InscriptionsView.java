@@ -152,35 +152,36 @@ public class InscriptionsView extends VerticalLayout implements View {
 				globalLayout.addComponent(panelInscription);
 
 
-				//DAC
-				Panel panelDAC= new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
+				// Si on doit afficher les inscriptions dans d'autres cursus
+				if (configController.isAffInscriptionsAutreCursus()) {
+					Panel panelDAC = new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
 
-				if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null && MainUI.getCurrent().getEtudiant().getLinscdac().size() > 0){
-					Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
-					inscriptionsDAC.setWidth("100%");
-					inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);
-					for (String fieldName : DAC_FIELDS_ORDER) {
-						inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".tabledac." + fieldName, null, getLocale()));
+					if (MainUI.getCurrent().getEtudiant().getLinscdac() != null && MainUI.getCurrent().getEtudiant().getLinscdac().size() > 0) {
+						Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
+						inscriptionsDAC.setWidth("100%");
+						inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);
+						for (String fieldName : DAC_FIELDS_ORDER) {
+							inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME + ".tabledac." + fieldName, null, getLocale()));
+						}
+						inscriptionsDAC.setColumnCollapsingAllowed(true);
+						inscriptionsDAC.setColumnReorderingAllowed(false);
+						inscriptionsDAC.setSelectable(false);
+						inscriptionsDAC.setImmediate(true);
+						inscriptionsDAC.setStyleName("noscrollabletable");
+						inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size());
+						panelDAC.setContent(inscriptionsDAC);
+					} else {
+						HorizontalLayout labelDacLayout = new HorizontalLayout();
+						labelDacLayout.setMargin(true);
+						labelDacLayout.setSizeFull();
+						Label aucuneDAC = new Label(applicationContext.getMessage(NAME + ".dac.aucune", null, getLocale()) + " " + MainUI.getCurrent().getEtudiant().getLibEtablissement());
+						aucuneDAC.setStyleName(ValoTheme.LABEL_COLORED);
+						aucuneDAC.addStyleName(ValoTheme.LABEL_BOLD);
+						labelDacLayout.addComponent(aucuneDAC);
+						panelDAC.setContent(labelDacLayout);
 					}
-					inscriptionsDAC.setColumnCollapsingAllowed(true);
-					inscriptionsDAC.setColumnReorderingAllowed(false);
-					inscriptionsDAC.setSelectable(false);
-					inscriptionsDAC.setImmediate(true);
-					inscriptionsDAC.setStyleName("noscrollabletable");
-					inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size() );
-					panelDAC.setContent(inscriptionsDAC);
-				}else{
-					HorizontalLayout labelDacLayout = new HorizontalLayout();
-					labelDacLayout.setMargin(true);
-					labelDacLayout.setSizeFull();
-					Label aucuneDAC = new Label(applicationContext.getMessage(NAME + ".dac.aucune", null, getLocale())+ " "+MainUI.getCurrent().getEtudiant().getLibEtablissement());
-					aucuneDAC.setStyleName(ValoTheme.LABEL_COLORED);
-					aucuneDAC.addStyleName(ValoTheme.LABEL_BOLD);
-					labelDacLayout.addComponent(aucuneDAC);
-					panelDAC.setContent(labelDacLayout);
+					globalLayout.addComponent(panelDAC);
 				}
-				globalLayout.addComponent(panelDAC);
-
 
 				Panel panelPremInscription= new Panel(applicationContext.getMessage(NAME + ".premiereinsc.title", null, getLocale()));
 				FormLayout formPremInscription = new FormLayout();

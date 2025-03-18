@@ -212,6 +212,8 @@ public class ConfigController {
 	public boolean isModificationAdressesAutorisee() {
 		return getBooleanValueForParameter("modificationAdresses");
 	}
+
+	public boolean isModificationAdresseAnnuelleAutorisee() { return getBooleanValueForParameter("modificationAdresseAnnuelle"); }
 	
 	public boolean isModificationTelephoneAutorisee() {
 		return getBooleanValueForParameter("modificationTelephone");
@@ -672,8 +674,7 @@ public class ConfigController {
 	public boolean isSignaturePdfDetailNote() {
 		return getBooleanValueForParameter("detailNoteSignature");
 	}
-
-	
+	public boolean isAffInscriptionsAutreCursus()  { return getBooleanValueForParameter("affInscriptionsAutreCursus"); 	}
 	public boolean isSignatureAltPdfCalendrier() {
 		return getBooleanValueForParameter("calendrierSignatureAlt");
 	}
@@ -801,6 +802,7 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
 
 
 }
