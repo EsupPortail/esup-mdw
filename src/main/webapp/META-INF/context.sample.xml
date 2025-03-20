@@ -164,7 +164,7 @@
 	<Parameter name="mail.startDisabling" value="00:01" />
 	<Parameter name="mail.stopDisabling" value="00:02" />
 	<!-- liste des erreurs à ignorer séparées par un point virgule -->
-	<Parameter name="liste.erreur.a.ignorer" value="ClientAbortException;IllegalStateException;SocketTimeoutException"/>
+	<Parameter name="liste.erreur.a.ignorer" value="ClientAbortException;IllegalStateException;SocketTimeoutException;RpcInvocationException"/>
 
 	<!-- ELASTICSEARCH -->
  	<Parameter name="param.elasticsearch.url" value="localhost" /> 

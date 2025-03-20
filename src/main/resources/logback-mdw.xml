@@ -104,21 +104,20 @@
 		</then>
 		<else>
 			<!-- no debug mode -->
-			<logger name="fr.univlorraine.mondossierweb" level="error" />
+			<logger name="fr.univlorraine.mondossierweb" level="error">
+				<appender-ref ref="consoleAppender" />
+				<appender-ref ref="mailAppender" />
+			</logger>
 		</else>
 	</if>
 
-	<logger name="fr.univlorraine.mondossierweb.security" level="info" additivity="false">
-		<appender-ref ref="consoleAppender" />
+	<logger name="fr.univlorraine.mondossierweb.security" level="info">
 		<appender-ref ref="securityFileAppender" />
-		<appender-ref ref="mailAppender" />
 	</logger>
 
 
 	<root level="warn">
-		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
-		<appender-ref ref="mailAppender" />
 	</root>
 
 	<logger name="org.springframework" level="warn" />
