@@ -111,7 +111,7 @@
 		</else>
 	</if>
 
-	<logger name="fr.univlorraine.mondossierweb.security" level="info">
+	<logger name="fr.univlorraine.mondossierweb.security" level="info" additivity="false">
 		<appender-ref ref="securityFileAppender" />
 	</logger>
 
