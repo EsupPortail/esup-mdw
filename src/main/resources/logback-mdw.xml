@@ -111,11 +111,8 @@
 		</else>
 	</if>
 
-	<logger name="fr.univlorraine.mondossierweb.security" level="info" additivity="false">
+	<logger name="fr.univlorraine.mondossierweb.security" level="info">
 		<appender-ref ref="securityFileAppender" />
-	</logger>
-	<logger name="fr.univlorraine.mondossierweb.security" level="error" additivity="true">
-		<!-- Pas besoin d'ajouter d'appender ici, les logs seront propagées au logger parent (voir ci-dessus) -->
 	</logger>
 
 
