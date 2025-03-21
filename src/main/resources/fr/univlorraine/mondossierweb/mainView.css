@@ -445,3 +445,16 @@ display: inline-block;
 	margin-left: 0px !important;
 }
 
+.admin-home-button {
+	color: white !important;
+	background: transparent !important;
+	border-radius: 7px !important;
+}
+
+.admin-button {
+	border-radius: 7px !important;
+}
+
+.admin-title-layout {
+	display: flex !important;
+}

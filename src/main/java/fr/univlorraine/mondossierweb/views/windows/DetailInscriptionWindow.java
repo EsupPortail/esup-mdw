@@ -37,13 +37,13 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**
@@ -55,8 +55,6 @@ import java.util.List;
 public class DetailInscriptionWindow extends Window {
 
 	public static final String NAME = "inscriptionWindow";
-
-
 
 	@Resource
 	private transient ApplicationContext applicationContext;
@@ -90,7 +88,6 @@ public class DetailInscriptionWindow extends Window {
 			setModal(true);
 			setResizable(false);
 
-
 			//Test si user enseignant
 			if(userController.isEnseignant()){
 				//On recupere le détail de l'IP pour un enseignant
@@ -109,7 +106,6 @@ public class DetailInscriptionWindow extends Window {
 			/* Titre */
 			setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
 
-
 			//Sous titre avec l'année
 			HorizontalLayout titleLayout = new HorizontalLayout();
 			titleLayout.setSizeFull();
@@ -119,8 +115,6 @@ public class DetailInscriptionWindow extends Window {
 			titleLayout.addComponent(labelAnneeUniv);
 			titleLayout.setComponentAlignment(labelAnneeUniv, Alignment.MIDDLE_CENTER);
 			layout.addComponent(titleLayout);
-
-
 
 			Panel panelDetailInscription= new Panel(etape.getLibelle());
 			panelDetailInscription.setSizeFull();
@@ -155,21 +149,12 @@ public class DetailInscriptionWindow extends Window {
 				messageLayout.addComponent(labelAucuneIp);
 				panelDetailInscription.setContent(messageLayout);
 			}
-
-
 			layout.addComponent(panelDetailInscription);
-
-
-
 			layout.setExpandRatio(panelDetailInscription, 1);
-
-
 			setContent(layout);
-
 
 			/* Centre la fenêtre */
 			center();
-
 		}
 	}
 
@@ -191,7 +176,6 @@ public class DetailInscriptionWindow extends Window {
 			Label libLabel = new Label();
 
 			if(StringUtils.hasText(el.getLibelle())){
-
 				//indentation des libelles dans la liste:
 				String code = el.getCode();
 				if(el.getLevel()==1 && !el.isEpreuve()){
@@ -217,14 +201,12 @@ public class DetailInscriptionWindow extends Window {
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
 			ElementPedagogique el = (ElementPedagogique) bid.getBean();
 			Label libLabel = new Label();
 
 			if(StringUtils.hasText(el.getLibelle())){
-
 				//indentation des libelles dans la liste:
 				int rg = Integer.valueOf(el.getLevel());
 				String libelp = el.getLibelle();
@@ -260,7 +242,6 @@ public class DetailInscriptionWindow extends Window {
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
 			ElementPedagogique el = (ElementPedagogique) bid.getBean();
@@ -270,12 +251,7 @@ public class DetailInscriptionWindow extends Window {
 				libLabel.setValue(el.getEcts());
 				libLabel.addStyleName("ects-value-label");
 			}
-
 			return libLabel;
 		}
 	}
-
-
-
-
 }

@@ -83,19 +83,12 @@ import java.util.concurrent.Executors;
 @SpringView(name = RechercheArborescenteView.NAME)
 public class RechercheArborescenteView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
-
 	public static final String NAME = "rechercheArborescenteView";
-
 	private static final String ID_PROPERTY = "id";
-
 	private static final String TRUE_ID_PROPERTY = "trueObjectId";
-
 	private static final String LIBELLE_PROPERTY = "libelle";
-
 	private static final String DEPLIE_PROPERTY = "deplie";
-
 	private static final String TYPE_PROPERTY ="type";
-
 	/* les champs de la table */
 	public static final String[] DETAIL_FIELDS_ORDER = {"libelle", "trueObjectId","type"};
 	/* les champs de la table */
@@ -124,39 +117,22 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
-	
 	private HierarchicalContainer hc;
-
 	private TreeTable table;
-
 	private List<String> markedRows;
-
 	private List<String> liste_types_favoris;
-
 	private List<String> liste_types_inscrits;
-
 	private List<String> liste_types_deplier;
-
 	private List<ReferencedButton> listeBoutonFavoris;
-
 	private Label ligneSelectionneeLabel;
-
 	private Label vetElpSelectionneLabel;
-
 	private Label labelLigneSelectionneeLabel;
-
 	private FormLayout elpLayout;
-
 	private String annee;
-
 	private ComboBox comboBoxAnneeUniv;
-
 	private String code;
-
 	private String type;
-
 	private boolean initEffectue;
-
 	private Button reinitButton;
 
 	/**
@@ -170,9 +146,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
 			//Actualiser de l'affiche du bouton de mise en favori
 			if(table!=null && hc!=null){
-
 				recuperationDesfavoris();
-
 				if(listeBoutonFavoris!=null){
 					for(ReferencedButton btnfav : listeBoutonFavoris){
 						if(markedRows.contains(btnfav.getIdObj())){	
@@ -236,7 +210,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && userController.isEnseignant() ){
 			/* Style */
@@ -349,8 +322,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 			addComponent(btnLayout);
 
-
-
 			if(code!=null && type!=null){
 				Label elementRecherche = new Label(code +" "+type);
 				elementRecherche.addStyleName(ValoTheme.LABEL_H1);
@@ -406,7 +377,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			tableVerticalLayout.setExpandRatio(table, 1);
 			addComponent(tableVerticalLayout);
 			setExpandRatio(tableVerticalLayout, 1);
-
 		}
 	}
 
@@ -438,21 +408,13 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			}
 
 		}else{
-
 			//On ajoute l'objet racine et on déplira ci-dessous le premier niveau
 			ObjetBase obj = rechercheArborescenteController.getObj(code,type);
 			Item i = hc.addItem(obj.getId());
 			renseignerItem(i,obj);
 			rootItemId = (String)i.getItemProperty(ID_PROPERTY).getValue();
-
-
 		}
 
-
-		//Vrai si ce n'est pas la premiere initialisation de la table
-		/*if(initEffectue){
-			//table.removeAllItems();
-		}*/
 		table.setContainerDataSource(hc);
 		if(!initEffectue){
 			table.addContainerProperty(TRUE_ID_PROPERTY, String.class, "");
@@ -470,7 +432,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.addContainerProperty(LIBELLE_PROPERTY, String.class, "");
 			table.setVisibleColumns(DETAIL_FIELDS_ORDER_ON_REFRESH);
 		}
-
 		//On déplie l'élément racine (quand la racine de la table n'est pas la totalité des composantes)
 		if(StringUtils.hasText(rootItemId)){
 			selectionnerLigne(rootItemId);
@@ -876,7 +837,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								}
 							}
 
-							//List<ObjetBase> lobj = new LinkedList<ObjetBase>();
 							//Si on a récupéré des ELP
 							if(lelp!=null && lelp.size()>0){
 								//On parcourt les ELP

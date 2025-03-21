@@ -28,12 +28,12 @@ import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.util.Set;
 
 /**
@@ -45,12 +45,8 @@ import java.util.Set;
 public class SignificationsMobileWindow extends Window {
 
 	public static final String NAME = "significationsMobileWindow";
-	
-	
 	@Resource
 	private transient ApplicationContext applicationContext;
-	
-
 	/**
 	 * Crée une fenêtre
 	 */
@@ -68,7 +64,6 @@ public class SignificationsMobileWindow extends Window {
 
 		// Titre
 		setCaption(applicationContext.getMessage("significationsWindow.title", null, getLocale()));
-		// setStyleName("v-popover-blank");
 
         VerticalLayout panelLayout = new VerticalLayout();
         panelLayout.setWidth("100%");
@@ -77,7 +72,6 @@ public class SignificationsMobileWindow extends Window {
     	panelLayout.setMargin(true);
        
         if(MdwTouchkitUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
-        	
 			Panel panelSignificationResultats= new Panel();
 			panelSignificationResultats.setCaption(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 			panelSignificationResultats.addStyleName("significationpanel");
@@ -109,11 +103,9 @@ public class SignificationsMobileWindow extends Window {
 			
 			panelSignificationResultats.setContent(significationLayout);
 			panelLayout.addComponent(panelSignificationResultats);
-		
 		}
         
         if(afficherSignificationIndicateurProfondeur){
-        	
         	Panel panelSignificationIndicateurs= new Panel();
         	panelSignificationIndicateurs.setCaption(applicationContext.getMessage(NAME+".info.significations.indicateurs", null, getLocale()));
         	panelSignificationIndicateurs.addStyleName("significationpanel");
@@ -138,12 +130,9 @@ public class SignificationsMobileWindow extends Window {
 
 			panelSignificationIndicateurs.setContent(significationLayout);
 			panelLayout.addComponent(panelSignificationIndicateurs);
-
         }
 
     	layout.addComponent(panelLayout);
-		    
-
         // close button
         HorizontalLayout bLayout = new HorizontalLayout();
         bLayout.setSizeFull();
@@ -156,7 +145,6 @@ public class SignificationsMobileWindow extends Window {
         closeButton.setIcon(FontAwesome.CHECK);
         closeButton.addClickListener(e->{
         	close();
-        	
         });
         
         bLayout.addComponent(closeButton);
@@ -164,9 +152,6 @@ public class SignificationsMobileWindow extends Window {
         layout.addComponent(bLayout);
 
         layout.setExpandRatio(panelLayout, 1);
-
-
-       
 	}
 
 	private com.vaadin.ui.Component createInfoLevelLayout(int level) {
@@ -206,6 +191,4 @@ public class SignificationsMobileWindow extends Window {
 		levelLayout.addStyleName("v-small");
 		return levelLayout;
 	}
-
-
 }

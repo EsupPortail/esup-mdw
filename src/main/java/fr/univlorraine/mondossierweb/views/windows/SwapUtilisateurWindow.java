@@ -35,12 +35,11 @@ import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.Resource;
 
 
 
@@ -54,12 +53,9 @@ import jakarta.annotation.Resource;
 public class SwapUtilisateurWindow extends Window {
 
 	public static final String NAME = "swapUtilisateurWindow";
-
 	public static final String[] CONF_APP_FIELDS_ORDER = {"loginSource", "loginCible", "datCre"};
-
 	@Resource
 	private transient ApplicationContext applicationContext;
-	
 	@Resource
 	private transient ConfigController configController;
 
@@ -79,7 +75,6 @@ public class SwapUtilisateurWindow extends Window {
 		setClosable(false);
 		setWidth("50%");
 
-
 		/* Layout */
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
@@ -93,7 +88,6 @@ public class SwapUtilisateurWindow extends Window {
 		}else{
 			setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
 		}
-		
 
 		/* Formulaire */
 		fieldGroup = new BeanFieldGroup<>(UtilisateurSwap.class);
@@ -115,9 +109,7 @@ public class SwapUtilisateurWindow extends Window {
 			formLayout.addComponent(field);
 		}
 
-		//fieldGroup.getField("loginCible").setReadOnly(swap.getLoginCible() != null);
 		fieldGroup.getField("loginSource").setReadOnly(swap.getLoginSource() != null);
-
 		layout.addComponent(formLayout);
 
 		/* Ajoute les boutons */
@@ -129,11 +121,13 @@ public class SwapUtilisateurWindow extends Window {
 
 		btnAnnuler = new Button(applicationContext.getMessage(NAME+".btnAnnuler", null, getLocale()), FontAwesome.TIMES);
 		btnAnnuler.addClickListener(e -> close());
+		btnAnnuler.addStyleName("admin-button");
 		buttonsLayout.addComponent(btnAnnuler);
 		buttonsLayout.setComponentAlignment(btnAnnuler, Alignment.MIDDLE_LEFT);
 
 		btnEnregistrer = new Button(applicationContext.getMessage(NAME+".btnSave", null, getLocale()), FontAwesome.SAVE);
 		btnEnregistrer.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		btnEnregistrer.addStyleName("admin-button");
 		btnEnregistrer.addClickListener(e -> {
 			try {
 				/* Valide la saisie */
@@ -144,7 +138,7 @@ public class SwapUtilisateurWindow extends Window {
 					String loginSource = (String)fieldGroup.getField("loginSource").getValue();
 					if(configController.getSwapUtilisateur(loginSource)!=null){
 						commitok=false;
-						//afficher message d'erreur
+						//Afficher message d'erreur
 						Notification.show(applicationContext.getMessage(NAME+".error.loginexistant",null, UI.getCurrent().getLocale()), Notification.Type.ERROR_MESSAGE);
 					}
 				}
@@ -164,5 +158,4 @@ public class SwapUtilisateurWindow extends Window {
 		/* Centre la fenêtre */
 		center();
 	}
-
 }

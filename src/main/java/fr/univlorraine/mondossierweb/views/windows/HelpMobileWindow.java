@@ -28,13 +28,12 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.Resource;
 
 /**
  * Fenêtre d'aide
@@ -50,11 +49,8 @@ public class HelpMobileWindow extends Window {
 
 	/* Composants */
 	private Button btnFermer = new Button();
-
 	@Getter
 	private CheckBox checkBox=new CheckBox();
-
-
 
 	public void addBtnNonListener(Button.ClickListener clickListener) {
 		btnFermer.addClickListener(clickListener);
@@ -129,9 +125,7 @@ public class HelpMobileWindow extends Window {
 		if(displayCheckBox) {
 			buttonsLayout.setExpandRatio(checkBox, 1);
 		}
-
 		// Centre la fenêtre 
 		center();
 	}
-
 }

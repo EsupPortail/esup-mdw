@@ -28,13 +28,13 @@ import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 import com.vaadin.v7.ui.VerticalLayout;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -50,7 +50,6 @@ public class InputWindow extends Window {
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
-
 	/* Composants */
 	private TextField inputTextField = new TextField();
 	private Button btnOk = new Button();
@@ -164,12 +163,9 @@ public class InputWindow extends Window {
 	 * Interface pour les listeners du bouton ok.
 	 */
 	public interface BtnOkListener extends Serializable {
-
 		/**
 		 * Appelé lorsque Ok est cliqué.
 		 */
 		public void btnOkClick(String text);
-
 	}
-
 }

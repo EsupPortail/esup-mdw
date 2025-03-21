@@ -61,12 +61,8 @@ import java.util.List;
 @SpringView(name = NotesMobileView.NAME)
 public class NotesMobileView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -2056224835347802529L;
-
 	private Logger LOG = LoggerFactory.getLogger(NotesMobileView.class);
-
 	public static final String NAME = "notesMobileView";
-
-
 
 	/* Injections */
 	@Resource
@@ -83,14 +79,10 @@ public class NotesMobileView extends VerticalLayout implements View {
 	private transient ObjectFactory<SignificationsMobileWindow> significationsMobileWindowFactory;
 
 	private Button returnButton;
-
 	private Button significationButton;
-
 	private VerticalLayout diplomesLayout;
 	private VerticalLayout elpsLayout;
-
 	private HorizontalLayout showDiplomesLayout;
-
 	private HorizontalLayout showEtapesLayout;
 
 	/**
@@ -101,15 +93,12 @@ public class NotesMobileView extends VerticalLayout implements View {
 
 	}
 	public void refresh(){
-
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null &&
 				((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
 					(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
 					(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) ){
-
 			removeAllComponents();
-
 			// Style
 			setMargin(false);
 			setSpacing(false);
@@ -149,7 +138,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 			labelNavBar.setStyleName("v-label-navbar");
 			navbar.addComponent(labelNavBar);
 			navbar.setComponentAlignment(labelNavBar, Alignment.MIDDLE_CENTER);
-
 			navbar.setExpandRatio(labelNavBar, 1);
 
 			//Significations
@@ -167,9 +155,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 				navbar.setComponentAlignment(significationButton, Alignment.MIDDLE_RIGHT);
 			}
 
-
 			addComponent(navbar);
-
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSpacing(true);
 			globalLayout.setMargin(true);
@@ -207,7 +193,6 @@ public class NotesMobileView extends VerticalLayout implements View {
 				}
 				globalLayout.addComponent(this.diplomesLayout);
 			}
-
 
 			List<Etape> letapes = MdwTouchkitUI.getCurrent().getEtudiant().getEtapes();
 			if(letapes != null && letapes.size() > 0){

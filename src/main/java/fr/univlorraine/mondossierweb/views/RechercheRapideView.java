@@ -72,15 +72,8 @@ import java.util.Map;
 @Component @Scope("prototype")
 @SpringView(name = RechercheRapideView.NAME)
 public class RechercheRapideView extends VerticalLayout implements View {
-
 	private static final long serialVersionUID = 7147611659177952737L;
-
-
-
 	public static final String NAME = "rechercheRapideView";
-
-
-
 	public static final String[] FIELDS_ORDER = {"lib","type"};
 
 	/* Injections */
@@ -99,31 +92,18 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	@Resource
 	private ElasticSearchApogeeService ElasticSearchService;
-
 	private VerticalLayout mainVerticalLayout;
-
 	private HorizontalLayout champRechercheLayout;
-
 	private Button btnRecherche;
-
 	private AutoComplete champRecherche;
-
 	private HierarchicalContainer rrContainer;
-
 	private TreeTable tableResultats;
-
 	private String[] columnHeaders;
-
 	private CheckBox casesAcocherComposantes;
-
 	private CheckBox casesAcocherVet;
-
 	private CheckBox casesAcocherElp;
-
 	private CheckBox casesAcocherEtudiant;
-
 	private Button resetButton;
-
 	private List<ResultatDeRecherche> items = new ArrayList<ResultatDeRecherche>();
 
 	/**
@@ -131,21 +111,16 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && userController.isEnseignant()){
-
-
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
-
 
 			mainVerticalLayout = new VerticalLayout();
 			champRechercheLayout = new HorizontalLayout();
 			// mainVerticalLayout.setImmediate(true);
 			mainVerticalLayout.setSizeFull();
-
 
 			//BOUTON DE RECHERCHE
 			btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
@@ -154,10 +129,8 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			btnRecherche.setEnabled(true);
 			btnRecherche.addClickListener(e -> search(false));
 
-
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
 			if(ElasticSearchService.initConnexion()){
-
 				//CHAMP DE RECHERCHE
 				champRecherche = new AutoComplete();
 				champRecherche.setWidth(700, Unit.PIXELS); //540
@@ -227,15 +200,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				// Maj style css du champ de recherche
 				champRecherche.updateStyle();
 
-				//champRecherche.addBlurListener(e -> champRecherche.getChoicesPopup().setVisible(false));
-
 				HorizontalLayout layoutBordure = new HorizontalLayout();
 				layoutBordure.setWidth("100px");
 				champRechercheLayout.addComponent(layoutBordure);
 				champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
-
-				/*champRechercheLayout.addComponent(search1);
-			champRechercheLayout.setComponentAlignment(search1, Alignment.MIDDLE_LEFT);*/
 
 				champRechercheLayout.addComponent(champRecherche);
 				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.TOP_LEFT);
@@ -259,8 +227,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				mainVerticalLayout.addComponent(champRechercheLayout);
 				mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
 				champRechercheLayout.setMargin(true);
-
-
 
 				casesAcocherComposantes= new CheckBox("Composantes");
 				casesAcocherComposantes.setValue(true);
@@ -287,7 +253,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				checkBoxLayout.addComponent(casesAcocherElp);
 				checkBoxLayout.addComponent(casesAcocherEtudiant);
 
-
 				mainVerticalLayout.addComponent(checkBoxLayout);
 
 				//TABLE DE RESULTATS
@@ -310,8 +275,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				tableResultats.setContainerDataSource(rrContainer);
 				tableResultats.setVisibleColumns(FIELDS_ORDER);
 				tableResultats.setColumnHeaders(columnHeaders);
-				/*mainVerticalLayout.addComponent(searchBoxFilter);
-		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
 				VerticalLayout tableVerticalLayout = new VerticalLayout();
 				tableVerticalLayout.setMargin(new MarginInfo(false, true, true, true));
 				tableVerticalLayout.setSizeFull();
@@ -320,17 +283,14 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
 				tableResultats.setVisible(false);
 
-
 				addComponent(mainVerticalLayout);
 				setSizeFull();
 			}else{
-
 				//Message fonctionnalité indisponible
 				addComponent(new Label(applicationContext.getMessage(NAME + ".indisponible.message", null, getLocale()), ContentMode.HTML));
 			}
 		}
 	}
-
 
 
 	private List<ResultatDeRecherche> quickSearch(String valueString){
@@ -341,19 +301,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		String value = valueString;
 		if(StringUtils.hasText(value) && value.length()>2){
 
-
 			///////////////////////////////////////////////////////
 			//appel elasticSearch
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
 
-	
 			//valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
-		
-			
 			//Liste des types autorisés
 			LinkedList<String> listeTypeAutorise=new LinkedList();
 			if(casesAcocherComposantes.getValue()){
@@ -368,7 +324,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			if(casesAcocherEtudiant.getValue()){
 				listeTypeAutorise.add(Utils.ETU);
 			}
-
 
 			///////////////////////////////////////////////////////
 			// recuperation des obj ElasticSearch
@@ -406,22 +361,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					}
 				}
 			}
-
-
-
 		}
-
-		//return listeReponses;
-		//return new ArrayList<Object>(listeReponses);
 		return listeReponses;
-
 	}
-
-
-
-
-
-
 
 	private void search(boolean rechercheSansUtiliserLaVue){
 
@@ -432,19 +374,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			champRecherche.getChoicesPopup().setPopupVisible(false);
 		}
 		String value = String.valueOf(champRecherche.getValue());
-		/*ResultatDeRecherche r = (ResultatDeRecherche)search1.getValue();
-		String value = String.valueOf(r.getLib());*/
+
 
 		if(StringUtils.hasText(value) && value.length()>1){
-
-
 			boolean suggestionValidee = false;
 
 			//On détecte si la recherche porte sur une suggestion proposée par la pop_up
 			if(value.contains("[") && value.contains("]")){
 				suggestionValidee = true;
 			}
-
 
 			///////////////////////////////////////////////////////
 			//appel elasticSearch
@@ -481,8 +419,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 							
 							rrContainer.setChildrenAllowed(rr, false);
 						}
-
-
 					}
 				}
 
@@ -496,16 +432,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				}
 			}
 
-
-
-
 		}else{
 			if(StringUtils.hasText(value) && value.length()<=1){
 				//afficher message erreur
 				Notification.show("Merci d'indiquer au moins 2 lettres", Notification.Type.ERROR_MESSAGE);
 			}
 		}
-
 	}
 
 
@@ -524,7 +456,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	}
 
 	class DisplayNameColumnGenerator implements Table.ColumnGenerator {
-
 		public Object generateCell(Table source, Object itemId,
 				Object columnId) {
 
@@ -551,14 +482,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				libhl.setComponentAlignment(formation, Alignment.MIDDLE_RIGHT);
 				
 				return libhl;
-				
 			}
-			
 			return b;
 		}
 	}
-
-
 
 
 	private void tuneSearch() {
@@ -590,15 +517,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			}
 
 			rrContainer.addContainerFilter(filterStringToSearch);
-
-
 		}
 
 	}
-
-
-
-
 
 	/**
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)

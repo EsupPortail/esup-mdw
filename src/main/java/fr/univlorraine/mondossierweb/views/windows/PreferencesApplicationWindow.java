@@ -43,13 +43,13 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -65,16 +65,13 @@ import java.util.Locale;
 public class PreferencesApplicationWindow extends Window {
 
 	public static final String NAME = "preferencesApplicationWindow";
-
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
-
 	public static final String[]  PAV_FIELD_ORDER = {"valeur"}; 
 
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient ConfigController configController;
-
 	private BeanItemContainer<PreferencesApplicationValeurs> pavContainer;
 	
 	/* Composants */
@@ -149,9 +146,6 @@ public class PreferencesApplicationWindow extends Window {
 
 			}
 		});
-
-
-
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.setSpacing(true);
@@ -259,10 +253,12 @@ public class PreferencesApplicationWindow extends Window {
 		btnAnnuler = new Button(applicationContext.getMessage(NAME+".btnAnnuler", null, getLocale()), FontAwesome.TIMES);
 		btnAnnuler.addClickListener(e -> close());
 		buttonsLayout.addComponent(btnAnnuler);
+		btnAnnuler.addStyleName("admin-button");
 		buttonsLayout.setComponentAlignment(btnAnnuler, Alignment.MIDDLE_LEFT);
 
 		btnEnregistrer = new Button(applicationContext.getMessage(NAME+".btnSave", null, getLocale()), FontAwesome.SAVE);
 		btnEnregistrer.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		btnEnregistrer.addStyleName("admin-button");
 		btnEnregistrer.addClickListener(e -> {
 			try {
 				/* Valide la saisie */
@@ -314,8 +310,6 @@ public class PreferencesApplicationWindow extends Window {
 		}else{
 			Notification.show(applicationContext.getMessage(NAME+".notification.valeur.presente",null, getLocale()));
 		}
-		
-		
 	}
 
 
@@ -346,13 +340,4 @@ public class PreferencesApplicationWindow extends Window {
 		}
 		refreshPavContainer(prefApp);
 	}
-
-	/**
-	 * 
-	 * @param val
-	 * @return vrai si la valeur est booleenne
-	 */
-	/*boolean estUneValeurBooleenne(String val){
-		return (StringUtils.hasText(val)&& (val.equals("true") || val.equals("false")));
-	}*/
 }

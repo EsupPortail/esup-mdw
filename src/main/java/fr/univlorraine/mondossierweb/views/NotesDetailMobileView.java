@@ -41,6 +41,8 @@ import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -49,8 +51,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,10 +67,7 @@ import java.util.Map.Entry;
 public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	private Logger LOG = LoggerFactory.getLogger(NotesDetailMobileView.class);
-
 	public static final String NAME = "notesDetailMobileView";
-
-
 
 	/* Injections */
 	@Resource
@@ -85,23 +82,15 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	private transient NoteController noteController;
 	@Resource
 	private transient ConfigController configController;
-
 	@Resource
 	private transient ObjectFactory<SignificationsMobileWindow> significationsMobileWindowFactory;
 
 	private Etape etape;
-
 	private String codetu;
-
 	int compteurElp;
-
 	String elpPere;
-
 	private Map<String,LinkedList<HorizontalLayout>> layoutList;
-
-
 	private Button returnButton;
-
 	private Button significationButton;
 
 	/**
@@ -114,7 +103,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	@SuppressWarnings("deprecation")
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
-
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null &&
 			((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
@@ -132,15 +120,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 			//On repassera dans la création que si on n'a pas dejà créé la vue
 			if(codetu==null || etape == null){
 				compteurElp=0;
-
 				removeAllComponents();
 
 				/* Style */
 				setMargin(false);
 				setSpacing(false);
 				setSizeFull();
-
-
 
 				//Test si user enseignant
 				if(userController.isEnseignant()){
@@ -173,7 +158,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				labelNavBar.setStyleName("v-label-navbar");
 				navbar.addComponent(labelNavBar);
 				navbar.setComponentAlignment(labelNavBar, Alignment.MIDDLE_CENTER);
-
 				navbar.setExpandRatio(labelNavBar, 1);
 
 				//Significations
@@ -191,12 +175,8 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					navbar.setComponentAlignment(significationButton, Alignment.MIDDLE_RIGHT);
 				}
 
-
 				addComponent(navbar);
-
-
 				layoutList = new  HashMap<String,LinkedList<HorizontalLayout>>();
-
 				etape=etapeToDisplay;
 				codetu=codetuToDisplay;
 
@@ -207,14 +187,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				layout.setSpacing(true);
 				layout.setStyleName("v-scrollableelement");
 
-				/* Titre */
-				//setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-
-
 				List<ElementPedagogique> lelp = MdwTouchkitUI.getCurrent().getEtudiant().getElementsPedagogiques();
-
-
-
 				if(lelp!=null && lelp.size()>0){
 					VerticalLayout notesLayout = new VerticalLayout();
 

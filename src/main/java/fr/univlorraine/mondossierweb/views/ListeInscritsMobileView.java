@@ -46,14 +46,14 @@ import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.FiltreInscritsMobileWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.List;
 
 
@@ -140,10 +140,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				libelleObj = MdwTouchkitUI.getCurrent().getElpListeInscrits().getLibelle();
 			}
 
-
 			//Récupération de la liste des inscrits
 			List<Inscrit> linscrits = MdwTouchkitUI.getCurrent().getListeInscrits();
-
 
 			//Récupération du nombre d'inscrit par page
 			nbEtuParPage=configController.getTrombiMobileNbEtuParPage();
@@ -185,6 +183,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			favpk.setTypfav(typeFavori);
 			Favoris favori  = new Favoris();
 			favori.setId(favpk);
+
 			//Si l'objet n'est pas déjà en favori
 			if(lfav!=null && !lfav.contains(favori)){
 				//Création du bouton pour ajouter l'objet aux favoris
@@ -193,7 +192,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				btnAjoutFavori.setStyleName("v-menu-nav-button");
 				btnAjoutFavori.setHeight("100%");
 				btnAjoutFavori.addClickListener(e->{
-
 					//creation du favori en base sur le clic du bouton
 					favorisController.saveFavori(favori);
 
@@ -207,7 +205,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Ajout du bouton à l'interface
 				navbar.addComponent(btnAjoutFavori);
 			}
-
 
 			//Bouton Filtre
 			//On a la possibilité de filtrer le trombinoscope que si on est positionné sur un ELP
@@ -230,7 +227,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 							}
 						});
 						UI.getCurrent().addWindow(w);
-
 					});
 					navbar.addComponent(filterButton);
 					navbar.setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
@@ -240,10 +236,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			navbar.setExpandRatio(labelTrombi, 1);
 			addComponent(navbar);
 
-
 			//Test si la liste contient des étudiants
 			if(linscrits!=null && linscrits.size()>0){
-
 				pageEnCours=1;
 				//Calcul du nombre maxi de page
 				if(nbEtuParPage>0 && linscrits.size()>nbEtuParPage){
@@ -274,7 +268,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				dataLayout = new VerticalLayout();
 				dataLayout.setSizeFull();
 
-
 				//Layout contenant le gridLayout correspondant au trombinoscope
 				verticalLayoutForTrombi = new VerticalLayout();
 				verticalLayoutForTrombi.setSizeFull();
@@ -287,7 +280,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				verticalLayoutForTrombi.setSizeFull();
 				verticalLayoutForTrombi.setHeight(null);
 
-				if(pageMax>1){
+				if(pageMax > 1){
 					HorizontalLayout layoutPagination = new HorizontalLayout();
 					layoutPagination.setWidth("100%");
 					layoutPagination.setMargin(true);
@@ -307,11 +300,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 						layoutPagination.setExpandRatio(btnNext, 1);
 					}
 					verticalLayoutForTrombi.addComponent(layoutPagination);
-
-
-
 				}
-
 
 				//Le layout contient le trombi à afficher
 				dataLayout.addComponent(verticalLayoutForTrombi);
@@ -320,7 +309,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				infoLayout.setExpandRatio(dataLayout, 1);
 
 				addComponent(infoLayout);
-
 
 				setExpandRatio(infoLayout, 1);
 			}else{
@@ -376,7 +364,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 				//Si l'étudiant n'est pas dans la VET sélectionnée, on ne l'affiche pas
 				if(StringUtils.hasText(vetSelectionnee) && (inscrit.getId_etp()==null || !inscrit.getId_etp().contains(vetSelectionnee))){
 					afficherEtudiant=false;
-
 				}
 
 				// Si l'étudiant n'est pas dans le groupe sélectionné, on ne l'affiche pas
@@ -384,10 +371,8 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 					afficherEtudiant=false;
 				}
 
-
 				// Si l'étudiant doit être affiché
 				if(afficherEtudiant){
-
 					// Panel contenant l'étudiant
 					Panel etuPanel = new Panel();
 
@@ -399,7 +384,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 
 					// Si on a une url renseignée vers la photo de l'étudiant
 					if(inscrit.getUrlphoto()!=null){
-						
 						// On met à jour l'url de la photo, des fois que le ticket ait expiré entre temps
 						inscrit.setUrlphoto(listeInscritsController.getUrlPhoto(inscrit));
 
@@ -414,7 +398,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 						});
 						// Ajout de la photo au layout
 						photoLayout.addComponent(fotoEtudiant);
-
 					}
 
 					// Layout contenant le nom, prénom et le codetu
@@ -469,7 +452,6 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		//LOG.debug("enter listeInscritsMobileView");
 	}
-
 
 	private boolean typeIsVet(){
 		return (typeFavori!=null && typeFavori.equals(Utils.VET));

@@ -43,6 +43,8 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -52,8 +54,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**
@@ -63,11 +63,8 @@ import java.util.List;
 @SpringView(name = EtatCivilView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
-
 	private static final long serialVersionUID = -2056224835347802529L;
-
 	private Logger LOG = LoggerFactory.getLogger(EtatCivilView.class);
-
 	public static final String NAME = "etatCivilView";
 
 	/* Injections */
@@ -93,7 +90,6 @@ public class EtatCivilView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-
 
 		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
 
@@ -196,10 +192,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 					idLayout.addComponent(generalitesGlobalLayout);
 
 
-
 					/* Bac */
-
-
 					Panel panelBac= new Panel(applicationContext.getMessage(NAME+".bac.title", null, getLocale()));
 
 					//Si plusieurs bac
@@ -222,7 +215,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 						vBacLayout.addComponent(bacTabSheet);
 						panelBac.setContent(vBacLayout);
 					}else{
-						//Si un seul bac
+						//Un seul bac
 						FormLayout formBacLayout = new FormLayout();
 						formBacLayout.setSizeFull();
 						if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()==1){
@@ -242,9 +235,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 					idLayout.addComponent(bacGlobalLayout);
 
 
-
-
-					/* Info de contact */
+					/* Infos de contact */
 					if(userController.isEtudiant() || 
 						(userController.isEnseignant() && configController.isAffInfosContactEnseignant()) || 
 						(userController.isGestionnaire() && configController.isAffInfosContactGestionnaire())){
@@ -308,7 +299,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 			btnValidModifCoordonneesPerso.addClickListener(e -> {
 				erreursLayout.removeAllComponents();
 				List<String> retour = etudiantController.updateContact(fieldTelPortable.getValue(),fieldMailPerso.getValue(),MainUI.getCurrent().getEtudiant().getCod_etu());
-				//si modif ok
+				// si modif ok
 				if(retour!=null && retour.size()==1 && retour.get(0).equals("OK")){
 					etudiantController.recupererEtatCivil();
 					renseignerPanelContact();

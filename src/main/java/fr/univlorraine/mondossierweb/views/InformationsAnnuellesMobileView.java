@@ -49,14 +49,14 @@ import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**
@@ -368,8 +368,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				}
 
 				panelInfos.setContent(formInfosLayout);
-
-
 
 				//Si étudiant non inscrit ou si user étudiant ou si on a autorisé la visualisation des infos annuelles par l'enseignant
 				if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours() || userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignant()){

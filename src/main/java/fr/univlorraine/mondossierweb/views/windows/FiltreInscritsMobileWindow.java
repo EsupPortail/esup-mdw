@@ -24,7 +24,6 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.NativeSelect;
@@ -32,16 +31,15 @@ import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
-import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**
@@ -53,32 +51,22 @@ import java.util.List;
 public class FiltreInscritsMobileWindow extends Window {
 
 	public static final String NAME = "filtreInscritsMobileWindow";
-
 	public static final String TOUTES_LES_ETAPES_LABEL = "toutes";
-
 	public static final String TOUS_LES_GROUPES_LABEL = "tous";
-
 	
 	private String typeFavori;
-	
 	@Getter
 	private NativeSelect listeEtapes;
-
 	@Getter
 	private NativeSelect listeGroupes;
-	
 	@Getter
 	private String vetSelectionnee;
-	
 	@Getter
 	private String groupeSelectionne;
-	
 	@Getter
 	private boolean demandeFiltrage;
-	
 	@Resource
 	private transient ApplicationContext applicationContext;
-	
 
 	/**
 	 * Crée une fenêtre
@@ -108,8 +96,6 @@ public class FiltreInscritsMobileWindow extends Window {
 			//GESTION DES ETAPES
 			List<VersionEtape> letapes = MdwTouchkitUI.getCurrent().getListeEtapesInscrits();
 			if(letapes != null && letapes.size()>0){
-				
-				
 		        Label etapeLabel = new Label(applicationContext.getMessage(NAME+".etape", null, getLocale()));
 		        layout.addComponent(etapeLabel);
 		        layout.setComponentAlignment(etapeLabel, Alignment.BOTTOM_LEFT);
@@ -124,7 +110,6 @@ public class FiltreInscritsMobileWindow extends Window {
 					listeEtapes.addItem(idEtape);
 					listeEtapes.setItemCaption(idEtape,"["+idEtape+"] "+etape.getLib_web_vet());
 				}
-
 				if(MdwTouchkitUI.getCurrent().getEtapeInscrits()!=null){
 					listeEtapes.setValue( MdwTouchkitUI.getCurrent().getEtapeInscrits());
 				}else{
@@ -145,21 +130,15 @@ public class FiltreInscritsMobileWindow extends Window {
 						if(groupeSelectionne!=null && groupeSelectionne.equals(TOUS_LES_GROUPES_LABEL)){
 							groupeSelectionne=null;
 						}
-						
-						//update de l'affichage
-						//initListe();
-
 					}
 				});
 				layout.addComponent(listeEtapes);
 
 			}
 
-			
 			//GESTION DES GROUPES
 			List<ElpDeCollection> lgroupes = MdwTouchkitUI.getCurrent().getListeGroupesInscrits();
 			if(lgroupes != null && lgroupes.size()>0){
-			     
 				// Label "GROUPE"
 		        HorizontalLayout gLayout = new HorizontalLayout();
 		        gLayout.setSizeFull();
@@ -191,7 +170,6 @@ public class FiltreInscritsMobileWindow extends Window {
 					listeGroupes.setValue(TOUS_LES_GROUPES_LABEL);
 				}
 
-
 				//Gestion de l'événement sur le changement de groupe
 				listeGroupes.addValueChangeListener(new Property.ValueChangeListener() {
 					@Override
@@ -209,15 +187,9 @@ public class FiltreInscritsMobileWindow extends Window {
 						
 					}
 				});
-
-
 				layout.addComponent(listeGroupes);
-
 			}
 		}
-
-
-        
 
         // Bouton "Filtrer"
         HorizontalLayout bLayout = new HorizontalLayout();
@@ -234,29 +206,10 @@ public class FiltreInscritsMobileWindow extends Window {
         bLayout.addComponent(closeButton);
         bLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_CENTER);
         layout.addComponent(bLayout);
-
-
 	}
-
-
-
 
 	private boolean typeIsElp(){
 		return (typeFavori!=null && typeFavori.equals(Utils.ELP));
 	}
-
-
-
-	private void refreshListeCodind(BeanItemContainer<Inscrit> ic) {
-		/*if(listecodind!=null){
-			listecodind.clear();
-		}else{
-			listecodind = new LinkedList<String>();
-		}
-		for(Inscrit inscrit : ic.getItemIds()){
-			listecodind.add(inscrit.getCod_ind());
-		}*/
-	}
-
 
 }

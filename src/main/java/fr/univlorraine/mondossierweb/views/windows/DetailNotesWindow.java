@@ -46,13 +46,13 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
@@ -65,31 +65,20 @@ import java.util.Set;
 public class DetailNotesWindow extends Window {
 
 	public static final String NAME = "notesWindow";
-
-
-
 	@Resource
 	private transient ApplicationContext applicationContext;
-	
 	@Resource
 	private transient UserController userController;
-	
 	@Resource
 	private transient EtudiantController etudiantController;
-	
 	@Resource(name="${resultat.implementation}")
 	private transient ResultatController resultatController;
-	
 	@Resource
 	private transient NoteController noteController;
-	
 	@Resource
 	private transient ConfigController configController;
-
 	private Etape etape;
-	
 	private Button btnDisplayFiltres;
-	
 	private Panel panelVue;
 
 	public void init(Etape et) {
@@ -110,7 +99,6 @@ public class DetailNotesWindow extends Window {
 			setHeight(95, Unit.PERCENTAGE);
 			setModal(true);
 			setResizable(false);
-
 
 			//Test si user enseignant et en vue Enseignant
 			if(userController.isEnseignant() && voirCommeEnseignant()){
@@ -142,7 +130,6 @@ public class DetailNotesWindow extends Window {
 
 			ajouterVoirCommeUnEtudiant(titleLayout);
 
-			
 			if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
@@ -150,8 +137,7 @@ public class DetailNotesWindow extends Window {
 				pdfButton.addStyleName("red-button-icon");
 				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-				
-				
+
 				if(PropertyUtils.isPushEnabled()){
 					MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfDetail(etape));
 					fd.extend(pdfButton);
@@ -159,7 +145,6 @@ public class DetailNotesWindow extends Window {
 					FileDownloader fd = new FileDownloader(noteController.exportPdfDetail(etape));
 					fd.extend(pdfButton);
 				}
-				
 				titleLayout.addComponent(pdfButton);
 				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}
@@ -170,7 +155,6 @@ public class DetailNotesWindow extends Window {
 			Panel panelDetailNotes= new Panel(etape.getLibelle()+" - "+applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" "+ etape.getAnnee());
 			panelDetailNotes.addStyleName("small-font-element");
 			panelDetailNotes.setSizeFull();
-
 
 			if(lelp!=null && lelp.size()>0){
 				Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
@@ -221,9 +205,7 @@ public class DetailNotesWindow extends Window {
 			}
 			layout.addComponent(panelDetailNotes);
 
-
-
-			if(lelp!=null && lelp.size()>0 && MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
+			if(lelp!=null && !lelp.isEmpty() && MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
 				Panel panelSignificationResultats= new Panel(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 
 				panelSignificationResultats.addStyleName("significationpanel");
@@ -250,14 +232,9 @@ public class DetailNotesWindow extends Window {
 
 				panelSignificationResultats.setContent(significationLayout);
 				layout.addComponent(panelSignificationResultats);
-
 			}
 
-
-
 			layout.setExpandRatio(panelDetailNotes, 1);
-
-
 			setContent(layout);
 
 
@@ -290,7 +267,6 @@ public class DetailNotesWindow extends Window {
 			}
 			setContent(layout);
 		}
-
 	}
 
 	private void ajouterPanelVoirCommeUnEtudiant(VerticalLayout layout) {
@@ -553,7 +529,6 @@ public class DetailNotesWindow extends Window {
 		}
 	}
 
-
 	/** Formats the position in a column containing Date objects. */
 	class ResultatSession1ColumnGenerator implements Table.ColumnGenerator {
 		/**
@@ -667,5 +642,4 @@ public class DetailNotesWindow extends Window {
 			return libLabel;
 		}
 	}
-
 }

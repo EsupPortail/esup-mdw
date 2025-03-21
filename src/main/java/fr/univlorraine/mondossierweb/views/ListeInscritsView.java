@@ -205,7 +205,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-
 	}
 	public void refresh() {
 
@@ -213,7 +212,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 		if(UI.getCurrent() instanceof MainUI && userController.isEnseignant()){
 			//Actualiser de l'affiche du bouton de mise en favori
 			if(btnAjoutFavori !=null && favoriLayout!=null && StringUtils.hasText(code) && StringUtils.hasText(typeFavori)){
-
 				List<Favoris> lfav = favorisController.getFavoris();
 				FavorisPK favpk = new FavorisPK();
 				favpk.setLogin(userController.getCurrentUserName());
@@ -256,7 +254,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 			// Si l'objet est renseigné
 			if(code!=null && typeFavori!=null){
-
 				//Panel contenant les filtres d'affichage et le bouton de mise en favori
 				HorizontalLayout panelLayout = new HorizontalLayout();
 				panelLayout.setSizeFull();
@@ -309,7 +306,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						}
 					});
 					formInscritLayout.addComponent(listeAnnees);
-
 				}
 
 				//Si on affiche la liste des inscrits à un ELP
@@ -351,11 +347,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 								//faire le changement
 								filtrerInscrits(vetSelectionnee, getGroupeSelectionne());
-
 							}
 						});
 						formInscritLayout.addComponent(listeEtapes);
-
 					}
 
 					List<ElpDeCollection> lgroupes = MainUI.getCurrent().getListeGroupesInscrits();
@@ -383,7 +377,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						}else{
 							listeGroupes.setValue(TOUS_LES_GROUPES_LABEL);
 						}
-
 
 						//Gestion de l'événement sur le changement de groupe
 						listeGroupes.addValueChangeListener(new Property.ValueChangeListener() {
@@ -422,9 +415,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 							UI.getCurrent().addWindow(dgw);
 						});
 						gpLayout.addComponent(btnDetailGpe);
-
 						formInscritLayout.addComponent(gpLayout);
-
 					}
 				}
 				panelLayout.addComponent(formInscritLayout);
@@ -532,9 +523,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					leftResumeLayout.addComponent(infoDescriptionButton);
 					leftResumeLayout.setComponentAlignment(infoDescriptionButton, Alignment.MIDDLE_LEFT);
 
-
-
-
 					//Bouton export trombinoscope
 					btnExportTrombi=new Button();
 					btnExportTrombi.setIcon(FontAwesome.FILE_PDF_O);
@@ -550,7 +538,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
 						@Override
 						public InputStream getStream() {
-
 							//recuperation de l'année sélectionnée et du libellé de l'ELP
 							String annee=(String)listeAnnees.getValue();
 							String libObj=panelFormInscrits.getCaption();
@@ -573,12 +560,9 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					leftResumeLayout.addComponent(btnExportTrombi);
 					leftResumeLayout.setComponentAlignment(btnExportTrombi, Alignment.MIDDLE_LEFT);
-					//if(!afficherTrombinoscope){
 
 					//On cache le bouton d'export pdf
 					btnExportTrombi.setVisible(false);
-					//}
-
 
 					//Bouton export liste excel
 					btnExportExcel=new Button();
@@ -591,7 +575,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					StreamResource resourceXls = new StreamResource(new StreamResource.StreamSource() {
 						@Override
 						public InputStream getStream() {
-							//recuperation de l'année sélectionnée et du libellé de l'ELP
+							//Recuperation de l'année sélectionnée et du libellé de l'ELP
 							String annee=(String)listeAnnees.getValue();
 							String libObj=panelFormInscrits.getCaption();
 							// Récupération des paramètres d'affichage du tableau
@@ -614,10 +598,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						fd.extend(btnExportExcel);
 					}
 
-					//if(!afficherTrombinoscope){
-					//On échange le bouton d'export pdf par le bouton export excel
 					leftResumeLayout.replaceComponent(btnExportTrombi, btnExportExcel);
-					//}
 
 					resumeLayout.addComponent(leftResumeLayout);
 
@@ -666,9 +647,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 						middleResumeLayout.setComponentAlignment(collapseGrp, Alignment.MIDDLE_CENTER);
 					}
 
-
 					resumeLayout.addComponent(middleResumeLayout);
-
 
 					HorizontalLayout buttonResumeLayout = new HorizontalLayout();
 					buttonResumeLayout.setSizeFull();
@@ -722,9 +701,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					btnRetourListe= new Button(applicationContext.getMessage(NAME+".message.retourliste", null, getLocale()));
 					btnRetourListe.setIcon(FontAwesome.BARS);
 					buttonResumeLayout.addComponent(btnRetourListe);
-					//if(!afficherTrombinoscope){
 					btnRetourListe.setVisible(false);
-					//}
 
 					//Gestion du clic sur le bouton de  retour à l'affichage de la liste
 					btnRetourListe.addClickListener(e->{
@@ -739,9 +716,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					});
 					buttonResumeLayout.setComponentAlignment(btnRetourListe, Alignment.MIDDLE_RIGHT);
-
 					resumeLayout.addComponent(buttonResumeLayout);
-
 					infoLayout.addComponent(resumeLayout);
 
 					//Layout qui contient la liste des inscrits et le trombinoscope
@@ -750,7 +725,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 					//Table contenant la liste des inscrits
 					inscritstable = new Table(null, new BeanItemContainer<>(Inscrit.class, linscrits));
-
 					inscritstable.addStyleName("table-without-column-selector");
 					inscritstable.setSizeFull();
 					inscritstable.setVisibleColumns(new String[0]);
@@ -777,7 +751,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setColumnHeader("notes1", applicationContext.getMessage(NAME+".table.notes1", null, getLocale()));
 					inscritstable.addGeneratedColumn("notes2", new Session2ColumnGenerator());
 					inscritstable.setColumnHeader("notes2", applicationContext.getMessage(NAME+".table.notes2", null, getLocale()));
-					
 					inscritstable.addGeneratedColumn("groupe", new GroupeColumnGenerator());
 					inscritstable.setColumnHeader("groupe", applicationContext.getMessage(NAME+".table.groupe", null, getLocale()));
 
@@ -807,9 +780,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					inscritstable.setColumnCollapsed("notes1", true);
 					inscritstable.setColumnCollapsed("notes2", true);
 					inscritstable.setColumnCollapsed("groupe", true);
-
-
-
 					inscritstable.setSelectable(false);
 					inscritstable.setImmediate(true);
 					inscritstable.addStyleName("scrollabletable");
@@ -826,7 +796,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					verticalLayoutForTrombi.addComponent(trombiLayout);
 					verticalLayoutForTrombi.setSizeFull();
 					verticalLayoutForTrombi.setHeight(null);
-
 					infoLayout.addComponent(dataLayout);
 					infoLayout.setExpandRatio(dataLayout, 1);
 					addComponent(infoLayout);
@@ -901,7 +870,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private void displayTrombinoscope() {
 		List<Inscrit> linscrits = MainUI.getCurrent().getListeInscrits();
-
 		if(trombiLayout!=null){
 			trombiLayout.removeAllComponents();
 		}else{
@@ -932,7 +900,6 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					//photoLayout.addComponent(fotoEtu);
 					photoLayout.setComponentAlignment(fotoEtudiant, Alignment.MIDDLE_CENTER);
 					photoLayout.setExpandRatio(fotoEtudiant, 1);
-
 				}
 				VerticalLayout nomCodeLayout = new VerticalLayout();
 				nomCodeLayout.setSizeFull();

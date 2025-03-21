@@ -52,6 +52,8 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -61,8 +63,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
@@ -76,15 +76,10 @@ import java.util.Set;
 public class NotesView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -6491779626961549383L;
-
 	private Logger LOG = LoggerFactory.getLogger(NotesView.class);
-
 	public static final String NAME = "notesView";
-
 	public static final String[] DIPLOMES_FIELDS_ORDER = {"annee", "cod_dip","lib_web_vdi"};
-
 	public static final String[] ETAPES_FIELDS_ORDER = {"annee"};
-
 	private boolean vueEnseignant;
 
 	/* Injections */
@@ -104,8 +99,6 @@ public class NotesView extends VerticalLayout implements View {
 	private transient ObjectFactory<DetailNotesWindow> detailNotesWindowFactory;
 	@Resource
 	private transient ObjectFactory<HelpWindow> helpWindowFactory;
-
-
 
 	/**
 	 * Initialise la vue
@@ -144,7 +137,6 @@ public class NotesView extends VerticalLayout implements View {
 				resultatController.renseigneNotesEtResultatsEtudiant(MainUI.getCurrent().getEtudiant());
 			}
 
-
 			//Test si on a des diplomes ou des etapes
 			if((MainUI.getCurrent().getEtudiant().getDiplomes()!=null && MainUI.getCurrent().getEtudiant().getDiplomes().size()>0)||
 					(MainUI.getCurrent().getEtudiant().getEtapes()!=null && MainUI.getCurrent().getEtudiant().getEtapes().size()>0)){
@@ -167,7 +159,6 @@ public class NotesView extends VerticalLayout implements View {
 			}
 			addComponent(titleLayout);
 
-
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
@@ -176,8 +167,6 @@ public class NotesView extends VerticalLayout implements View {
 			ajouterVoirCommeUnEtudiant(globalLayout);
 
 			Panel panelNotesDiplomes= new Panel(applicationContext.getMessage(NAME+".table.diplomes", null, getLocale()));
-			//panelNotesDiplomes.addStyleName("small-font-element");
-
 			Table notesDiplomesTable = new Table(null, new BeanItemContainer<>(Diplome.class, MainUI.getCurrent().getEtudiant().getDiplomes()));
 			notesDiplomesTable.setWidth("100%");
 			notesDiplomesTable.setVisibleColumns((Object[]) DIPLOMES_FIELDS_ORDER);
@@ -206,9 +195,7 @@ public class NotesView extends VerticalLayout implements View {
 			globalLayout.addComponent(panelNotesDiplomes);
 
 
-
 			Panel panelNotesEtapes= new Panel(applicationContext.getMessage(NAME+".table.etapes", null, getLocale()));
-			//panelNotesEtapes.addStyleName("small-font-element");
 
 			Table notesEtapesTable = new Table(null, new BeanItemContainer<>(Etape.class, MainUI.getCurrent().getEtudiant().getEtapes()));
 			notesEtapesTable.setWidth("100%");
@@ -239,8 +226,6 @@ public class NotesView extends VerticalLayout implements View {
 			panelNotesEtapes.setContent(notesEtapesTable);
 			globalLayout.addComponent(panelNotesEtapes);
 
-
-
 			if(MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
 				Panel panelSignificationResultats= new Panel(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 
@@ -268,8 +253,6 @@ public class NotesView extends VerticalLayout implements View {
 				panelSignificationResultats.setContent(significationLayout);
 				globalLayout.addComponent(panelSignificationResultats);
 			}
-
-
 			addComponent(globalLayout);
 		}else{
 			addComponent(titleLayout);
@@ -289,7 +272,6 @@ public class NotesView extends VerticalLayout implements View {
 				refusLayout.addComponent(msg);
 				refusLayout.setComponentAlignment(msg,Alignment.MIDDLE_LEFT);
 				addComponent(refusLayout);
-				
 			}
 		}
 	}
@@ -298,7 +280,6 @@ public class NotesView extends VerticalLayout implements View {
 		//Test si user enseignant
 		if(isUserGestionnaireWithAccess() || isUserEnseignantWithAccess()){
 			Panel panelVue= new Panel();
-
 			HorizontalLayout vueLayout = new HorizontalLayout();
 			vueLayout.setMargin(true);
 			vueLayout.setSpacing(true);
@@ -371,7 +352,6 @@ public class NotesView extends VerticalLayout implements View {
 		}
 	}
 
-
 	/** Formats the position in a column containing Date objects. */
 	class NoteColumnGenerator implements Table.ColumnGenerator {
 		/**
@@ -416,7 +396,6 @@ public class NotesView extends VerticalLayout implements View {
 			for( Resultat r : resultats){
 				sessionLayout.addComponent(new Label(r.getAdmission()));
 			}
-
 			return sessionLayout;
 		}
 	}
@@ -438,7 +417,6 @@ public class NotesView extends VerticalLayout implements View {
 			for( Resultat r : resultats){
 				sessionLayout.addComponent(new Label(r.getCodMention()));
 			}
-
 			return sessionLayout;
 		}
 	}
@@ -453,7 +431,6 @@ public class NotesView extends VerticalLayout implements View {
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-
 			// RECUPERATION DE LA VALEUR 
 			String rang = (String)item.getItemProperty("rang").getValue();
 			Boolean afficherRang = (boolean)item.getItemProperty("afficherRang").getValue();
@@ -475,7 +452,6 @@ public class NotesView extends VerticalLayout implements View {
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Etape> bid = (BeanItem<Etape>) item;
 			Etape etape = (Etape) bid.getBean();
@@ -558,7 +534,6 @@ public class NotesView extends VerticalLayout implements View {
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-
 			// RECUPERATION DE LA VALEUR 
 			BeanItem<Etape> bid = (BeanItem<Etape>) item;
 			Etape etape = (Etape) bid.getBean();
@@ -568,7 +543,6 @@ public class NotesView extends VerticalLayout implements View {
 				Button b = new Button(etape.getLibelle());
 				b.setStyleName("link"); 
 				b.addStyleName("v-link");
-
 				//Appel de la window contenant le détail des notes
 				prepareBoutonAppelDetailDesNotes( b, etape);
 
@@ -576,7 +550,6 @@ public class NotesView extends VerticalLayout implements View {
 			}else{
 				sessionLayout.addComponent(new Label(etape.getLibelle()));
 			}
-
 			return sessionLayout;
 		}
 	}

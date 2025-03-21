@@ -59,7 +59,6 @@ import java.util.List;
 public class ModificationAdressesWindow extends Window {
 
 	public static final String NAME = "modificationAdressesWindow";
-
 	private static final String COD_HEBERG_DOMICILE_PARENTAL = "4";
 	private static final String COD_PAY_FRANCE = "100";
 
@@ -73,10 +72,7 @@ public class ModificationAdressesWindow extends Window {
 
 	/* Composants */
 	private Button btnAnnuler = new Button();
-
 	private Button btnValider = new Button();
-
-
 	private NativeSelect lhebergement;
 	private TextField fieldAnnu1;
 	private TextField fieldAnnu2;
@@ -88,8 +84,6 @@ public class ModificationAdressesWindow extends Window {
 	private NativeSelect lville1;
 	private TextField fieldVilleEtranger1;
 	private Label labelChoixHebergement;
-
-
 	private TextField fieldFixe1;
 	private TextField fieldFixe2;
 	private TextField fieldFixe3;
@@ -100,7 +94,6 @@ public class ModificationAdressesWindow extends Window {
 	private NativeSelect lville2;
 	private TextField fieldVilleEtranger2;
 
-
 	/**
 	 * Crée une fenêtre de confirmation
 	 * @param etudiant
@@ -108,7 +101,6 @@ public class ModificationAdressesWindow extends Window {
 	 */
 	public void init(Etudiant etudiant, boolean modificationTelephoneAutorisee, boolean modificationAdresseAnnuelleAutorisee) {
 		/* Style */
-		//setWidth(900, Unit.PIXELS);
 		setModal(true);
 		setResizable(false);
 		setClosable(false);
@@ -118,7 +110,6 @@ public class ModificationAdressesWindow extends Window {
 		layout.setMargin(true);
 		layout.setSpacing(true);
 		setContent(layout);
-
 
 		/* Titre */
 		setCaption(applicationContext.getMessage(NAME + ".title", null, getLocale()));
@@ -199,7 +190,6 @@ public class ModificationAdressesWindow extends Window {
 		fieldAnnu3.setMaxLength(32);
 		formAdresseAnnuelleLayout.addComponent(fieldAnnu3);
 
-
 		//Liste des Pays
 		String captionPays = applicationContext.getMessage(NAME + ".pays1", null, getLocale());
 		List<PaysDTO> pays = adresseController.getPays();
@@ -228,7 +218,6 @@ public class ModificationAdressesWindow extends Window {
 		});
 		formAdresseAnnuelleLayout.addComponent(lpays1);
 
-
 		//Ville pour adresse à l'étranger
 		fieldVilleEtranger1 = new TextField(applicationContext.getMessage(NAME + ".villeetranger1", null, getLocale()));
 		fieldVilleEtranger1.setValue(etudiant.getAdresseAnnuelle().getAdresseetranger());
@@ -245,14 +234,12 @@ public class ModificationAdressesWindow extends Window {
 		fieldCodePostal1.setWidth("326px");
 		fieldCodePostal1.setMaxLength(5);
 		fieldCodePostal1.setRequired(true);
-		//fieldCodePostal1.setTextChangeEventMode(TextChangeEventMode.EAGER);
 		fieldCodePostal1.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {
 				updateListeVillesAnnuelle(event.getText());
 			}
 		});
-
 		formAdresseAnnuelleLayout.addComponent(fieldCodePostal1);
 
 		//Ville pour adresse en france
@@ -276,14 +263,12 @@ public class ModificationAdressesWindow extends Window {
 		});
 		formAdresseAnnuelleLayout.addComponent(lville1);
 
-
 		//activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
 		if (etudiant.getAdresseAnnuelle().getCodPays().equals(COD_PAY_FRANCE)) {
 			activerChampPourAdresseAnnuelleEnFrance();
 		} else {
 			activerChampPourAdresseAnnuelleEtranger();
 		}
-
 
 		//Téléphone1
 		fieldTelephone1 = new TextField(applicationContext.getMessage(NAME + ".tel1", null, getLocale()));
@@ -310,14 +295,11 @@ public class ModificationAdressesWindow extends Window {
 			}
 		}
 
-
 		/* Panel adresse fixe */
 		Panel adressesFixePanel = new Panel(applicationContext.getMessage(NAME+".panel.adressefixe.title", null, getLocale()));
-
 		FormLayout formAdresseFixeLayout = new FormLayout();
 		formAdresseFixeLayout.setSpacing(true);
 		formAdresseFixeLayout.setMargin(true);
-
 
 		//AdresseFixe1
 		fieldFixe1 = new TextField(applicationContext.getMessage(NAME+".fixe1", null, getLocale()));
@@ -344,8 +326,6 @@ public class ModificationAdressesWindow extends Window {
 		fieldFixe3.setMaxLength(32);
 		formAdresseFixeLayout.addComponent(fieldFixe3);
 
-
-
 		//Liste des Pays
 		lpays2 = new NativeSelect();
 		lpays2.setCaption(captionPays);
@@ -371,7 +351,6 @@ public class ModificationAdressesWindow extends Window {
 			}
 		});
 		formAdresseFixeLayout.addComponent(lpays2);
-
 
 		//Ville pour adresse à l'étranger
 		fieldVilleEtranger2 = new TextField(applicationContext.getMessage(NAME+".villeetranger2", null, getLocale()));
@@ -420,8 +399,7 @@ public class ModificationAdressesWindow extends Window {
 		});
 		formAdresseFixeLayout.addComponent(lville2);
 
-
-		//activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
+		//Activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
 		if(etudiant.getAdresseFixe().getCodPays().equals(COD_PAY_FRANCE)){
 			activerChampPourAdresseFixeEnFrance();
 		}else{
@@ -440,11 +418,9 @@ public class ModificationAdressesWindow extends Window {
 			formAdresseFixeLayout.addComponent(fieldTelephone2);
 		}
 
-
 		//ajout du panel adresse fixe
 		adressesFixePanel.setContent(formAdresseFixeLayout);
 		panelslayout.addComponent(adressesFixePanel);
-
 
 		// Boutons
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
@@ -455,7 +431,6 @@ public class ModificationAdressesWindow extends Window {
 		btnValider.setIcon(FontAwesome.CHECK);
 		btnValider.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		btnValider.addClickListener(e -> {
-
 			Adresse adresseAnnuelle = new Adresse();
 			adresseAnnuelle.setType(lhebergement.getValue().toString());
 			adresseAnnuelle.setAdresse1(fieldAnnu1.getValue());
@@ -517,7 +492,6 @@ public class ModificationAdressesWindow extends Window {
 		center();
 	}
 
-
 	private void activerChampPourAdresseAnnuelleEnFrance() {
 		fieldVilleEtranger1.setVisible(false);
 		fieldCodePostal1.setVisible(true);
@@ -553,12 +527,6 @@ public class ModificationAdressesWindow extends Window {
 
 	}
 
-
-
-
-
-
-
 	private void activerChampPourAdresseFixeEnFrance() {
 		fieldVilleEtranger2.setVisible(false);
 		fieldCodePostal2.setVisible(true);
@@ -570,9 +538,7 @@ public class ModificationAdressesWindow extends Window {
 		fieldVilleEtranger2.setVisible(true);
 		fieldCodePostal2.setVisible(false);
 		lville2.setVisible(false);
-
 	}
-
 
 	private void updateCodePostalVilleFixe() {
 		fieldCodePostal2.setValue(codePostalVillesFixe);
@@ -591,9 +557,7 @@ public class ModificationAdressesWindow extends Window {
 				lville2.setValue(villes2.get(0).getLibCommune());
 			}
 		}
-
 	}
-
 
 	private void activeFormulaireAdresseAnnuelle(){
 		//active les champs adresse annuelle
@@ -606,8 +570,6 @@ public class ModificationAdressesWindow extends Window {
 		lville1.setVisible(lpays1.getValue().equals(COD_PAY_FRANCE));
 		fieldVilleEtranger1.setVisible(!lpays1.getValue().equals(COD_PAY_FRANCE));
 		labelChoixHebergement.setVisible(false);
-
-
 	}
 
 	private void desactiveFormulaireAdresseAnnuelle(){

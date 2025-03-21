@@ -39,16 +39,14 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
-import java.util.List;
 
 /**
  * Page de calendrier sur mobile
@@ -144,13 +142,10 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 			globalLayout.setMargin(true);
 			globalLayout.setStyleName("v-scrollableelement");
 
-
-
-			if(MdwTouchkitUI.getCurrent().getEtudiant()!=null && MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier()!=null && MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier().size()>0){
-
-				List<Examen> listeExam = MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier();
-
-				for(Examen exam : listeExam){
+			// Si on a des données de calendrier à afficher
+			if(MdwTouchkitUI.getCurrent().getEtudiant()!=null && MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier()!=null && !MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier().isEmpty()){
+				//On parcourt les examens
+				for(Examen exam : MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier()){
 					Panel panelCalendrier= new Panel();
 					panelCalendrier.setSizeFull();
 					HorizontalLayout labelExamenLayout = new HorizontalLayout();
@@ -203,7 +198,6 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					libelleLayout.addComponent(new Label(""));
 					libelleLayout.addComponent(libLabel);
 
-
 					//Ajout des 2 layouts dans le layout principal 
 					labelExamenLayout.addComponent(detailLayout);
 					labelExamenLayout.addComponent(libelleLayout);
@@ -213,11 +207,7 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 
 					//Ajout du panel à la vue
 					globalLayout.addComponent(panelCalendrier);
-
-
 				}
-
-
 			}else{
 				Panel panelCalendrier= new Panel();
 				panelCalendrier.setSizeFull();
@@ -233,8 +223,6 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 				panelCalendrier.setContent(labelExamenLayout);
 				globalLayout.addComponent(panelCalendrier);
 			}
-
-
 
 			addComponent(globalLayout);
 			setExpandRatio(globalLayout, 1);

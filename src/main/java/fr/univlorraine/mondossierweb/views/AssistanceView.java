@@ -31,13 +31,12 @@ import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -121,7 +120,7 @@ public class AssistanceView extends VerticalLayout implements View {
 				addComponent(contactBtn);
 			}
 			
-			/* Deconnexion */
+			// Deconnexion
 			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
 			if(configController.isLogoutCasPropose()){
 				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);

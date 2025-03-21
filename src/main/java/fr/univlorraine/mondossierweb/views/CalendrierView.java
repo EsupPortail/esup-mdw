@@ -46,15 +46,14 @@ import fr.univlorraine.mondossierweb.converters.DateToStringConverter;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -174,12 +173,12 @@ public class CalendrierView extends VerticalLayout implements View {
 			}
 
 
-
 			/* Le Calendrier */
 			Panel panelCalendrier= new Panel(applicationContext.getMessage(NAME + ".calendrier.title", null, getLocale()));
 			panelCalendrier.setSizeFull();
 
-			if(MainUI.getCurrent().getEtudiant()!=null && MainUI.getCurrent().getEtudiant().getCalendrier()!=null && MainUI.getCurrent().getEtudiant().getCalendrier().size()>0){
+			// Si on a des données à afficher
+			if(MainUI.getCurrent().getEtudiant()!=null && MainUI.getCurrent().getEtudiant().getCalendrier()!=null && !MainUI.getCurrent().getEtudiant().getCalendrier().isEmpty()){
 
 				BeanItemContainer<Examen> bic= new BeanItemContainer<>(Examen.class, MainUI.getCurrent().getEtudiant().getCalendrier());
 				Table calendrierTable = new Table(null, bic);

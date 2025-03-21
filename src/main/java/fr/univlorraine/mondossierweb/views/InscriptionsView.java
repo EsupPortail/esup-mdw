@@ -312,7 +312,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 					bCertificatInscription.addStyleName("red-button-icon");
 				}
 			}		
-			
 
 			//Si on peut proposer l'attestation d'affiliation
 			if(etudiantController.proposerAttestationAffiliationSSO(inscription, MainUI.getCurrent().getEtudiant())){

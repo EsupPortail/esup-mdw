@@ -43,14 +43,14 @@ import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -65,11 +65,8 @@ import java.util.concurrent.Executors;
 public class FavorisMobileView extends VerticalLayout implements View {
 	
 	private static final long serialVersionUID = -2056224835347802529L;
-
 	public static final String NAME = "favorisMobileView";
-
 	public static final String[] FAV_FIELDS_ORDER = {"id.idfav"};
-
 
 
 	/* Injections */
@@ -99,8 +96,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	private BeanItemContainer<Favoris> bic;
 
 	private HorizontalLayout labelAucunFavoriLayout ;
-	
-	
+
 
 	/**
 	 * Initialise la vue
@@ -125,7 +121,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			liste_type_arbo.add("VET");
 
 			List<Favoris> lfav = favorisController.getFavoris();
-
 
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
@@ -278,8 +273,6 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			rechercheController.accessToMobileDetail(id,type,false);
 	}
 	
-
-
 
 	private boolean favorisContientTypeFav(List<Favoris> lfav, String typeFacv) {
 		for(Favoris fav :  lfav){

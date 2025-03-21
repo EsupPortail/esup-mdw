@@ -24,14 +24,13 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 
 /**
@@ -43,17 +42,13 @@ import jakarta.annotation.Resource;
 public class NavigationManagerView extends VerticalLayout implements View {
 
 	private Logger LOG = LoggerFactory.getLogger(NavigationManagerView.class);
-
 	public static final String NAME = "NavigationManagerView";
 
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
-
 	private VerticalLayout currentView;
-	
 	private VerticalLayout firstView;
-	
 	private VerticalLayout nextView;
 	
 	
@@ -70,35 +65,26 @@ public class NavigationManagerView extends VerticalLayout implements View {
 	}
 	
 	public void refresh(){
-
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MdwTouchkitUI){
-
 			removeAllComponents();
-
 			/* Style */
 			setMargin(false);
 			setSpacing(false);
 			setSizeFull();
-
 			currentView = firstView;
 			addComponent(firstView);
-
-
 		}
 	}
 	
 	public void navigateToNextView() {
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MdwTouchkitUI){
-
 			removeAllComponents();
-
 			/* Style */
 			setMargin(false);
 			setSpacing(false);
 			setSizeFull();
-
 			currentView = nextView;
 			addComponent(nextView);
 		}

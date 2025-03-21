@@ -29,13 +29,12 @@ import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import jakarta.annotation.Resource;
 
 /**
  * Fenêtre d'aide basique
@@ -44,7 +43,6 @@ import jakarta.annotation.Resource;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class HelpBasicWindow extends Window {
-	
 	public static final String NAME = "helpBasicWindow";
 
 	/* Injections */
@@ -56,16 +54,12 @@ public class HelpBasicWindow extends Window {
 	/* Composants */
 	private Button btnFermer = new Button();
 
-
-
 	public void addBtnNonListener(Button.ClickListener clickListener) {
 		btnFermer.addClickListener(clickListener);
 	}
-
 	public void removeBtnNonListener(Button.ClickListener clickListener) {
 		btnFermer.removeClickListener(clickListener);
 	}
-
 	/**
 	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
 	 */
@@ -134,9 +128,7 @@ public class HelpBasicWindow extends Window {
 		buttonsLayout.addComponent(btnFermer);
 		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);
 
-
 		/* Centre la fenêtre */
 		center();
 	}
-
 }
