@@ -20,20 +20,41 @@ package fr.univlorraine.mondossierweb.controllers;
 
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.*;
+import fr.univlorraine.mondossierweb.beans.CacheIP;
+import fr.univlorraine.mondossierweb.beans.CacheResultatsElpEpr;
+import fr.univlorraine.mondossierweb.beans.CacheResultatsVdiVet;
+import fr.univlorraine.mondossierweb.beans.Diplome;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.*;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatElpEprDTO5;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatVdiVetDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.EpreuveElpDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.EtapeResVdiVetDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.PedagogiqueMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatElpDTO3;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatEprDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVdiDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVetDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEpreuveElpDto24;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEtapeResVdiVetDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatElpDto33;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatEprDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVdiDto;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVetDto;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -442,7 +463,7 @@ public class ResultatController {
                                     //et.getResultats().add(r);
                                     try {
                                         int session = Integer.parseInt(ret.getSession().getCodSes());
-                                        if (et.getResultats().size() > 0 && et.getResultats().size() >= session) {
+                                        if (!et.getResultats().isEmpty() && et.getResultats().size() >= session) {
                                             //ajout du résultat à la bonne place dans la liste
                                             et.getResultats().add((session - 1), r);
                                         } else {
@@ -772,7 +793,7 @@ public class ResultatController {
                         }
 
                         //ajout de l'élément dans la liste
-                        if (liste1.size() == 0 || sourceExtractionApogee) {
+                        if (liste1.isEmpty() || sourceExtractionApogee) {
                             liste1.add(elp);
                         } else {
                             //ajout de l'élément dans la liste par ordre alphabétique
@@ -918,7 +939,7 @@ public class ResultatController {
             }
             //ajout des éléments dans la liste de l'étudiant en commençant par la ou les racine
             int niveauRacine = 1;
-            if (liste1.size() > 0) {
+            if (!liste1.isEmpty()) {
                 int i = 0;
                 while (i < liste1.size()) {
                     ElementPedagogique el = liste1.get(i);
@@ -940,7 +961,7 @@ public class ResultatController {
 
 
             //suppression des épreuve seules et quand elles ont les mêmes notes que l'element pere:
-            if (!sourceExtractionApogee && e.getElementsPedagogiques().size() > 0) {
+            if (!sourceExtractionApogee && !e.getElementsPedagogiques().isEmpty()) {
                 int i = 1;
                 boolean suppr = false;
                 while (i < e.getElementsPedagogiques().size()) {
@@ -974,7 +995,7 @@ public class ResultatController {
 
             //Gestion des temoins fictif si temoinFictif est renseigné dans monDossierWeb.xml
             if (configController.getTemoinFictif() != null && !configController.getTemoinFictif().equals("")) {
-                if (e.getElementsPedagogiques().size() > 0) {
+                if (!e.getElementsPedagogiques().isEmpty()) {
                     List<Integer> listeRangAsupprimer = new LinkedList<Integer>();
                     int rang = 0;
                     //on note les rangs des éléments à supprimer
@@ -997,7 +1018,7 @@ public class ResultatController {
             // Gestion de la descendance des semestres si temNotesEtuSem est renseigné et à true dans monDossierWeb.xml
             // et qu'il ne s'agit pas d'une extraction
             if (configController.isTemNotesEtuSem() && !sourceExtractionApogee) {
-                if (e.getElementsPedagogiques().size() > 0) {
+                if (!e.getElementsPedagogiques().isEmpty()) {
                     List<Integer> listeRangAsupprimer = new LinkedList<Integer>();
                     int rang = 0;
 
@@ -1036,7 +1057,7 @@ public class ResultatController {
             ep.setLevel(1);
             ep.setLibelle(et.getLibelle());
             e.setDeliberationTerminee(et.isDeliberationTerminee());
-            if (et.getResultats().size() > 0) {
+            if (!et.getResultats().isEmpty()) {
                 for (Resultat r : et.getResultats()) {
                     if (r != null) {
                         //Si c'est un résultat de session 1 ou de session unique
@@ -1571,7 +1592,7 @@ public class ResultatController {
         CacheResultatsElpEpr cree = new CacheResultatsElpEpr();
         cree.setVueEtudiant(vueEtudiant);
         cree.setEtape(etape);
-        if (e.getElementsPedagogiques() != null && e.getElementsPedagogiques().size() > 0) {
+        if (e.getElementsPedagogiques() != null && !e.getElementsPedagogiques().isEmpty()) {
             cree.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getElementsPedagogiques()));
         }
         e.getCacheResultats().getResultElpEpr().add(cree);
@@ -1584,7 +1605,7 @@ public class ResultatController {
     public void ajouterCacheDetailInscription(Etape etape, Etudiant e) {
         CacheIP cip = new CacheIP();
         cip.setEtape(etape);
-        if (e.getElementsPedagogiques() != null && e.getElementsPedagogiques().size() > 0) {
+        if (e.getElementsPedagogiques() != null && !e.getElementsPedagogiques().isEmpty()) {
             cip.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getElementsPedagogiques()));
         }
         e.getCacheResultats().getIp().add(cip);
@@ -1662,7 +1683,7 @@ public class ResultatController {
 
     public boolean isAfficherRangElpEpr() {
         List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
-        if (lelp != null && lelp.size() > 0) {
+        if (lelp != null && !lelp.isEmpty()) {
             List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
             if (codesAutorises != null && codesAutorises.contains(lelp.get(0).getCode())) {
                 return true;

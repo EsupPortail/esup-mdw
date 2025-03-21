@@ -133,7 +133,7 @@ public class DetailGroupesWindow extends Window {
 		Panel panelDetailGroupes= new Panel(elpLibelle);
 		panelDetailGroupes.setSizeFull();
 
-		if(lgroupes!=null && lgroupes.size()>0){
+		if(lgroupes!=null && !lgroupes.isEmpty()){
 			TreeTable detailGroupesTable = new TreeTable();
 			detailGroupesTable.setSizeFull();
 			HierarchicalContainer hc = new HierarchicalContainer();

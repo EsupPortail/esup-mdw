@@ -61,6 +61,7 @@ import gouv.education.apogee.commun.client.ws.OffreFormationMetier.RecupererGrou
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauCollection4;
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauElementPedagogi3;
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauGroupe3;
+import jakarta.annotation.Resource;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -79,7 +80,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -190,7 +190,7 @@ public class ListeInscritsController {
 				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e, anneeMax);
 
 				//Si on a récupéré aucune année, on ajoute l'année en cours par défaut.
-				if(annees.size()==0){
+				if(annees.isEmpty()){
 					annees.add(etudiantController.getAnneeUnivEnCours(ui));
 				}
 
@@ -331,7 +331,7 @@ public class ListeInscritsController {
 		List<VersionEtape> letape = null;
 
 		//test si on a des inscrits
-		if(listeInscrits!=null && listeInscrits.size()>0){
+		if(listeInscrits!=null && !listeInscrits.isEmpty()){
 			//on init la liste de VET à vide
 			letape = new LinkedList<VersionEtape>();
 
@@ -362,7 +362,7 @@ public class ListeInscritsController {
 		//Récupération des groupes de l'ELP
 		List<ElpDeCollection> listeGroupes = recupererGroupes(e.getAnnee(), code);
 		//Si on a récupérer des groupes
-		if(listeGroupes!=null && listeGroupes.size()>0){
+		if(listeGroupes!=null && !listeGroupes.isEmpty()){
 			//On stocke la liste des groupes au niveau de l'ui
 			ui.setListeGroupesInscrits(listeGroupes);
 		}
@@ -453,7 +453,7 @@ public class ListeInscritsController {
 	 */
 	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee, GenericUI ui) {
 
-		if(listeInscrits!=null && listeInscrits.size()>0){
+		if(listeInscrits!=null && !listeInscrits.isEmpty()){
 			//setLoginInscrits(listeInscrits);
 			setIdEtpInscrits(listeInscrits);
 			setMailInscrits(listeInscrits);
@@ -463,7 +463,7 @@ public class ListeInscritsController {
 
 		//On parcourt les groupes, on recup les inscrit puis 
 		//pour chaque inscrit on ajoute les id des groupes auxquels il appartient dans un attribut ";codgpe;"
-		if(listeGroupes!=null && listeGroupes.size()>0){
+		if(listeGroupes!=null && !listeGroupes.isEmpty()){
 
 			for(ElpDeCollection edc : listeGroupes){
 				for(CollectionDeGroupes cdg : edc.getListeCollection()){
@@ -496,7 +496,7 @@ public class ListeInscritsController {
 
 
 	private boolean listeContient(List<BigDecimal> lcodindinscrits, String cod_ind) {
-		if(lcodindinscrits.size()>0 && cod_ind!=null){
+		if(!lcodindinscrits.isEmpty() && cod_ind!=null){
 			for(BigDecimal s: lcodindinscrits){
 				if(s.toString().equals(cod_ind)){
 					return true;

@@ -118,7 +118,7 @@ public class FavorisView extends VerticalLayout implements View {
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
 
-			if(lfav!=null && lfav.size()>0){
+			if(lfav!=null && !lfav.isEmpty()){
 				bic = new BeanItemContainer<>(Favoris.class,lfav);
 				bic.addNestedContainerProperty("id.typfav");
 				bic.addNestedContainerProperty("id.idfav");
@@ -155,7 +155,7 @@ public class FavorisView extends VerticalLayout implements View {
 			labelAucunFavoriLayout.setVisible(false);
 			globalLayout.addComponent(labelAucunFavoriLayout);
 
-			if(lfav==null || lfav.size()==0){
+			if(lfav==null || lfav.isEmpty()){
 				labelAucunFavoriLayout.setVisible(true);
 			}
 
@@ -229,7 +229,7 @@ public class FavorisView extends VerticalLayout implements View {
 					bic.removeItem(itemId);
 					favorisTable.sanitizeSelection();
 					favorisTable.setPageLength(favorisTable.getItemIds().size() );
-					if(favorisTable.getItemIds().size()<1){
+					if(favorisTable.getItemIds().isEmpty()){
 						favorisTable.setVisible(false);
 						labelAucunFavoriLayout.setVisible(true);
 					}

@@ -723,7 +723,7 @@ public class ConfigController {
 		LinkedList<String> values = new LinkedList<String>();
 		PreferencesApplication pa = preferencesApplicationRepository.findById(parameter).orElse(null);
 		if(pa!=null && pa.getPrefId()!=null){
-			if(pa.getPreferencesApplicationValeurs()!=null && pa.getPreferencesApplicationValeurs().size()>0){
+			if(pa.getPreferencesApplicationValeurs()!=null && !pa.getPreferencesApplicationValeurs().isEmpty()){
 				for(PreferencesApplicationValeurs valeur : pa.getPreferencesApplicationValeurs()){
 					values.add(valeur.getValeur());
 				}

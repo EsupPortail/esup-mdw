@@ -130,7 +130,7 @@ public class DetailNotesWindow extends Window {
 
 			ajouterVoirCommeUnEtudiant(titleLayout);
 
-			if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
+			if(lelp!=null && !lelp.isEmpty() && configController.isPdfNotesActive()){
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				pdfButton.addStyleName("button-icon");
@@ -156,7 +156,7 @@ public class DetailNotesWindow extends Window {
 			panelDetailNotes.addStyleName("small-font-element");
 			panelDetailNotes.setSizeFull();
 
-			if(lelp!=null && lelp.size()>0){
+			if(lelp!=null && !lelp.isEmpty()){
 				Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
 				detailNotesTable.setSizeFull();
 				detailNotesTable.setVisibleColumns(new String[0]);

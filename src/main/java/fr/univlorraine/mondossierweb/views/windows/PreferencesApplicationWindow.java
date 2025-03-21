@@ -279,7 +279,7 @@ public class PreferencesApplicationWindow extends Window {
 
 	private void refreshPavContainer(PreferencesApplication prefApp) {
 		pavContainer.removeAllItems();
-		if(prefApp.getPreferencesApplicationValeurs()!=null && prefApp.getPreferencesApplicationValeurs().size()>0){
+		if(prefApp.getPreferencesApplicationValeurs()!=null && !prefApp.getPreferencesApplicationValeurs().isEmpty()){
 			for(PreferencesApplicationValeurs pav : prefApp.getPreferencesApplicationValeurs()){
 				pavContainer.addBean(pav);
 			}

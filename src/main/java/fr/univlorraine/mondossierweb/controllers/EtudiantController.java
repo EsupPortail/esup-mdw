@@ -22,19 +22,47 @@ import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.*;
+import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
+import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
 import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
-import fr.univlorraine.mondossierweb.services.apogee.*;
+import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
+import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
+import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.AdministratifMetier.*;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.*;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.CursusExterneDTO;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.CursusExternesEtTransfertsDTO;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.InsAdmAnuDTO2;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.InsAdmEtpDTO3;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.TableauCursusExterneDto;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CommuneMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IdentifiantsEtudiantDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IndBacDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.InfoAdmEtuDTO4;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TableauIndBacDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementCourtDTO;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.OptionBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.ScolariteMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.SpecialiteBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.WebBaseException_Exception;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -42,8 +70,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 
@@ -242,7 +273,7 @@ public class EtudiantController {
 
 
 				//informations sur le(s) bac(s) :
-				if (GenericUI.getCurrent().getEtudiant().getListeBac() != null && GenericUI.getCurrent().getEtudiant().getListeBac().size() > 0) {
+				if (GenericUI.getCurrent().getEtudiant().getListeBac() != null && !GenericUI.getCurrent().getEtudiant().getListeBac().isEmpty()) {
 					GenericUI.getCurrent().getEtudiant().getListeBac().clear();
 				} else {
 					GenericUI.getCurrent().getEtudiant().setListeBac(new ArrayList<BacEtatCivil>());
@@ -399,11 +430,11 @@ public class EtudiantController {
 				//On vérifie si l'étudiant est interdit de consultation de ses notes
 				List<String> lcodesBloquant = configController.getListeCodesBlocageAffichageNotes();
 				//Si on a paramétré des codes bloquant
-				if(lcodesBloquant!=null && lcodesBloquant.size()>0){
+				if(lcodesBloquant!=null && !lcodesBloquant.isEmpty()){
 					//Récupération des éventuels blocage pour l'étudiant
 					List<String> lblo = multipleApogeeService.getListeCodeBlocage(GenericUI.getCurrent().getEtudiant().getCod_etu());
 					// Si l'étudiant a des blocages
-					if(lblo!=null && lblo.size()>0){
+					if(lblo!=null && !lblo.isEmpty()){
 						//Parcours des blocage
 						for(String codblo : lblo){
 							//Si le blocage est dans la liste des blocages configurés comme bloquant

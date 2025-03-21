@@ -19,6 +19,7 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
@@ -32,7 +33,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -289,7 +289,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			List<String> mdps = (List<String>) query.getResultList();
 
-			if(mdps!=null && mdps.size()>0 && mdps.get(0)!=null && StringUtils.hasText(mdps.get(0))){
+			if(mdps!=null && !mdps.isEmpty() && mdps.get(0)!=null && StringUtils.hasText(mdps.get(0))){
 				return mdps;
 			}
 		}catch(NoResultException | EmptyResultDataAccessException e){

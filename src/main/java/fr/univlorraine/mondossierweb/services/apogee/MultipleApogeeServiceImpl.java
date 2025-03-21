@@ -27,6 +27,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.NatureElp;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
@@ -39,7 +40,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,10 +129,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		List<String> lannee = getDernieresAnneesUniversitaires();
 
 		//On garde 10 annees maxi
-		if(lannee!=null && lannee.size()>10){
-			for(int i=(lannee.size()-1);i>9;i--){
-				lannee.remove(i);
-			}
+		if(lannee!=null && lannee.size() > 10){
+            lannee.subList(10, lannee.size()).clear();
 		}
 
 		return lannee;

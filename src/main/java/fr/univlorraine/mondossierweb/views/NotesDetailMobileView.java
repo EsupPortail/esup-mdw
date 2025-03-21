@@ -188,7 +188,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				layout.setStyleName("v-scrollableelement");
 
 				List<ElementPedagogique> lelp = MdwTouchkitUI.getCurrent().getEtudiant().getElementsPedagogiques();
-				if(lelp!=null && lelp.size()>0){
+				if(lelp!=null && !lelp.isEmpty()){
 					VerticalLayout notesLayout = new VerticalLayout();
 
 					HorizontalLayout libSessionLayout = new HorizontalLayout();
@@ -391,7 +391,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							String pere = entry.getKey();
 							LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
 							// traitements
-							if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+							if(listeLayoutFils!=null && !listeLayoutFils.isEmpty()){
 								String affichagejavascriptfils = "";
 								for(HorizontalLayout hl : listeLayoutFils){
 									affichagejavascriptfils += "if(document.getElementById('"+hl.getId()+"').style.display==\"none\"){document.getElementById('"+hl.getId()+"').style.display = \"block\";}else{document.getElementById('"+hl.getId()+"').style.display = \"none\";}";
@@ -484,7 +484,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 			String pere = entry.getKey();
 			LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
 			// traitements
-			if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+			if(listeLayoutFils!=null && !listeLayoutFils.isEmpty()){
 				String affichagejavascriptfils = "";
 				for(HorizontalLayout hl : listeLayoutFils){
 					//On masque par défaut tous les fils

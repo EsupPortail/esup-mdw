@@ -95,7 +95,7 @@ public class FiltreInscritsMobileWindow extends Window {
 	        
 			//GESTION DES ETAPES
 			List<VersionEtape> letapes = MdwTouchkitUI.getCurrent().getListeEtapesInscrits();
-			if(letapes != null && letapes.size()>0){
+			if(letapes != null && !letapes.isEmpty()){
 		        Label etapeLabel = new Label(applicationContext.getMessage(NAME+".etape", null, getLocale()));
 		        layout.addComponent(etapeLabel);
 		        layout.setComponentAlignment(etapeLabel, Alignment.BOTTOM_LEFT);
@@ -138,7 +138,7 @@ public class FiltreInscritsMobileWindow extends Window {
 
 			//GESTION DES GROUPES
 			List<ElpDeCollection> lgroupes = MdwTouchkitUI.getCurrent().getListeGroupesInscrits();
-			if(lgroupes != null && lgroupes.size()>0){
+			if(lgroupes != null && !lgroupes.isEmpty()){
 				// Label "GROUPE"
 		        HorizontalLayout gLayout = new HorizontalLayout();
 		        gLayout.setSizeFull();

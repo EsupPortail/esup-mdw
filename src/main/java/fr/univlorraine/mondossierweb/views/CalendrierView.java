@@ -127,7 +127,7 @@ public class CalendrierView extends VerticalLayout implements View {
 			titleLayout.addComponent(title);
 			titleLayout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
 			//Test si on a des diplomes ou des etapes
-			if(MainUI.getCurrent().getEtudiant().getCalendrier()!=null && MainUI.getCurrent().getEtudiant().getCalendrier().size()>0){
+			if(MainUI.getCurrent().getEtudiant().getCalendrier()!=null && !MainUI.getCurrent().getEtudiant().getCalendrier().isEmpty()){
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				pdfButton.addStyleName("button-big-icon");

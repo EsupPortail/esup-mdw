@@ -1,8 +1,6 @@
 /* ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium */
 
 .valo-ul {
-	/* background: #F0F0F0 !important; */
-	/* --mobile_main_color: #343a40; */
 	--mobile_main_color: rgb(71,74, 77);
 	--light_gray: rgb(197, 197, 197);
 	--pastel_green: #0da50d73;
@@ -321,7 +319,6 @@ opacity: 1.0 !important;
 .valo-ul .v-panel-caption-v-panel-caption-lefttitle-panel {
 text-align: left !important;
 font-size: medium !important;
-/* font-weight: bold !important; */
 }
 
 .valo-ul .logo-mobile {

@@ -138,8 +138,8 @@ public class NotesView extends VerticalLayout implements View {
 			}
 
 			//Test si on a des diplomes ou des etapes
-			if((MainUI.getCurrent().getEtudiant().getDiplomes()!=null && MainUI.getCurrent().getEtudiant().getDiplomes().size()>0)||
-					(MainUI.getCurrent().getEtudiant().getEtapes()!=null && MainUI.getCurrent().getEtudiant().getEtapes().size()>0)){
+			if((MainUI.getCurrent().getEtudiant().getDiplomes()!=null && !MainUI.getCurrent().getEtudiant().getDiplomes().isEmpty())||
+					(MainUI.getCurrent().getEtudiant().getEtapes()!=null && !MainUI.getCurrent().getEtudiant().getEtapes().isEmpty())){
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				pdfButton.addStyleName("button-big-icon");

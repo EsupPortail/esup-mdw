@@ -182,7 +182,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelLayout.addComponent(infoLabel);
 			globalLayout.addComponent(labelLayout);
 
-			if(lfav != null && lfav.size()>0){
+			if (lfav != null && !lfav.isEmpty()) {
 				ajouteTypeFav(globalLayout, lfav, Utils.VET, applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
 				ajouteTypeFav(globalLayout, lfav, Utils.ELP, applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
 			}
@@ -201,7 +201,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelAucunFavoriLayout.setVisible(false);
 			globalLayout.addComponent(labelAucunFavoriLayout);
 
-			if(lfav==null || lfav.size()==0){
+			if(lfav==null || lfav.isEmpty()){
 				labelAucunFavoriLayout.setVisible(true);
 			}
 

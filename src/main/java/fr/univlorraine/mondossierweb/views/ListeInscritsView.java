@@ -269,7 +269,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 				//Affichage d'une liste déroulante contenant la liste des années
 				List<String> lannees = MainUI.getCurrent().getListeAnneeInscrits();
-				if(lannees != null && lannees.size()>0){
+				if(lannees != null && !lannees.isEmpty()){
 					listeAnnees = new ComboBox(applicationContext.getMessage(NAME+".annee", null, getLocale()));
 					listeAnnees.setPageLength(5);
 					listeAnnees.setTextInputAllowed(false);
@@ -313,7 +313,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				//Affichage d'une liste déroulante contenant la liste des années
 				if(typeIsElp()){
 					List<VersionEtape> letapes = MainUI.getCurrent().getListeEtapesInscrits();
-					if(letapes != null && letapes.size()>0){
+					if(letapes != null && !letapes.isEmpty()){
 						listeEtapes = new ComboBox(applicationContext.getMessage(NAME+".etapes", null, getLocale()));
 						listeEtapes.setPageLength(5);
 						listeEtapes.setNullSelectionAllowed(false);
@@ -353,7 +353,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 
 					List<ElpDeCollection> lgroupes = MainUI.getCurrent().getListeGroupesInscrits();
-					if(lgroupes != null && lgroupes.size()>0){
+					if(lgroupes != null && !lgroupes.isEmpty()){
 						listeGroupes = new ComboBox();
 						listeGroupes.setPageLength(5);
 						listeGroupes.setNullSelectionAllowed(false);
@@ -487,7 +487,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 				refreshListeCodind(new BeanItemContainer<>(Inscrit.class, linscrits));
 
 				//Test si la liste contient des étudiants
-				if(linscrits!=null && linscrits.size()>0 && listecodind!=null && listecodind.size()>0){
+				if(linscrits!=null && !linscrits.isEmpty() && listecodind!=null && !listecodind.isEmpty()){
 					infoLayout= new VerticalLayout();
 					infoLayout.setSizeFull();
 

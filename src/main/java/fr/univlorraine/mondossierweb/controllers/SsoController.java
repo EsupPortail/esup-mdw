@@ -115,7 +115,7 @@ public class SsoController {
 		q.initValues();
 		// Récupérer les quittances
 		List<Map<String,String>> r = ssoApogeeService.getQuittances(codAnu, e.getCod_ind());
-		if(r!=null && r.size()>0){
+		if(r!=null && !r.isEmpty()){
 			LOG.debug("nb quittances : "+r.size());
 			if(r.get(0)!=null ){
 				Map<String,String> m1 = r.get(0);
@@ -131,15 +131,15 @@ public class SsoController {
 				}
 
 				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnu,e.getCod_ind(), m1.get("NUMOCCSQR"));
-				if(mdps!=null && mdps.size()>0 && StringUtils.hasText(mdps.get(0))){
+				if (mdps!=null && !mdps.isEmpty() && StringUtils.hasText(mdps.get(0))) {
 					q.setLic_mdp1_quittance1(mdps.get(0));
-					if(mdps.size()>1 && StringUtils.hasText(mdps.get(1))){
+					if (mdps.size() > 1 && StringUtils.hasText(mdps.get(1))) {
 						q.setLic_mdp2_quittance1(mdps.get(1));
 					}
 				}
 
 			}
-			if(r.size()>1 && r.get(1)!=null ){
+			if (r.size() > 1 && r.get(1) != null ) {
 				Map<String,String> m2 = r.get(1);
 				LOG.debug("-quittance2 : "+m2);
 				if(m2.get("NUMOCCQUT")!=null){
@@ -152,7 +152,7 @@ public class SsoController {
 					q.setDat_quittance2(m2.get("DATSQR"));
 				}
 				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnu,e.getCod_ind(), m2.get("NUMOCCSQR"));
-				if(mdps!=null && mdps.size()>0 && StringUtils.hasText(mdps.get(0))){
+				if(mdps!=null && !mdps.isEmpty() && StringUtils.hasText(mdps.get(0))){
 					q.setLic_mdp1_quittance2(mdps.get(0));
 					if(mdps.size()>1 && StringUtils.hasText(mdps.get(1))){
 						q.setLic_mdp2_quittance2(mdps.get(1));
@@ -199,7 +199,7 @@ public class SsoController {
 	}
 
 	private List<DroitUniversitaire> convertResultToListDroitUniversitaire(List<Map<String, String>> ldp) {
-		if(ldp!=null && ldp.size()>0){
+		if(ldp!=null && !ldp.isEmpty()){
 			List<DroitUniversitaire> l = new LinkedList<DroitUniversitaire>();
 			for(Map<String, String> m : ldp){
 				DroitUniversitaire du = new DroitUniversitaire();
@@ -615,7 +615,7 @@ public class SsoController {
 				PdfPTable table2 = new PdfPTable(2);
 				table2.setWidthPercentage(98);
 				// Détail des droits payés
-				if(etudiant.getQuittance_sso().getList_droits_payes() != null && etudiant.getQuittance_sso().getList_droits_payes().size()>0){
+				if(etudiant.getQuittance_sso().getList_droits_payes() != null && !etudiant.getQuittance_sso().getList_droits_payes().isEmpty()){
 					Paragraph ptextDetail = new Paragraph("\n"+applicationContext.getMessage("pdf.quittance.txtdetail", null, Locale.getDefault())+" :", normal);
 					ptextDetail.setAlignment(Element.ALIGN_LEFT);
 					document.add(ptextDetail);

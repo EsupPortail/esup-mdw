@@ -27,10 +27,6 @@ border-bottom: 1px solid #c5c5c5 !important;
 
 .v-slot-googlepopupview {
 	position: absolute;
-	/* left:112px; */
-	/* top: 54px; */
-	/* left:137px; 
-	 top: 66px; */
 	 left:122px;
 	 top: 59px;
 	z-index: 2;
@@ -45,7 +41,6 @@ border-bottom: 1px solid #c5c5c5 !important;
 }
 
 .v-table-body-googletable{
-     /*  overflow: hidden !important; */
     overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -127,8 +122,6 @@ color: #008000 !important;
  	font-size: inherit !important;
 	border-top-right-radius: 5px !important;
 	border-top-left-radius: 5px !important;
-	/*font-size: large !important;
-	font-weight: 600;*/
 }
 
 
@@ -143,8 +136,6 @@ color: #008000 !important;
 }
 
 .valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
-	/*background : #939393 !important;
-	color: white !important;*/
 	background : #dfdfdf !important;
 	color: #666666 !important;
 	height: 3em !important;
@@ -177,24 +168,6 @@ color: inherit;
 	overflow-y: auto;
 }
 
-
-/*
-.valo-ul .v-table-body-scrollabletable{
-    overflow-x: auto;
-	overflow-y: auto;
-}
-
-.valo-ul .v-table-scrollabletable{
-    overflow-x: auto;
-	overflow-y: auto;
-}
-
-.valo-ul .v-slot-scrollabletable{
-	overflow-x: auto;
-	overflow-y: auto;
-}
-*/
-
 .v-window {
 @include transition(none);
 }
@@ -209,14 +182,6 @@ overflow-x: hidden;
 .v-table-body-wrapper.v-table-body > div:nth-child(1) > table > tbody td:last-child > div{
 width: auto !important;
 }
-
-/* couleur header des tables et footer */
-/*.valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .headerTable {
-	background: rgba(65, 102, 169, 0.65);
-	color: white;
-	height: 37px;
-	font: 400 12px/1.55 "Open Sans", sans-serif;
-}*/
 
 .valo-ul .deletefavbutton {
 	width: 52px;
@@ -261,11 +226,6 @@ width: auto !important;
 .dropicon .v-icon {
 color: red;
 }
-    
-/* .dropicon .v-icon:before {
-content: "\f05e";
-color: red;
-}*/
 
 .valo-ul .v-window-modalitycurtain {
 -webkit-animation: none;
@@ -344,7 +304,6 @@ display: inline-block;
 }
 
 .photo-mdw {
-	/*border: 2px solid #6E6E6E;*/
 	border-radius: 15px;
 } 
 
@@ -387,9 +346,6 @@ display: inline-block;
 	position: absolute;
 	z-index: 1;
 	color: white !important;
-	/*font-weight: bold;*/
-	/*margin-top: 0.7em !important;*/
-	/* height: 3.5em; */
 }
 
 .valo-ul .contenu-ens-menu {

@@ -156,7 +156,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 				if (configController.isAffInscriptionsAutreCursus()) {
 					Panel panelDAC = new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
 
-					if (MainUI.getCurrent().getEtudiant().getLinscdac() != null && MainUI.getCurrent().getEtudiant().getLinscdac().size() > 0) {
+					if (MainUI.getCurrent().getEtudiant().getLinscdac() != null && !MainUI.getCurrent().getEtudiant().getLinscdac().isEmpty()) {
 						Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
 						inscriptionsDAC.setWidth("100%");
 						inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);

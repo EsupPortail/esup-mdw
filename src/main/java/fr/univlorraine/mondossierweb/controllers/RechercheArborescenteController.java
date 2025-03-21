@@ -18,18 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.List;
-
-import jakarta.annotation.Resource;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
@@ -39,6 +27,15 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBase;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * Gestion de la recherche
@@ -72,13 +69,6 @@ public class RechercheArborescenteController {
 
 
 	private List<String> lanneeUniv;
-
-	//On utilise soit recupererLesDixDernieresAnneeUniversitaire soit recupererLesDernieresAnneeUniversitaire
-	public List<String> recupererLesDixDernieresAnneeUniversitaire(){
-		if(lanneeUniv==null)
-			lanneeUniv = multipleApogeeService.getDixDernieresAnneesUniversitaires();
-		return lanneeUniv;
-	}
 	
 	//On utilise soit recupererLesDixDernieresAnneeUniversitaire soit recupererLesDernieresAnneeUniversitaire
 	public List<String> recupererLesDernieresAnneeUniversitaire(){
@@ -86,23 +76,6 @@ public class RechercheArborescenteController {
 			lanneeUniv = multipleApogeeService.getDernieresAnneesUniversitaires();
 		return lanneeUniv;
 	}
-
-	/*public List<String> recupererListeDesAnnees(Map<String, String> parameterMap){
-		String code = parameterMap.get("code");
-		String type = parameterMap.get("type");
-		List<String> annees = new LinkedList<String>();
-
-
-		if (type.equals(Utils.VET)) {
-			//On part d'une Etape pour établir une liste d'étudiant
-			Etape e = new Etape();
-			e.setCode(code.split("/")[0]);
-			e.setVersion(code.split("/")[1]);
-			annees = multipleApogeeService.getAnneesFromVetDesc(e);
-
-		}
-		return annees;
-	}*/
 	
 	public void renseigneObjFromGroupe(ObjetBase obj, Groupe g,String itemId){
 		obj.setType(Utils.GRP);

@@ -328,12 +328,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			///////////////////////////////////////////////////////
 			// recuperation des obj ElasticSearch
 			///////////////////////////////////////////////////////
-			if(lobjresult!=null && listeTypeAutorise.size()>0){
+			if(lobjresult!=null && !listeTypeAutorise.isEmpty()){
 				for(Map<String,Object> obj : lobjresult){
 					if(listeReponses.size()<Utils.NB_MAX_RESULT_QUICK_SEARCH){
 						if(obj != null){
 							if(listeTypeAutorise.contains((String)obj.get(Utils.ES_TYPE))){
-								if(listeReponses.size()>0){
+								if(!listeReponses.isEmpty()){
 									boolean triOk=true;
 									int rang = 0;
 									//On evite des doublons

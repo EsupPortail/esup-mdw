@@ -178,7 +178,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			showDiplomes();
 
 			List<Diplome> ldiplomes = MdwTouchkitUI.getCurrent().getEtudiant().getDiplomes();
-			if(ldiplomes != null && ldiplomes.size() > 0){
+			if(ldiplomes != null && !ldiplomes.isEmpty()){
 				String anneeEnCours = null;
 				Panel panelEnCours = null;
 				VerticalLayout notesLayout = null;
@@ -195,7 +195,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 			}
 
 			List<Etape> letapes = MdwTouchkitUI.getCurrent().getEtudiant().getEtapes();
-			if(letapes != null && letapes.size() > 0){
+			if(letapes != null && !letapes.isEmpty()){
 				String anneeEnCours = null;
 				Panel panelEnCours = null;
 				VerticalLayout notesLayout = null;
@@ -318,7 +318,7 @@ public class NotesMobileView extends VerticalLayout implements View {
 		libelleObj.addStyleName("v-small");
 
 		// Si l'objet a des résultats
-		if(resultats != null && resultats.size() > 0){
+		if(resultats != null && !resultats.isEmpty()){
 			// on saute une ligne au niveau du libellé
 			libelleLayout.addComponent(new Label(""));
 		}

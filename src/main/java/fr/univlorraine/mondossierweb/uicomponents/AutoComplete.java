@@ -43,7 +43,7 @@ public class AutoComplete extends TextField {
 
 	public void showChoices(List<ResultatDeRecherche> text, Layout layout, Button btnRecherche, boolean touchkitMobileDisplay) {
 		//Si du texte est saisi
-		if(text.size()>0){
+		if(!text.isEmpty()){
 			//Si la popup est déjà instanciée, on la masque
 			if(choicesPopup != null){
 				choicesPopup.setPopupVisible(false);

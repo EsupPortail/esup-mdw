@@ -111,7 +111,7 @@ public class InscriptionServiceImpl implements InscriptionService{
 				"and tem_iae_prm = 'O' "+
 				"ORDER BY COD_ANU DESC").getResultList();
 
-		if(llib!=null && llib.size()>0){
+		if(llib!=null && !llib.isEmpty()){
 			return llib.get(0);
 		}
 

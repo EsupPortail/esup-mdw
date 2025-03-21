@@ -249,7 +249,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			comboBoxAnneeUniv.setNullSelectionAllowed(false);
 			//Initialisation de la liste des années
 			List<String> lanneeUniv = rechercheArborescenteController.recupererLesDernieresAnneeUniversitaire();
-			if(lanneeUniv!=null && lanneeUniv.size()>0){
+			if(lanneeUniv!=null && !lanneeUniv.isEmpty()){
 				for(String anneeUniv : lanneeUniv){
 					comboBoxAnneeUniv.addItem(anneeUniv);
 					int anneenplusun = Integer.parseInt(anneeUniv) + 1;
@@ -395,7 +395,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		String rootItemId = null;
 		//Si aucun code ni type spécifié on récupère toutes les composantes
 		if(!StringUtils.hasText(code) || !StringUtils.hasText(type)){
-			if(lcomp==null || lcomp.size()==0){
+			if(lcomp==null || lcomp.isEmpty()){
 				lcomp = composanteService.findComposantesEnService();
 			}
 
@@ -672,7 +672,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 		table.setCollapsed(itemId, false);
 		//parcourir les fils, pour chaque fils faire deplierNoeudComplet
 		Collection<String> lfils = (Collection<String>)hc.getChildren(itemId);
-		if(lfils!=null && lfils.size()>0){
+		if(lfils!=null && !lfils.isEmpty()){
 			for(String fils : lfils){
 				deplierNoeudComplet(fils);
 			}
@@ -694,7 +694,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 					List<VersionDiplome> lvdi = composanteService.findVdiFromComposante(annee, trueObjectId);
 					List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-					if(lvdi!=null && lvdi.size()>0){
+					if(lvdi!=null && !lvdi.isEmpty()){
 						for(VersionDiplome vdi : lvdi){
 
 							ObjetBase obj = new ObjetBase();
@@ -735,7 +735,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 						List<VersionEtape> lvet = composanteService.findVetFromVdiAndCmp(annee, codDip, vrsDip, codCmp);
 						List<ObjetBase> lobj = new LinkedList<ObjetBase>();
-						if(lvet!=null && lvet.size()>0){
+						if(lvet!=null && !lvet.isEmpty()){
 							for(VersionEtape vet : lvet){
 
 								ObjetBase obj = new ObjetBase();
@@ -775,11 +775,11 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 								lelp = composanteService.findElpFromElp( trueObjectId);
 
 								//Si ELP n'a pas de fils , on cherche les groupes
-								if(lelp==null || lelp.size()==0){
+								if(lelp==null || lelp.isEmpty()){
 									//On tente de récupèrer les groupes de l'ELP
 									List<ElpDeCollection> lgroupes =  listeInscritsController.recupererGroupes(annee, trueObjectId);
 									//Si on a récupéré des groupes
-									if(lgroupes != null && lgroupes.size()>0){
+									if(lgroupes != null && !lgroupes.isEmpty()){
 										//Vrai si on a plusieurs collection (dans ce cas on affiche les collections dans l'arbo)
 										boolean plsrsCollection = false;
 										//On parcourt l'ELP (un seul ELP dans la liste en vérité)
@@ -838,7 +838,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 							}
 
 							//Si on a récupéré des ELP
-							if(lelp!=null && lelp.size()>0){
+							if(lelp!=null && !lelp.isEmpty()){
 								//On parcourt les ELP
 								for(ElementPedagogique elp : lelp){
 									//On créé un nouvel objet basique à inséré dans le tableau

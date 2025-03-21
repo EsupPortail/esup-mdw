@@ -237,7 +237,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 			addComponent(navbar);
 
 			//Test si la liste contient des étudiants
-			if(linscrits!=null && linscrits.size()>0){
+			if(linscrits!=null && !linscrits.isEmpty()){
 				pageEnCours=1;
 				//Calcul du nombre maxi de page
 				if(nbEtuParPage>0 && linscrits.size()>nbEtuParPage){

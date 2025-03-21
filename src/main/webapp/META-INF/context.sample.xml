@@ -146,7 +146,7 @@
 	<Parameter name="pdf.sign.reason" value="" />
 	<Parameter name="pdf.sign.location" value="" />
 	<Parameter name="pdf.sign.contact" value="" />
-	<!-- (facultatif) TSA Signature compatible ALT : Nécessité de posséder un certificat délivré par une authentité de certification externe 
+	<!-- (facultatif) TSA Signature compatible ALT : Nécessité de posséder un certificat délivré par une entité de certification externe
 	     La signature Alt doit être activée pour les pdf dans l'adminView (onglet PDF) -->
 	<Parameter name="pdf.sign.alt.tsa.url" value="http://timestamp.digicert.com" />
 	<Parameter name="pdf.sign.alt.tsa.username" value="toto" />

@@ -460,7 +460,7 @@ public class ModificationAdressesWindow extends Window {
 				close();
 			}else{
 				//affichage erreurs
-				if(retour!=null && retour.size()>0){
+				if(retour!=null && !retour.isEmpty()){
 					String errorMsg="";
 					for(String erreur : retour){
 						if(!errorMsg.equals(""))

@@ -121,7 +121,7 @@ public class DetailInscriptionWindow extends Window {
 			panelDetailInscription.addStyleName("small-font-element");
 
 			List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
-			if(lelp!=null && lelp.size()>0){
+			if(lelp!=null && !lelp.isEmpty()){
 				Table detailInscriptionTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
 				detailInscriptionTable.setSizeFull();
 				detailInscriptionTable.setVisibleColumns(new String[0]);

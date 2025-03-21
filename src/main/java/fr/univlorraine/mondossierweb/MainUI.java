@@ -537,7 +537,7 @@ public class MainUI extends GenericUI {
 							if(userController.isEnseignant()){
 								//Récupération des favoris pour l'utilisateur
 								List<Favoris> lfav = favorisController.getFavoris();
-								if(lfav!=null && lfav.size()>0){
+								if(lfav!=null && !lfav.isEmpty()){
 									//On affiche la vue des favoris
 									navigator.navigateTo(FavorisView.NAME);
 								}else{
