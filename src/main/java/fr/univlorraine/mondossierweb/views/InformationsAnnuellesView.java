@@ -36,13 +36,13 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.List;
 
 /**
@@ -52,7 +52,6 @@ import java.util.List;
 @SpringView(name = InformationsAnnuellesView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class InformationsAnnuellesView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
 
 	public static final String NAME = "informationsAnnuellesView";
 

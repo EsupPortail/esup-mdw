@@ -49,8 +49,7 @@ import fr.univlorraine.mondossierweb.views.NotesView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -70,9 +69,9 @@ import java.util.regex.Pattern;
  * 
  * Méthodes Utiles
  */
+@Slf4j
 public class Utils {
 
-	static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 	
 	/**
 	 * type utilisateur admin.
@@ -386,7 +385,7 @@ public class Utils {
 			try {
 				d = formatter.parse(date);
 			} catch (ParseException e) {
-				LOG.error("String to date : "+date+" en objet Date");
+				log.error("String to date : "+date+" en objet Date");
 				return null;
 			}
 			return d;

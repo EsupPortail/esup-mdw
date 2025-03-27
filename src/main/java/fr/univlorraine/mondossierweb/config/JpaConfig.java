@@ -20,10 +20,9 @@ package fr.univlorraine.mondossierweb.config;
 
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.repositories.mdw.FavorisRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.flywaydb.core.Flyway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,12 +46,11 @@ import java.util.Properties;
  */
 @Configuration
 @EnableTransactionManagement(mode=AdviceMode.ASPECTJ)
+@Slf4j
 @EnableJpaRepositories(basePackageClasses=FavorisRepository.class,transactionManagerRef="transactionManager", entityManagerFactoryRef="entityManagerFactory")
 public class JpaConfig {
 
 	public final static String PERSISTENCE_UNIT_NAME = "pun-jpa";
-
-	private Logger LOG = LoggerFactory.getLogger(JpaConfig.class);
 
 	/**
 	 * Source de données
@@ -73,17 +71,17 @@ public class JpaConfig {
 	@DependsOn("dataSource")
 	public Flyway flyway() {
 		try{
-			LOG.info("Database analysis: in progress...");
+			log.info("Database analysis: in progress...");
 			Flyway flyway = new Flyway();
 			flyway.setDataSource(dataSource());
 			flyway.setBaselineOnMigrate(true);
 			flyway.setValidateOnMigrate(true);
 			flyway.repair();
 			flyway.migrate();
-			LOG.info("Database analysis: finish...");
+			log.info("Database analysis: finish...");
 			return flyway;
 		}catch (Exception e){
-			LOG.error("Database analysis: ERROR",e);
+			log.error("Database analysis: ERROR",e);
 			throw e;
 		}
 	}

@@ -67,8 +67,7 @@ import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
@@ -90,9 +89,8 @@ import java.util.Map;
 @SpringUI(path = "m")
 @Push(transport = Transport.WEBSOCKET_XHR)
 @Viewport("user-scalable=no,initial-scale=1.0")
+@Slf4j
 public class MdwTouchkitUI extends GenericUI{
-
-	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
 
 	/**
 	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
@@ -193,7 +191,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 	@Override
 	protected void init(VaadinRequest request) {
-		LOG.debug("init(); MdwTouchkitUI");
+		log.debug("init(); MdwTouchkitUI");
 
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 
@@ -207,7 +205,7 @@ public class MdwTouchkitUI extends GenericUI{
 			while (cause instanceof Throwable) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
-					LOG.info("Erreur de fragment ");
+					log.info("Erreur de fragment ");
 					// Retour à la racine
 					Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
 					return;
@@ -233,7 +231,7 @@ public class MdwTouchkitUI extends GenericUI{
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
-			LOG.error(e.getThrowable().toString(), e.getThrowable());
+			log.error(e.getThrowable().toString(), e.getThrowable());
 			// Affiche de la vue d'erreur
 			navigator.navigateTo(ErreurView.NAME);
 		});
@@ -288,9 +286,6 @@ public class MdwTouchkitUI extends GenericUI{
 		});
 
 		navigator.addViewChangeListener(new ViewChangeListener() {
-
-			private static final long serialVersionUID = 9183991275107545154L;
-
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 
@@ -374,7 +369,7 @@ public class MdwTouchkitUI extends GenericUI{
 							navigateToDossierEtudiant();
 						}
 					} catch (Exception ex) {
-						LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
+						log.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
 						navigator.navigateTo(ErreurView.NAME);
 					}
 
@@ -697,7 +692,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 	private void reloadIfUriFragmentError(String uriFragment) {
 		if(uriFragment != null && uriFragment.contains("#")) {
-			LOG.warn("fragment erroné :"+uriFragment);
+			log.warn("fragment erroné :"+uriFragment);
 			// Retour à la racine
 			Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
 		}

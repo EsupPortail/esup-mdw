@@ -82,7 +82,6 @@ import java.util.concurrent.Executors;
 @Component @Scope("prototype")
 @SpringView(name = RechercheArborescenteView.NAME)
 public class RechercheArborescenteView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
 	public static final String NAME = "rechercheArborescenteView";
 	private static final String ID_PROPERTY = "id";
 	private static final String TRUE_ID_PROPERTY = "trueObjectId";
@@ -359,7 +358,6 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 			//gestion du clic sur la fleche pour déplier une entrée
 			table.addExpandListener(new Tree.ExpandListener() {
-				private static final long serialVersionUID = 8532342540008245348L;
 				@Override
 				public void nodeExpand(Tree.ExpandEvent event) {
 					if(event!=null && event.getItemId()!=null && hc!=null && hc.getItem(event.getItemId())!=null
@@ -458,7 +456,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//LOG.debug("enter");
+		//log.debug("enter");
 	}
 
 	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
@@ -711,7 +709,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 								table.setParent(obj.getId(), itemId);
 							}else{
-								//LOG.debug("attention : element non créé !");
+								//log.debug("attention : element non créé !");
 							}
 
 						} 

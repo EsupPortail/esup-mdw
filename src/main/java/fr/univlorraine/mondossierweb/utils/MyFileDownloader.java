@@ -33,8 +33,6 @@ import java.io.IOException;
 
 public class MyFileDownloader extends BusyIndicatorFileDownloader {
 
-	private static final long serialVersionUID = 1L;
-
 	private long fileSize = 0;
 
 	public MyFileDownloader(Resource resource) {

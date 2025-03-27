@@ -45,8 +45,7 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -61,10 +60,9 @@ import java.util.List;
  */
 @Component @Scope("prototype")
 @SpringView(name = EtatCivilView.NAME)
+@Slf4j
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-	private Logger LOG = LoggerFactory.getLogger(EtatCivilView.class);
 	public static final String NAME = "etatCivilView";
 
 	/* Injections */
@@ -91,12 +89,12 @@ public class EtatCivilView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
+		log.debug(userController.getCurrentUserName()+" EtatCivilView");
 
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant())){
 			if( MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
-					LOG.debug(userController.getCurrentUserName()+" init EtatCivilView "+SecurityContextHolder.getContext().getAuthentication().getName());
+					log.debug(userController.getCurrentUserName()+" init EtatCivilView "+SecurityContextHolder.getContext().getAuthentication().getName());
 
 					/* Style */
 					setMargin(true);

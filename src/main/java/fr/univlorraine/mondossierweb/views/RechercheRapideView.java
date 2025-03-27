@@ -72,7 +72,6 @@ import java.util.Map;
 @Component @Scope("prototype")
 @SpringView(name = RechercheRapideView.NAME)
 public class RechercheRapideView extends VerticalLayout implements View {
-	private static final long serialVersionUID = 7147611659177952737L;
 	public static final String NAME = "rechercheRapideView";
 	public static final String[] FIELDS_ORDER = {"lib","type"};
 

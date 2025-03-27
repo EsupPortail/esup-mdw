@@ -23,12 +23,11 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 /**
  * Page d'accueil
@@ -36,7 +35,6 @@ import jakarta.annotation.Resource;
 @Component @Scope("prototype")
 @SpringView(name = ErreurView.NAME)
 public class ErreurView extends VerticalLayout implements View {
-	private static final long serialVersionUID = 5118929963964330113L;
 
 	public static final String NAME = "erreurView";
 

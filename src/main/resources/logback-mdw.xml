@@ -25,8 +25,10 @@
 
 	<property name="defaultPattern" value="%date{HH:mm:ss.SSS} [%thread] %-5level %mdc{username} %logger - %message%n" />
 
+	<property name="debugMode" value="${context.debugMode}" />
 	<property name="appUrl" value="${context.app.url}" />
 	<property name="smtpHost" value="${context.mail.smtpHost}" />
+	<property name="smtpPort" value="${context.mail.smtpPort}" />
 	<property name="mailFrom" value="${context.mail.from}" />
 	<property name="mailTo" value="${context.mail.to}" />
 	<property name="mailStartDisabling" value="${context.mail.startDisabling}" />
@@ -84,6 +86,7 @@
 		<mailDelaySeconds>60</mailDelaySeconds>
 
 		<smtpHost>${smtpHost}</smtpHost>
+		<smtpPort>${smtpPort}</smtpPort>
 		<from>${mailFrom}</from>
 		<to>${mailTo}</to>
 		<subject>[mondossierweb] Logback Message from ${appUrl}</subject>
@@ -97,16 +100,20 @@
 		<layout class="ch.qos.logback.classic.html.HTMLLayout" />
 	</appender>
 
-	<if condition="Boolean.valueOf(p(&quot;context.debugMode&quot;))">
+	<if condition='Boolean.valueOf(property("debugMode"))'>
 		<then>
 			<!-- in debug mode -->
-			<logger name="fr.univlorraine.mondossierweb" level="debug" />
+			<logger name="fr.univlorraine.mondossierweb" level="debug">
+				<appender-ref ref="consoleAppender" />
+				<appender-ref ref="fileAppender" />
+			</logger>
 		</then>
 		<else>
 			<!-- no debug mode -->
 			<logger name="fr.univlorraine.mondossierweb" level="error">
-				<appender-ref ref="consoleAppender" />
+				<appender-ref ref="fileAppender" />
 				<appender-ref ref="mailAppender" />
+				<appender-ref ref="consoleAppender" />
 			</logger>
 		</else>
 	</if>
@@ -127,7 +134,6 @@
 	<!-- Ne mail pas les erreurs push -->
 	<logger name="com.vaadin.server.DefaultErrorHandler" level="off" />
 
-
 	<!-- Ne prend pas en compte les warn sur ServerRpcHandler(Resynchronizing client) -->
 	<logger name="com.vaadin.server.communication.PushHandler" level="off" />
 	<logger name="com.vaadin.server.communication.PushAtmosphereHandler" level="off" />
@@ -139,5 +145,7 @@
 
 	<!-- Ne mail pas les erreurs atmosphere -->
 	<logger name="org.atmosphere" level="off" />
+
+
 
 </configuration>

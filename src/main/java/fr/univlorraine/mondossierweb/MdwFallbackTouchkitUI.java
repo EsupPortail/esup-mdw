@@ -38,10 +38,6 @@ import org.springframework.stereotype.Component;
 @Theme("valo-ul")
 @StyleSheet("mobileView.css")
 public class MdwFallbackTouchkitUI extends UI {
-	
-	private static final long serialVersionUID = 1L;
-	
-
 
 	@Resource
 	private transient ApplicationContext applicationContext;

@@ -29,7 +29,6 @@ import java.io.PrintWriter;
 
 @WebServlet("/AppExceptionHandler")
 public class AppExceptionHandler extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 	private static final String TOO_MANY_SESSION_EXCEPTION = "TooManyActiveSessionsException";
 
 	protected void doGet(HttpServletRequest request,

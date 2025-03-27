@@ -18,11 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.beans;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Data;
 
 /**
  * Diplôme
@@ -31,7 +31,6 @@ import lombok.Data;
 @Data
 public class Diplome implements Serializable{
 
-	private static final long serialVersionUID = -725836072091894826L;
 	/**
 	 * code de la composante a laquelle appartient le diplome.
 	 */

@@ -19,17 +19,12 @@
 package fr.univlorraine.mondossierweb.converters;
 
 
-
-
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import jakarta.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
-
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 
 
 
@@ -40,10 +35,9 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
  *
  */
 @Component(value="codetuFromLoginLdapImpl")
+@Slf4j
 public class CodeEtudiantLoginConverterImplLdap implements CodeEtudiantLoginConverterInterface {
 
-	private Logger LOG = LoggerFactory.getLogger(CodeEtudiantLoginConverterImplLdap.class);
-	
 	@Resource
 	private transient LdapUserSearch ldapUserSearch;
 
@@ -61,13 +55,13 @@ public class CodeEtudiantLoginConverterImplLdap implements CodeEtudiantLoginConv
 			if(dco!=null){
 				String[] vals= dco.getStringAttributes(PropertyUtils.getAttributLdapCodEtu());
 				if(vals!=null){
-					LOG.debug("Codetu via LDAP pour "+login+" => "+vals[0]);
+					log.debug("Codetu via LDAP pour "+login+" => "+vals[0]);
 					return vals[0];
 				}
 			}
 			return null;
 		} catch (Exception e) {
-			LOG.error("probleme de récupération du cod_etu depuis le login via le ldap. ",e);
+			log.error("probleme de récupération du cod_etu depuis le login via le ldap. ",e);
 			return null;
 		}
 	}

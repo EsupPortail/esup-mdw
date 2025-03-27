@@ -69,8 +69,7 @@ import fr.univlorraine.mondossierweb.views.windows.DetailGroupesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -91,11 +90,8 @@ import java.util.Map;
  */
 @Component @Scope("prototype")
 @SpringView(name = ListeInscritsView.NAME)
+@Slf4j
 public class ListeInscritsView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = -2056224835347802529L;
-
-	private Logger LOG = LoggerFactory.getLogger(ListeInscritsView.class);
 
 	public static final String NAME = "listeInscritsView";
 
@@ -941,7 +937,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//LOG.debug("enter listeInscritsView");
+		//log.debug("enter listeInscritsView");
 	}
 
 
@@ -1141,7 +1137,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 
 	private void filtrerInscrits(String idEtape, String idgroupe) {
 
-		LOG.debug("filtre les inscrits pour idetape:"+idEtape +" et idgroupe :"+idgroupe);
+		log.debug("filtre les inscrits pour idetape:"+idEtape +" et idgroupe :"+idgroupe);
 		if(inscritstable!=null){
 
 			BeanItemContainer<Inscrit> ic = (BeanItemContainer<Inscrit>) inscritstable.getContainerDataSource();
@@ -1159,7 +1155,7 @@ public class ListeInscritsView extends VerticalLayout implements View {
 					}
 
 				}catch(NullPointerException npe){
-					LOG.info("NullPointerException lors du addContainerFilter sur ListeInscritView pour code : "+code+" type : "+typeFavori+ "et idEtape : "+idEtape + " et idgroupe : "+idgroupe);
+					log.info("NullPointerException lors du addContainerFilter sur ListeInscritView pour code : "+code+" type : "+typeFavori+ "et idEtape : "+idEtape + " et idgroupe : "+idgroupe);
 				}
 			}
 

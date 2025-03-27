@@ -48,6 +48,7 @@ import com.itextpdf.text.pdf.security.OcspClient;
 import com.itextpdf.text.pdf.security.OcspClientBouncyCastle;
 import com.itextpdf.text.pdf.security.PrivateKeySignature;
 import com.itextpdf.text.pdf.security.TSAClientBouncyCastle;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Enumerated;
@@ -78,8 +79,6 @@ import org.bouncycastle.operator.OperatorException;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.x509.util.StreamParsingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -108,9 +107,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class PdfUtils {
-
-	private static Logger LOG = LoggerFactory.getLogger(PdfUtils.class);
 
 	/**
 	 * outputstream size.
@@ -194,7 +192,7 @@ public class PdfUtils {
 
 
 		} catch (Exception e) {
-			LOG.error("Erreur lors de la signature du PDF ",e);
+			log.error("Erreur lors de la signature du PDF ",e);
 		}
 
 		return null;
@@ -203,7 +201,7 @@ public class PdfUtils {
 
 	public static byte[] generatePwd() {
 		String pwd = RandomStringUtils.randomAlphanumeric(MIN_LENGTH_PWD, MAX_LENGTH_PWD);
-		LOG.debug("ownerPwd : {}", pwd);
+		log.debug("ownerPwd : {}", pwd);
 		return pwd.getBytes();
 	}
 
@@ -253,22 +251,22 @@ public class PdfUtils {
 			ValidationData validationData = new ValidationData();
 
 			while (certificate != null) {
-				LOG.debug("Certificate name : {}" , certificate.getSubjectX500Principal().getName());
+				log.debug("Certificate name : {}" , certificate.getSubjectX500Principal().getName());
 				X509Certificate issuer = getIssuerCertificate(certificate);
 				validationData.certs.add(certificate.getEncoded());
 				byte[] ocspResponse = ocspClient.getEncoded(certificate, issuer, null);
 				if (ocspResponse != null) {
-					LOG.debug("  with OCSP response");
+					log.debug("  with OCSP response");
 					validationData.ocsps.add(ocspResponse);
 					X509Certificate ocspSigner = getOcspSignerCertificate(ocspResponse);
 					if (ocspSigner != null) {
-						LOG.debug("  signed by {}\n", ocspSigner.getSubjectX500Principal().getName());
+						log.debug("  signed by {}\n", ocspSigner.getSubjectX500Principal().getName());
 					}
 					addLtvForChain(ocspSigner, ocspClient, crlClient, getOcspHashKey(ocspResponse));
 				} else {
 					Collection<byte[]> crl = crlClient.getEncoded(certificate, null);
 					if (crl != null && !crl.isEmpty()) {
-						LOG.debug("  with {} CRLs\n", crl.size());
+						log.debug("  with {} CRLs\n", crl.size());
 						validationData.crls.addAll(crl);
 						for (byte[] crlBytes : crl) {
 							addLtvForChain(null, ocspClient, crlClient, getCrlHashKey(crlBytes));

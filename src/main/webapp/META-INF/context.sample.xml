@@ -158,7 +158,8 @@
 	<Parameter name="autoredirect.to.mobileview" value="true"/>
 	
 	<!-- Configuration de l'envoi de mails d'erreur -->
-	<Parameter name="mail.smtpHost" value="smtp-sig.univ-lorraine.fr" />
+	<Parameter name="mail.smtpHost" value="smtp.univ.fr" />
+	<Parameter name="mail.smtpPort" value="25" />
 	<Parameter name="mail.from" value="mdw@univ.fr" />
 	<Parameter name="mail.to" value="error@univ.fr" />
 	<Parameter name="mail.startDisabling" value="00:01" />

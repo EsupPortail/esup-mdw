@@ -49,8 +49,7 @@ import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatE
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVdiDto;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVetDto;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -66,6 +65,7 @@ import java.util.Locale;
  * Gestion de la récupération des notes et résultats
  */
 @Component(value = "resultatController")
+@Slf4j
 public class ResultatController {
 
     private static final String ACRONYME_CORRESPONDANCE = "COR";
@@ -73,7 +73,7 @@ public class ResultatController {
      * proxy pour faire appel aux infos sur les résultats du WS .
      */
     private final PedagogiqueMetierServiceInterface pedagogiqueService = ServiceProvider.getService(PedagogiqueMetierServiceInterface.class);
-    private Logger LOG = LoggerFactory.getLogger(ResultatController.class);
+
     /* Injections */
     @Resource
     private transient ApplicationContext applicationContext;
@@ -163,9 +163,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage() != null && ex.getMessage().contains("remoteerror")) {
-                LOG.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
 
@@ -255,9 +255,9 @@ public class ResultatController {
             } catch (Exception ex) {
                 //Si on est dans un cas d'erreur non expliqué
                 if (ex.getMessage().contains("remoteerror")) {
-                    LOG.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                    log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
                 } else {
-                    LOG.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                    log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
                 }
             }
         }
@@ -509,9 +509,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().contains("remoteerror")) {
-                LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
 
@@ -612,7 +612,7 @@ public class ResultatController {
                             if (contientResultatsMixte(relpdto.getItem()) && temSesUniVet == null) {
                                 // Récupération du témoin de session unique de la VET correspondante
                                 temSesUniVet = multipleApogeeService.getTemSesUniVet(et.getCode(), et.getVersion());
-                                LOG.debug("temoinEtatDelib " + et.getCode() + "/" + et.getVersion() + " : " + temSesUniVet);
+                                log.debug("temoinEtatDelib " + et.getCode() + "/" + et.getVersion() + " : " + temSesUniVet);
                             }
                             //on parcourt les résultats pour l'ELP:
                             for (ResultatElpDTO3 rpd : relpdto.getItem()) {
@@ -762,7 +762,7 @@ public class ResultatController {
                                         }
                                     }
                                 } else {
-                                    LOG.debug("Résultat ignoré  car temSesUniVet = " + temSesUniVet + " pour VET " + et.getCode() + "/" + et.getVersion());
+                                    log.debug("Résultat ignoré  car temSesUniVet = " + temSesUniVet + " pour VET " + et.getCode() + "/" + et.getVersion());
                                 }
                             }
                         }
@@ -930,7 +930,7 @@ public class ResultatController {
                             }
                             //ajout de l'épreuve dans la liste en tant qu'élément si elle a une note ou un résultat (si on veut afficher les résultats)
                             if (EprNotee || (confAffResultatsEpreuve && EprResult)) {
-                                LOG.debug("*****Ajout epreuve à la liste : " + elp2.getCode());
+                                log.debug("*****Ajout epreuve à la liste : " + elp2.getCode());
                                 liste1.add(elp2);
                             }
                         }
@@ -1103,9 +1103,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().contains("remoteerror")) {
-                LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
     }
@@ -1126,13 +1126,13 @@ public class ResultatController {
                 } else {
                     // Si c'et une MCC différente de celle trouvée jusque là
                     if (sessionUnique.booleanValue() != su.booleanValue()) {
-                        LOG.debug("contientResultatsMixte true");
+                        log.debug("contientResultatsMixte true");
                         return true;
                     }
                 }
             }
         }
-        LOG.debug("contientResultatsMixte false");
+        log.debug("contientResultatsMixte false");
         return false;
     }
 
@@ -1238,9 +1238,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().contains("remoteerror")) {
-                LOG.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
     }
@@ -1306,9 +1306,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().equals("remoteerror")) {
-                LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(), ex);
+                log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(), ex);
             } else {
-                LOG.info(ex.getMessage() + " pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant(" + et.getAnnee() + "," + et.getCode() + "/" + et.getVersion() + ")");
+                log.info(ex.getMessage() + " pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant(" + et.getAnnee() + "," + et.getCode() + "/" + et.getVersion() + ")");
             }
         }
 
@@ -1391,7 +1391,7 @@ public class ResultatController {
 
         //Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
         if (utilisationExtractionApogee(etape.getAnnee().substring(0, 4), sourceResultat)) {
-            LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
+            log.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
             //On regarde si on a pas déjà les infos dans le cache:
             String rang = getRangDetailInscriptionEnCache(etape, GenericUI.getCurrent().getEtudiant());
 
@@ -1405,7 +1405,7 @@ public class ResultatController {
             }
 
         } else {
-            LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
+            log.info("Méthode de récupération de l'IP identique à la récupération des notes");
             //Méthode de récupération de l'IP commune aux notes
             renseigneDetailNotesEtResultatsEtudiant(etape);
         }
@@ -1420,7 +1420,7 @@ public class ResultatController {
 
         //Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
         if (utilisationExtractionApogee(etape.getAnnee().substring(0, 4), sourceResultat)) {
-            LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
+            log.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
             //On regarde si on a pas déjà les infos dans le cache:
             String rang = getRangDetailInscriptionEnCache(etape, GenericUI.getCurrent().getEtudiant());
 
@@ -1433,7 +1433,7 @@ public class ResultatController {
                 recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
             }
         } else {
-            LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
+            log.info("Méthode de récupération de l'IP identique à la récupération des notes");
             //Méthode de récupération de l'IP commune aux notes
             renseigneDetailNotesEtResultats(etape, isGestionnaire);
         }

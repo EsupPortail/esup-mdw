@@ -22,6 +22,7 @@ import ch.qos.logback.classic.net.SMTPAppender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.boolex.EvaluationException;
 import ch.qos.logback.core.helpers.CyclicBuffer;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * Appender qui regroupe les événements à mailer, dans une limite de temps et de nombre d'événements.
  * @author Adrien Colson
  */
+@Slf4j
 public class GroupEventsSMTPAppender extends SMTPAppender {
 
 	/** Message indiquant une demande d'envoi de mail. */
@@ -152,10 +154,12 @@ public class GroupEventsSMTPAppender extends SMTPAppender {
 	 * Envoie le mail.
 	 */
 	private void sendMail() {
-		if (lastEventObject != null) {
-			super.append(lastEventObject);
-			lastEventObject = null;
-		}
+			if (lastEventObject != null) {
+				log.debug("Envoi du mail " + lastEventObject.getMessage() + " sur " + this.getSmtpHost() + ":" + this.getSmtpPort());
+				super.append(lastEventObject);
+				log.debug("Envoi du mail OK");
+				lastEventObject = null;
+			}
 	}
 
 	/**

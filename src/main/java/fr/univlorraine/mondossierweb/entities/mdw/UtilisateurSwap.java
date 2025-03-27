@@ -34,8 +34,6 @@ import java.util.Date;
 @Table(name="UTILISATEUR_SWAP")
 public class UtilisateurSwap implements Serializable {
 
-	private static final long serialVersionUID = 6093580014334823119L;
-
 	@Id
 	@Column(name="LOGIN_SOURCE")
 	private String loginSource;

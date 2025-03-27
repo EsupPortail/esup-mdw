@@ -81,8 +81,7 @@ import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
 import jakarta.annotation.Resource;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
@@ -109,10 +108,9 @@ import java.util.Map;
 @StyleSheet("mainView.css")
 @SuppressWarnings("serial")
 @SpringUI(path = "")
+@Slf4j
 @Push(transport = Transport.WEBSOCKET_XHR)
 public class MainUI extends GenericUI {
-
-	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	/**
 	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
@@ -244,7 +242,7 @@ public class MainUI extends GenericUI {
 	@Override
 	protected void init(VaadinRequest request) {
 
-		LOG.debug("init(); mainUI");
+		log.debug("init(); mainUI");
 
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
@@ -260,7 +258,7 @@ public class MainUI extends GenericUI {
 			while (cause instanceof Throwable) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
-					LOG.debug("Erreur de fragment ");
+					log.debug("Erreur de fragment ");
 					// Retour à la racine
 					Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
 					return;
@@ -284,7 +282,7 @@ public class MainUI extends GenericUI {
 				cause = cause.getCause();
 			}
 			// Traite les autres erreurs normalement 
-			LOG.error(e.getThrowable().toString(), e.getThrowable());
+			log.error(e.getThrowable().toString(), e.getThrowable());
 			// Affiche de la vue d'erreur
 			displayViewFullScreen(ErreurView.NAME);
 			//DefaultErrorHandler.doDefault(e);
@@ -330,27 +328,25 @@ public class MainUI extends GenericUI {
 		navigator.setErrorProvider(new ViewProvider() {
 			@Override
 			public String getViewName(final String viewAndParameters) {
-				LOG.warn("navigator ErrorProvider getViewName : " + viewAndParameters);
+				log.warn("navigator ErrorProvider getViewName : " + viewAndParameters);
 				return ErreurView.NAME;
 			}
 
 			@Override
 			public View getView(final String viewName) {
-				LOG.warn("navigator ErrorProvider - getView " + viewName);
+				log.warn("navigator ErrorProvider - getView " + viewName);
 				return viewProvider.getView(ErreurView.NAME);
 			}
 		});
 
 
 		navigator.addViewChangeListener(new ViewChangeListener() {
-			private static final long serialVersionUID = 7905379446201794289L;
-
 			private static final String SELECTED_ITEM = "selected";
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 
-				LOG.debug("beforeViewChange " + event.getViewName());
+				log.debug("beforeViewChange " + event.getViewName());
 
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
@@ -500,7 +496,7 @@ public class MainUI extends GenericUI {
 						//On renseigne l'étudiant dont on consulte le dossier
 						//Récupération du cod_etu
 						etudiant = new Etudiant(userController.getCodetu());
-						LOG.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
+						log.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
 						//Récupération de l'état-civil (et les adresses)
 						etudiantController.recupererEtatCivil();
 						//On construit le menu affiché à l'étudiant
@@ -598,7 +594,7 @@ public class MainUI extends GenericUI {
 	 * Affichage message d'erreur
 	 */
 	public void afficherErreurView() {
-		LOG.debug("afficherErreurView");
+		log.debug("afficherErreurView");
 		navigator.navigateTo(ErreurView.NAME);
 	}
 
@@ -743,7 +739,7 @@ public class MainUI extends GenericUI {
 	 * Ajout de l'onglet principal "dossier" contenant le dossier de l'étudiant
 	 */
 	private void addTabDossierEtudiant() {
-		LOG.debug("Création du l'onglet du dossier de l'étudiant");
+		log.debug("Création du l'onglet du dossier de l'étudiant");
 		//Ajout de l'onglet "Dossier"
 		tabDossierEtu = tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
 		tabSheetGlobal.setTabPosition(tabDossierEtu, rangTabDossierEtudiant);
@@ -950,7 +946,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue Recherche Arborescente
 	 */
 	private void navigateToRechercheArborescente() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
 		//récupération de l'onglet qui affiche la vue RechercheArborescente
 		int numtab = viewEnseignantTab.get(rechercheArborescenteView.NAME);
 		//Si on a des paramètres renseignés
@@ -966,7 +962,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue Liste Inscrits
 	 */
 	private void navigateToListeInscrits() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
 		//récupération de l'onglet qui affiche la vue ListeInscrits
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 
@@ -1007,7 +1003,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue des favoris
 	 */
 	private void navigateToFavoris() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToFavoris");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToFavoris");
 		//récupération de l'onglet qui affiche la vue des favoris
 		int numtab = viewEnseignantTab.get(favorisView.NAME);
 		//On affiche l'onglet
@@ -1022,7 +1018,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue RechercheRapide
 	 */
 	private void navigateToRechercheRapide() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheRapide");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheRapide");
 		//récupération de l'onglet qui affiche la vue RechercheRapide
 		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
 		//On affiche l'onglet
@@ -1039,7 +1035,7 @@ public class MainUI extends GenericUI {
 	 */
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
 
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
 
 		//Si l'onglet a été closed
 		if(tabDossierEtu==null || tabSheetGlobal.getTabPosition(tabDossierEtu)<0){
@@ -1105,7 +1101,7 @@ public class MainUI extends GenericUI {
 
 	private void reloadIfUriFragmentError(String uriFragment) {
 		if(uriFragment != null && uriFragment.contains("#")) {
-			LOG.warn("fragment erroné :"+uriFragment);
+			log.warn("fragment erroné :"+uriFragment);
 			// Retour à la racine
 			Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
 		}

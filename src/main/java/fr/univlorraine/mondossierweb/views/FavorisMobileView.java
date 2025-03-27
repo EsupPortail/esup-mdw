@@ -63,11 +63,8 @@ import java.util.concurrent.Executors;
 @SpringView(name = FavorisMobileView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('teacher') || @userController.hasRoleInProperty('gestionnaire')")
 public class FavorisMobileView extends VerticalLayout implements View {
-	
-	private static final long serialVersionUID = -2056224835347802529L;
-	public static final String NAME = "favorisMobileView";
-	public static final String[] FAV_FIELDS_ORDER = {"id.idfav"};
 
+	public static final String NAME = "favorisMobileView";
 
 	/* Injections */
 	@Resource
@@ -288,7 +285,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//LOG.debug("ENTER FAVORIS VIEW");
+		//log.debug("ENTER FAVORIS VIEW");
 	}
 
 

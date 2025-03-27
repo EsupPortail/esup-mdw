@@ -31,6 +31,7 @@ import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.SessionTrackingMode;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
+import lombok.extern.slf4j.Slf4j;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.SessionSupport;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ import java.util.Set;
  * 
  * @author Adrien Colson
  */
+@Slf4j
 public class Initializer implements WebApplicationInitializer {
 
 	/**
@@ -87,12 +89,12 @@ public class Initializer implements WebApplicationInitializer {
 			loggerContext.putProperty("context." + parameterName, servletContext.getInitParameter(parameterName));
 		}
 
-		// loggerContext.putProperty("context.log.level", productionMode ? "info" : "trace");
-
 		try {
+			log.debug("###Configuration des LOGS via logback-mdw.xml...####");
 			final InputStream logbackConfig = getClass().getResourceAsStream("/logback-mdw.xml");
 			jc.doConfigure(logbackConfig);
 			logbackConfig.close();
+			log.debug("###Configuration des LOGS OK####");
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

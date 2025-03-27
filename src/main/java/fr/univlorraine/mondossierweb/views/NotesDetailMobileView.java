@@ -43,8 +43,7 @@ import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -62,11 +61,11 @@ import java.util.Map.Entry;
  */
 @SuppressWarnings("serial")
 @Component @Scope("prototype")
+@Slf4j
 @SpringView(name = NotesDetailMobileView.NAME)
 @JavaScript("notesDetailMobileView.js")
 public class NotesDetailMobileView extends VerticalLayout implements View {
-
-	private Logger LOG = LoggerFactory.getLogger(NotesDetailMobileView.class);
+	
 	public static final String NAME = "notesDetailMobileView";
 
 	/* Injections */
@@ -227,12 +226,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					HorizontalLayout layoutPere=null;
 					int nbFils=0;
 
-					LOG.info("Liste des ELP à afficher : ");
+					log.info("Liste des ELP à afficher : ");
 					for (ElementPedagogique elp : lelp) {
 
 						compteurElp++;
 
-						LOG.info(compteurElp+"-(level="+elp.getLevel()+") - "+elp.getCode()+" - "+elp.getLibelle());
+						log.info(compteurElp+"-(level="+elp.getLevel()+") - "+elp.getCode()+" - "+elp.getLibelle());
 
 						//Si on est sur un element de niveau 1, différent du premier element de la liste (qui est un rappel de l'etape)
 						if(elp.getLevel()==1 && compteurElp>1){

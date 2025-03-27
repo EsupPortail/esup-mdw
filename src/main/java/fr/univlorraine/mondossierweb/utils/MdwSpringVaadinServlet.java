@@ -30,8 +30,7 @@ import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import fr.univlorraine.mondossierweb.MdwUIProvider;
 import jakarta.servlet.ServletException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -40,9 +39,8 @@ import java.util.List;
 import java.util.Locale;
 
 @SuppressWarnings("serial")
+@Slf4j
 public class MdwSpringVaadinServlet extends SpringVaadinServlet {
-
-	private Logger LOG = LoggerFactory.getLogger(MdwSpringVaadinServlet.class);
 
 	@Override
     protected void servletInitialized() throws ServletException {
@@ -76,8 +74,6 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
 
             @Override
             public void sessionInit(SessionInitEvent event) throws ServiceException {
-                // WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-
                 // remove DefaultUIProvider instances to avoid mapping
                 // extraneous UIs if e.g. a servlet is declared as a nested
                 // class in a UI class
@@ -96,11 +92,11 @@ public class MdwSpringVaadinServlet extends SpringVaadinServlet {
 				MdwUIProvider uiProvider = new MdwUIProvider(session);
                 session.addUIProvider(uiProvider);
 
-				LOG.info("####UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders() + " ####");
+				log.info("####UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders() + " ####");
             }
         });
 
-		LOG.info("################## MdwSpringVaadinServlet servletInitialized DONE ##################");
+		log.info("################## MdwSpringVaadinServlet servletInitialized DONE ##################");
     }
 	
 }

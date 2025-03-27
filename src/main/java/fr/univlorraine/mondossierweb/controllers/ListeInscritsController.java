@@ -62,6 +62,7 @@ import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauCollec
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauElementPedagogi3;
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauGroupe3;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -73,8 +74,6 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -96,9 +95,8 @@ import java.util.Map;
  * Gestion de l'affichage de la liste des inscrits
  */
 @Component
+@Slf4j
 public class ListeInscritsController {
-
-	private Logger LOG = LoggerFactory.getLogger(ListeInscritsController.class);
 
 	/**
 	 * marges.
@@ -637,7 +635,7 @@ public class ListeInscritsController {
 			}
 
 		}catch(Exception e){
-			LOG.debug("Aucun Groupe pour "+codElp+ " - "+annee);
+			log.debug("Aucun Groupe pour "+codElp+ " - "+annee);
 		}
 		return listeElp;
 	}
@@ -651,7 +649,7 @@ public class ListeInscritsController {
 	 */
 	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
 
-		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
+		log.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp, avecInfoNaissance);
@@ -659,7 +657,7 @@ public class ListeInscritsController {
 			byte[] bytes = baos.toByteArray();
 			return new ByteArrayInputStream(bytes);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération de la liste en xls : IOException ",e);
+			log.error("Erreur à la génération de la liste en xls : IOException ",e);
 			return null;
 		}
 
@@ -966,7 +964,7 @@ public class ListeInscritsController {
 	 */
 	public InputStream getPdfStream(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee) {
 
-		LOG.debug("generation pdf : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
+		log.debug("generation pdf : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
 		try {
 			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			PdfWriter docWriter = null;
@@ -985,10 +983,10 @@ public class ListeInscritsController {
 			byte[] bytes = baosPDF.toByteArray();
 			return new ByteArrayInputStream(bytes);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du trombinoscope : DocumentException ",e);
+			log.error("Erreur à la génération du trombinoscope : DocumentException ",e);
 			return null;
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du trombinoscope : IOException ",e);
+			log.error("Erreur à la génération du trombinoscope : IOException ",e);
 			return null;
 		}
 
@@ -1173,13 +1171,13 @@ public class ListeInscritsController {
 			document.add(table);
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du trombinoscope : BadElementException ",e);
+			log.error("Erreur à la génération du trombinoscope : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du trombinoscope : MalformedURLException ",e);
+			log.error("Erreur à la génération du trombinoscope : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du trombinoscope : IOException ",e);
+			log.error("Erreur à la génération du trombinoscope : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du trombinoscope : DocumentException ",e);
+			log.error("Erreur à la génération du trombinoscope : DocumentException ",e);
 		}
 
 		// step 6: fermeture du document.
