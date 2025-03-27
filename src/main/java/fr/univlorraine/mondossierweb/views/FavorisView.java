@@ -97,8 +97,6 @@ public class FavorisView extends VerticalLayout implements View {
 
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
-
-			log.error("Fake error");
 			removeAllComponents();
 			/* Style */
 			setMargin(true);
