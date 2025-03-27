@@ -27,8 +27,6 @@ import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepo
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationValeursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -40,9 +38,6 @@ import java.util.List;
  */
 @Component
 public class ConfigController {
-
-	private Logger LOG = LoggerFactory.getLogger(ConfigController.class);
-
 
 	@Resource
 	private PreferencesApplicationRepository preferencesApplicationRepository;

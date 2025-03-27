@@ -19,13 +19,9 @@
 package fr.univlorraine.mondossierweb.converters;
 
 import jakarta.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
-
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
 
 
 
@@ -34,11 +30,9 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
  * @author Charlie Dubois
  */
 @Component(value="emailConverterLdapImpl")
+@Slf4j
 public class EmailConverterImplLdap implements EmailConverterInterface{
 
-	private Logger LOG = LoggerFactory.getLogger(EmailConverterImplLdap.class); 
-	
-	
 	@Resource
 	private transient LdapUserSearch ldapEtudiantSearch;
 	
@@ -59,13 +53,13 @@ public class EmailConverterImplLdap implements EmailConverterInterface{
 			if(ldapEtudiantSearch.searchForUser(cod_etu)!=null){
 				String[] vals= ldapEtudiantSearch.searchForUser(cod_etu).getStringAttributes("mail");
 				if(vals!=null){
-					LOG.debug("mail via codetu pour "+cod_etu+" => "+vals[0]);
+					log.debug("mail via codetu pour "+cod_etu+" => "+vals[0]);
 					return vals[0];
 				}
 			}
 			return null;
 		} catch (Exception e) {
-			LOG.error("probleme de récupération du mail depuis le codetu via le ldap. ",e);
+			log.error("probleme de récupération du mail depuis le codetu via le ldap. ",e);
 			return null;
 		}	
 	}

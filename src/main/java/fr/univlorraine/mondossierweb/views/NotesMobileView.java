@@ -45,8 +45,6 @@ import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -60,8 +58,6 @@ import java.util.List;
 @Component @Scope("prototype")
 @SpringView(name = NotesMobileView.NAME)
 public class NotesMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-	private Logger LOG = LoggerFactory.getLogger(NotesMobileView.class);
 	public static final String NAME = "notesMobileView";
 
 	/* Injections */

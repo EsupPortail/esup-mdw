@@ -31,9 +31,6 @@ import java.io.Serializable;
 @Embeddable
 @Data
 public class VObjSeApogeePK implements Serializable {
-	//default serial version id, required for serializable classes.
-	private static final long serialVersionUID = 1L;
-
 
 	@Column(name="COD_OBJ")
 	private String codObj;

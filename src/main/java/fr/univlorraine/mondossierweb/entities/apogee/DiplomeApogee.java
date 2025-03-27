@@ -35,8 +35,6 @@ import java.io.Serializable;
 @Table(name="DIPLOME")
 @Data
 public class DiplomeApogee implements Serializable {
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@Column(name="COD_DIP")
 	private String codDip;

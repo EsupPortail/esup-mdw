@@ -45,9 +45,8 @@ import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -63,9 +62,8 @@ import java.util.Locale;
  * Gestion du calendrier des examens
  */
 @Component
+@Slf4j
 public class CalendrierController {
-
-	private Logger LOG = LoggerFactory.getLogger(CalendrierController.class);
 
 	/**
 	 * outputstream size.
@@ -107,8 +105,6 @@ public class CalendrierController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -134,10 +130,10 @@ public class CalendrierController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du calendrier des examens : DocumentException ",e);
+					log.error("Erreur à la génération du calendrier des examens : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération du calendrier des examens : IOException ",e);
+					log.error("Erreur à la génération du calendrier des examens : IOException ",e);
 					return null;
 				}
 
@@ -381,13 +377,13 @@ public class CalendrierController {
 
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du calendrier des examens : BadElementException ",e);
+			log.error("Erreur à la génération du calendrier des examens : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du calendrier des examens : MalformedURLException ",e);
+			log.error("Erreur à la génération du calendrier des examens : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du calendrier des examens : IOException ",e);
+			log.error("Erreur à la génération du calendrier des examens : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du calendrier des examens : DocumentException ",e);
+			log.error("Erreur à la génération du calendrier des examens : DocumentException ",e);
 		}
 		// step 6: fermeture du document.
 		document.close();

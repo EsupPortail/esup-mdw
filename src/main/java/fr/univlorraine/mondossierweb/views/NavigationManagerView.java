@@ -26,8 +26,6 @@ import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -40,8 +38,6 @@ import org.springframework.stereotype.Component;
 @Component @Scope("prototype")
 @SpringView(name = NavigationManagerView.NAME)
 public class NavigationManagerView extends VerticalLayout implements View {
-
-	private Logger LOG = LoggerFactory.getLogger(NavigationManagerView.class);
 	public static final String NAME = "NavigationManagerView";
 
 	/* Injections */

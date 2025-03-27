@@ -44,7 +44,6 @@ import org.springframework.util.StringUtils;
 @Component @Scope("prototype")
 @SpringView(name = AssistanceView.NAME)
 public class AssistanceView extends VerticalLayout implements View {
-	private static final long serialVersionUID = 7356887304797399383L;
 
 	public static final String NAME = "assistanceView";
 

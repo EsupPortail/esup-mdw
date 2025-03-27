@@ -58,8 +58,6 @@ import java.util.List;
 @SpringView(name = AdminView.NAME)
 public class AdminView extends VerticalLayout implements View {
 
-	private static final long serialVersionUID = -2605429366219007314L;
-
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
 
 	public static final String[] SWAP_FIELDS_ORDER = {"loginSource", "loginCible", "datCre"};

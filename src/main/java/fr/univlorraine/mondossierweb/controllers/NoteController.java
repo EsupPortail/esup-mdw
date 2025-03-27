@@ -52,8 +52,7 @@ import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -76,9 +75,8 @@ import java.util.Set;
  * Gestion des notes
  */
 @Component
+@Slf4j
 public class NoteController {
-
-	private Logger LOG = LoggerFactory.getLogger(NoteController.class);
 
 	/**
 	 * outputstream size.
@@ -121,8 +119,6 @@ public class NoteController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -153,10 +149,10 @@ public class NoteController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du résumé des notes : DocumentException ",e);
+					log.error("Erreur à la génération du résumé des notes : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération du résumé des notes : IOException ",e);
+					log.error("Erreur à la génération du résumé des notes : IOException ",e);
 					return null;
 				}
 
@@ -182,8 +178,6 @@ public class NoteController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -226,10 +220,10 @@ public class NoteController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du détail des notes : DocumentException ",e);
+					log.error("Erreur à la génération du détail des notes : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération du détail des notes : IOException ",e);
+					log.error("Erreur à la génération du détail des notes : IOException ",e);
 					return null;
 				}
 
@@ -721,13 +715,13 @@ public class NoteController {
 			}
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du résumé des notes : BadElementException ",e);
+			log.error("Erreur à la génération du résumé des notes : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du résumé des notes : MalformedURLException ",e);
+			log.error("Erreur à la génération du résumé des notes : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du résumé des notes : IOException ",e);
+			log.error("Erreur à la génération du résumé des notes : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du résumé des notes : DocumentException ",e);
+			log.error("Erreur à la génération du résumé des notes : DocumentException ",e);
 		}
 		// step 6: fermeture du document.
 		document.close();
@@ -1139,13 +1133,13 @@ public class NoteController {
 			}
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du detail des notes : BadElementException ",e);
+			log.error("Erreur à la génération du detail des notes : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du detail des notes : MalformedURLException ",e);
+			log.error("Erreur à la génération du detail des notes : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du detail des notes : IOException ",e);
+			log.error("Erreur à la génération du detail des notes : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du detail des notes : DocumentException ", e);
+			log.error("Erreur à la génération du detail des notes : DocumentException ", e);
 		}
 		// step 6: fermeture du document.
 		document.close();

@@ -54,8 +54,7 @@ import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -69,14 +68,12 @@ import java.util.Set;
 /**
  * Page des notes
  */
-@Component 
+@Component
+@Slf4j
 @Scope("prototype")
 @SpringView(name = NotesView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class NotesView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = -6491779626961549383L;
-	private Logger LOG = LoggerFactory.getLogger(NotesView.class);
 	public static final String NAME = "notesView";
 	public static final String[] DIPLOMES_FIELDS_ORDER = {"annee", "cod_dip","lib_web_vdi"};
 	public static final String[] ETAPES_FIELDS_ORDER = {"annee"};
@@ -122,7 +119,7 @@ public class NotesView extends VerticalLayout implements View {
 				(isUserEnseignantWithAccess() && voirCommeEnseignant()) ||
 				(isUserGestionnaireWithAccess() && voirCommeEnseignant())) ){
 
-			LOG.debug(userController.getCurrentUserName()+" NotesView");
+			log.debug(userController.getCurrentUserName()+" NotesView");
 
 			/* Style */
 			setMargin(true);

@@ -25,12 +25,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 
 /**
@@ -39,10 +38,6 @@ import jakarta.annotation.Resource;
 @Component @Scope("prototype")
 @SpringView(name = AccesBloqueView.NAME)
 public class AccesBloqueView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = -2605429366219007314L;
-
-
 	public static final String NAME = "accesBloqueView";
 
 	

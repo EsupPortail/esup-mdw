@@ -19,15 +19,9 @@
 package fr.univlorraine.mondossierweb.converters;
 
 
-
-
-import jakarta.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import fr.univlorraine.mondossierweb.services.apogee.AnnuMelLoginApogeeService;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Component;
 
 
 
@@ -39,8 +33,6 @@ import fr.univlorraine.mondossierweb.services.apogee.AnnuMelLoginApogeeService;
  */
 @Component(value="loginFromCodetuUnivLorraineImpl")
 public class LoginCodeEtudiantConverterImplUnivLorraine implements LoginCodeEtudiantConverterInterface {
-
-	private Logger LOG = LoggerFactory.getLogger(LoginCodeEtudiantConverterImplUnivLorraine.class);
 
 	@Resource
 	private AnnuMelLoginApogeeService annuMelLoginApogeeService;

@@ -38,8 +38,6 @@ import java.util.List;
 @ToString(exclude = {"preferencesApplicationValeurs"})
 public class PreferencesApplication implements Serializable {
 
-	private static final long serialVersionUID = 5299213936744275485L;
-
 	@Id
 	@Column(name="PREF_ID")
 	private String prefId;

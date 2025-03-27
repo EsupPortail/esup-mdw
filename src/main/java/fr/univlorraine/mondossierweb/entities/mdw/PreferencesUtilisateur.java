@@ -32,8 +32,6 @@ import java.io.Serializable;
 @Table(name="PREFERENCES_UTILISATEUR")
 @EqualsAndHashCode(of="id")
 public class PreferencesUtilisateur implements Serializable {
-	
-	private static final long serialVersionUID = 4738595766321367947L;
 
 	@EmbeddedId
 	private PreferencesUtilisateurPK id;

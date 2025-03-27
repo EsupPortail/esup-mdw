@@ -18,7 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -44,6 +43,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -56,9 +56,8 @@ import java.util.List;
  */
 @Component @Scope("prototype")
 @SpringView(name = FavorisView.NAME)
+@Slf4j
 public class FavorisView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = 6309734175451108885L;
 	public static final String NAME = "favorisView";
 	public static final String[] FAV_FIELDS_ORDER = {"Type","id", "Libelle", "Actions"};
 
@@ -99,6 +98,7 @@ public class FavorisView extends VerticalLayout implements View {
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
 
+			log.error("Fake error");
 			removeAllComponents();
 			/* Style */
 			setMargin(true);
@@ -168,7 +168,7 @@ public class FavorisView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//LOG.debug("ENTER FAVORIS VIEW");
+		//log.debug("ENTER FAVORIS VIEW");
 	}
 
 	class DisplayIdColumnGenerator implements Table.ColumnGenerator {

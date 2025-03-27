@@ -27,11 +27,6 @@ import java.io.Serializable;
 @Embeddable
 @Data
 public class FavorisPK implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7240432999800071780L;
 
 	@Column(name="LOGIN")
 	private String login;

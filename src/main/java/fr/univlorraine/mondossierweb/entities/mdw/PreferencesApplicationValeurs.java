@@ -40,8 +40,6 @@ import java.io.Serializable;
 @ToString(exclude = {"preferencesApplication"})
 public class PreferencesApplicationValeurs implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="PAV_ID")

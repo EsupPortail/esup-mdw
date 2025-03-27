@@ -41,8 +41,6 @@ import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -54,13 +52,8 @@ import org.springframework.util.StringUtils;
 @Component @Scope("prototype")
 @SpringView(name = CalendrierMobileView.NAME)
 public class CalendrierMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-
-	private Logger LOG = LoggerFactory.getLogger(CalendrierMobileView.class);
 
 	public static final String NAME = "calendrierMobileView";
-
-
 
 	/* Injections */
 	@Resource

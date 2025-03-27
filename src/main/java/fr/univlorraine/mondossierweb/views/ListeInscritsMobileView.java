@@ -64,8 +64,6 @@ import java.util.List;
 @SpringView(name = ListeInscritsMobileView.NAME)
 //@PreAuthorize("@userController.hasRoleInProperty('teacher')")
 public class ListeInscritsMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-
 	public static final String NAME = "listeInscritsMobileView";
 
 	/* Injections */
@@ -450,7 +448,7 @@ public class ListeInscritsMobileView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//LOG.debug("enter listeInscritsMobileView");
+		//log.debug("enter listeInscritsMobileView");
 	}
 
 	private boolean typeIsVet(){

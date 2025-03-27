@@ -55,7 +55,6 @@ import org.springframework.util.StringUtils;
 @SpringView(name = AdressesView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class AdressesView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
 
 	public static final String NAME = "adressesView";
 

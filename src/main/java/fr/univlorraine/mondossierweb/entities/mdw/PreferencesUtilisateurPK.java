@@ -28,11 +28,6 @@ import java.io.Serializable;
 @Data
 public class PreferencesUtilisateurPK implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4178790093683625317L;
-
 	@Column(name="LOGIN")
 	private String login;
 

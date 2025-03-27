@@ -48,8 +48,6 @@ import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,9 +60,6 @@ import org.springframework.stereotype.Component;
 @SpringView(name = CalendrierView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class CalendrierView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-
-	private Logger LOG = LoggerFactory.getLogger(CalendrierView.class);
 
 	public static final String NAME = "calendrierView";
 

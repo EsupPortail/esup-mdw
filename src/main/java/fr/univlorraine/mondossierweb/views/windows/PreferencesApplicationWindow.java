@@ -108,7 +108,6 @@ public class PreferencesApplicationWindow extends Window {
 
 
 		fieldGroup.setFieldFactory(new FieldGroupFieldFactory() {
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			@SuppressWarnings("rawtypes")
@@ -131,7 +130,6 @@ public class PreferencesApplicationWindow extends Window {
 					final TextField field = new TextField();
 					field.setImmediate(true);
 					field.addTextChangeListener(new FieldEvents.TextChangeListener() {
-						private static final long serialVersionUID = 1L;
 
 						@Override
 						public void textChange(FieldEvents.TextChangeEvent event) {
@@ -195,14 +193,12 @@ public class PreferencesApplicationWindow extends Window {
 					pavTable.setSelectable(true);
 					pavTable.setImmediate(true);
 					pavTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
-						private static final long serialVersionUID = 1L;
 						@Override
 						public void containerItemSetChange(Container.ItemSetChangeEvent event) {
 							pavTable.sanitizeSelection();
 						}
 					});
 					pavTable.addValueChangeListener(new Property.ValueChangeListener() {
-						private static final long serialVersionUID = 1L;
 						@Override
 						public void valueChange(Property.ValueChangeEvent event) {
 							boutonSupprimerPav.setEnabled(true);
@@ -210,7 +206,6 @@ public class PreferencesApplicationWindow extends Window {
 
 					});
 					boutonSupprimerPav.addClickListener(new Button.ClickListener() {
-						private static final long serialVersionUID = 1L;
 						@Override
 						public void buttonClick(Button.ClickEvent event) {
 							if(pavTable.getValue()!=null &&  pavTable.getValue() instanceof PreferencesApplicationValeurs){

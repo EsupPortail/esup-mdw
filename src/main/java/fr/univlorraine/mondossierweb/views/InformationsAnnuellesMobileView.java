@@ -66,8 +66,6 @@ import java.util.List;
 @SpringView(name = InformationsAnnuellesMobileView.NAME)
 @Slf4j
 public class InformationsAnnuellesMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-
 	public static final String NAME = "informationsAnnuellesMobileView";
 
 	/* Injections */

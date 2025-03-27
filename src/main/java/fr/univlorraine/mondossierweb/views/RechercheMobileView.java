@@ -75,7 +75,6 @@ import java.util.Map;
 @PreAuthorize("@userController.hasRoleInProperty('teacher') || @userController.hasRoleInProperty('gestionnaire')")
 public class RechercheMobileView extends VerticalLayout implements View {
 
-	private static final long serialVersionUID = -3389183877488162603L;
 	public static final String NAME = "rechercheMobileView";
 	public static final String[] FIELDS_ORDER = {"type","lib"};
 
@@ -352,7 +351,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//LOG.debug("enter listeInscritsMobileView");
+		//log.debug("enter listeInscritsMobileView");
 	}
 
 	private List<ResultatDeRecherche> quickSearch(String valueString){

@@ -25,12 +25,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 
 
 
@@ -40,7 +39,6 @@ import jakarta.annotation.Resource;
 @Component @Scope("prototype")
 @SpringView(name = AccesRefuseView.NAME)
 public class AccesRefuseView extends VerticalLayout implements View {
-	private static final long serialVersionUID = 8866536535186807851L;
 
 	public static final String NAME = "accesRefuseView";
 

@@ -124,7 +124,6 @@ public class InputWindow extends Window {
 		/* Champ de saisie */
 		inputTextField.setWidth(100, Unit.PERCENTAGE);
 		inputTextField.addShortcutListener(new ShortcutListener(null, ShortcutAction.KeyCode.ENTER, null) {
-			private static final long serialVersionUID = 6231790311427334925L;
 
 			@Override
 			public void handleAction(Object sender, Object target) {

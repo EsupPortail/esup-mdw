@@ -24,9 +24,8 @@ import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterf
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpEntity;
@@ -50,11 +49,9 @@ import java.util.Date;
 
 @Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)
 @Component(value="photoUnivLorraineImplV2")
+@Slf4j
 public class PhotoUnivLorraineImplV2 implements IPhoto {
-
 	private static final String UTF_8 = "UTF-8";
-
-	private Logger LOG = LoggerFactory.getLogger(PhotoUnivLorraineImplV2.class);
 
 	@Resource(name="${loginFromCodetu.implementation}")
 	private LoginCodeEtudiantConverterInterface loginCodeEtudiantConverter;
@@ -248,7 +245,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		// Récupération de la photo
 		String photo = getPhoto(pdfTokenJWT, loginCodeEtudiantConverter.getLoginFromCodEtu(cod_etu));
 		if(photo == null) {
-			LOG.warn("Photo null, récupération de l'avatar pour "+cod_etu);
+			log.warn("Photo null, récupération de l'avatar pour "+cod_etu);
 			photo =  getAvatar(pdfTokenJWT, "");
 		}
 		return photo;
@@ -293,7 +290,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		// Request
 		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
 
-		LOG.debug("GET TOKEN : "+url+" request : "+request);
+		log.debug("GET TOKEN : "+url+" request : "+request);
 
 		// Http Call 
 		RestTemplate rt = new RestTemplate();
@@ -303,12 +300,12 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
 				return response.getBody();
 			} else {
-				LOG.warn("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
+				log.warn("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
 		} catch (HttpServerErrorException hsee) {
-			LOG.warn("Une HttpServerErrorException "+hsee.getStatusCode()+" est survenue lors de la récupération du token JWT du serveur photo "+login, hsee);
+			log.warn("Une HttpServerErrorException "+hsee.getStatusCode()+" est survenue lors de la récupération du token JWT du serveur photo "+login, hsee);
 		} catch (Exception e) {
-			LOG.error("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login,e);
+			log.error("Une erreur est survenue lors de la récupération du token JWT du serveur photo "+login,e);
 		}
 		return null;
 	}
@@ -318,7 +315,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 	private String getPhoto(String token, String login) {
 		if(login == null) {
-			LOG.warn("Récupération de la photo pour login null");
+			log.warn("Récupération de la photo pour login null");
 			return null;
 		}
 		String url = getPhotoUrl() + "/" + encrypt(login);
@@ -334,7 +331,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		// Request
 		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
 
-		LOG.debug("GET PHOTO : "+url+" request : "+request);
+		log.debug("GET PHOTO : "+url+" request : "+request);
 
 		// Http Call 
 		RestTemplate rt = new RestTemplate();
@@ -345,12 +342,12 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 				return Utils.DATA_IMAGE + "/jpg;base64, "+ response.getBody();
 				//return Utils.DATA_IMAGE + "/jpg, "+ response.getBody();
 			} else {
-				LOG.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
+				log.warn("Une erreur est survenue lors de la récupération de la photo de "+login+" Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
 		} catch(HttpClientErrorException he) { 
-			LOG.warn("Récupération de la photo de "+login+" non autorisée Erreur HTTP "+he.getStatusCode()+". Il est probable que l'étudiant ne soit plus présent dans le ldap");
+			log.warn("Récupération de la photo de "+login+" non autorisée Erreur HTTP "+he.getStatusCode()+". Il est probable que l'étudiant ne soit plus présent dans le ldap");
 		} catch (Exception e) {
-			LOG.error("Une erreur est survenue lors de la récupération de la photo de "+login,e);
+			log.error("Une erreur est survenue lors de la récupération de la photo de "+login,e);
 		}
 		return null;
 	}
@@ -369,7 +366,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		// Request
 		HttpEntity<?> request = new HttpEntity<>(params , requestHeaders);
 
-		LOG.debug("GET AVATAR : "+url+" request : "+request);
+		log.debug("GET AVATAR : "+url+" request : "+request);
 
 		// Http Call 
 		RestTemplate rt = new RestTemplate();
@@ -379,12 +376,12 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			if(response !=null && response.getStatusCode().equals(HttpStatus.OK)) {
 				return Utils.DATA_IMAGE + "/png;base64, "+ response.getBody();
 			} else {
-				LOG.warn("Une erreur est survenue lors de la récupération de l'avatar Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
+				log.warn("Une erreur est survenue lors de la récupération de l'avatar Error Response => " + ( response == null ? "null" : response.getStatusCode().toString()));
 			}
 		} catch (HttpServerErrorException hsee) {
-			LOG.warn("Une erreur "+hsee.getStatusCode()+" est survenue lors de la récupération de l'avatar",hsee);
+			log.warn("Une erreur "+hsee.getStatusCode()+" est survenue lors de la récupération de l'avatar",hsee);
 		} catch (Exception e) {
-			LOG.error("Une erreur est survenue lors de la récupération de la photo de l'avatar ",e);
+			log.error("Une erreur est survenue lors de la récupération de la photo de l'avatar ",e);
 		}
 		return null;
 	}
@@ -400,10 +397,10 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	private Boolean isExpired(Date dateExpiration) {
 		/*DecodedJWT decodedToken  = JWT.decode(token);
 		if (decodedToken != null) {
-			LOG.debug("token expires at : "+decodedToken.getExpiresAt());
+			log.debug("token expires at : "+decodedToken.getExpiresAt());
 			return decodedToken.getExpiresAt().before(new Date());
 		}
-		LOG.debug("token null");
+		log.debug("token null");
 		return true;*/
 		if(dateExpiration != null) {
 			return dateExpiration.before(new Date());
@@ -415,7 +412,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 		if(token !=null) {
 			DecodedJWT decodedToken  = JWT.decode(token);
 			if (decodedToken != null) {
-				LOG.debug("token expires at : "+decodedToken.getExpiresAt());
+				log.debug("token expires at : "+decodedToken.getExpiresAt());
 				Calendar c = Calendar.getInstance();
 				c.setTime(decodedToken.getExpiresAt());
 				// On prend 10 secondes de marge sur la fin du token
@@ -423,7 +420,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 				return c.getTime();
 			}
 		}
-		LOG.debug("token null");
+		log.debug("token null");
 		return null;
 	}
 
@@ -438,7 +435,7 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 			//return new String(Base64.encode(cypher.doFinal(chaine.getBytes(UTF_8))), UTF_8);
 			return Hex.encodeHexString(cypher.doFinal(chaine.getBytes(UTF_8)));
 		} catch (Exception e) {
-			LOG.error("Erreur lors du cryptage de la chaine "+chaine,e);
+			log.error("Erreur lors du cryptage de la chaine "+chaine,e);
 			return null;
 		}
 	}

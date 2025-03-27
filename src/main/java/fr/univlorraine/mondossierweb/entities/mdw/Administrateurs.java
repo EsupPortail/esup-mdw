@@ -31,11 +31,6 @@ import java.io.Serializable;
 @Table(name="ADMINISTRATEURS")
 public class Administrateurs implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2301719865870658196L;
-	
 	@Id
 	@Column(name="LOGIN")
 	private String login;

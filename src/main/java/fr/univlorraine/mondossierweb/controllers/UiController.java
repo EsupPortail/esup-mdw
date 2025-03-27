@@ -27,6 +27,7 @@ import com.vaadin.ui.UI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.views.windows.ConfirmWindow;
 import fr.univlorraine.mondossierweb.views.windows.InputWindow;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContext;
@@ -34,7 +35,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,8 +77,6 @@ public class UiController {
 
 		/* Met à jour les AdminViews lorsqu'une UI change de vue */
 		ui.getNavigator().addViewChangeListener(new ViewChangeListener() {
-			private static final long serialVersionUID = -23117484566254727L;
-
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 				return true;

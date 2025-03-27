@@ -19,7 +19,6 @@
 package fr.univlorraine.mondossierweb.utils;
 
 
-
 import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
@@ -28,17 +27,15 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import fr.univlorraine.mondossierweb.MdwTouchkitUIProvider;
 import jakarta.servlet.ServletException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import java.util.Locale;
 
 @SuppressWarnings("serial")
+@Slf4j
 public class MDWTouchkitServlet extends SpringVaadinServlet {
-
-	private Logger LOG = LoggerFactory.getLogger(MDWTouchkitServlet.class);
 	
 	
 	@Override
@@ -81,7 +78,7 @@ public class MDWTouchkitServlet extends SpringVaadinServlet {
                 // add Spring UI provider
                 session.addUIProvider(new MdwTouchkitUIProvider(session));
 
-                LOG.info("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
+                log.info("UI Provider : "+event.getSession().getUIProviders().size()+"  -  "+event.getSession().getUIProviders());
             }
         });
     }

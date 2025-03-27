@@ -34,9 +34,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(of="id")
 public class Favoris implements Serializable {
 
-
-	private static final long serialVersionUID = -1983771824782315564L;
-	
 	@EmbeddedId
 	private FavorisPK id;
 
