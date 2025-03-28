@@ -142,17 +142,12 @@ public class Initializer implements WebApplicationInitializer {
 		/*FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
 		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");*/
 
-		/* Filtre Spring Mobile permettant de détecter le device */
-		/*FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
-		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");*/
-
 		/* Filtre qui gère les erreurs de fragment */
 		/*FilterRegistration.Dynamic fragmentErrorFilter = servletContext.addFilter("fragmentErrorFilter", FragmentErrorFilter.class);
 		fragmentErrorFilter.addMappingForUrlPatterns(null, false, "/*");*/
 
 		/* Servlet Spring-Vaadin */
 		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);
-		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", SpringVaadinServlet.class);
 		ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", fr.univlorraine.mondossierweb.utils.MdwSpringVaadinServlet.class);
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");

@@ -146,6 +146,4 @@
 	<!-- Ne mail pas les erreurs atmosphere -->
 	<logger name="org.atmosphere" level="off" />
 
-
-
 </configuration>
