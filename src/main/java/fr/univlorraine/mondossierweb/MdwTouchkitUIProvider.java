@@ -24,10 +24,8 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.internal.UIID;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
-import com.vaadin.util.CurrentInstance;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("serial")
@@ -54,6 +52,7 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 	}
 
 
+	/*
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		//Nom de la classe UI à utiliser
@@ -71,4 +70,6 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 			CurrentInstance.set(key, null);
 		}
 	}
+	*/
+
 }
