@@ -24,11 +24,14 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.internal.UIID;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
+import com.vaadin.util.CurrentInstance;
 import fr.univlorraine.mondossierweb.utils.DeviceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanCreationException;
 
 @SuppressWarnings("serial")
 @Theme("valo-ul")
@@ -67,6 +70,30 @@ public class MdwUIProvider extends SpringUIProvider {
 		return false;
 	}
 
+
+	@Override
+	public UI createInstance(UICreateEvent event) {
+		final Class<UIID> key = UIID.class;
+		final UIID identifier = new UIID(event);
+		CurrentInstance.set(key, identifier);
+		try {
+			log.debug(
+					"Creating a new UI bean of class [{}] with identifier [{}]",
+					event.getUIClass().getCanonicalName(), identifier);
+			UI ui = getWebApplicationContext().getBean(event.getUIClass());
+			configureNavigator(ui);
+			return ui;
+		}catch(BeanCreationException bce) {
+			log.error("Erreur lors de la création de l'UI. key : {} - id : {} - CurrenInstance.getUUID : {}", key, identifier, CurrentInstance.get(UIID.class), bce);
+			// 2nd essai
+			CurrentInstance.set(key, identifier);
+			UI ui = getWebApplicationContext().getBean(event.getUIClass());
+			configureNavigator(ui);
+			return ui;
+		} finally {
+			CurrentInstance.set(key, null);
+		}
+	}
 	/*
 	@Override
 	public UI createInstance(UICreateEvent event) {
