@@ -54,7 +54,8 @@ import java.util.List;
 /**
  * Favoris
  */
-@Component @Scope("prototype")
+@Component
+@Scope("prototype")
 @SpringView(name = FavorisView.NAME)
 @Slf4j
 public class FavorisView extends VerticalLayout implements View {
