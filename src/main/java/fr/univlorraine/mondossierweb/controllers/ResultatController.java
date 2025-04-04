@@ -972,6 +972,7 @@ public class ResultatController {
                         if (i < (e.getElementsPedagogiques().size() - 1)) {
                             ElementPedagogique elp1 = e.getElementsPedagogiques().get(i + 1);
                             if (!elp0.isEpreuve() && !elp1.isEpreuve()) {
+                                // 04/04/2025 : Ajout des résultats dans la condition ci-dessous
                                 if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())
                                         && elp0.getRes1().equals(elp.getRes1()) && elp0.getRes2().equals(elp.getRes2())) {
                                     //on supprime l'element i
@@ -980,6 +981,7 @@ public class ResultatController {
                                 }
                             }
                         } else {
+                            // 04/04/2025 : Ajout des résultats dans la condition ci-dessous
                             if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())
                                     && elp0.getRes1().equals(elp.getRes1()) && elp0.getRes2().equals(elp.getRes2())) {
                                 //on supprime l'element i

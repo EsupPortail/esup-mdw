@@ -255,7 +255,7 @@ public class MainUI extends GenericUI {
 
 			Throwable cause = e.getThrowable();
 
-			while (cause instanceof Throwable) {
+			while (cause != null) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
 					log.debug("Erreur de fragment ");
@@ -270,16 +270,14 @@ public class MainUI extends GenericUI {
 					return;
 				}
 
-				if (cause != null && cause.getClass() != null) {
-					String simpleName = cause.getClass().getSimpleName();
-					/* Gére les erreurs à ignorer */
-					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
-						Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
-						displayViewFullScreen(ErreurView.NAME);
-						return;
-					}
-				}
-				cause = cause.getCause();
+                String simpleName = cause.getClass().getSimpleName();
+                /* Gére les erreurs à ignorer */
+                if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
+                    Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    displayViewFullScreen(ErreurView.NAME);
+                    return;
+                }
+                cause = cause.getCause();
 			}
 			// Traite les autres erreurs normalement 
 			log.error(e.getThrowable().toString(), e.getThrowable());
