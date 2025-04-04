@@ -894,7 +894,7 @@ public class ResultatController {
                                                     elp2.setBareme1(red.getBarNotEpr());
                                                 }
                                             }
-                                            if (elp2.getNote1() != null && !elp2.getNote1().equals("")) {
+                                            if (elp2.getNote1() != null && !elp2.getNote1().isEmpty()) {
                                                 EprNotee = true;
                                             }
 
@@ -960,7 +960,7 @@ public class ResultatController {
             }
 
 
-            //suppression des épreuve seules et quand elles ont les mêmes notes que l'element pere:
+            //suppression des épreuve seules et quand elles ont les mêmes notes et résultats que l'élément pere:
             if (!sourceExtractionApogee && !e.getElementsPedagogiques().isEmpty()) {
                 int i = 1;
                 boolean suppr = false;
@@ -972,14 +972,16 @@ public class ResultatController {
                         if (i < (e.getElementsPedagogiques().size() - 1)) {
                             ElementPedagogique elp1 = e.getElementsPedagogiques().get(i + 1);
                             if (!elp0.isEpreuve() && !elp1.isEpreuve()) {
-                                if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
+                                if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())
+                                        && elp0.getRes1().equals(elp.getRes1()) && elp0.getRes2().equals(elp.getRes2())) {
                                     //on supprime l'element i
                                     e.getElementsPedagogiques().remove(i);
                                     suppr = true;
                                 }
                             }
                         } else {
-                            if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
+                            if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())
+                                    && elp0.getRes1().equals(elp.getRes1()) && elp0.getRes2().equals(elp.getRes2())) {
                                 //on supprime l'element i
                                 e.getElementsPedagogiques().remove(i);
                                 suppr = true;
