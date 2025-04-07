@@ -203,8 +203,6 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
-
-
 				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				//InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
