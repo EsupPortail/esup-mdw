@@ -1105,12 +1105,13 @@ public class ResultatController {
             e.getElementsPedagogiques().add(0, ep);
 
         } catch (Exception ex) {
+            log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex)
             //Si on est dans un cas d'erreur non expliqué
-            if (ex.getMessage().contains("remoteerror")) {
+           /* if (ex.getMessage().contains("remoteerror")) {
                 log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
                 log.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
-            }
+            }*/
         }
     }
 
