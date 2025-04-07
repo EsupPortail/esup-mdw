@@ -968,29 +968,23 @@ public class ResultatController {
                     suppr = false;
                     ElementPedagogique elp = e.getElementsPedagogiques().get(i);
                     if (elp.isEpreuve()) {
+                        // Récupération de l'ELP précédent dans la liste
                         ElementPedagogique elp0 = e.getElementsPedagogiques().get(i - 1);
-                        if (i < (e.getElementsPedagogiques().size() - 1)) {
-                            ElementPedagogique elp1 = e.getElementsPedagogiques().get(i + 1);
-                            if (!elp0.isEpreuve() && !elp1.isEpreuve()) {
-                                // 04/04/2025 : Ajout des résultats dans la condition ci-dessous
-                                if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())
-                                        && elp0.getRes1().equals(elp.getRes1()) && elp0.getRes2().equals(elp.getRes2())) {
-                                    //on supprime l'element i
-                                    e.getElementsPedagogiques().remove(i);
-                                    suppr = true;
-                                }
-                            }
-                        } else {
+                        // Si on doit tester si l'épreuve peut être supprimée de la liste
+                        if (testerEpreuve(e, i)) {
                             // 04/04/2025 : Ajout des résultats dans la condition ci-dessous
-                            if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())
-                                    && elp0.getRes1().equals(elp.getRes1()) && elp0.getRes2().equals(elp.getRes2())) {
+                            if (!elp0.isEpreuve() && elp0.getLevel() == (elp.getLevel() + 1)
+                                    && Utils.isEquals(elp0.getNote1(),elp.getNote1()) && Utils.isEquals(elp0.getNote2(),elp.getNote2())
+                                    && Utils.isEquals(elp0.getRes1(),elp.getRes1()) && Utils.isEquals(elp0.getRes2(),elp.getRes2())) {
                                 //on supprime l'element i
                                 e.getElementsPedagogiques().remove(i);
                                 suppr = true;
                             }
                         }
                     }
+                    // Si on n'a pas supprimé d'élément dans la liste
                     if (!suppr) {
+                        // On incrémente le compteur
                         i++;
                     }
                 }
@@ -1084,28 +1078,11 @@ public class ResultatController {
                     }
 
                 }
-
-                /* ANCIEN CODE : avant d'ajouter codeSession à Resultat.java*/
-				/*if (et.getResultats().get(0).getNote() != null){
-					ep.setNote1(et.getResultats().get(0).getNote().toString());
-					ep.setBareme1(et.getResultats().get(0).getBareme());
-				}
-				if (et.getResultats().get(0).getAdmission() != null)
-					ep.setRes1(et.getResultats().get(0).getAdmission());
-
-				}
-			if (et.getResultats().size() > 1) {
-				if (et.getResultats().get(1).getNote() != null){
-					ep.setNote2(et.getResultats().get(1).getNote().toString());
-					ep.setBareme2(et.getResultats().get(1).getBareme());
-				}
-				if (et.getResultats().get(1).getAdmission() != null)
-					ep.setRes2(et.getResultats().get(1).getAdmission());*/
             }
             e.getElementsPedagogiques().add(0, ep);
 
         } catch (Exception ex) {
-            log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex)
+            log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             //Si on est dans un cas d'erreur non expliqué
            /* if (ex.getMessage().contains("remoteerror")) {
                 log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
@@ -1113,6 +1090,16 @@ public class ResultatController {
                 log.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }*/
         }
+    }
+
+    private static boolean testerEpreuve(Etudiant e, int i) {
+        // Si on n'est pas sur le dernier ELP  de la liste
+        if (i < (e.getElementsPedagogiques().size() - 1)) {
+            // Si l'ELP suivant n'est pas une épreuve
+           return !e.getElementsPedagogiques().get(i + 1).isEpreuve();
+        }
+        // On est sur le dernier ELP on doit tester
+        return true;
     }
 
 
