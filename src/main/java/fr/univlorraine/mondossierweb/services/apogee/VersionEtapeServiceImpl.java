@@ -18,7 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;

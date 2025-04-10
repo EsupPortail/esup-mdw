@@ -18,9 +18,28 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.GrayColor;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
@@ -32,14 +51,13 @@ import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,9 +75,8 @@ import java.util.Set;
  * Gestion des notes
  */
 @Component
+@Slf4j
 public class NoteController {
-
-	private Logger LOG = LoggerFactory.getLogger(NoteController.class);
 
 	/**
 	 * outputstream size.
@@ -102,8 +119,6 @@ public class NoteController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -134,10 +149,10 @@ public class NoteController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du résumé des notes : DocumentException ",e);
+					log.error("Erreur à la génération du résumé des notes : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération du résumé des notes : IOException ",e);
+					log.error("Erreur à la génération du résumé des notes : IOException ",e);
 					return null;
 				}
 
@@ -163,8 +178,6 @@ public class NoteController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -207,10 +220,10 @@ public class NoteController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du détail des notes : DocumentException ",e);
+					log.error("Erreur à la génération du détail des notes : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération du détail des notes : IOException ",e);
+					log.error("Erreur à la génération du détail des notes : IOException ",e);
 					return null;
 				}
 
@@ -702,13 +715,13 @@ public class NoteController {
 			}
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du résumé des notes : BadElementException ",e);
+			log.error("Erreur à la génération du résumé des notes : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du résumé des notes : MalformedURLException ",e);
+			log.error("Erreur à la génération du résumé des notes : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du résumé des notes : IOException ",e);
+			log.error("Erreur à la génération du résumé des notes : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du résumé des notes : DocumentException ",e);
+			log.error("Erreur à la génération du résumé des notes : DocumentException ",e);
 		}
 		// step 6: fermeture du document.
 		document.close();
@@ -854,7 +867,7 @@ public class NoteController {
 			if (formatPortrait) {
 				// on teste s'il y a bien des elps presents
 				String annee = "";
-				if (etudiant.getElementsPedagogiques().size()>0){
+				if (!etudiant.getElementsPedagogiques().isEmpty()){
 					annee = etudiant.getElementsPedagogiques().get(0).getAnnee().replaceAll("FICM", "");
 				}
 				annee = annee.replaceAll("epreuve", "");
@@ -1120,13 +1133,13 @@ public class NoteController {
 			}
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du detail des notes : BadElementException ",e);
+			log.error("Erreur à la génération du detail des notes : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du detail des notes : MalformedURLException ",e);
+			log.error("Erreur à la génération du detail des notes : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du detail des notes : IOException ",e);
+			log.error("Erreur à la génération du detail des notes : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du detail des notes : DocumentException ", e);
+			log.error("Erreur à la génération du detail des notes : DocumentException ", e);
 		}
 		// step 6: fermeture du document.
 		document.close();

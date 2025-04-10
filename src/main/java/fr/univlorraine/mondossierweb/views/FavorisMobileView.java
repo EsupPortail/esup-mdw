@@ -18,27 +18,39 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.data.util.BeanItemContainer;
+
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -51,14 +63,8 @@ import java.util.concurrent.Executors;
 @SpringView(name = FavorisMobileView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('teacher') || @userController.hasRoleInProperty('gestionnaire')")
 public class FavorisMobileView extends VerticalLayout implements View {
-	
-	private static final long serialVersionUID = -2056224835347802529L;
 
 	public static final String NAME = "favorisMobileView";
-
-	public static final String[] FAV_FIELDS_ORDER = {"id.idfav"};
-
-
 
 	/* Injections */
 	@Resource
@@ -69,13 +75,14 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	private transient FavorisController favorisController;
 	@Resource
 	private transient RechercheController rechercheController;
+	@Resource
+	private transient ConfigController configController;
+	@Resource
+	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
 
 	/** Thread pool  */
 	ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-	private Button infoButton;
-	
-	private Button searchButton;
+	private MenuBar menuBar;
 
 	private List<String> liste_types_inscrits;
 
@@ -86,8 +93,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	private BeanItemContainer<Favoris> bic;
 
 	private HorizontalLayout labelAucunFavoriLayout ;
-	
-	
+
 
 	/**
 	 * Initialise la vue
@@ -113,25 +119,13 @@ public class FavorisMobileView extends VerticalLayout implements View {
 
 			List<Favoris> lfav = favorisController.getFavoris();
 
-
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
 			navbar.setSizeFull();
-			navbar.setHeight("40px");
+			navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 			navbar.setStyleName("navigation-bar");
 
-			//Bouton info
-			infoButton = new Button();
-			infoButton.setIcon(FontAwesome.INFO);
-			infoButton.setStyleName("v-menu-nav-button");
-			infoButton.addClickListener(e->{
-				Notification note = new Notification(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()), "", Notification.TYPE_TRAY_NOTIFICATION, true);
-				note.setPosition(Position.MIDDLE_CENTER);
-				note.setDelayMsec(6000);
-				note.show(UI.getCurrent().getPage());
-			});
-			navbar.addComponent(infoButton);
-			navbar.setComponentAlignment(infoButton, Alignment.MIDDLE_LEFT);
+			Utils.ajoutLogoBandeau(configController.getLogoUniversiteMobile(), navbar);
 
 			//Title
 			Label labelFav = new Label(applicationContext.getMessage(NAME + ".title.label", null, getLocale()));
@@ -139,31 +133,43 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			navbar.addComponent(labelFav);
 			navbar.setComponentAlignment(labelFav, Alignment.MIDDLE_CENTER);
 
-			//Bouton Search
-			searchButton = new Button();
-			searchButton.setIcon(FontAwesome.SEARCH);
-			searchButton.setStyleName("v-menu-nav-button");
-			navbar.addComponent(searchButton);
-			navbar.setComponentAlignment(searchButton, Alignment.MIDDLE_RIGHT);
-			searchButton.addClickListener(e->{
-				((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche(NAME);
-			});
 			navbar.setExpandRatio(labelFav, 1);
 			addComponent(navbar);
 
+			menuBar = new MenuBar();
+			menuBar.setStyleName("v-menubar-mobile");
+			MenuBar.MenuItem ellipsisItem = menuBar.addItem("", FontAwesome.ELLIPSIS_V, null);
+			ellipsisItem.setStyleName("ellipsis-icon");
 
+			MenuBar.MenuItem rechercheItem = ellipsisItem.addItem(applicationContext.getMessage(NAME + ".menu.recherche", null, getLocale()),FontAwesome.SEARCH, new MenuBar.Command() {
+				@Override
+				public void menuSelected(MenuBar.MenuItem selectedItem) {
+					((MdwTouchkitUI)MdwTouchkitUI.getCurrent()).navigateToRecherche(NAME);
+				}
+			});
+
+			MenuBar.MenuItem informationItem = ellipsisItem.addItem(applicationContext.getMessage(NAME + ".menu.information", null, getLocale()), FontAwesome.INFO, new MenuBar.Command() {
+				@Override
+				public void menuSelected(MenuBar.MenuItem selectedItem) {
+					String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
+					HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+					hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),false);
+					UI.getCurrent().addWindow(hbw);
+				}
+			});
+
+			navbar.addComponent(menuBar);
+			navbar.setComponentAlignment(menuBar, Alignment.MIDDLE_RIGHT);
 
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
 			globalLayout.setMargin(true);
 
-
 			FormLayout labelLayout = new FormLayout();
 			labelLayout.setSizeFull();
 			labelLayout.setMargin(false);
 			labelLayout.setSpacing(false);
-
 
 			Label infoLabel = new Label(applicationContext.getMessage(NAME + ".info.label", null, getLocale()));
 			infoLabel.setStyleName(ValoTheme.LABEL_SMALL);
@@ -173,118 +179,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelLayout.addComponent(infoLabel);
 			globalLayout.addComponent(labelLayout);
 
-			if(lfav!=null && lfav.size()>0){
-				if(favorisContientVet(lfav)){
-
-					Panel vetPanel = new Panel(applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
-					vetPanel.setStyleName("centertitle-panel");
-					vetPanel.addStyleName("v-colored-panel-caption");
-					vetPanel.setSizeFull();
-
-					VerticalLayout vetLayout = new VerticalLayout();
-					vetLayout.setSizeFull();
-					vetLayout.setHeight(null);
-					int i=0;
-					for(Favoris fav :  lfav){
-						if(fav.getId().getTypfav().equals(Utils.VET)){
-							i++;
-
-							HorizontalLayout favVetLayout = new HorizontalLayout();
-							favVetLayout.setSizeFull();
-							favVetLayout.setMargin(true);
-							favVetLayout.setSpacing(true);
-							favVetLayout.setStyleName("v-layout-multiline");
-							favVetLayout.setWidth("100%");
-							favVetLayout.setHeight("100%");
-
-							Button codeButton = new Button(fav.getId().getIdfav());
-							codeButton.setCaption(fav.getId().getIdfav());
-							Utils.setButtonStyle(codeButton);
-							codeButton.setWidth("90px");
-							codeButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-
-
-
-							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							Utils.setButtonStyle(libButton);
-							libButton.setHeight("100%");
-							libButton.setWidth("100%");
-							libButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-							
-
-							favVetLayout.addComponent(codeButton);
-							//favVetLayout.setComponentAlignment(codeButton, Alignment.MIDDLE_CENTER);
-							favVetLayout.addComponent(libButton);
-							favVetLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-							favVetLayout.setExpandRatio(libButton, 1);
-							vetLayout.addComponent(favVetLayout);
-							if(i>1){
-								favVetLayout.addStyleName("line-separator");
-							}
-						}
-					}
-					vetPanel.setContent(vetLayout);
-					globalLayout.addComponent(vetPanel);
-
-				}
-
-				if(favorisContientElp(lfav)){
-					Panel elpPanel = new Panel(applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
-					elpPanel.setStyleName("centertitle-panel");
-					elpPanel.addStyleName("v-colored-panel-caption");
-					elpPanel.setSizeFull();
-
-					VerticalLayout elpLayout = new VerticalLayout();
-					elpLayout.setSizeFull();
-					elpLayout.setHeight(null);
-					int i=0;
-					for(Favoris fav :  lfav){
-						if(fav.getId().getTypfav().equals(Utils.ELP)){
-							i++;
-							HorizontalLayout favElpLayout = new HorizontalLayout();
-							favElpLayout.setSizeFull();
-							favElpLayout.setMargin(true);
-							favElpLayout.setSpacing(true);
-							favElpLayout.setStyleName("v-layout-multiline");
-							favElpLayout.setWidth("100%");
-							favElpLayout.setHeight("100%");
-
-
-							Button codeButton = new Button(fav.getId().getIdfav());
-							Utils.setButtonStyle(codeButton);
-							codeButton.setWidth("90px");
-							codeButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-
-							Button libButton = new Button(favorisController.getLibObjFavori(fav.getId().getTypfav(),fav.getId().getIdfav()));
-							Utils.setButtonStyle(libButton);
-							libButton.setHeight("100%");
-							libButton.setWidth("100%");
-							libButton.addClickListener(e->{
-								accessToDetail(fav.getId().getIdfav(),fav.getId().getTypfav());
-							});
-
-							favElpLayout.addComponent(codeButton);
-							favElpLayout.addComponent(libButton);
-							favElpLayout.setComponentAlignment(libButton, Alignment.MIDDLE_CENTER);
-							favElpLayout.setExpandRatio(libButton, 1);
-							elpLayout.addComponent(favElpLayout);
-							if(i>1){
-								favElpLayout.addStyleName("line-separator");
-							}
-						}
-					}
-					elpPanel.setContent(elpLayout);
-					globalLayout.addComponent(elpPanel);
-				}
-
-
-
+			if (lfav != null && !lfav.isEmpty()) {
+				ajouteTypeFav(globalLayout, lfav, Utils.VET, applicationContext.getMessage(NAME + ".vetpanel.title", null, getLocale()));
+				ajouteTypeFav(globalLayout, lfav, Utils.ELP, applicationContext.getMessage(NAME + ".elppanel.title", null, getLocale()));
 			}
 
 			labelAucunFavoriLayout = new HorizontalLayout();
@@ -301,7 +198,7 @@ public class FavorisMobileView extends VerticalLayout implements View {
 			labelAucunFavoriLayout.setVisible(false);
 			globalLayout.addComponent(labelAucunFavoriLayout);
 
-			if(lfav==null || lfav.size()==0){
+			if(lfav==null || lfav.isEmpty()){
 				labelAucunFavoriLayout.setVisible(true);
 			}
 
@@ -314,6 +211,59 @@ public class FavorisMobileView extends VerticalLayout implements View {
 		}
 	}
 
+	private void ajouteTypeFav(VerticalLayout globalLayout, List<Favoris> lfav, String typeFav, String titre) {
+		if(favorisContientTypeFav(lfav, typeFav)){
+			Panel favPanel = new Panel(titre);
+			favPanel.setStyleName("lefttitle-panel");
+			favPanel.addStyleName("v-medium-panel-caption");
+			favPanel.setSizeFull();
+			favPanel.setContent(getFavLayout(lfav,typeFav));
+			globalLayout.addComponent(favPanel);
+		}
+	}
+
+	private com.vaadin.ui.Component getFavLayout(List<Favoris> lfav, String typeFav) {
+
+		VerticalLayout favLayout = new VerticalLayout();
+		favLayout.setSizeFull();
+		favLayout.setHeight(null);
+		for(Favoris fav :  lfav) {
+			if (fav.getId().getTypfav().equals(typeFav)) {
+
+				HorizontalLayout favVetLayout = new HorizontalLayout();
+				favVetLayout.setSizeFull();
+				favVetLayout.setMargin(true);
+				favVetLayout.setSpacing(true);
+				favVetLayout.setStyleName("v-layout-multiline");
+				favVetLayout.setWidth("100%");
+				favVetLayout.setHeight("100%");
+
+				VerticalLayout liblayout = new VerticalLayout();
+				liblayout.addComponent(new Label(fav.getId().getIdfav()));
+				Label libelle = new Label(favorisController.getLibObjFavori(fav.getId().getTypfav(), fav.getId().getIdfav()));
+				libelle.setStyleName(ValoTheme.LABEL_SMALL);
+				liblayout.addComponent(libelle);
+
+				HorizontalLayout blayout = new HorizontalLayout();
+				Button actionButton = new Button();
+				actionButton.setIcon(FontAwesome.USERS);
+				actionButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				actionButton.addClickListener(e -> {
+					accessToDetail(fav.getId().getIdfav(), fav.getId().getTypfav());
+				});
+				blayout.addComponent(actionButton);
+				//blayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
+
+				favVetLayout.addComponent(liblayout);
+				favVetLayout.addComponent(blayout);
+				favVetLayout.setExpandRatio(liblayout, 1);
+
+				favLayout.addComponent(favVetLayout);
+			}
+		}
+		return favLayout;
+	}
+
 
 	private void accessToDetail(String id, String type) {
 			//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
@@ -321,20 +271,9 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	}
 	
 
-
-
-	private boolean favorisContientVet(List<Favoris> lfav) {
+	private boolean favorisContientTypeFav(List<Favoris> lfav, String typeFacv) {
 		for(Favoris fav :  lfav){
-			if(fav.getId().getTypfav().equals(Utils.VET)){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean favorisContientElp(List<Favoris> lfav) {
-		for(Favoris fav :  lfav){
-			if(fav.getId().getTypfav().equals(Utils.ELP)){
+			if(fav.getId().getTypfav().equals(typeFacv)){
 				return true;
 			}
 		}
@@ -345,8 +284,8 @@ public class FavorisMobileView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
-		//LOG.debug("ENTER FAVORIS VIEW");
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		//log.debug("ENTER FAVORIS VIEW");
 	}
 
 

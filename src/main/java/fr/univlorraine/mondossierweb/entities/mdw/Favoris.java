@@ -18,15 +18,14 @@
  */
 package fr.univlorraine.mondossierweb.entities.mdw;
 
-import java.io.Serializable;
-
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 @Entity
 @Data
@@ -35,9 +34,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(of="id")
 public class Favoris implements Serializable {
 
-
-	private static final long serialVersionUID = -1983771824782315564L;
-	
 	@EmbeddedId
 	private FavorisPK id;
 

@@ -18,48 +18,31 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.util.filter.Or;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TreeTable;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -70,6 +53,18 @@ import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeServ
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Page d'accueil
@@ -77,15 +72,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 @Component @Scope("prototype")
 @SpringView(name = RechercheRapideView.NAME)
 public class RechercheRapideView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = 7147611659177952737L;
-
-
-
 	public static final String NAME = "rechercheRapideView";
-
-
-
 	public static final String[] FIELDS_ORDER = {"lib","type"};
 
 	/* Injections */
@@ -104,31 +91,18 @@ public class RechercheRapideView extends VerticalLayout implements View {
 
 	@Resource
 	private ElasticSearchApogeeService ElasticSearchService;
-
 	private VerticalLayout mainVerticalLayout;
-
 	private HorizontalLayout champRechercheLayout;
-
 	private Button btnRecherche;
-
 	private AutoComplete champRecherche;
-
 	private HierarchicalContainer rrContainer;
-
 	private TreeTable tableResultats;
-
 	private String[] columnHeaders;
-
 	private CheckBox casesAcocherComposantes;
-
 	private CheckBox casesAcocherVet;
-
 	private CheckBox casesAcocherElp;
-
 	private CheckBox casesAcocherEtudiant;
-
 	private Button resetButton;
-
 	private List<ResultatDeRecherche> items = new ArrayList<ResultatDeRecherche>();
 
 	/**
@@ -136,32 +110,26 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && userController.isEnseignant()){
-
-
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
 
-
 			mainVerticalLayout = new VerticalLayout();
 			champRechercheLayout = new HorizontalLayout();
-			mainVerticalLayout.setImmediate(true);
+			// mainVerticalLayout.setImmediate(true);
 			mainVerticalLayout.setSizeFull();
-
 
 			//BOUTON DE RECHERCHE
 			btnRecherche = new Button(applicationContext.getMessage("buttonChercher.label", null, Locale.getDefault()));
+			btnRecherche.addStyleName("right-input-cmp");
 			btnRecherche.setIcon(FontAwesome.SEARCH);
 			btnRecherche.setEnabled(true);
 			btnRecherche.addClickListener(e -> search(false));
 
-
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
 			if(ElasticSearchService.initConnexion()){
-
 				//CHAMP DE RECHERCHE
 				champRecherche = new AutoComplete();
 				champRecherche.setWidth(700, Unit.PIXELS); //540
@@ -169,10 +137,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				champRecherche.setImmediate(true);
 				champRecherche.setMaxLength(100);
 				champRecherche.focus();
-				champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
-				champRecherche.addTextChangeListener(new TextChangeListener() {
+				champRecherche.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.EAGER);
+				champRecherche.addTextChangeListener(new FieldEvents.TextChangeListener() {
 					@Override
-					public void textChange(TextChangeEvent event) {
+					public void textChange(FieldEvents.TextChangeEvent event) {
 						if(event.getText()!=null){
 							resetButton.setIcon(FontAwesome.TIMES);
 						}
@@ -228,21 +196,18 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					}
 				});
 
-				//champRecherche.addBlurListener(e -> champRecherche.getChoicesPopup().setVisible(false));
+				// Maj style css du champ de recherche
+				champRecherche.updateStyle();
 
 				HorizontalLayout layoutBordure = new HorizontalLayout();
 				layoutBordure.setWidth("100px");
 				champRechercheLayout.addComponent(layoutBordure);
 				champRechercheLayout.setComponentAlignment(layoutBordure, Alignment.MIDDLE_LEFT);
 
-				/*champRechercheLayout.addComponent(search1);
-			champRechercheLayout.setComponentAlignment(search1, Alignment.MIDDLE_LEFT);*/
-
 				champRechercheLayout.addComponent(champRecherche);
 				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.TOP_LEFT);
 
 				//BOUTON RESET
-				champRecherche.addStyleName("textfield-resetable");
 				resetButton = new Button();
 				resetButton.setIcon(FontAwesome.TIMES);
 				resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
@@ -261,8 +226,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				mainVerticalLayout.addComponent(champRechercheLayout);
 				mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
 				champRechercheLayout.setMargin(true);
-
-
 
 				casesAcocherComposantes= new CheckBox("Composantes");
 				casesAcocherComposantes.setValue(true);
@@ -289,7 +252,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				checkBoxLayout.addComponent(casesAcocherElp);
 				checkBoxLayout.addComponent(casesAcocherEtudiant);
 
-
 				mainVerticalLayout.addComponent(checkBoxLayout);
 
 				//TABLE DE RESULTATS
@@ -312,8 +274,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				tableResultats.setContainerDataSource(rrContainer);
 				tableResultats.setVisibleColumns(FIELDS_ORDER);
 				tableResultats.setColumnHeaders(columnHeaders);
-				/*mainVerticalLayout.addComponent(searchBoxFilter);
-		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
 				VerticalLayout tableVerticalLayout = new VerticalLayout();
 				tableVerticalLayout.setMargin(new MarginInfo(false, true, true, true));
 				tableVerticalLayout.setSizeFull();
@@ -322,17 +282,14 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
 				tableResultats.setVisible(false);
 
-
 				addComponent(mainVerticalLayout);
 				setSizeFull();
 			}else{
-
 				//Message fonctionnalité indisponible
 				addComponent(new Label(applicationContext.getMessage(NAME + ".indisponible.message", null, getLocale()), ContentMode.HTML));
 			}
 		}
 	}
-
 
 
 	private List<ResultatDeRecherche> quickSearch(String valueString){
@@ -343,19 +300,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		String value = valueString;
 		if(StringUtils.hasText(value) && value.length()>2){
 
-
 			///////////////////////////////////////////////////////
 			//appel elasticSearch
 			///////////////////////////////////////////////////////
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
 
-	
 			//valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
-		
-			
 			//Liste des types autorisés
 			LinkedList<String> listeTypeAutorise=new LinkedList();
 			if(casesAcocherComposantes.getValue()){
@@ -371,16 +324,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				listeTypeAutorise.add(Utils.ETU);
 			}
 
-
 			///////////////////////////////////////////////////////
 			// recuperation des obj ElasticSearch
 			///////////////////////////////////////////////////////
-			if(lobjresult!=null && listeTypeAutorise.size()>0){
+			if(lobjresult!=null && !listeTypeAutorise.isEmpty()){
 				for(Map<String,Object> obj : lobjresult){
 					if(listeReponses.size()<Utils.NB_MAX_RESULT_QUICK_SEARCH){
 						if(obj != null){
 							if(listeTypeAutorise.contains((String)obj.get(Utils.ES_TYPE))){
-								if(listeReponses.size()>0){
+								if(!listeReponses.isEmpty()){
 									boolean triOk=true;
 									int rang = 0;
 									//On evite des doublons
@@ -408,22 +360,9 @@ public class RechercheRapideView extends VerticalLayout implements View {
 					}
 				}
 			}
-
-
-
 		}
-
-		//return listeReponses;
-		//return new ArrayList<Object>(listeReponses);
 		return listeReponses;
-
 	}
-
-
-
-
-
-
 
 	private void search(boolean rechercheSansUtiliserLaVue){
 
@@ -434,19 +373,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			champRecherche.getChoicesPopup().setPopupVisible(false);
 		}
 		String value = String.valueOf(champRecherche.getValue());
-		/*ResultatDeRecherche r = (ResultatDeRecherche)search1.getValue();
-		String value = String.valueOf(r.getLib());*/
+
 
 		if(StringUtils.hasText(value) && value.length()>1){
-
-
 			boolean suggestionValidee = false;
 
 			//On détecte si la recherche porte sur une suggestion proposée par la pop_up
 			if(value.contains("[") && value.contains("]")){
 				suggestionValidee = true;
 			}
-
 
 			///////////////////////////////////////////////////////
 			//appel elasticSearch
@@ -483,8 +418,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 							
 							rrContainer.setChildrenAllowed(rr, false);
 						}
-
-
 					}
 				}
 
@@ -498,16 +431,12 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				}
 			}
 
-
-
-
 		}else{
 			if(StringUtils.hasText(value) && value.length()<=1){
 				//afficher message erreur
-				Notification.show("Merci d'indiquer au moins 2 lettres",Type.ERROR_MESSAGE);
+				Notification.show("Merci d'indiquer au moins 2 lettres", Notification.Type.ERROR_MESSAGE);
 			}
 		}
-
 	}
 
 
@@ -526,7 +455,6 @@ public class RechercheRapideView extends VerticalLayout implements View {
 	}
 
 	class DisplayNameColumnGenerator implements Table.ColumnGenerator {
-
 		public Object generateCell(Table source, Object itemId,
 				Object columnId) {
 
@@ -553,14 +481,10 @@ public class RechercheRapideView extends VerticalLayout implements View {
 				libhl.setComponentAlignment(formation, Alignment.MIDDLE_RIGHT);
 				
 				return libhl;
-				
 			}
-			
 			return b;
 		}
 	}
-
-
 
 
 	private void tuneSearch() {
@@ -568,7 +492,7 @@ public class RechercheRapideView extends VerticalLayout implements View {
 		if(rrContainer!=null){
 			rrContainer.removeAllContainerFilters();
 
-			Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
+			Container.Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
 			SimpleStringFilter compFilter;
 			SimpleStringFilter vetFilter;
 			SimpleStringFilter elpFilter;
@@ -592,21 +516,15 @@ public class RechercheRapideView extends VerticalLayout implements View {
 			}
 
 			rrContainer.addContainerFilter(filterStringToSearch);
-
-
 		}
 
 	}
-
-
-
-
 
 	/**
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 

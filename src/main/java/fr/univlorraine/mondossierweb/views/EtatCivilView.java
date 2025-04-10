@@ -18,22 +18,34 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
+
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,8 +53,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -50,13 +60,9 @@ import java.util.List;
  */
 @Component @Scope("prototype")
 @SpringView(name = EtatCivilView.NAME)
+@Slf4j
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class EtatCivilView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = -2056224835347802529L;
-
-	private Logger LOG = LoggerFactory.getLogger(EtatCivilView.class);
-
 	public static final String NAME = "etatCivilView";
 
 	/* Injections */
@@ -83,13 +89,12 @@ public class EtatCivilView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-
-		LOG.debug(userController.getCurrentUserName()+" EtatCivilView");
+		log.debug(userController.getCurrentUserName()+" EtatCivilView");
 
 		//On vérifie le droit d'accéder à la vue
 		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant())){
 			if( MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
-					LOG.debug(userController.getCurrentUserName()+" init EtatCivilView "+SecurityContextHolder.getContext().getAuthentication().getName());
+					log.debug(userController.getCurrentUserName()+" init EtatCivilView "+SecurityContextHolder.getContext().getAuthentication().getName());
 
 					/* Style */
 					setMargin(true);
@@ -185,10 +190,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 					idLayout.addComponent(generalitesGlobalLayout);
 
 
-
 					/* Bac */
-
-
 					Panel panelBac= new Panel(applicationContext.getMessage(NAME+".bac.title", null, getLocale()));
 
 					//Si plusieurs bac
@@ -211,7 +213,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 						vBacLayout.addComponent(bacTabSheet);
 						panelBac.setContent(vBacLayout);
 					}else{
-						//Si un seul bac
+						//Un seul bac
 						FormLayout formBacLayout = new FormLayout();
 						formBacLayout.setSizeFull();
 						if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()==1){
@@ -231,9 +233,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 					idLayout.addComponent(bacGlobalLayout);
 
 
-
-
-					/* Info de contact */
+					/* Infos de contact */
 					if(userController.isEtudiant() || 
 						(userController.isEnseignant() && configController.isAffInfosContactEnseignant()) || 
 						(userController.isGestionnaire() && configController.isAffInfosContactGestionnaire())){
@@ -297,13 +297,13 @@ public class EtatCivilView extends VerticalLayout implements View {
 			btnValidModifCoordonneesPerso.addClickListener(e -> {
 				erreursLayout.removeAllComponents();
 				List<String> retour = etudiantController.updateContact(fieldTelPortable.getValue(),fieldMailPerso.getValue(),MainUI.getCurrent().getEtudiant().getCod_etu());
-				//si modif ok
+				// si modif ok
 				if(retour!=null && retour.size()==1 && retour.get(0).equals("OK")){
 					etudiantController.recupererEtatCivil();
 					renseignerPanelContact();
 				}else{
 					//affichage erreurs
-					if(retour!=null && retour.size()>0){
+					if (retour != null && !retour.isEmpty()) {
 						String errorMsg="";
 						for(String erreur : retour){
 							if(!errorMsg.equals(""))
@@ -463,7 +463,7 @@ public class EtatCivilView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 }

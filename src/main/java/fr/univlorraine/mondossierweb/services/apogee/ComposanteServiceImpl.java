@@ -18,20 +18,18 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-
 import fr.univlorraine.mondossierweb.entities.apogee.Composante;
 import fr.univlorraine.mondossierweb.entities.apogee.ElementPedagogique;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionDiplome;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.repositories.apogee.ComposanteApogeeRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+
+import jakarta.annotation.Resource;
+import java.util.List;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")

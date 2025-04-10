@@ -18,19 +18,16 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.VerticalLayout;
-
-import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
 
 /**
  * Page d'accueil
@@ -38,7 +35,6 @@ import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
 @Component @Scope("prototype")
 @SpringView(name = ErreurView.NAME)
 public class ErreurView extends VerticalLayout implements View {
-	private static final long serialVersionUID = 5118929963964330113L;
 
 	public static final String NAME = "erreurView";
 
@@ -59,7 +55,7 @@ public class ErreurView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View${symbol_pound}enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 }

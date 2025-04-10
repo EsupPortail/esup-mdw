@@ -18,39 +18,38 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationCategorie;
 import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.views.windows.PreferencesApplicationWindow;
 import fr.univlorraine.mondossierweb.views.windows.SwapUtilisateurWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Page admin
@@ -58,8 +57,6 @@ import fr.univlorraine.mondossierweb.views.windows.SwapUtilisateurWindow;
 @Component @Scope("prototype")
 @SpringView(name = AdminView.NAME)
 public class AdminView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = -2605429366219007314L;
 
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
 
@@ -116,39 +113,38 @@ public class AdminView extends VerticalLayout implements View {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 			topLayout.setSpacing(true);
 
-			Label Apptitle = new Label(environment.getRequiredProperty("app.name"));
-			Apptitle.addStyleName(ValoTheme.LABEL_HUGE);
-			Apptitle.addStyleName(ValoTheme.LABEL_BOLD);
+			Label apptitle = new Label(environment.getRequiredProperty("app.name"));
+			apptitle.addStyleName(ValoTheme.LABEL_HUGE);
+			apptitle.addStyleName(ValoTheme.LABEL_BOLD);
+
+			Button homeButton = new Button(FontAwesome.HOME);
+			homeButton.addStyleName("admin-home-button");
+			homeButton.addClickListener(e -> getUI().getPage().setLocation(PropertyUtils.getAppUrl()));
+
+			CssLayout titleLayout = new CssLayout();
+			titleLayout.setWidthFull();
+			titleLayout.addStyleName("admin-title-layout");
+			titleLayout.addComponents(apptitle, homeButton);
 
 			Label versionLabel = new Label("v" + environment.getRequiredProperty("app.version"));
 			versionLabel.addStyleName(ValoTheme.LABEL_TINY);
 
-			VerticalLayout appTitleLayout = new VerticalLayout(Apptitle, versionLabel);
+			VerticalLayout appTitleLayout = new VerticalLayout(titleLayout, versionLabel);
 			topLayout.addComponent(appTitleLayout);
 			topLayout.setComponentAlignment(appTitleLayout, Alignment.MIDDLE_LEFT);
 			topLayout.setExpandRatio(appTitleLayout, 1);
 
 			addComponent(topLayout);
 
-			// Titre 
-			/*Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-			title.addStyleName(ValoTheme.LABEL_H1);
-			addComponent(title);*/
-
-			// Texte 
-			//addComponent(new Label(applicationContext.getMessage(NAME + ".message", null, getLocale()), ContentMode.HTML));
-
 			tabSheetGlobal = new TabSheet();
 			tabSheetGlobal.setSizeFull();
 			tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
 			/* Récupération des Categories de configuration */
-
 			List<PreferencesApplicationCategorie> categories = configController.getCategoriesOrderByOrdre();
 
 			int tabNumber = 0;
 			for(PreferencesApplicationCategorie categorie : categories){
-				//ajout de l'onglet principal 'parametres'
 				layoutConfigApplication = new VerticalLayout();
 				layoutConfigApplication.setSizeFull();
 				ajoutGestionParametresApplicatifs(categorie,tabNumber);
@@ -162,11 +158,7 @@ public class AdminView extends VerticalLayout implements View {
 			ajoutGestionSwap(tabNumber);
 			tabSheetGlobal.addTab(layoutSwapUser, "Swap utilisateur", FontAwesome.GROUP);
 
-
 			tabSheetGlobal.setSelectedTab(tabSelectedPosition);
-			//Ce tabSheet sera aligné à droite
-			//tabSheetGlobal.addStyleName("right-aligned-tabs");
-
 			//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
 			addComponent(tabSheetGlobal);
 			setExpandRatio(tabSheetGlobal, 1);
@@ -175,27 +167,19 @@ public class AdminView extends VerticalLayout implements View {
 
 	private void ajoutGestionParametresApplicatifs(PreferencesApplicationCategorie categorie,int tabNumber) {
 
-
 		layoutConfigApplication.setMargin(true);
 		layoutConfigApplication.setSpacing(true);
-
-
 
 		/* Boutons */
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setSpacing(true);
 		layoutConfigApplication.addComponent(buttonsLayout);
-
-		Label categorieLabel = new Label();
-		categorieLabel.setCaption(categorie.getCatDesc());
-		buttonsLayout.addComponent(categorieLabel);
-
 		Button btnEdit = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
 		btnEdit.setEnabled(false);
-		
+		btnEdit.addStyleName("admin-button");
 		buttonsLayout.addComponent(btnEdit);
-		buttonsLayout.setComponentAlignment(btnEdit, Alignment.MIDDLE_CENTER);
+		buttonsLayout.setComponentAlignment(btnEdit, Alignment.MIDDLE_RIGHT);
 
 		/* Table des conf */
 		Table confAppTable = new Table(null, new BeanItemContainer<>(PreferencesApplication.class, configController.getAppParametersForCatId(categorie.getCatId())));
@@ -244,7 +228,6 @@ public class AdminView extends VerticalLayout implements View {
 
 	private void ajoutGestionSwap(int tabNumber) {
 
-
 		layoutSwapUser.setMargin(true);
 		layoutSwapUser.setSpacing(true);
 		/* Boutons */
@@ -252,7 +235,6 @@ public class AdminView extends VerticalLayout implements View {
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setSpacing(true);
 		layoutSwapUser.addComponent(buttonsLayout);
-
 
 		btnEditSwap = new Button(applicationContext.getMessage(NAME+".btnEdit", null, getLocale()), FontAwesome.PENCIL);
 		btnEditSwap.setEnabled(false);
@@ -266,10 +248,12 @@ public class AdminView extends VerticalLayout implements View {
 			}
 		});
 		buttonsLayout.addComponent(btnEditSwap);
+		btnEditSwap.addStyleName("admin-button");
 		buttonsLayout.setComponentAlignment(btnEditSwap, Alignment.MIDDLE_LEFT);
 
 		btnAddSwap = new Button(applicationContext.getMessage(NAME+".btnAdd", null, getLocale()), FontAwesome.PLUS);
 		btnAddSwap.setEnabled(true);
+		btnAddSwap.addStyleName("admin-button");
 		btnAddSwap.addClickListener(e -> {
 			SwapUtilisateurWindow suw = swapUtilisateurWindowFactory.getObject();
 			suw.init(new UtilisateurSwap(), true);
@@ -284,6 +268,7 @@ public class AdminView extends VerticalLayout implements View {
 		// Deconnexion 
 		Button decoBtn = new Button("Se Déconnecter", FontAwesome.SIGN_OUT);
 		decoBtn.setEnabled(true);
+		decoBtn.addStyleName("admin-button");
 		decoBtn.addClickListener(e -> {
 			userController.disconnectUser();
 			getUI().getPage().setLocation("logout");
@@ -325,7 +310,7 @@ public class AdminView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View${symbol_pound}enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 }

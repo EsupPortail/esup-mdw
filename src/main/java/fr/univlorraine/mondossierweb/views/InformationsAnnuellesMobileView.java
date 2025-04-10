@@ -18,36 +18,25 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
 import fr.univlorraine.mondossierweb.beans.Inscription;
@@ -56,11 +45,19 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.InscriptionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
-import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * Page d'accueil mobile de l'étudiant
@@ -69,8 +66,6 @@ import lombok.extern.slf4j.Slf4j;
 @SpringView(name = InformationsAnnuellesMobileView.NAME)
 @Slf4j
 public class InformationsAnnuellesMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-
 	public static final String NAME = "informationsAnnuellesMobileView";
 
 	/* Injections */
@@ -110,7 +105,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
 			navbar.setSizeFull();
-			navbar.setHeight("40px");
+			navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 			navbar.setStyleName("navigation-bar");
 
 			//Bouton retour
@@ -133,6 +128,8 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 				});
 				navbar.addComponent(returnButton);
 				navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+			} else {
+				Utils.ajoutLogoBandeau(configController.getLogoUniversiteMobile(), navbar);
 			}
 
 			//Title
@@ -234,24 +231,14 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			slimLayout.addComponent(etuPanel);
 			slimLayout.setComponentAlignment(etuPanel, Alignment.MIDDLE_CENTER);
 
-
-
-
 			globalLayout.addComponent(slimLayout);
 
-
-
-
-
-
-
-
-			//Si l'étudiant est inscrit pour l'année en cours
+			// Si l'étudiant n'est pas inscrit pour l'année en cours
 			if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
 				//Etudiant non inscrit pour l'année en cours
 				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours(MdwTouchkitUI.getCurrent())));
-				panelInfos.setStyleName("centertitle-panel");
-				panelInfos.addStyleName("v-colored-panel-caption");
+				panelInfos.setStyleName("lefttitle-panel");
+				panelInfos.addStyleName("v-medium-panel-caption");
 
 				HorizontalLayout labelNonInscritLayout = new HorizontalLayout();
 				labelNonInscritLayout.setMargin(true);
@@ -266,9 +253,9 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 			} 
 			for(InfosAnnuelles infos : MdwTouchkitUI.getCurrent().getEtudiant().getInfosAnnuelles()) {
 				
-				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+infos.getLibelle());
-				panelInfos.setStyleName("centertitle-panel");
-				panelInfos.addStyleName("v-colored-panel-caption");
+				Panel panelInfos = new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" " + infos.getLibelle());
+				panelInfos.setStyleName("lefttitle-panel");
+				panelInfos.addStyleName("v-medium-panel-caption");
 
 				FormLayout formInfosLayout = new FormLayout();
 				formInfosLayout.setSpacing(true);
@@ -286,6 +273,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 					//Si on a au moins une inscription
 					if(MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae() !=null &&
 						!MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().isEmpty()){
+
 						// Récupération de la première inscription de la liste
 						Inscription inscription = MdwTouchkitUI.getCurrent().getEtudiant().getLinsciae().get(0);
 
@@ -379,8 +367,6 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 
 				panelInfos.setContent(formInfosLayout);
 
-
-
 				//Si étudiant non inscrit ou si user étudiant ou si on a autorisé la visualisation des infos annuelles par l'enseignant
 				if(!MdwTouchkitUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours() || userController.isEtudiant() || configController.isAffInfosAnnuellesEnseignant()){
 					globalLayout.addComponent(panelInfos);
@@ -405,7 +391,7 @@ public class InformationsAnnuellesMobileView extends VerticalLayout implements V
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 }

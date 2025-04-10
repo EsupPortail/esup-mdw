@@ -18,52 +18,41 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.mobile.device.Device;
-import org.springframework.mobile.device.DeviceUtils;
 
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.internal.UIID;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
-
+import com.vaadin.util.CurrentInstance;
+import fr.univlorraine.mondossierweb.utils.DeviceUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanCreationException;
 
 @SuppressWarnings("serial")
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
 @Slf4j
-public class MdwUIProvider extends SpringUIProvider  {
-	
-	private boolean startServletMobile;
+public class MdwUIProvider extends SpringUIProvider {
 
-	
+	private final boolean startServletMobile;
+
 	public MdwUIProvider(VaadinSession vaadinSession) {
 		super(vaadinSession);
-		startServletMobile = Boolean.valueOf(getWebApplicationContext().getEnvironment().getProperty("startServletMobile"));
+		startServletMobile = Boolean.parseBoolean(getWebApplicationContext().getEnvironment().getProperty("startServletMobile"));
 	}
 	
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 
 		//Récupération du userAgent
-		if(startServletMobile && event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
-			//String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-
-			/* Device Detection */
-			Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
-			boolean isMobile =currentDevice.isMobile();
-			
-			// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-			/*if(isMobile && (userAgent.contains("webkit")
-					|| userAgent.contains("windows phone 8")
-					|| userAgent.contains("windows phone 9"))){*/
+		if(startServletMobile && event!=null && event.getRequest()!=null){
 			// on teste que l'utilisateur est sur mobile
-			if(isMobile){
+			if( DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())){
 				//On affiche la page proposant une redirection vers la version Mobile
 				return MdwFallbackTouchkitUI.class;
 			}else{
@@ -81,43 +70,64 @@ public class MdwUIProvider extends SpringUIProvider  {
 		return false;
 	}
 
+
+	@Override
+	public UI createInstance(UICreateEvent event) {
+		final Class<UIID> key = UIID.class;
+		final UIID identifier = new UIID(event);
+		CurrentInstance.set(key, identifier);
+		try {
+			log.debug(
+					"Creating a new UI bean of class [{}] with identifier [{}]",
+					event.getUIClass().getCanonicalName(), identifier);
+			UI ui = getWebApplicationContext().getBean(event.getUIClass());
+			configureNavigator(ui);
+			return ui;
+		}catch(BeanCreationException bce) {
+			log.error("Erreur lors de la création de l'UI. key : {} - id : {} - CurrenInstance.getUUID : {}", key, identifier, CurrentInstance.get(UIID.class), bce);
+			// 2nd essai
+			CurrentInstance.set(key, identifier);
+			UI ui = getWebApplicationContext().getBean(event.getUIClass());
+			configureNavigator(ui);
+			return ui;
+		} finally {
+			CurrentInstance.set(key, null);
+		}
+	}
+	/*
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		//Nom de la classe UI à utiliser
-		String uiBeanNameObj = "";
-		//Récupération du userAgent
-		String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
+		log.debug("-uiBeanNameObj = mainUI");
 
-		/* Device Detection */
-		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) event.getRequest());
-		boolean isMobile =currentDevice.isMobile();
-		
-		// on teste que l'utilisateur est sur smartphone et avec un navigateur compatible webkit ou sous WP
-		/*if(startServletMobile && isMobile && (userAgent.contains("webkit")
-				|| userAgent.contains("windows phone 8")
-				|| userAgent.contains("windows phone 9"))){*/
-		if(isMobile) {
+		final Class<UIID> key = UIID.class;
+		final UIID identifier = new UIID(event);
+		CurrentInstance.set(key, identifier);
+
+		boolean mobile = false;
+
+		if (DeviceUtils.isMobileDevice((HttpServletRequest) event.getRequest())) {
 			//On affiche la page proposant une redirection vers la version Mobile
-			log.debug("-FallbackTouchkit UI provided ("+userAgent+")");
-			uiBeanNameObj = "mdwFallbackTouchkitUI";
-		}else{
-			//On va vers la version desktop
-			log.debug("-uiBeanNameObj = mainUI");
-			uiBeanNameObj = "mainUI";
+			log.debug("-FallbackTouchkit UI ");
+			mobile = true;
 		}
 
-		//Stored in VaadinSession to use it in
-		// the ApplicationScope later to initialize vaadin application scope beans
-		final Integer uiId = event.getUiId();
-		log.debug("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
-		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);
-
-		//On retourne l'UI décidée plus haut (desktop ou mobile)
-		if (uiBeanNameObj instanceof String) {
-			String uiBeanName = uiBeanNameObj.toString();
-			return (UI) this.getWebApplicationContext().getBean(uiBeanName);
+		try {
+			logger.debug(
+					"Creating a new UI bean of class [{}] with identifier [{}]",
+					mobile ? MdwFallbackTouchkitUI.class.getCanonicalName() : MainUI.class.getCanonicalName(), identifier);
+			UI ui = null;
+			if(mobile) {
+				ui = getWebApplicationContext().getBean(MdwFallbackTouchkitUI.class);
+			} else {
+				ui = getWebApplicationContext().getBean(MainUI.class);
+			}
+			configureNavigator(ui);
+			//On retourne l'UI décidée plus haut (desktop ou mobile)
+			return ui;
+		} finally {
+			CurrentInstance.set(key, null);
 		}
-		return super.createInstance(event);
-	}
-
+    }
+*/
 }

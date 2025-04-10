@@ -18,17 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-
 import com.vaadin.server.WebBrowser;
-
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
@@ -37,6 +27,13 @@ import fr.univnancy2.PhotoClient.beans.Category;
 import fr.univnancy2.PhotoClient.beans.PhotoClient;
 import fr.univnancy2.PhotoClient.beans.TicketClient;
 import fr.univnancy2.PhotoClient.exception.PhotoClientException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 
@@ -46,16 +43,10 @@ import fr.univnancy2.PhotoClient.exception.PhotoClientException;
  * classe pour la gestion des photos (notament la récupération du ticket).
  * @author Charlie Dubois
  */
-
+@Slf4j
 @Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)
 @Component(value="photoUnivLorraineImpl")
 public class PhotoUnivLorraineImpl implements IPhoto {
-	/**
-	 * Un logger.
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(PhotoUnivLorraineImpl.class);
-
-
 	/*@Resource
 	private transient UserController userController;
 	 */
@@ -127,7 +118,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 				url = photoClient.computeURLforCode(Category.ETUDIANT, cod_etu, tc);
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur getUrlPhoto cod_ind:"+cod_ind+" , cod_etu:"+cod_etu,e);
+				log.error("PhotoUnivLorraineImplCodEtu-Erreur getUrlPhoto cod_ind:"+cod_ind+" , cod_etu:"+cod_etu,e);
 			}
 		}
 
@@ -152,7 +143,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 				url = photoClient.computeURLforCode(Category.ETUDIANT, cod_etu, tc);
 
 			} catch (PhotoClientException e) {
-				LOG.error("PhotoUnivLorraineImplCodEtu-Erreur getUrlPhotoTrombinoscopePdf cod_ind : "+cod_ind+", cod_etu:"+cod_etu,e);
+				log.error("PhotoUnivLorraineImplCodEtu-Erreur getUrlPhotoTrombinoscopePdf cod_ind : "+cod_ind+", cod_etu:"+cod_etu,e);
 			}
 		}
 
@@ -192,7 +183,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 				hostadress, "ID", "NONE", loginUser);
 
 		} catch (PhotoClientException e) {
-			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer loginUser:"+loginUser+" hostadress : "+hostadress,e);
+			log.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer loginUser:"+loginUser+" hostadress : "+hostadress,e);
 			tc = null;
 
 		}
@@ -204,7 +195,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e1) {
-			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer hostadress ",e1);
+			log.error("PhotoUnivLorraineImplCodEtu-Erreur initForServer hostadress ",e1);
 		}
 		return null;
 	}
@@ -232,7 +223,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 		} catch (PhotoClientException e) {
-			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
+			log.error("PhotoUnivLorraineImplCodEtu-Erreur init cod_etu:"+cod_etu+" loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
 			tc = null;
 
 		}
@@ -265,7 +256,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 		} catch (PhotoClientException e) {
-			LOG.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
+			log.error("PhotoUnivLorraineImplCodEtu-Erreur init loginUser:"+loginUser+ " remoteadress :-"+remoteadress+"-",e);
 			tc = null;
 
 		}
@@ -287,20 +278,20 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 		WebBrowser browser;
 
 		String ip =  GenericUI.getCurrent().getIpClient();
-		LOG.debug("IP client via VaadinService Headers : "+ip);
+		log.debug("IP client via VaadinService Headers : "+ip);
 
 
 		//Recuperation de l'IP pour info
 		if(GenericUI.getCurrent() instanceof MainUI){
 			MainUI mainUI = MainUI.getCurrent();
 			browser = mainUI.getPage().getWebBrowser();
-			LOG.debug("browser IP client MainUI : "+browser.getAddress());
+			log.debug("browser IP client MainUI : "+browser.getAddress());
 
 		}
 		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
 			MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
 			browser = mdwTouchkitUI.getPage().getWebBrowser();
-			LOG.debug("browser IP client MdwTouchkitUI : "+browser.getAddress());
+			log.debug("browser IP client MdwTouchkitUI : "+browser.getAddress());
 
 		}
 

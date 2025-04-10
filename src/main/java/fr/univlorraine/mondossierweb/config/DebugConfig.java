@@ -18,9 +18,8 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
+import fr.univlorraine.mondossierweb.Initializer;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.interceptor.CustomizableTraceInterceptor;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
@@ -28,8 +27,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import fr.univlorraine.mondossierweb.Initializer;
-import fr.univlorraine.mondossierweb.controllers.UserController;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * Configuration mode debug
@@ -59,29 +58,11 @@ public class DebugConfig {
 	@Bean
 	public Advisor controllersAdvisor() {
 		return new StaticMethodMatcherPointcutAdvisor(customizableTraceInterceptor()) {
-			private static final long serialVersionUID = 5897279987213542868L;
-
 			@Override
 			public boolean matches(Method method, Class<?> clazz) {
 				return Modifier.isPublic(method.getModifiers()) && clazz.getPackage() != null && clazz.getPackage().getName().startsWith(UserController.class.getPackage().getName());
 			}
 		};
 	}
-
-	/**
-	 * Branche customizableTraceInterceptor sur les méthodes enter des vues
-	 * @return
-	 */
-/*	@Bean
-	public Advisor viewsEnterAdvisor() {
-		return new StaticMethodMatcherPointcutAdvisor(customizableTraceInterceptor()) {
-			private static final long serialVersionUID = -7297125641462899887L;
-
-			@Override
-			public boolean matches(Method method, Class<?> clazz) {
-				return clazz.isAnnotationPresent(VaadinView.class) && "enter".equals(method.getName());
-			}
-		};
-	}*/
 
 }

@@ -18,26 +18,22 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import javax.annotation.Resource;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
+import jakarta.annotation.Resource;
+import lombok.Getter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import lombok.Getter;
 
 /**
  * Fenêtre d'aide
@@ -53,17 +49,14 @@ public class HelpMobileWindow extends Window {
 
 	/* Composants */
 	private Button btnFermer = new Button();
-
 	@Getter
 	private CheckBox checkBox=new CheckBox();
 
-
-
-	public void addBtnNonListener(ClickListener clickListener) {
+	public void addBtnNonListener(Button.ClickListener clickListener) {
 		btnFermer.addClickListener(clickListener);
 	}
 
-	public void removeBtnNonListener(ClickListener clickListener) {
+	public void removeBtnNonListener(Button.ClickListener clickListener) {
 		btnFermer.removeClickListener(clickListener);
 	}
 
@@ -132,9 +125,7 @@ public class HelpMobileWindow extends Window {
 		if(displayCheckBox) {
 			buttonsLayout.setExpandRatio(checkBox, 1);
 		}
-
 		// Centre la fenêtre 
 		center();
 	}
-
 }

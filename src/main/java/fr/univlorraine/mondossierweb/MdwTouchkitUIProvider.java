@@ -19,16 +19,17 @@
 package fr.univlorraine.mondossierweb;
 
 
-
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.internal.UIID;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.ui.UI;
-
+import com.vaadin.util.CurrentInstance;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanCreationException;
 
 @SuppressWarnings("serial")
 @Theme("valo-ul")
@@ -38,32 +39,13 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 
 	
 	public MdwTouchkitUIProvider(VaadinSession vaadinSession) {
-		super(vaadinSession);	
+		super(vaadinSession);
 	}
 	
 	@Override
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
-		/*
-		//Récupération du userAgent
-		if(event!=null && event.getRequest()!=null && event.getRequest().getHeader("user-agent")!=null){
-			String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-			LOG.debug("UA : "+userAgent);
-			
-			// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
-			if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
-					|| userAgent.contains("windows phone 9")) {
-				//On va vers la version mobile
-				LOG.debug("Touckit UI provided ("+userAgent+")");
-				return MdwTouchkitUI.class;
-			} else{
-				LOG.debug("Fallback UI provided ("+userAgent+")");
-				//On affiche la page proposant une redirection vers la version Desktop
-				return MdwFallbackUI.class;
-			}
-		}*/
 		//On va vers la version mobile
 		return MdwTouchkitUI.class;
-
 	}
 
 	@Override
@@ -72,37 +54,48 @@ public class MdwTouchkitUIProvider extends SpringUIProvider {
 		return false;
 	}
 
+	@Override
+	public UI createInstance(UICreateEvent event) {
+		final Class<UIID> key = UIID.class;
+		final UIID identifier = new UIID(event);
+		CurrentInstance.set(key, identifier);
+		try {
+			log.debug(
+					"Creating a new UI bean of class [{}] with identifier [{}]",
+					event.getUIClass().getCanonicalName(), identifier);
+			UI ui = getWebApplicationContext().getBean(event.getUIClass());
+			configureNavigator(ui);
+			return ui;
+		}catch(BeanCreationException bce) {
+			log.error("Erreur lors de la création de l'UI. key : {} - id : {} - CurrenInstance.getUUID : {}", key, identifier, CurrentInstance.get(UIID.class), bce);
+			// 2nd essai
+			CurrentInstance.set(key, identifier);
+			UI ui = getWebApplicationContext().getBean(event.getUIClass());
+			configureNavigator(ui);
+			return ui;
+		} finally {
+			CurrentInstance.set(key, null);
+		}
+	}
 
+	/*
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		//Nom de la classe UI à utiliser
-		String uiBeanNameObj = "mdwTouchkitUI";
-		//Récupération du userAgent
-		/*String userAgent = event.getRequest().getHeader("user-agent").toLowerCase();
-		// on teste que l'utilisateur est sous WP ou accède via un navigateur compatible webkit
-		if(userAgent.contains("webkit") || userAgent.contains("windows phone 8")
-				|| userAgent.contains("windows phone 9")) {
-			//On va vers la version mobile
-			LOG.debug("-uiBeanNameObj = mdwTouchkitUI");
-			uiBeanNameObj = "mdwTouchkitUI";
-		} else {
-			//On affiche la page proposant une redirection vers la version Desktop
-			LOG.debug("-uiBeanNameObj = mdwFallbackUI");
-			uiBeanNameObj = "mdwFallbackUI";
-		}*/
+		log.debug("-uiBeanNameObj = mdwTouchkitUI");
 
+		final Class<UIID> key = UIID.class;
+		final UIID identifier = new UIID(event);
+		CurrentInstance.set(key, identifier);
 
-		//Stored in VaadinSession to use it in
-		// the ApplicationScope later to initialize vaadin application scope beans
-		final Integer uiId = event.getUiId();
-		log.debug("uiId : "+uiId+ " VaadinSessionScope:"+VaadinSession.getCurrent().getAttribute("applicationScope.UiId"));
-		VaadinSession.getCurrent().setAttribute("applicationScope.UiId", uiId);
-
-		//On retourne l'UI décidée plus haut (desktop ou mobile)
-		if (uiBeanNameObj instanceof String) {
-			String uiBeanName = uiBeanNameObj.toString();
-			return (UI) this.getWebApplicationContext().getBean(uiBeanName);
+		try {
+			UI ui  = getWebApplicationContext().getBean(MdwTouchkitUI.class);
+			configureNavigator(ui);
+			return ui;
+		} finally {
+			CurrentInstance.set(key, null);
 		}
-		return super.createInstance(event);
 	}
+	*/
+
 }

@@ -18,11 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.converters;
 
-import java.util.*;
-
-import com.vaadin.data.util.converter.Converter;
-
+import com.vaadin.v7.data.util.converter.Converter;
 import fr.univlorraine.mondossierweb.utils.Utils;
+
+import java.util.Date;
+import java.util.Locale;
 
 @SuppressWarnings("serial")
 public class DateToStringConverter implements Converter<String, Date> {
@@ -30,7 +30,7 @@ public class DateToStringConverter implements Converter<String, Date> {
 	@Override
 	public Date convertToModel(String value, Class<? extends Date> targetType,
 			Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
+			throws ConversionException {
 
 
 		 if (value == null) {
@@ -43,7 +43,7 @@ public class DateToStringConverter implements Converter<String, Date> {
 	@Override
 	public String convertToPresentation(Date value,
 			Class<? extends String> targetType, Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
+			throws ConversionException {
 		if (value == null) {
             return null;
         } else {

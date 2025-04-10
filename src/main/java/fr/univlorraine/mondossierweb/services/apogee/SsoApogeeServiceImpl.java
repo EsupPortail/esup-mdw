@@ -18,32 +18,28 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
+import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
 @Repository
+@Slf4j
 public class SsoApogeeServiceImpl implements SsoApogeeService{
-
-	private Logger LOG = LoggerFactory.getLogger(SsoApogeeServiceImpl.class);
 
 	@PersistenceContext (unitName="entityManagerFactoryApogee")
 	private transient EntityManager entityManagerApogee;
@@ -236,38 +232,11 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 			String dateCotisation = (String) query.getSingleResult();
 			return dateCotisation;
 		}catch(NoResultException nre) {
-			LOG.info("getDateCotisation - Aucune date de cotisation pour " + codInd + " en " + codAnu);
+			log.info("getDateCotisation - Aucune date de cotisation pour " + codInd + " en " + codAnu);
 		}
 
 		return null;
 	}
-
-
-	/*@Override
-	public boolean isAffilieSso(String codAnu, String codInd) {
-		String requeteSQL = "";
-
-		if(StringUtils.hasText(requestUtils.isAffilieSso())){
-
-			//On utilise la requête indiquée dans le fichier XML
-			requeteSQL = requestUtils.isAffilieSso().replaceAll("#COD_IND#", codInd).replaceAll("#COD_ANU#", codAnu);
-
-		}else{
-			requeteSQL = "SELECT iaa.tem_afl_sso FROM ins_adm_anu iaa "+
-					"WHERE iaa.cod_anu = '"+codAnu+"' "+
-					" AND iaa.cod_ind = "+codInd;
-		}
-
-		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-
-		String tem_afl_sso = (String) query.getSingleResult();
-
-		if(tem_afl_sso!=null && tem_afl_sso.equals("O")){
-			return true;
-		}
-
-		return false;
-	}*/
 
 	@Override
 	public List<String> getMoyensDePaiement(String codAnu,  String codInd, String NumOccSqr) {
@@ -291,7 +260,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 		try{
 			List<String> mdps = (List<String>) query.getResultList();
 
-			if(mdps!=null && mdps.size()>0 && mdps.get(0)!=null && StringUtils.hasText(mdps.get(0))){
+			if(mdps!=null && !mdps.isEmpty() && mdps.get(0)!=null && StringUtils.hasText(mdps.get(0))){
 				return mdps;
 			}
 		}catch(NoResultException | EmptyResultDataAccessException e){

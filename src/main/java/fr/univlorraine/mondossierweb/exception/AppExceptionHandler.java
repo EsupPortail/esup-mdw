@@ -18,18 +18,17 @@
  */
 package fr.univlorraine.mondossierweb.exception;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 @WebServlet("/AppExceptionHandler")
 public class AppExceptionHandler extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 	private static final String TOO_MANY_SESSION_EXCEPTION = "TooManyActiveSessionsException";
 
 	protected void doGet(HttpServletRequest request,
@@ -47,16 +46,16 @@ public class AppExceptionHandler extends HttpServlet {
 
 		// Analyze the servlet exception
 		Throwable throwable = (Throwable) request
-				.getAttribute("javax.servlet.error.exception");
+				.getAttribute("jakarta.servlet.error.exception");
 		Integer statusCode = (Integer) request
-				.getAttribute("javax.servlet.error.status_code");
+				.getAttribute("jakarta.servlet.error.status_code");
 		String servletName = (String) request
-				.getAttribute("javax.servlet.error.servlet_name");
+				.getAttribute("jakarta.servlet.error.servlet_name");
 		if (servletName == null) {
 			servletName = "Unknown";
 		}
 		String requestUri = (String) request
-				.getAttribute("javax.servlet.error.request_uri");
+				.getAttribute("jakarta.servlet.error.request_uri");
 		if (requestUri == null) {
 			requestUri = "Unknown";
 		}
@@ -68,7 +67,7 @@ public class AppExceptionHandler extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.write("<html><head><title>Erreur</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head><body><div style=\"background-color: rgba(85, 96, 164, 0.12); width: 100%; height: 100%; margin:auto;text-align: center;font-size: x-large;display: flex;\"><div style=\"margin: auto;\">");
 		// Si c'est une erreur du au nombre de session max atteint
-		if(statusCode == 500 && throwable!=null && throwable.getClass() !=null &&
+		if(statusCode != null && statusCode == 500 && throwable!=null && throwable.getClass() !=null &&
 				throwable.getClass().getName() !=null &&  throwable.getClass().getName().contains(TOO_MANY_SESSION_EXCEPTION)){
 			out.write("<h5>Le service demandé est momentanément indisponible, nous mettons tout en oeuvre pour rétablir son fonctionnement.</h5>");
 		}else{

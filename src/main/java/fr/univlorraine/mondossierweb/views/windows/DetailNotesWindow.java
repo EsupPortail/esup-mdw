@@ -18,28 +18,41 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
+
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.NoteController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
@@ -52,31 +65,20 @@ import java.util.Set;
 public class DetailNotesWindow extends Window {
 
 	public static final String NAME = "notesWindow";
-
-
-
 	@Resource
 	private transient ApplicationContext applicationContext;
-	
 	@Resource
 	private transient UserController userController;
-	
 	@Resource
 	private transient EtudiantController etudiantController;
-	
 	@Resource(name="${resultat.implementation}")
 	private transient ResultatController resultatController;
-	
 	@Resource
 	private transient NoteController noteController;
-	
 	@Resource
 	private transient ConfigController configController;
-
 	private Etape etape;
-	
 	private Button btnDisplayFiltres;
-	
 	private Panel panelVue;
 
 	public void init(Etape et) {
@@ -97,7 +99,6 @@ public class DetailNotesWindow extends Window {
 			setHeight(95, Unit.PERCENTAGE);
 			setModal(true);
 			setResizable(false);
-
 
 			//Test si user enseignant et en vue Enseignant
 			if(userController.isEnseignant() && voirCommeEnseignant()){
@@ -129,16 +130,14 @@ public class DetailNotesWindow extends Window {
 
 			ajouterVoirCommeUnEtudiant(titleLayout);
 
-			
-			if(lelp!=null && lelp.size()>0 && configController.isPdfNotesActive()){
+			if(lelp!=null && !lelp.isEmpty() && configController.isPdfNotesActive()){
 				Button pdfButton = new Button();
 				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 				pdfButton.addStyleName("button-icon");
 				pdfButton.addStyleName("red-button-icon");
 				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
 				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-				
-				
+
 				if(PropertyUtils.isPushEnabled()){
 					MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfDetail(etape));
 					fd.extend(pdfButton);
@@ -146,7 +145,6 @@ public class DetailNotesWindow extends Window {
 					FileDownloader fd = new FileDownloader(noteController.exportPdfDetail(etape));
 					fd.extend(pdfButton);
 				}
-				
 				titleLayout.addComponent(pdfButton);
 				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}
@@ -158,8 +156,7 @@ public class DetailNotesWindow extends Window {
 			panelDetailNotes.addStyleName("small-font-element");
 			panelDetailNotes.setSizeFull();
 
-
-			if(lelp!=null && lelp.size()>0){
+			if(lelp!=null && !lelp.isEmpty()){
 				Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
 				detailNotesTable.setSizeFull();
 				detailNotesTable.setVisibleColumns(new String[0]);
@@ -208,9 +205,7 @@ public class DetailNotesWindow extends Window {
 			}
 			layout.addComponent(panelDetailNotes);
 
-
-
-			if(lelp!=null && lelp.size()>0 && MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
+			if(lelp!=null && !lelp.isEmpty() && MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
 				Panel panelSignificationResultats= new Panel(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
 
 				panelSignificationResultats.addStyleName("significationpanel");
@@ -237,14 +232,9 @@ public class DetailNotesWindow extends Window {
 
 				panelSignificationResultats.setContent(significationLayout);
 				layout.addComponent(panelSignificationResultats);
-
 			}
 
-
-
 			layout.setExpandRatio(panelDetailNotes, 1);
-
-
 			setContent(layout);
 
 
@@ -277,7 +267,6 @@ public class DetailNotesWindow extends Window {
 			}
 			setContent(layout);
 		}
-
 	}
 
 	private void ajouterPanelVoirCommeUnEtudiant(VerticalLayout layout) {
@@ -449,7 +438,7 @@ public class DetailNotesWindow extends Window {
 			if(StringUtils.hasText(el.getLibelle())){
 
 				//indentation des libelles dans la liste:
-				int rg = new Integer(el.getLevel());
+				int rg = Integer.valueOf(el.getLevel());
 				String libelp = el.getLibelle();
 				String lib = "";
 				for (int j = 2; j <= rg; j++) {
@@ -539,7 +528,6 @@ public class DetailNotesWindow extends Window {
 			return libLabel;
 		}
 	}
-
 
 	/** Formats the position in a column containing Date objects. */
 	class ResultatSession1ColumnGenerator implements Table.ColumnGenerator {
@@ -654,5 +642,4 @@ public class DetailNotesWindow extends Window {
 			return libLabel;
 		}
 	}
-
 }

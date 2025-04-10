@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
+
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -25,32 +26,62 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
-import com.vaadin.server.*;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ui.Transport;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
+import fr.univlorraine.mondossierweb.controllers.UiController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.*;
+import fr.univlorraine.mondossierweb.views.AccesBloqueView;
+import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.AdminView;
+import fr.univlorraine.mondossierweb.views.AdressesView;
+import fr.univlorraine.mondossierweb.views.AssistanceView;
+import fr.univlorraine.mondossierweb.views.CalendrierView;
+import fr.univlorraine.mondossierweb.views.ErreurView;
+import fr.univlorraine.mondossierweb.views.EtatCivilView;
+import fr.univlorraine.mondossierweb.views.FavorisView;
+import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
+import fr.univlorraine.mondossierweb.views.InscriptionsView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsView;
+import fr.univlorraine.mondossierweb.views.NotesView;
+import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
+import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
+import jakarta.annotation.Resource;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
@@ -60,7 +91,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -77,10 +107,10 @@ import java.util.Map;
 @Theme("valo-ul")
 @StyleSheet("mainView.css")
 @SuppressWarnings("serial")
+@SpringUI(path = "")
+@Slf4j
 @Push(transport = Transport.WEBSOCKET_XHR)
 public class MainUI extends GenericUI {
-
-	private Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	/**
 	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
@@ -148,7 +178,7 @@ public class MainUI extends GenericUI {
 	private int rangTabDossierEtudiant;
 
 	//tab Dossier Etudiant
-	private Tab tabDossierEtu;
+	private TabSheet.Tab tabDossierEtu;
 
 	//rang de l'onglet contenant la recherche dans le conteneur principal
 	private int rangTabRecherche;
@@ -212,7 +242,7 @@ public class MainUI extends GenericUI {
 	@Override
 	protected void init(VaadinRequest request) {
 
-		LOG.debug("init(); mainUI");
+		log.debug("init(); mainUI");
 
 		//Gestion des erreurs
 		VaadinSession.getCurrent().setErrorHandler(e -> {
@@ -225,35 +255,32 @@ public class MainUI extends GenericUI {
 
 			Throwable cause = e.getThrowable();
 
-			while (cause instanceof Throwable) {
+			while (cause != null) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
-					LOG.debug("Erreur de fragment ");
+					log.debug("Erreur de fragment ");
 					// Retour à la racine
 					Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
 					return;
 				}
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
-					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+					Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
 
-				if(cause!=null && cause.getClass()!=null){
-					String simpleName = cause.getClass().getSimpleName();
-
-					/* Gérer les erreurs à ignorer */
-					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
-						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
-						displayViewFullScreen(ErreurView.NAME);
-						return;
-					}
-				}
-				cause = cause.getCause();
+                String simpleName = cause.getClass().getSimpleName();
+                /* Gére les erreurs à ignorer */
+                if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
+                    Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    displayViewFullScreen(ErreurView.NAME);
+                    return;
+                }
+                cause = cause.getCause();
 			}
 			// Traite les autres erreurs normalement 
-			LOG.error(e.getThrowable().toString(), e.getThrowable());
+			log.error(e.getThrowable().toString(), e.getThrowable());
 			// Affiche de la vue d'erreur
 			displayViewFullScreen(ErreurView.NAME);
 			//DefaultErrorHandler.doDefault(e);
@@ -267,8 +294,8 @@ public class MainUI extends GenericUI {
 
 		//Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 		//car le fragment ne correspond pas à une vue existante)
-		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
-			public void uriFragmentChanged(UriFragmentChangedEvent source) {
+		getPage().addUriFragmentChangedListener(new Page.UriFragmentChangedListener() {
+			public void uriFragmentChanged(Page.UriFragmentChangedEvent source) {
 
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() &&
@@ -299,27 +326,25 @@ public class MainUI extends GenericUI {
 		navigator.setErrorProvider(new ViewProvider() {
 			@Override
 			public String getViewName(final String viewAndParameters) {
-				LOG.warn("navigator ErrorProvider getViewName : " + viewAndParameters);
+				log.warn("navigator ErrorProvider getViewName : " + viewAndParameters);
 				return ErreurView.NAME;
 			}
 
 			@Override
 			public View getView(final String viewName) {
-				LOG.warn("navigator ErrorProvider - getView " + viewName);
+				log.warn("navigator ErrorProvider - getView " + viewName);
 				return viewProvider.getView(ErreurView.NAME);
 			}
 		});
 
 
 		navigator.addViewChangeListener(new ViewChangeListener() {
-			private static final long serialVersionUID = 7905379446201794289L;
-
 			private static final String SELECTED_ITEM = "selected";
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 
-				LOG.debug("beforeViewChange " + event.getViewName());
+				log.debug("beforeViewChange " + event.getViewName());
 
 				//Avant de se rendre sur une vue, on supprime le style "selected" des objets du menu
 				viewButtons.values().forEach(button -> button.removeStyleName(SELECTED_ITEM));
@@ -441,14 +466,18 @@ public class MainUI extends GenericUI {
 						//ajout de l'onglet principal 'assistance'
 						tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
 
-
 						//ajout de l'onglet dossier étudiant
 						addTabDossierEtudiant();
 
 						//Ce tabSheet sera aligné à droite
 						tabSheetGlobal.addStyleName("right-aligned-tabs");
 
+						//Ce tabSheet sera decalé vers le haut
+						// tabSheetGlobal.addStyleName("top-shift-tabs");
+
 						//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
+						Utils.ajoutLogoBandeauEnseignant(configController.getLogoUniversiteEns(), mainVerticalLayout, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
+
 						mainVerticalLayout.addComponent(tabSheetGlobal);
 						mainVerticalLayout.setSizeFull();
 						mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
@@ -465,7 +494,7 @@ public class MainUI extends GenericUI {
 						//On renseigne l'étudiant dont on consulte le dossier
 						//Récupération du cod_etu
 						etudiant = new Etudiant(userController.getCodetu());
-						LOG.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
+						log.debug("MainUI etudiant : "+etudiant.getCod_etu()+"-"+MainUI.getCurrent().getEtudiant().getCod_etu());
 						//Récupération de l'état-civil (et les adresses)
 						etudiantController.recupererEtatCivil();
 						//On construit le menu affiché à l'étudiant
@@ -502,7 +531,7 @@ public class MainUI extends GenericUI {
 							if(userController.isEnseignant()){
 								//Récupération des favoris pour l'utilisateur
 								List<Favoris> lfav = favorisController.getFavoris();
-								if(lfav!=null && lfav.size()>0){
+								if(lfav!=null && !lfav.isEmpty()){
 									//On affiche la vue des favoris
 									navigator.navigateTo(FavorisView.NAME);
 								}else{
@@ -563,7 +592,7 @@ public class MainUI extends GenericUI {
 	 * Affichage message d'erreur
 	 */
 	public void afficherErreurView() {
-		LOG.debug("afficherErreurView");
+		log.debug("afficherErreurView");
 		navigator.navigateTo(ErreurView.NAME);
 	}
 
@@ -645,7 +674,7 @@ public class MainUI extends GenericUI {
 		//On gère le changement d'onglet effectué par l'utilisateur
 		tabSheetEnseignant.addSelectedTabChangeListener( new TabSheet.SelectedTabChangeListener() {
 
-			public void selectedTabChange(SelectedTabChangeEvent event){
+			public void selectedTabChange(TabSheet.SelectedTabChangeEvent event){
 				//On récupère le tabSheet
 				TabSheet tabsheet = event.getTabSheet();
 
@@ -708,7 +737,7 @@ public class MainUI extends GenericUI {
 	 * Ajout de l'onglet principal "dossier" contenant le dossier de l'étudiant
 	 */
 	private void addTabDossierEtudiant() {
-		LOG.debug("Création du l'onglet du dossier de l'étudiant");
+		log.debug("Création du l'onglet du dossier de l'étudiant");
 		//Ajout de l'onglet "Dossier"
 		tabDossierEtu = tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
 		tabSheetGlobal.setTabPosition(tabDossierEtu, rangTabDossierEtudiant);
@@ -733,15 +762,21 @@ public class MainUI extends GenericUI {
 	private void buildMainMenuEtudiant() {
 
 		//Si l'étudiant dont on affiche le dossier est renseigné
-		if(etudiant!=null){
+		if(etudiant != null){
 
 			//Ajout du style au menu
 			mainMenu.setPrimaryStyleName(ValoTheme.MENU_PART);
 			//On fixe la largeur du menu
 			mainMenu.setWidth("233px");
 
+			// On affiche che le bandeau que si le user est étudiant (sinon le bandeau est déjà présent dans l'interface)
+			if (userController.isEtudiant()) {
+				//Ajout du logo de l'université et du titre de l'application
+				Utils.ajoutLogoBandeauMenu(configController.getLogoUniversiteEtu(), mainMenu, applicationContext.getMessage("mainUI.app.title", null, UI.getCurrent().getLocale()));
+			}
+
 			//Si on a une url pour la photo de l'étudiant
-			if(etudiant.getPhoto()!=null){
+			if(etudiant.getPhoto() != null){
 				//Layout contenant la photo
 				HorizontalLayout photoLayout = new HorizontalLayout();
 
@@ -848,7 +883,8 @@ public class MainUI extends GenericUI {
 			helpBtn.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 			HelpBasicWindow hbw = helpBasicWindowFactory.getObject();
 			hbw.init(applicationContext.getMessage("helpWindow.text.etudiant", null, getLocale()),applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale()),true);
-			helpBtn.addClickListener(e -> {UI.getCurrent().addWindow(hbw);});
+			helpBtn.addClickListener(e -> {
+				UI.getCurrent().addWindow(hbw);});
 			mainMenu.addComponent(helpBtn);
 
 			/* Deconnexion */
@@ -908,7 +944,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue Recherche Arborescente
 	 */
 	private void navigateToRechercheArborescente() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
 		//récupération de l'onglet qui affiche la vue RechercheArborescente
 		int numtab = viewEnseignantTab.get(rechercheArborescenteView.NAME);
 		//Si on a des paramètres renseignés
@@ -924,7 +960,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue Liste Inscrits
 	 */
 	private void navigateToListeInscrits() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
 		//récupération de l'onglet qui affiche la vue ListeInscrits
 		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 
@@ -965,7 +1001,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue des favoris
 	 */
 	private void navigateToFavoris() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToFavoris");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToFavoris");
 		//récupération de l'onglet qui affiche la vue des favoris
 		int numtab = viewEnseignantTab.get(favorisView.NAME);
 		//On affiche l'onglet
@@ -980,7 +1016,7 @@ public class MainUI extends GenericUI {
 	 * Affichage de la vue RechercheRapide
 	 */
 	private void navigateToRechercheRapide() {
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheRapide");
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheRapide");
 		//récupération de l'onglet qui affiche la vue RechercheRapide
 		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
 		//On affiche l'onglet
@@ -997,7 +1033,7 @@ public class MainUI extends GenericUI {
 	 */
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
 
-		LOG.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
+		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
 
 		//Si l'onglet a été closed
 		if(tabDossierEtu==null || tabSheetGlobal.getTabPosition(tabDossierEtu)<0){
@@ -1063,7 +1099,7 @@ public class MainUI extends GenericUI {
 
 	private void reloadIfUriFragmentError(String uriFragment) {
 		if(uriFragment != null && uriFragment.contains("#")) {
-			LOG.warn("fragment erroné :"+uriFragment);
+			log.warn("fragment erroné :"+uriFragment);
 			// Retour à la racine
 			Page.getCurrent().setLocation(PropertyUtils.getAppUrl());
 		}
@@ -1078,4 +1114,5 @@ public class MainUI extends GenericUI {
 		getReconnectDialogConfiguration().setDialogText(applicationContext.getMessage("vaadin.reconnectDialog.text", null, getLocale()));
 		getReconnectDialogConfiguration().setDialogTextGaveUp(applicationContext.getMessage("vaadin.reconnectDialog.textGaveUp", null, getLocale()));
 	}
+
 }

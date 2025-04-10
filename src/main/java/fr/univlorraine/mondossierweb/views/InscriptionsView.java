@@ -18,37 +18,25 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Inscription;
@@ -60,6 +48,13 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
 
 /**
  * Page d'accueil
@@ -68,9 +63,6 @@ import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
 @SpringView(name = InscriptionsView.NAME)
 @PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
 public class InscriptionsView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-	
-	private Logger LOG = LoggerFactory.getLogger(InscriptionsView.class);
 
 	public static final String NAME = "inscriptionsView";
 
@@ -155,35 +147,36 @@ public class InscriptionsView extends VerticalLayout implements View {
 				globalLayout.addComponent(panelInscription);
 
 
-				//DAC
-				Panel panelDAC= new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
+				// Si on doit afficher les inscriptions dans d'autres cursus
+				if (configController.isAffInscriptionsAutreCursus()) {
+					Panel panelDAC = new Panel(applicationContext.getMessage(NAME + ".dac.title", null, getLocale()));
 
-				if(MainUI.getCurrent().getEtudiant().getLinscdac()!=null && MainUI.getCurrent().getEtudiant().getLinscdac().size()>0){
-					Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
-					inscriptionsDAC.setWidth("100%");
-					inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);
-					for (String fieldName : DAC_FIELDS_ORDER) {
-						inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".tabledac." + fieldName, null, getLocale()));
+					if (MainUI.getCurrent().getEtudiant().getLinscdac() != null && !MainUI.getCurrent().getEtudiant().getLinscdac().isEmpty()) {
+						Table inscriptionsDAC = new Table(null, new BeanItemContainer<>(Inscription.class, MainUI.getCurrent().getEtudiant().getLinscdac()));
+						inscriptionsDAC.setWidth("100%");
+						inscriptionsDAC.setVisibleColumns((Object[]) DAC_FIELDS_ORDER);
+						for (String fieldName : DAC_FIELDS_ORDER) {
+							inscriptionsDAC.setColumnHeader(fieldName, applicationContext.getMessage(NAME + ".tabledac." + fieldName, null, getLocale()));
+						}
+						inscriptionsDAC.setColumnCollapsingAllowed(true);
+						inscriptionsDAC.setColumnReorderingAllowed(false);
+						inscriptionsDAC.setSelectable(false);
+						inscriptionsDAC.setImmediate(true);
+						inscriptionsDAC.setStyleName("noscrollabletable");
+						inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size());
+						panelDAC.setContent(inscriptionsDAC);
+					} else {
+						HorizontalLayout labelDacLayout = new HorizontalLayout();
+						labelDacLayout.setMargin(true);
+						labelDacLayout.setSizeFull();
+						Label aucuneDAC = new Label(applicationContext.getMessage(NAME + ".dac.aucune", null, getLocale()) + " " + MainUI.getCurrent().getEtudiant().getLibEtablissement());
+						aucuneDAC.setStyleName(ValoTheme.LABEL_COLORED);
+						aucuneDAC.addStyleName(ValoTheme.LABEL_BOLD);
+						labelDacLayout.addComponent(aucuneDAC);
+						panelDAC.setContent(labelDacLayout);
 					}
-					inscriptionsDAC.setColumnCollapsingAllowed(true);
-					inscriptionsDAC.setColumnReorderingAllowed(false);
-					inscriptionsDAC.setSelectable(false);
-					inscriptionsDAC.setImmediate(true);
-					inscriptionsDAC.setStyleName("noscrollabletable");
-					inscriptionsDAC.setPageLength(inscriptionsDAC.getItemIds().size() );
-					panelDAC.setContent(inscriptionsDAC);
-				}else{
-					HorizontalLayout labelDacLayout = new HorizontalLayout();
-					labelDacLayout.setMargin(true);
-					labelDacLayout.setSizeFull();
-					Label aucuneDAC = new Label(applicationContext.getMessage(NAME + ".dac.aucune", null, getLocale())+ " "+MainUI.getCurrent().getEtudiant().getLibEtablissement());
-					aucuneDAC.setStyleName(ValoTheme.LABEL_COLORED);
-					aucuneDAC.addStyleName(ValoTheme.LABEL_BOLD);
-					labelDacLayout.addComponent(aucuneDAC);
-					panelDAC.setContent(labelDacLayout);
+					globalLayout.addComponent(panelDAC);
 				}
-				globalLayout.addComponent(panelDAC);
-
 
 				Panel panelPremInscription= new Panel(applicationContext.getMessage(NAME + ".premiereinsc.title", null, getLocale()));
 				FormLayout formPremInscription = new FormLayout();
@@ -228,7 +221,7 @@ public class InscriptionsView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 
@@ -314,7 +307,6 @@ public class InscriptionsView extends VerticalLayout implements View {
 					bCertificatInscription.addStyleName("red-button-icon");
 				}
 			}		
-			
 
 			//Si on peut proposer l'attestation d'affiliation
 			if(etudiantController.proposerAttestationAffiliationSSO(inscription, MainUI.getCurrent().getEtudiant())){

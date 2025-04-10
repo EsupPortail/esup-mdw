@@ -22,28 +22,58 @@ import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.*;
+import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
+import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.DiplomeApogee;
 import fr.univlorraine.mondossierweb.entities.apogee.InfoUsageEtatCivil;
-import fr.univlorraine.mondossierweb.services.apogee.*;
+import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
+import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.DiplomeApogeeServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
+import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
+import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
+import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.AdministratifMetier.*;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.*;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.CursusExterneDTO;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.CursusExternesEtTransfertsDTO;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.InsAdmAnuDTO2;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.InsAdmEtpDTO3;
+import gouv.education.apogee.commun.client.ws.AdministratifMetier.TableauCursusExterneDto;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.AdresseMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CommuneMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.CoordonneesMajDTO;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.EtudiantMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IdentifiantsEtudiantDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.IndBacDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.InfoAdmEtuDTO4;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TableauIndBacDTO2;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementCourtDTO;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.OptionBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.ScolariteMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.SpecialiteBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.WebBaseException_Exception;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 
@@ -51,10 +81,8 @@ import java.util.regex.Pattern;
  * Gestion de l'étudiant dont on consulte le dossier
  */
 @Component
+@Slf4j
 public class EtudiantController {
-
-	private Logger LOG = LoggerFactory.getLogger(EtudiantController.class);
-
 
 	/* Injections */
 	@Resource
@@ -134,7 +162,6 @@ public class EtudiantController {
 			}
 			return false;
 		} catch (Exception ex) {
-			//LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + codetu,ex);
 			return false;
 		}
 	}
@@ -176,14 +203,12 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
-
-
 				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				//InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
-				LOG.debug("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
+				log.debug("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
 				GenericUI.getCurrent().getEtudiant().setCodCiv(iuec.getCodCiv());
 				GenericUI.getCurrent().getEtudiant().setSexEtatCiv(iuec.getCodSexEtatCiv());
 				GenericUI.getCurrent().getEtudiant().setPrenomEtatCiv(iuec.getLibPrEtaCiv());
@@ -242,14 +267,14 @@ public class EtudiantController {
 
 
 				//informations sur le(s) bac(s) :
-				if (GenericUI.getCurrent().getEtudiant().getListeBac() != null && GenericUI.getCurrent().getEtudiant().getListeBac().size() > 0) {
+				if (GenericUI.getCurrent().getEtudiant().getListeBac() != null && !GenericUI.getCurrent().getEtudiant().getListeBac().isEmpty()) {
 					GenericUI.getCurrent().getEtudiant().getListeBac().clear();
 				} else {
 					GenericUI.getCurrent().getEtudiant().setListeBac(new ArrayList<BacEtatCivil>());
 				}
 
 				GenericUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
-				LOG.debug("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
+				log.debug("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				GenericUI.getCurrent().getEtudiant().setInfosAnnuelles(new LinkedList<InfosAnnuelles> ());
 				try{
 					// Initialisation des paramètres
@@ -263,7 +288,7 @@ public class EtudiantController {
 					// Si on a récupéré des données
 					if(iaad2!=null){
 						
-						LOG.debug("nb ia pour annee en cours : "+iaad2.size());
+						log.debug("nb ia pour annee en cours : "+iaad2.size());
 						
 						// Liste des années pour lesquelles une IA valide a été trouvée
 						List<Integer> insOkTrouvee= new LinkedList<Integer> ();
@@ -342,7 +367,7 @@ public class EtudiantController {
 					}
 				} catch (Exception ex) {
 					GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
-					LOG.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
+					log.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				} 
 
 				TableauIndBacDTO2 bacvo = iaetu.getListeBacs();
@@ -390,7 +415,7 @@ public class EtudiantController {
 						}
 					}
 				} else {
-					LOG.info("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.info("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 					BacEtatCivil bec = new BacEtatCivil();
 					bec.setLib_bac("/");
 					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
@@ -399,11 +424,11 @@ public class EtudiantController {
 				//On vérifie si l'étudiant est interdit de consultation de ses notes
 				List<String> lcodesBloquant = configController.getListeCodesBlocageAffichageNotes();
 				//Si on a paramétré des codes bloquant
-				if(lcodesBloquant!=null && lcodesBloquant.size()>0){
+				if(lcodesBloquant!=null && !lcodesBloquant.isEmpty()){
 					//Récupération des éventuels blocage pour l'étudiant
 					List<String> lblo = multipleApogeeService.getListeCodeBlocage(GenericUI.getCurrent().getEtudiant().getCod_etu());
 					// Si l'étudiant a des blocages
-					if(lblo!=null && lblo.size()>0){
+					if(lblo!=null && !lblo.isEmpty()){
 						//Parcours des blocage
 						for(String codblo : lblo){
 							//Si le blocage est dans la liste des blocages configurés comme bloquant
@@ -420,17 +445,17 @@ public class EtudiantController {
 
 			} catch (ServerSOAPFaultException ssx) {
 				//Erreur côté WebService (ex : data.nullretrieve)
-				LOG.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
+				log.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
-				LOG.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
+				log.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					LOG.warn("Probleme " + ex.getMessage() + " lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme " + ex.getMessage() + " lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}else {
-					LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+					log.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				}
 				//On met l'étudiant à null pour remonter le problème
 				GenericUI.getCurrent().setEtudiant(null);
@@ -441,7 +466,7 @@ public class EtudiantController {
 
 
 	private String getSpecialiteBac(String codSpe) {
-		LOG.debug("Recuperation lib SPE BAC from code : "+codSpe);
+		log.debug("Recuperation lib SPE BAC from code : "+codSpe);
 		if(codSpe!=null) {
 			if(listeSpeBac ==null || listeSpeBac.isEmpty()) {
 				recuperSpeBacApogee();
@@ -455,25 +480,25 @@ public class EtudiantController {
 
 	private void recuperSpeBacApogee() {
 		try {
-			LOG.debug("Recuperation SPE BAC");
+			log.debug("Recuperation SPE BAC");
 			List<SpecialiteBacDTO2>  liste = scolariteService.recupererSpeBacWS(null, null);
 			if(liste!=null && !liste.isEmpty()) {
-				LOG.debug(liste.size()+" SPE BAC");
+				log.debug(liste.size()+" SPE BAC");
 				listeSpeBac = new HashMap<String, String> ();
 				for(SpecialiteBacDTO2 spe : liste) {
 					listeSpeBac.put(spe.getCodSpeBac(), spe.getLibSpeBac());
 				}
 			} else {
-				LOG.warn("Aucune SPE BAC récupérée dans Apogée");
+				log.warn("Aucune SPE BAC récupérée dans Apogée");
 			}
 		} catch (WebBaseException_Exception e) {
-			LOG.warn("Erreur a la recupération des SPECIALITE BAC",e);
+			log.warn("Erreur a la recupération des SPECIALITE BAC",e);
 		}
 
 	}
 
 	private String getOptionBac(String codOpt) {
-		LOG.debug("Recuperation lib OPT BAC from code : "+codOpt);
+		log.debug("Recuperation lib OPT BAC from code : "+codOpt);
 		if(codOpt!=null) {
 			if(listeOptBac ==null || listeOptBac.isEmpty()) {
 				recuperOptBacApogee();
@@ -488,19 +513,19 @@ public class EtudiantController {
 
 	private void recuperOptBacApogee() {
 		try {
-			LOG.debug("Recuperation Options BAC");
+			log.debug("Recuperation Options BAC");
 			List<OptionBacDTO2>  liste = scolariteService.recupererOptBacWS(null, null);
 			if(liste!=null && !liste.isEmpty()) {
-				LOG.debug(liste.size()+" Options BAC");
+				log.debug(liste.size()+" Options BAC");
 				listeOptBac = new HashMap<String, String> ();
 				for(OptionBacDTO2 opt : liste) {
 					listeOptBac.put(opt.getCodOptBac(), opt.getLibOptBac());
 				}
 			} else {
-				LOG.warn("Aucune Option BAC récupérée dans Apogée : "+liste);
+				log.warn("Aucune Option BAC récupérée dans Apogée : "+liste);
 			}
 		} catch (WebBaseException_Exception e) {
-			LOG.warn("Erreur a la recupération des OPTIONS BAC",e);
+			log.warn("Erreur a la recupération des OPTIONS BAC",e);
 		}
 
 	}
@@ -609,19 +634,19 @@ public class EtudiantController {
 						GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
 					}
 				}else{
-					LOG.info("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.info("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}
 			} catch (ServerSOAPFaultException ssx) {
 				//Erreur côté WebService (ex : data.nullretrieve)
-				LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
+				log.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
-				LOG.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
+				log.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
 			}  catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					LOG.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 				}else {
-					LOG.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+					log.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				}
 			}
 		}
@@ -661,7 +686,7 @@ public class EtudiantController {
 					if (insdto.getEtatIae()!=null && insdto.getEtatIae().getCodeEtatIAE()!=null && insdto.getEtatIae().getCodeEtatIAE().equals("E")){
 
 						//récupération de l'année
-						int annee = new Integer(insdto.getAnneeIAE());
+						int annee = Integer.valueOf(insdto.getAnneeIAE());
 						int annee2 = annee + 1;
 						insc.setCod_anu(annee + "/" + annee2);
 
@@ -725,7 +750,7 @@ public class EtudiantController {
 
 						Inscription insc = new Inscription();
 
-						int annee = new Integer(cext.getAnnee());
+						int annee = Integer.valueOf(cext.getAnnee());
 						int annee2 = annee + 1;
 						insc.setCod_anu(annee + "/" + annee2);
 
@@ -782,23 +807,23 @@ public class EtudiantController {
 				try{
 					GenericUI.getCurrent().getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
 				} catch(Exception e){
-					LOG.info("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+					log.info("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
 				}
 
 				//Tentative de récupération des informations relatives à la quittance des droits payés
 				try{
 					GenericUI.getCurrent().getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
 				} catch(Exception e){
-					LOG.info("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+					log.info("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
 				}
 			}
 
 
 		} catch(Exception ex) {
 			if(GenericUI.getCurrent().getEtudiant()!=null){
-				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+				log.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 			}else{
-				LOG.error("Probleme lors de la recherche des inscriptions pour etudiant ",ex);
+				log.error("Probleme lors de la recherche des inscriptions pour etudiant ",ex);
 			}
 			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(false);
 		}
@@ -1125,15 +1150,15 @@ public class EtudiantController {
 				cdtomaj.setAdresseAnnuelle(adanmaj);
 				cdtomaj.setAdresseFixe(adfixmaj);
 
-				LOG.debug("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+cdto.getTypeHebergement().getCodTypeHebergement());
+				log.debug("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+cdto.getTypeHebergement().getCodTypeHebergement());
 				etudiantService.mettreAJourAdressesEtudiant(cdtomaj, codetu);
 
 				succes = true;
 			} catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					LOG.warn("Probleme " + ex.getMessage() + " lors de la maj des contacts de l'etudiant dont codetu est : " + codetu);
+					log.warn("Probleme " + ex.getMessage() + " lors de la maj des contacts de l'etudiant dont codetu est : " + codetu);
 				}else {
-					LOG.error("Probleme avec le WS lors de la maj des contacts de l'etudiant dont codetu est : " + codetu,ex);
+					log.error("Probleme avec le WS lors de la maj des contacts de l'etudiant dont codetu est : " + codetu,ex);
 				}
 			}
 

@@ -18,28 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.security;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.esupportail.portal.ws.client.PortalGroup;
-import org.esupportail.portal.ws.client.PortalUser;
-import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.ldap.search.LdapUserSearch;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.converters.CodeEtudiantLoginConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Utilisateur;
@@ -52,7 +30,26 @@ import fr.univlorraine.mondossierweb.services.apogee.UtilisateurService;
 import fr.univlorraine.mondossierweb.services.apogee.UtilisateurServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.esupportail.portal.ws.client.PortalGroup;
+import org.esupportail.portal.ws.client.PortalUser;
+import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 
 
@@ -236,11 +233,11 @@ public class MdwUserDetailsService implements UserDetailsService {
 				//On vérifie si l'étudiant est interdit de consultation de l'application
 				List<String> lcodesBloquant = configController.getListeCodesBlocageAccesApplication();
 				//Si on a paramétré des codes bloquant
-				if(lcodesBloquant!=null && lcodesBloquant.size()>0){
+				if(lcodesBloquant!=null && !lcodesBloquant.isEmpty()){
 					//Récupération des éventuels blocage pour l'étudiant
 					List<String> lblo = multipleApogeeService.getListeCodeBlocage(codetu);
 					// Si l'étudiant a des blocages
-					if(lblo!=null && lblo.size()>0){
+					if(lblo!=null && !lblo.isEmpty()){
 						//Parcours des blocage
 						for(String codblo : lblo){
 							//Si le blocage est dans la liste des blocages configurés comme bloquant
@@ -314,7 +311,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 			List<String> listegroupes = PropertyUtils.getListeGroupesUportalAutorises();
 
 			//on test si on est en portlet
-			if (listegroupes != null && listegroupes.size()>0) {
+			if (listegroupes != null && !listegroupes.isEmpty()) {
 
 				//recupère l'utilisateur uportal
 				PortalUser portaluser = portalService.getUser(username);
@@ -350,30 +347,10 @@ public class MdwUserDetailsService implements UserDetailsService {
 			List<String> listegroupes = PropertyUtils.getListeGroupesLdapAutorises();
 
 			//test si on a des groupes renseignes
-			if (StringUtils.hasText(PropertyUtils.getAttributGroupeLdap()) && listegroupes != null && listegroupes.size()>0) {
+			if (StringUtils.hasText(PropertyUtils.getAttributGroupeLdap()) && listegroupes != null && !listegroupes.isEmpty()) {
 				//on recupère l'utilisateur ldap
 				DirContextOperations dco = ldapUserSearch.searchForUser(username);
 				userldap = estDansLeGroupe(username, dco, PropertyUtils.getAttributGroupeLdap(), listegroupes);
-				/*if(dco!=null){
-					String[] vals= dco.getStringAttributes(PropertyUtils.getAttributGroupeLdap());
-					if(vals!=null){
-						List<String> lmemberof = Arrays.asList(vals);
-						//Si le compte LDAP possede des groupes
-						if (lmemberof != null && lmemberof.size()>0) {
-							//on regarde si il appartient a un des groupes
-							for (String groupe : listegroupes) {
-								// on cherche le groupe si il n'est pas déjà trouvé
-								if (!userldap) {
-									//on cherche le groupe	
-									if (lmemberof.contains(groupe)) {
-										log.info("Utilisateur "+username+" autorisé via groupe LDAP : "+ groupe);
-										userldap = true;
-									} 
-								}
-							}
-						}
-					}
-				}*/
 				if(!userldap){
 					log.info("utilisateur "+username+" n'appartient à aucun groupe ldap autorises");
 				}					

@@ -18,29 +18,21 @@
  */
 package fr.univlorraine.mondossierweb.entities.mdw;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-
-
-
-
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import lombok.Data;
 
 @Entity
 @Data
 @Table(name="UTILISATEUR_SWAP")
 public class UtilisateurSwap implements Serializable {
-
-	private static final long serialVersionUID = 6093580014334823119L;
 
 	@Id
 	@Column(name="LOGIN_SOURCE")

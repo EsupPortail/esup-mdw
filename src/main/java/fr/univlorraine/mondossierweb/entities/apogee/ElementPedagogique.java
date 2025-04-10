@@ -18,16 +18,15 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
-import java.io.Serializable;
-
-import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
-import javax.persistence.Id;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.Table;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.FieldResult;
+import jakarta.persistence.Id;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.Table;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Entity
 @SqlResultSetMapping(name="ElementPedagogique",

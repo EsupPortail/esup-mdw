@@ -18,45 +18,21 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
-import java.security.Key;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.binary.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
-import fr.univlorraine.mondossierweb.converters.LoginCodeEtudiantConverterInterface;
-import fr.univlorraine.mondossierweb.utils.Utils;
-
 @Component(value="photoEsupSgc")
+@Slf4j
 public class PhotoEsupSgcImpl implements IPhoto {
-
-	private static final String UTF_8 = "UTF-8";
-
-	private Logger LOG = LoggerFactory.getLogger(PhotoUnivLorraineImplV2.class);
 
 	@Value("${param.esupsgc.urlphoto:}")
 	private String esupSgcPhotoUrl;
@@ -85,15 +61,15 @@ public class PhotoEsupSgcImpl implements IPhoto {
 	byte[] getPhoto(String cod_etu) {
 		String eppn = getEppnFromCodEtu(cod_etu);
 		String url = String.format(esupSgcPhotoUrl, eppn);
-		LOG.debug("GET PHOTO : " + url);
+		log.debug("GET PHOTO : " + url);
 		try {
 			ResponseEntity<byte[]> response = rt.getForEntity(url, byte[].class);
 			return response.getBody();
 		} catch(HttpClientErrorException he) { 
-			LOG.warn("Récupération de la photo de "+eppn+" en erreur Erreur HTTP "+he.getStatusCode());
+			log.warn("Récupération de la photo de "+eppn+" en erreur Erreur HTTP "+he.getStatusCode());
 			return he.getResponseBodyAsByteArray();
 		} catch (Exception e) {
-			LOG.error("Une erreur est survenue lors de la récupération de la photo de "+eppn,e);
+			log.error("Une erreur est survenue lors de la récupération de la photo de "+eppn,e);
 		}
 		return null;
 	}
@@ -110,14 +86,14 @@ public class PhotoEsupSgcImpl implements IPhoto {
 		try {
 			String[] vals = ldapEtudiantSearch.searchForUser(codetu).getStringAttributes("eduPersonPrincipalName");
 			if (vals != null) {
-				LOG.debug("login via codetu pour " + codetu + " => " + vals[0]);
+				log.debug("login via codetu pour " + codetu + " => " + vals[0]);
 				return vals[0];
 			} else {
-				LOG.warn("No eduPersonPrincipalName  in LDAP for " + codetu);
+				log.warn("No eduPersonPrincipalName  in LDAP for " + codetu);
 			}
 			return null;
 		} catch (Exception e) {
-			LOG.error("probleme de récupération de l'eppn depuis le codetu via le ldap. ",e);
+			log.error("probleme de récupération de l'eppn depuis le codetu via le ldap. ",e);
 			return null;
 		}
 	}

@@ -19,14 +19,12 @@
 package fr.univlorraine.mondossierweb.entities.apogee;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Data;
 
 import java.sql.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import lombok.Data;
 
 /**
  * classe qui représente un examen du calendrier.

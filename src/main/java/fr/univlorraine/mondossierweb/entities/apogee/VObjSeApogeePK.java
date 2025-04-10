@@ -18,12 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * The primary key class for the VERSION_ETAPE database table.
@@ -32,9 +31,6 @@ import lombok.Data;
 @Embeddable
 @Data
 public class VObjSeApogeePK implements Serializable {
-	//default serial version id, required for serializable classes.
-	private static final long serialVersionUID = 1L;
-
 
 	@Column(name="COD_OBJ")
 	private String codObj;

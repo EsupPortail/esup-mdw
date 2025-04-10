@@ -18,49 +18,31 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.util.filter.Or;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TreeTable;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
@@ -68,8 +50,21 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.uicomponents.AutoComplete;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -80,12 +75,8 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 @PreAuthorize("@userController.hasRoleInProperty('teacher') || @userController.hasRoleInProperty('gestionnaire')")
 public class RechercheMobileView extends VerticalLayout implements View {
 
-	private static final long serialVersionUID = -3389183877488162603L;
-
 	public static final String NAME = "rechercheMobileView";
-
 	public static final String[] FIELDS_ORDER = {"type","lib"};
-
 
 	/* Injections */
 	@Resource
@@ -99,33 +90,18 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	@Resource
 	private ElasticSearchApogeeService ElasticSearchService;
 
-
 	private Button returnButton;
-
 	private AutoComplete champRecherche;
-
 	private Button btnRecherche;
-
 	private HorizontalLayout champRechercheLayout;
-
 	private VerticalLayout mainVerticalLayout;
-
 	private HierarchicalContainer rrContainer;
-
 	private String[] columnHeaders;
-
 	private TreeTable tableResultats;
-
 	private boolean casesAcocherVet=true;
-
 	private boolean casesAcocherElp=true;
-
 	private boolean casesAcocherEtudiant=true;
-	
 	private Button resetButton;
-
-
-
 
 	/**
 	 * Initialise la vue
@@ -142,13 +118,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			setSizeFull();
 			addStyleName("v-noscrollableelement");
 
-
-
-
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
 			navbar.setSizeFull();
-			navbar.setHeight("40px");
+			navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 			navbar.setStyleName("navigation-bar");
 
 			//Bouton retour
@@ -166,10 +139,8 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			labelTrombi.setStyleName("v-label-navbar");
 			navbar.addComponent(labelTrombi);
 			navbar.setComponentAlignment(labelTrombi, Alignment.MIDDLE_CENTER);
-
 			navbar.setExpandRatio(labelTrombi, 1);
 			addComponent(navbar);
-
 
 			//BOUTON DE RECHERCHE
 			btnRecherche = new Button();
@@ -177,6 +148,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			btnRecherche.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			btnRecherche.addStyleName("v-popover-button");
 			btnRecherche.addStyleName("v-button-without-padding");
+			btnRecherche.addStyleName("right-input-cmp");
 			btnRecherche.setEnabled(true);
 			btnRecherche.addClickListener(e -> search(false));
 
@@ -184,32 +156,27 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			champRechercheLayout = new HorizontalLayout();
 			champRechercheLayout.setWidth("100%");
 			mainVerticalLayout = new VerticalLayout();
-			mainVerticalLayout.setImmediate(true);
+			// mainVerticalLayout.setImmediate(true);
 			mainVerticalLayout.setSizeFull();
 
 			//Init connexion à ES, pour gain perf au premiere lettre tapées
 			if(ElasticSearchService.initConnexion()){
-
 				//Création du champ autoComplete
 				champRecherche = new AutoComplete();
 				champRecherche.setWidth(100, Unit.PERCENTAGE); 
 				champRecherche.setEnabled(true);
-				champRecherche.setImmediate(true);
+				// champRecherche.setImmediate(true);
 				champRecherche.setMaxLength(100);
 				champRecherche.focus();
-				champRecherche.setTextChangeEventMode(TextChangeEventMode.EAGER);
-				champRecherche.addTextChangeListener(new TextChangeListener() {
+				champRecherche.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.EAGER);
+				champRecherche.setImmediate(true);
+				champRecherche.addTextChangeListener(new FieldEvents.TextChangeListener() {
 					@Override
-					public void textChange(TextChangeEvent event) {
-						/*if(event.getText()!=null){
-					resetButton.setIcon(FontAwesome.TIMES);
-				}*/
-
+					public void textChange(FieldEvents.TextChangeEvent event) {
 						champRecherche.showChoices(quickSearch(event.getText()), mainVerticalLayout, btnRecherche,true);
-
 					}
 				});
-				champRecherche.setImmediate(true);
+
 				champRecherche.addShortcutListener(new ShortcutListener("Enter Shortcut", ShortcutAction.KeyCode.ENTER, null) {
 					@Override
 					public void handleAction(Object sender, Object target) {
@@ -238,6 +205,8 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					}
 				});
 
+				// Maj style css du champ de recherche
+				champRecherche.updateStyle();
 				champRecherche.addShortcutListener(new ShortcutListener("Top Arrow", ShortcutAction.KeyCode.ARROW_UP, null) {
 					@Override
 					public void handleAction(Object sender, Object target) {
@@ -256,13 +225,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					}
 				});
 
-
-
 				champRechercheLayout.addComponent(champRecherche);
 				champRechercheLayout.setComponentAlignment(champRecherche, Alignment.MIDDLE_LEFT);
 
 				//BOUTON RESET
-				champRecherche.addStyleName("textfield-resetable");
 				resetButton = new Button();
 				resetButton.setIcon(FontAwesome.TIMES);
 				resetButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
@@ -278,15 +244,12 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				champRechercheLayout.addComponent(resetButton);
 				champRechercheLayout.setComponentAlignment(resetButton, Alignment.MIDDLE_LEFT);
 
-
-
 				//Ajout du bouton de recherche au layout
 				champRechercheLayout.addComponent(btnRecherche);
 				mainVerticalLayout.addComponent(champRechercheLayout);
 				mainVerticalLayout.setComponentAlignment(champRechercheLayout, Alignment.MIDDLE_LEFT);
 				champRechercheLayout.setMargin(true);
 				champRechercheLayout.setExpandRatio(champRecherche, 1);
-
 
 				HorizontalLayout checkBoxVetLayout = new HorizontalLayout();
 				Label etapeLabel=new Label(applicationContext.getMessage(NAME+".etapes.checkbox", null, getLocale()));
@@ -306,8 +269,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				checkBoxVetLayout.setSizeFull();
 				checkBoxElpLayout.setSizeFull();
 				checkBoxEtuLayout.setSizeFull();
-
-
 
 				if(casesAcocherVet){
 					checkBoxVetLayout.setStyleName("layout-checkbox-checked");
@@ -333,53 +294,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					etuLabel.addStyleName("label-line-through");
 				}
 
-				checkBoxVetLayout.addListener(new LayoutClickListener() {
-					public void layoutClick(LayoutClickEvent event) {
-						if(casesAcocherVet){
-							casesAcocherVet=false;
-							checkBoxVetLayout.setStyleName("layout-checkbox-unchecked");
-							etapeLabel.addStyleName("label-line-through");
-						}else{
-							casesAcocherVet=true;
-							checkBoxVetLayout.setStyleName("layout-checkbox-checked");
-							etapeLabel.setStyleName(ValoTheme.LABEL_SMALL);
-						}
-						tuneSearch();
-					}
-				});
-
-				checkBoxElpLayout.addListener(new LayoutClickListener() {
-					public void layoutClick(LayoutClickEvent event) {
-						if(casesAcocherElp){
-							casesAcocherElp=false;
-							checkBoxElpLayout.setStyleName("layout-checkbox-unchecked");
-							elpLabel.addStyleName("label-line-through");
-						}else{
-							casesAcocherElp=true;
-							checkBoxElpLayout.setStyleName("layout-checkbox-checked");
-							elpLabel.setStyleName(ValoTheme.LABEL_SMALL);
-						}
-						tuneSearch();
-					}
-				});
-
-				checkBoxEtuLayout.addListener(new LayoutClickListener() {
-					public void layoutClick(LayoutClickEvent event) {
-						if(casesAcocherEtudiant){
-							casesAcocherEtudiant=false;
-							checkBoxEtuLayout.setStyleName("layout-checkbox-unchecked");
-							etuLabel.addStyleName("label-line-through");
-						}else{
-							casesAcocherEtudiant=true;
-							checkBoxEtuLayout.setStyleName("layout-checkbox-checked");
-							etuLabel.setStyleName(ValoTheme.LABEL_SMALL);
-						}
-						tuneSearch();
-					}
-				});
-
-
-
 				HorizontalLayout checkBoxLayout=new HorizontalLayout();
 				checkBoxLayout.setWidth("100%");
 				checkBoxLayout.setHeight("50px");
@@ -388,8 +302,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				checkBoxLayout.addComponent(checkBoxVetLayout);
 				checkBoxLayout.addComponent(checkBoxElpLayout);
 				checkBoxLayout.addComponent(checkBoxEtuLayout);
-
-
 
 				mainVerticalLayout.addComponent(checkBoxLayout);
 
@@ -417,8 +329,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				tableResultats.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
 				tableResultats.setColumnWidth("type", 100);
 
-				/*mainVerticalLayout.addComponent(searchBoxFilter);
-		mainVerticalLayout.setComponentAlignment(searchBoxFilter, Alignment.MIDDLE_RIGHT);*/
 				VerticalLayout tableVerticalLayout = new VerticalLayout();
 				tableVerticalLayout.setMargin(true);
 				tableVerticalLayout.setSizeFull();
@@ -426,7 +336,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				mainVerticalLayout.addComponent(tableVerticalLayout);
 				mainVerticalLayout.setExpandRatio(tableVerticalLayout, 1);
 				tableResultats.setVisible(false);
-
 
 				addComponent(mainVerticalLayout);
 				setExpandRatio(mainVerticalLayout, 1);
@@ -437,17 +346,13 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		}
 	}
 
-
-
-
 	/**
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
-		//LOG.debug("enter listeInscritsMobileView");
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		//log.debug("enter listeInscritsMobileView");
 	}
-
 
 	private List<ResultatDeRecherche> quickSearch(String valueString){
 
@@ -463,7 +368,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			//transformation de la chaine recherchée en fonction des besoins
 			String valueselasticSearch = value;
 
-			//valueselasticSearch = valueselasticSearch+"*";
 			List<Map<String,Object>> lobjresult = ElasticSearchService.findObj(valueselasticSearch, Utils.NB_MAX_RESULT_QUICK_SEARCH * 5, true);
 
 			//Liste des types autorisés
@@ -478,16 +382,15 @@ public class RechercheMobileView extends VerticalLayout implements View {
 				listeTypeAutorise.add(Utils.ETU);
 			}
 
-
 			///////////////////////////////////////////////////////
 			// recuperation des obj ElasticSearch
 			///////////////////////////////////////////////////////
-			if(lobjresult!=null && listeTypeAutorise.size()>0){
+			if(lobjresult!=null && !listeTypeAutorise.isEmpty()){
 				for(Map<String,Object> obj : lobjresult){
 					if(listeReponses.size()<Utils.NB_MAX_RESULT_QUICK_SEARCH){
 						if(obj != null){
 							if(listeTypeAutorise.contains((String)obj.get(Utils.ES_TYPE))){
-								if(listeReponses.size()>0){
+								if(!listeReponses.isEmpty()){
 									boolean triOk=true;
 									int rang = 0;
 									//On evite des doublons
@@ -511,24 +414,11 @@ public class RechercheMobileView extends VerticalLayout implements View {
 					}
 				}
 			}
-
-
-
 		}
-
 		return listeReponses;
-
 	}
 
-
-
-
-
-
-
 	private void search(boolean rechercheSansUtiliserLaVue){
-
-
 		//ChoicesPopup null si aucun choix propose
 		if(champRecherche.getChoicesPopup()!=null){
 			champRecherche.getChoicesPopup().setVisible(false);
@@ -537,9 +427,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		String value = String.valueOf(champRecherche.getValue());
 
 		if(StringUtils.hasText(value) && value.length()>1){
-
 			boolean suggestionValidee = false;
-
 			//On détecte si la recherche porte sur une suggestion proposée par la pop_up
 			if(value.contains("[") && value.contains("]")){
 				suggestionValidee = true;
@@ -556,14 +444,11 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			// recuperation des objets
 			///////////////////////////////////////////////////////
 			if(lobjresult!=null){
-
 				rrContainer.removeAllItems();
 				String code=null;
 				String type=null;
-
 				for(Map<String,Object> obj : lobjresult){
 					if(obj != null){
-
 						//GESTION DES TYPES D'OBJET AFFICHES
 						ResultatDeRecherche rr=new ResultatDeRecherche(obj);
 						Item i=rrContainer.addItem(rr);
@@ -576,8 +461,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 							type=rr.type;
 							rrContainer.setChildrenAllowed(rr, false);
 						}
-
-
 					}
 				}
 
@@ -590,14 +473,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 
 				}
 			}
-
-
-
-
 		}else{
 			if(StringUtils.hasText(value) && value.length()<=1){
 				//afficher message erreur
-				Notification.show("Merci d'indiquer au moins 2 lettres",Type.ERROR_MESSAGE);
+				Notification.show("Merci d'indiquer au moins 2 lettres", Notification.Type.ERROR_MESSAGE);
 			}
 		}
 
@@ -609,11 +488,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 		if(rrContainer!=null){
 			rrContainer.removeAllContainerFilters();
 
-			Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
+			Container.Filter filterStringToSearch =  new SimpleStringFilter("type","TypeImpossible", true, false);
 			SimpleStringFilter vetFilter;
 			SimpleStringFilter elpFilter;
 			SimpleStringFilter etuFilter;
-
 
 			if(casesAcocherVet){
 				vetFilter = new SimpleStringFilter("type",Utils.VET, true, false);
@@ -629,8 +507,6 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			}
 
 			rrContainer.addContainerFilter(filterStringToSearch);
-
-
 		}
 
 	}
@@ -656,12 +532,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			b.addClickListener(e->{
 				rechercheController.accessToMobileDetail(item.getItemProperty("code").getValue().toString(),item.getItemProperty("type").getValue().toString(),true);
 			});
-			
-			
+
 			VerticalLayout vl = new VerticalLayout();
 			vl.setSizeFull();
 			vl.addComponent(b);
-			//vl.setComponentAlignment(b, Alignment.MIDDLE_CENTER);
 			return vl;
 		}
 	}
@@ -669,17 +543,10 @@ public class RechercheMobileView extends VerticalLayout implements View {
 	
 
 	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
-
 		public Object generateCell(Table source, Object itemId,
 				Object columnId) {
 
 			Item item = source.getItem(itemId);
-
-			/*String code = item.getItemProperty("lib").getValue().toString();
-			if(code.startsWith("[")){
-				String tab[]=code.split("]");
-				code=tab[0].replaceFirst("\\[", "").trim();
-			}*/
 
 			String code = (String)item.getItemProperty("code").getValue();
 			String typeObj = item.getItemProperty("type").getValue().toString();
@@ -699,7 +566,7 @@ public class RechercheMobileView extends VerticalLayout implements View {
 			VerticalLayout vl =new VerticalLayout();
 			vl.addComponent(labelType);
 			vl.addComponent(labelCode);
-			//On converti le type pour un affichage lisible
+			//On convertit le type pour un affichage lisible
 			return vl;
 		}
 	}

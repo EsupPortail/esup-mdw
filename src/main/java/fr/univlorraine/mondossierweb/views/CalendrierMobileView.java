@@ -18,38 +18,33 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * Page de calendrier sur mobile
@@ -57,13 +52,8 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 @Component @Scope("prototype")
 @SpringView(name = CalendrierMobileView.NAME)
 public class CalendrierMobileView extends VerticalLayout implements View {
-	private static final long serialVersionUID = -2056224835347802529L;
-
-	private Logger LOG = LoggerFactory.getLogger(CalendrierMobileView.class);
 
 	public static final String NAME = "calendrierMobileView";
-
-
 
 	/* Injections */
 	@Resource
@@ -88,7 +78,7 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 	}
 	public void refresh(){
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MdwTouchkitUI &&  MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null && 
+		if(UI.getCurrent() instanceof MdwTouchkitUI &&  MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null &&
 			((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
 				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
 				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire()))){
@@ -105,14 +95,13 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 			//NAVBAR
 			HorizontalLayout navbar=new HorizontalLayout();
 			navbar.setSizeFull();
-			navbar.setHeight("40px");
+			navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 			navbar.setStyleName("navigation-bar");
 
 			//Bouton retour
 			if(userController.isEnseignant()){
 				returnButton = new Button();
 				returnButton.setIcon(FontAwesome.ARROW_LEFT);
-				//returnButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 				returnButton.setStyleName("v-menu-nav-button");
 				returnButton.addClickListener(e->{
 					if(MdwTouchkitUI.getCurrent().getDossierEtuFromView()!=null &&
@@ -127,6 +116,8 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 				});
 				navbar.addComponent(returnButton);
 				navbar.setComponentAlignment(returnButton, Alignment.MIDDLE_LEFT);
+			} else {
+				Utils.ajoutLogoBandeau(configController.getLogoUniversiteMobile(), navbar);
 			}
 
 			//Title
@@ -144,13 +135,10 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 			globalLayout.setMargin(true);
 			globalLayout.setStyleName("v-scrollableelement");
 
-
-
-			if(MdwTouchkitUI.getCurrent().getEtudiant()!=null && MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier()!=null && MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier().size()>0){
-
-				List<Examen> listeExam = MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier();
-
-				for(Examen exam : listeExam){
+			// Si on a des données de calendrier à afficher
+			if(MdwTouchkitUI.getCurrent().getEtudiant()!=null && MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier()!=null && !MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier().isEmpty()){
+				//On parcourt les examens
+				for(Examen exam : MdwTouchkitUI.getCurrent().getEtudiant().getCalendrier()){
 					Panel panelCalendrier= new Panel();
 					panelCalendrier.setSizeFull();
 					HorizontalLayout labelExamenLayout = new HorizontalLayout();
@@ -184,12 +172,14 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					}
 					detailLayout.addComponent(salleLabel);
 					salleLabel.setStyleName("v-label-align-right");
+					salleLabel.addStyleName("v-small");
 					
 					//ajout de la place
 					if(configController.isAffNumPlaceExamen() && StringUtils.hasText(exam.getPlace())){
 						Label placeLabel = new Label(applicationContext.getMessage(NAME+".place", null, getLocale())+ " " +exam.getPlace());
 						detailLayout.addComponent(placeLabel);
 						placeLabel.setStyleName("v-label-align-right");
+						placeLabel.addStyleName("v-small");
 					}
 
 					//Libelle de l'épreuve
@@ -201,7 +191,6 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 					libelleLayout.addComponent(new Label(""));
 					libelleLayout.addComponent(libLabel);
 
-
 					//Ajout des 2 layouts dans le layout principal 
 					labelExamenLayout.addComponent(detailLayout);
 					labelExamenLayout.addComponent(libelleLayout);
@@ -211,11 +200,7 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 
 					//Ajout du panel à la vue
 					globalLayout.addComponent(panelCalendrier);
-
-
 				}
-
-
 			}else{
 				Panel panelCalendrier= new Panel();
 				panelCalendrier.setSizeFull();
@@ -232,8 +217,6 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 				globalLayout.addComponent(panelCalendrier);
 			}
 
-
-
 			addComponent(globalLayout);
 			setExpandRatio(globalLayout, 1);
 		}
@@ -243,7 +226,7 @@ public class CalendrierMobileView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 	}
 
 

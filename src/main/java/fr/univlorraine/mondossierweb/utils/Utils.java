@@ -18,25 +18,15 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-
+import com.vaadin.server.FileResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdminView;
@@ -59,15 +49,29 @@ import fr.univlorraine.mondossierweb.views.NotesView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.RechercheMobileView;
 import fr.univlorraine.mondossierweb.views.RechercheRapideView;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author Charlie Dubois
  * 
  * Méthodes Utiles
  */
+@Slf4j
 public class Utils {
 
-	static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 	
 	/**
 	 * type utilisateur admin.
@@ -340,7 +344,7 @@ public class Utils {
 	}
 
 	//Formate bouton/lien pour appli mobile
-	public static void setButtonStyle(Button b){
+	public static void setButtonStyle(Component b){
 		b.setStyleName("v-nav-button");
 		b.addStyleName("link"); 
 		b.addStyleName("v-link");
@@ -381,7 +385,7 @@ public class Utils {
 			try {
 				d = formatter.parse(date);
 			} catch (ParseException e) {
-				LOG.error("String to date : "+date+" en objet Date");
+				log.error("String to date : "+date+" en objet Date");
 				return null;
 			}
 			return d;
@@ -412,5 +416,64 @@ public class Utils {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		return dateFormat.format(d);
 	}
+
+    public static void ajoutLogoBandeau(String pathLogo, HorizontalLayout navbar) {
+		if(StringUtils.hasText(pathLogo)) {
+			FileResource resource = new FileResource(new File(pathLogo));
+			Image logo = new Image(null, resource);
+			logo.setStyleName("logo-mobile");
+			navbar.addComponent(logo);
+			navbar.setComponentAlignment(logo, Alignment.MIDDLE_LEFT);
+		}
+    }
+	public static void ajoutLogoBandeauMenu(String pathLogo, CssLayout menu, String titre) {
+		if(StringUtils.hasText(pathLogo)) {
+			FileResource resource = new FileResource(new File(pathLogo));
+			Image logo = new Image(null, resource);
+			logo.setStyleName("logo-etu-menu");
+			logo.setWidthUndefined();
+			HorizontalLayout bandeau = new HorizontalLayout();
+			bandeau.setWidthFull();
+			HorizontalLayout contenu = new HorizontalLayout();
+			contenu.setWidthUndefined();
+			contenu.addComponent(logo);
+			Label appLabel = new Label(titre);
+			appLabel.setWidthFull();
+			contenu.addComponent(appLabel);
+			contenu.setExpandRatio(appLabel, 1);
+			contenu.addStyleName("bandeau-etu-contenu");
+			bandeau.addStyleName("bandeau-etu-menu");
+			bandeau.addComponent(contenu);
+			menu.addComponent(bandeau);
+		}
+	}
+
+	public static void ajoutLogoBandeauEnseignant(String pathLogo, VerticalLayout vue, String titre) {
+
+		CssLayout bandeau = new CssLayout();
+		bandeau.addStyleName("bandeau-ens-menu");
+		CssLayout contenu = new CssLayout();
+		contenu.setWidthUndefined();
+		contenu.addStyleName("contenu-ens-menu");
+
+		if (StringUtils.hasText(pathLogo)) {
+			FileResource resource = new FileResource(new File(pathLogo));
+			Image logo = new Image(null, resource);
+			logo.setStyleName("logo-ens-menu");
+			logo.setWidthUndefined();
+			contenu.addComponent(logo);
+		}
+		Label appLabel = new Label(titre);
+		appLabel.setWidthFull();
+		appLabel.setStyleName("label-ens-menu");
+		contenu.addComponent(appLabel);
+
+		bandeau.addComponent(contenu);
+		vue.addComponent(bandeau);
+	}
+
+    public static boolean isEquals(String s1, String s2) {
+		return s1 == null && s2 == null || (s1 != null && s2 != null && s1.equals(s2));
+    }
 }
 

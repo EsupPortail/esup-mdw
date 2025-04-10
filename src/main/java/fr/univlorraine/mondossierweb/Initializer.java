@@ -18,21 +18,23 @@
  */
 package fr.univlorraine.mondossierweb;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
-
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import com.vaadin.server.Constants;
+import com.vaadin.shared.communication.PushMode;
+import fr.univlorraine.mondossierweb.config.SpringConfig;
+import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
+import lombok.extern.slf4j.Slf4j;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.SessionSupport;
-import org.springframework.mobile.device.DeviceResolverRequestFilter;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
@@ -40,24 +42,25 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.vaadin.server.Constants;
-import com.vaadin.shared.communication.PushMode;
-
-import fr.univlorraine.mondossierweb.config.SpringConfig;
-import fr.univlorraine.mondossierweb.utils.MDWTouchkitServlet;
-import fr.univlorraine.tools.logback.UserMdcServletFilter;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Initialisation de l'application web
  * 
  * @author Adrien Colson
  */
+@Slf4j
 public class Initializer implements WebApplicationInitializer {
 
 	/**
 	 * Profil Spring de debug
 	 */
 	public final static String DEBUG_PROFILE = "debug";
+	private static final String WIDGETSET_TO_USE = "com.vaadin.v7.Vaadin7WidgetSet";
+	// private static final String WIDGETSET_TO_USE = "fr.univlorraine.mondossierweb.AppWidgetset";
 
 	/**
 	 * Ajoute les paramètres de contexte aux propriétés systèmes, de manière à les rendre accessibles dans logback.xml
@@ -72,11 +75,36 @@ public class Initializer implements WebApplicationInitializer {
 	}
 
 	/**
-	 * @see org.springframework.web.WebApplicationInitializer#onStartup(javax.servlet.ServletContext)
+	 * Ajoute les paramètres de contexte aux propriétés Logback.
 	 */
+	private void addContextParametersToLogbackConfig(final ServletContext servletContext) {
+		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		final JoranConfigurator jc = new JoranConfigurator();
+		jc.setContext(loggerContext);
+		loggerContext.reset();
+
+		final Enumeration<String> parameterNames = servletContext.getInitParameterNames();
+		while (parameterNames.hasMoreElements()) {
+			final String parameterName = parameterNames.nextElement();
+			loggerContext.putProperty("context." + parameterName, servletContext.getInitParameter(parameterName));
+		}
+
+		try {
+			log.debug("###Configuration des LOGS via logback-mdw.xml...####");
+			final InputStream logbackConfig = getClass().getResourceAsStream("/logback-mdw.xml");
+			jc.doConfigure(logbackConfig);
+			logbackConfig.close();
+			log.debug("###Configuration des LOGS OK####");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		addContextParametersToSystemProperties(servletContext);
+
+		addContextParametersToLogbackConfig(servletContext);
 
 		/* Configure les sessions */
 		Set<SessionTrackingMode> sessionTrackingModes = new HashSet<SessionTrackingMode>();
@@ -111,12 +139,8 @@ public class Initializer implements WebApplicationInitializer {
 		springSecurityFilterChain.addMappingForUrlPatterns(null, false, "/*");
 		
 		/* Filtre passant l'utilisateur courant à Logback */
-		FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
-		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");
-
-		/* Filtre Spring Mobile permettant de détecter le device */
-		FilterRegistration.Dynamic springMobileServletFilter = servletContext.addFilter("deviceResolverRequestFilter", DeviceResolverRequestFilter.class);
-		springMobileServletFilter.addMappingForUrlPatterns(null, false, "/*");
+		/*FilterRegistration.Dynamic userMdcServletFilter = servletContext.addFilter("userMdcServletFilter", UserMdcServletFilter.class);
+		userMdcServletFilter.addMappingForUrlPatterns(null, false, "/*");*/
 
 		/* Filtre qui gère les erreurs de fragment */
 		/*FilterRegistration.Dynamic fragmentErrorFilter = servletContext.addFilter("fragmentErrorFilter", FragmentErrorFilter.class);
@@ -124,25 +148,21 @@ public class Initializer implements WebApplicationInitializer {
 
 		/* Servlet Spring-Vaadin */
 		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", JMeterServlet.class);
-		//ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", SpringVaadinServlet.class);
 		ServletRegistration.Dynamic springVaadinServlet = servletContext.addServlet("springVaadin", fr.univlorraine.mondossierweb.utils.MdwSpringVaadinServlet.class);
 		springVaadinServlet.setLoadOnStartup(1);
 		springVaadinServlet.addMapping("/*");
 		/* Défini le bean UI */
-		//springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
+		// springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_UI_PROVIDER, "fr.univlorraine.mondossierweb.MdwUIProvider");
 		/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 		//springVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 		/* Défini la fréquence du heartbeat en secondes (cf. https://vaadin.com/book/vaadin7/-/page/application.lifecycle.html#application.lifecycle.ui-expiration) */
-		springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+		springVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, WIDGETSET_TO_USE);
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
-
 		/* Configure le Push */
 		springVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
-
 		/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 		springVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
-		
 		/* Active le support des requêtes asynchrones */
 		springVaadinServlet.setAsyncSupported(true);
 
@@ -155,7 +175,7 @@ public class Initializer implements WebApplicationInitializer {
 			springTouchkitVaadinServlet.addMapping("/m/*");
 			/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 			//springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
-			springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, "fr.univlorraine.mondossierweb.AppWidgetset");
+			springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, WIDGETSET_TO_USE);
 			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
 
 			/* Configure le Push */

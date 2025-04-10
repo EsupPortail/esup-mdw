@@ -18,27 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -56,7 +35,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
-
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.AffiliationSSO;
 import fr.univlorraine.mondossierweb.beans.DroitUniversitaire;
@@ -71,14 +49,31 @@ import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Gestion des infos de sécu (affiliation et quittance des droits)
  */
 @Component
+@Slf4j
 public class SsoController {
-
-	private Logger LOG = LoggerFactory.getLogger(SsoController.class);
 
 	/**
 	 * outputstream size.
@@ -113,16 +108,16 @@ public class SsoController {
 	 * va chercher et renseigne les informations concernant l'affilication à la sécu
 	 */
 	public boolean recupererInfoQuittance(String codAnu,Etudiant e){
-		LOG.debug("-recupererQuittance pour codetu "+e.getCod_etu());
+		log.debug("-recupererQuittance pour codetu "+e.getCod_etu());
 		QuittanceDroitsUniversitaires q = new QuittanceDroitsUniversitaires();
 		q.initValues();
 		// Récupérer les quittances
 		List<Map<String,String>> r = ssoApogeeService.getQuittances(codAnu, e.getCod_ind());
-		if(r!=null && r.size()>0){
-			LOG.debug("nb quittances : "+r.size());
+		if(r!=null && !r.isEmpty()){
+			log.debug("nb quittances : "+r.size());
 			if(r.get(0)!=null ){
 				Map<String,String> m1 = r.get(0);
-				LOG.debug("-quittance1 : "+m1);
+				log.debug("-quittance1 : "+m1);
 				if(m1.get("NUMOCCQUT")!=null){
 					q.setNum_quittance1(m1.get("NUMOCCQUT"));
 				}
@@ -134,17 +129,17 @@ public class SsoController {
 				}
 
 				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnu,e.getCod_ind(), m1.get("NUMOCCSQR"));
-				if(mdps!=null && mdps.size()>0 && StringUtils.hasText(mdps.get(0))){
+				if (mdps!=null && !mdps.isEmpty() && StringUtils.hasText(mdps.get(0))) {
 					q.setLic_mdp1_quittance1(mdps.get(0));
-					if(mdps.size()>1 && StringUtils.hasText(mdps.get(1))){
+					if (mdps.size() > 1 && StringUtils.hasText(mdps.get(1))) {
 						q.setLic_mdp2_quittance1(mdps.get(1));
 					}
 				}
 
 			}
-			if(r.size()>1 && r.get(1)!=null ){
+			if (r.size() > 1 && r.get(1) != null ) {
 				Map<String,String> m2 = r.get(1);
-				LOG.debug("-quittance2 : "+m2);
+				log.debug("-quittance2 : "+m2);
 				if(m2.get("NUMOCCQUT")!=null){
 					q.setNum_quittance2(m2.get("NUMOCCQUT"));
 				}
@@ -155,7 +150,7 @@ public class SsoController {
 					q.setDat_quittance2(m2.get("DATSQR"));
 				}
 				List<String> mdps=ssoApogeeService.getMoyensDePaiement(codAnu,e.getCod_ind(), m2.get("NUMOCCSQR"));
-				if(mdps!=null && mdps.size()>0 && StringUtils.hasText(mdps.get(0))){
+				if(mdps!=null && !mdps.isEmpty() && StringUtils.hasText(mdps.get(0))){
 					q.setLic_mdp1_quittance2(mdps.get(0));
 					if(mdps.size()>1 && StringUtils.hasText(mdps.get(1))){
 						q.setLic_mdp2_quittance2(mdps.get(1));
@@ -202,7 +197,7 @@ public class SsoController {
 	}
 
 	private List<DroitUniversitaire> convertResultToListDroitUniversitaire(List<Map<String, String>> ldp) {
-		if(ldp!=null && ldp.size()>0){
+		if(ldp!=null && !ldp.isEmpty()){
 			List<DroitUniversitaire> l = new LinkedList<DroitUniversitaire>();
 			for(Map<String, String> m : ldp){
 				DroitUniversitaire du = new DroitUniversitaire();
@@ -219,7 +214,7 @@ public class SsoController {
 	 * va chercher et renseigne les informations concernant l'affilication à la sécu
 	 */
 	public boolean recupererInfoAffiliationSso(String codAnu,Etudiant e){
-		LOG.debug("-recupererInfoAffiliationSso pour codetu "+e.getCod_etu());
+		log.debug("-recupererInfoAffiliationSso pour codetu "+e.getCod_etu());
 		List<Inscription> lins = e.getLinsciae();
 		AffiliationSSO affiliation = new AffiliationSSO();
 		//Récupérer les informations nécessaires dans apogée
@@ -260,7 +255,7 @@ public class SsoController {
 
 
 	public com.vaadin.server.Resource exportQuittancePdf(Etudiant e, Inscription inscription) {
-		LOG.debug("-generation pdf Quittance pour "+e.getCod_etu());
+		log.debug("-generation pdf Quittance pour "+e.getCod_etu());
 
 		// verifie les autorisations
 		if(!etudiantController.proposerQuittanceDroitsPayes(inscription, MainUI.getCurrent().getEtudiant())){
@@ -271,8 +266,6 @@ public class SsoController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -297,10 +290,10 @@ public class SsoController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération de l'attestation : DocumentException ",e);
+					log.error("Erreur à la génération de l'attestation : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération de l'attestation : IOException ",e);
+					log.error("Erreur à la génération de l'attestation : IOException ",e);
 					return null;
 				}
 
@@ -315,7 +308,7 @@ public class SsoController {
 	}
 
 	public com.vaadin.server.Resource exportAffiliationSsoPdf(Etudiant e, Inscription inscription) {
-		LOG.debug("-generation pdf AffiliationSso pour "+e.getCod_etu());
+		log.debug("-generation pdf AffiliationSso pour "+e.getCod_etu());
 
 
 		// verifie les autorisations
@@ -328,8 +321,6 @@ public class SsoController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -349,10 +340,10 @@ public class SsoController {
 					byte[] bytes = baosPDF.toByteArray();
 					return new ByteArrayInputStream(bytes);
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération de l'attestation : DocumentException ",e);
+					log.error("Erreur à la génération de l'attestation : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération de l'attestation : IOException ",e);
+					log.error("Erreur à la génération de l'attestation : IOException ",e);
 					return null;
 				}
 
@@ -459,7 +450,7 @@ public class SsoController {
 			if (etudiant.getCod_nne() != null) {
 				Paragraph pNNE = new Paragraph(applicationContext.getMessage("pdf.quittance.ine", null, Locale.getDefault())+" : ", normal);
 				pNNE.setAlignment(Element.ALIGN_LEFT);
-				Chunk nneText = new Chunk(etudiant.getCod_nne().toLowerCase(), normalBig);
+				Chunk nneText = new Chunk(etudiant.getCod_nne().toUpperCase(), normalBig);
 				pNNE.add(nneText);
 				Chunk codetuText = new Chunk("\t\t\t "+applicationContext.getMessage("pdf.quittance.codetu", null, Locale.getDefault())+" : ", normal);
 				pNNE.add(codetuText);
@@ -618,7 +609,7 @@ public class SsoController {
 				PdfPTable table2 = new PdfPTable(2);
 				table2.setWidthPercentage(98);
 				// Détail des droits payés
-				if(etudiant.getQuittance_sso().getList_droits_payes() != null && etudiant.getQuittance_sso().getList_droits_payes().size()>0){
+				if(etudiant.getQuittance_sso().getList_droits_payes() != null && !etudiant.getQuittance_sso().getList_droits_payes().isEmpty()){
 					Paragraph ptextDetail = new Paragraph("\n"+applicationContext.getMessage("pdf.quittance.txtdetail", null, Locale.getDefault())+" :", normal);
 					ptextDetail.setAlignment(Element.ALIGN_LEFT);
 					document.add(ptextDetail);
@@ -693,7 +684,7 @@ public class SsoController {
 
 					//ajout signature
 					if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){ 
-						LOG.debug(signataire.getImg_sig_std().toString());
+						log.debug(signataire.getImg_sig_std().toString());
 						Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
 
 						int largeurSignature = configController.getDimensionPDFSignature();
@@ -706,7 +697,7 @@ public class SsoController {
 						document.add(imageSignature);
 
 					} else {
-						LOG.warn("Signature de "+configController.getQuittanceCodeSignataire()+" vide ou non récupérée pour la génération de la quittance");
+						log.warn("Signature de "+configController.getQuittanceCodeSignataire()+" vide ou non récupérée pour la génération de la quittance");
 					}
 				}
 
@@ -715,13 +706,13 @@ public class SsoController {
 
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération de la quittance : BadElementException ",e);
+			log.error("Erreur à la génération de la quittance : BadElementException ",e);
 		}  catch (DocumentException e) {
-			LOG.error("Erreur à la génération de la quittance : DocumentException ",e);
+			log.error("Erreur à la génération de la quittance : DocumentException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération de la quittance : MalformedURLException ",e);
+			log.error("Erreur à la génération de la quittance : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération de la quittance : IOException ",e);
+			log.error("Erreur à la génération de la quittance : IOException ",e);
 		}
 		// step 6: fermeture du document.
 		document.close();
@@ -817,7 +808,7 @@ public class SsoController {
 			if (etudiant.getCod_nne() != null) {
 				Paragraph pNNE = new Paragraph(applicationContext.getMessage("pdf.affiliationsso.ine", null, Locale.getDefault())+" : ", normal);
 				pNNE.setAlignment(Element.ALIGN_LEFT);
-				Chunk nneText = new Chunk(etudiant.getCod_nne().toLowerCase(), normalBig);
+				Chunk nneText = new Chunk(etudiant.getCod_nne().toUpperCase(), normalBig);
 				pNNE.add(nneText);
 				document.add(pNNE);
 			}
@@ -874,13 +865,13 @@ public class SsoController {
 
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération de l'attestation SSO : BadElementException ",e);
+			log.error("Erreur à la génération de l'attestation SSO : BadElementException ",e);
 		}  catch (DocumentException e) {
-			LOG.error("Erreur à la génération de l'attestation SSO : DocumentException ",e);
+			log.error("Erreur à la génération de l'attestation SSO : DocumentException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération de l'attestation SSO : MalformedURLException ",e);
+			log.error("Erreur à la génération de l'attestation SSO : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération de l'attestation SSO : IOException ",e);
+			log.error("Erreur à la génération de l'attestation SSO : IOException ",e);
 		}
 		// step 6: fermeture du document.
 		document.close();

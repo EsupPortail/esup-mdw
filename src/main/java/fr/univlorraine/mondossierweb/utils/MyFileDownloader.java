@@ -18,7 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
-import java.io.IOException;
 
 import com.vaadin.server.ConnectorResource;
 import com.vaadin.server.DownloadStream;
@@ -26,14 +25,13 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.UI;
-
 import fr.univlorraine.tools.vaadin.BusyIndicatorFileDownloader;
 import fr.univlorraine.tools.vaadin.BusyIndicatorWindow;
 
+import java.io.IOException;
+
 
 public class MyFileDownloader extends BusyIndicatorFileDownloader {
-
-	private static final long serialVersionUID = 1L;
 
 	private long fileSize = 0;
 
@@ -47,7 +45,7 @@ public class MyFileDownloader extends BusyIndicatorFileDownloader {
 	}
 
 	@Override
-	public boolean handleConnectorRequest(VaadinRequest request,VaadinResponse response, String path) throws IOException {
+	public boolean handleConnectorRequest(VaadinRequest request, VaadinResponse response, String path) throws IOException {
 		BusyIndicatorWindow busyIndicatorWindow = new BusyIndicatorWindow();
 		UI ui = UI.getCurrent();
 		ui.access(() -> ui.addWindow(busyIndicatorWindow));

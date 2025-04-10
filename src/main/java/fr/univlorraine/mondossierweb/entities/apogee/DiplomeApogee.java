@@ -18,14 +18,13 @@
  */
 package fr.univlorraine.mondossierweb.entities.apogee;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
+
+import java.io.Serializable;
 
 
 /**
@@ -36,8 +35,6 @@ import lombok.Data;
 @Table(name="DIPLOME")
 @Data
 public class DiplomeApogee implements Serializable {
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@Column(name="COD_DIP")
 	private String codDip;

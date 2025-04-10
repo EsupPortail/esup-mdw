@@ -18,11 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import java.util.Properties;
-
-import javax.persistence.SharedCacheMode;
-import javax.sql.DataSource;
-
+import fr.univlorraine.mondossierweb.entities.apogee.VObjSeApogee;
+import fr.univlorraine.mondossierweb.entities.converters.BooleanToStringConverter;
+import fr.univlorraine.mondossierweb.repositories.apogee.ComposanteApogeeRepository;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import jakarta.persistence.SharedCacheMode;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
@@ -35,10 +35,8 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import fr.univlorraine.mondossierweb.entities.apogee.VObjSeApogee;
-import fr.univlorraine.mondossierweb.entities.converters.BooleanToStringConverter;
-import fr.univlorraine.mondossierweb.repositories.apogee.ComposanteApogeeRepository;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 
 /**

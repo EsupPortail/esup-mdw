@@ -18,9 +18,9 @@
  */
 package fr.univlorraine.mondossierweb.beans;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * représente un élément pédagogique.
@@ -28,8 +28,7 @@ import lombok.Data;
  */
 @Data
 public class ElementPedagogique implements Serializable {
-	
-	private static final long serialVersionUID = 5197935378325878240L;
+
 	/**
 	 * code de l'élément pédagogique.
 	 */
