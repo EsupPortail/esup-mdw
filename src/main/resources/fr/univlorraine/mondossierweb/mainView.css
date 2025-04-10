@@ -1,6 +1,12 @@
 /* ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium */
+
 .valo-menu {
 	color: #ff0000;
+}
+
+.valo-ul .v-textfield:focus {
+	outline: none !important;
+	box-shadow: 0 0 0 2px #8b8b8b !important;
 }
 
 .valo-ul .v-slot-btn-reset {
@@ -12,7 +18,7 @@ height: 35px !important;
 }
 
 .valo-ul .textfield-resetable {
-border-radius: 0px !important;
+/*border-radius: 0px !important;*/
 border-right: 0px !important;
 border-left: 1px solid #c5c5c5 !important;
 border-top: 1px solid #c5c5c5 !important;
@@ -21,30 +27,24 @@ border-bottom: 1px solid #c5c5c5 !important;
 
 .v-slot-googlepopupview {
 	position: absolute;
-	/* left:112px; */
-	/* top: 54px; */
-	/* left:137px; 
-	 top: 66px; */
-	 left:122px; 
-	 top: 61px;
+	 left:122px;
+	 top: 59px;
 	z-index: 2;
 }
 
 .valo-ul .v-popupview-popup-googlepopupview {
-padding: 0px 0px !important;
+	padding: 0px 0px !important;
+	border-radius: 0px 0px 10px 10px !important;
+	border-left: 2px solid #8b8b8b;
+	border-right: 2px solid #8b8b8b;
+	border-bottom: 2px solid #8b8b8b;
 }
 
 .v-table-body-googletable{
-     /*  overflow: hidden !important; */
     overflow-x: hidden;
 	overflow-y: hidden;
 }
 
-.valo-ul .valo-menu-subtitle {
-color: silver;
-font-size: inherit;
-font-weight: bold;
-}
 
 .v-table-row-highlighted {
 	color: #ff0000;
@@ -116,12 +116,12 @@ color: #008000 !important;
 }
 
 .valo-ul .v-panel-caption {
-background-color: #6E6E6E !important;
-background-image: none !important;
-color: white !important;
- font-size: inherit !important;
- border-top-right-radius: 5px !important;
-border-top-left-radius: 5px !important;
+	background-color: #6E6E6E !important;
+	background-image: none !important;
+	color: white !important;
+ 	font-size: inherit !important;
+	border-top-right-radius: 5px !important;
+	border-top-left-radius: 5px !important;
 }
 
 
@@ -135,12 +135,15 @@ border-top-left-radius: 5px !important;
 	overflow-y: hidden;
 }
 
-
 .valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .v-table-header-drag {
-	background : rgb(85,96,164) !important;
-	color: white !important;
-	height: 37px !important;
+	background : #dfdfdf !important;
+	color: #666666 !important;
+	height: 3em !important;
 	font: 400 12px/1.55 "Open Sans", sans-serif !important;
+}
+
+.valo-ul .v-tabsheet-tabcontainer .v-tabsheet-tabs-right-aligned-tabs {
+	margin-top: 1em;
 }
 
 .valo-ul .v-link {
@@ -165,24 +168,6 @@ color: inherit;
 	overflow-y: auto;
 }
 
-
-/*
-.valo-ul .v-table-body-scrollabletable{
-    overflow-x: auto;
-	overflow-y: auto;
-}
-
-.valo-ul .v-table-scrollabletable{
-    overflow-x: auto;
-	overflow-y: auto;
-}
-
-.valo-ul .v-slot-scrollabletable{
-	overflow-x: auto;
-	overflow-y: auto;
-}
-*/
-
 .v-window {
 @include transition(none);
 }
@@ -198,26 +183,49 @@ overflow-x: hidden;
 width: auto !important;
 }
 
-/* couleur header des tables et footer */
-/*.valo-ul .v-table-header-wrap, .valo-ul .v-table-footer-wrap, .valo-ul .headerTable {
-	background: rgba(65, 102, 169, 0.65);
-	color: white;
-	height: 37px;
-	font: 400 12px/1.55 "Open Sans", sans-serif;
-}*/
-
 .valo-ul .deletefavbutton {
-width: 52px;
+	width: 52px;
+}
+
+.valo-ul .v-popupview-popup-googlepopupview {
+	border-radius: 0px 0px 10px 10px !important;
+}
+
+.valo-ul .v-table-googletable{
+	border-radius: 0px 0px 10px 10px !important;
+}
+
+.valo-ul .left-input-cmp {
+	border-radius: 10px 0px 0px 10px !important;
+}
+
+.valo-ul .left-input-cmp-with-popup {
+	border-radius: 10px 0px 0px 0px !important;
+}
+
+.valo-ul .right-input-cmp {
+	border-radius: 0px 10px 10px 0px !important;
+}
+.valo-ul .single-action-button {
+	border-radius: 7px 7px 7px 7px !important;
+	width: 3.4em;
+}
+.valo-ul .left-action-button {
+	border-radius: 10px 0px 0px 10px !important;
+	width: 3.4em;
+}
+.valo-ul .middle-action-button {
+	border-radius: 0px 0px 0px 0px !important;
+	width: 3.4em;
+}
+.valo-ul .right-action-button {
+	border-radius: 0px 10px 10px 0px !important;
+	width: 3.4em;
 }
 
 .dropicon .v-icon {
 color: red;
 }
-    
-/* .dropicon .v-icon:before {
-content: "\f05e";
-color: red;
-}*/
 
 .valo-ul .v-window-modalitycurtain {
 -webkit-animation: none;
@@ -296,10 +304,113 @@ display: inline-block;
 }
 
 .photo-mdw {
-	/*border: 2px solid #6E6E6E;*/
 	border-radius: 15px;
 } 
 
 .loadingIndicatorWindow {
 	border-radius: 5px !important;
+}
+
+.valo-ul .valo-menu-item.selected .v-icon {
+	color: white !important;
+}
+
+.valo-ul .valo-menu-subtitle {
+	color: white !important;
+	font-size: inherit;
+	font-weight: bold;
+	margin-top: 0 !important;
+}
+
+.valo-ul .bandeau-etu-menu {
+	color: white !important;
+	font-size: inherit;
+	font-weight: bold;
+	margin-top: 0.5em !important;
+	border-bottom: 1px solid #666666;
+}
+
+.valo-ul .bandeau-etu-contenu {
+	display: table;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.valo-ul .v-image-logo-etu-menu {
+	height: 2em;
+	margin-bottom: 0.5em;
+	margin-right: 0.5em;
+}
+
+.valo-ul .bandeau-ens-menu {
+	position: absolute;
+	z-index: 1;
+	color: white !important;
+}
+
+.valo-ul .contenu-ens-menu {
+	display: flex;
+	height: 3.4em;
+}
+
+.valo-ul .v-image-logo-ens-menu {
+	height: 2.5em;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	margin-top: auto;
+	margin-bottom: auto;
+	padding-right: 0.5em;
+	border-right: thin solid white;
+}
+
+.valo-ul .label-ens-menu {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.valo-ul .v-tabsheet-right-aligned-tabs > .v-tabsheet-tabcontainer {
+	background-color: #343a40 !important
+}
+
+.valo-ul .v-tabsheet-top-shift-tabs {
+	margin-top: -1.6em;
+}
+
+.valo-ul .font-small {
+	font-size: small;
+}
+
+.valo-ul .v-caption-font-small {
+	font-size: small !important;
+}
+
+.valo-ul .v-table [class*="-row"].v-selected {
+	background-color: grey !important;
+	background-image: none !important;
+}
+
+.valo-ul .v-table [class*="-row"].v-selected .v-table-cell-content {
+	border-left-color: #d4d4d4 !important;
+}
+
+.valo-ul .v-table-focus {
+	outline: none !important;
+}
+
+.valo-ul .v-tabsheet-framed > .v-tabsheet-tabcontainer .v-caption {
+	margin-left: 0px !important;
+}
+
+.admin-home-button {
+	color: white !important;
+	background: transparent !important;
+	border-radius: 7px !important;
+}
+
+.admin-button {
+	border-radius: 7px !important;
+}
+
+.admin-title-layout {
+	display: flex !important;
 }

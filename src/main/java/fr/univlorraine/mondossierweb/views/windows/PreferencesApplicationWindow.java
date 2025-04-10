@@ -18,50 +18,40 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.LinkedList;
-import java.util.Locale;
-
-import javax.annotation.Resource;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroupFieldFactory;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
+import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
 import org.flywaydb.core.internal.util.StringUtils;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.data.fieldgroup.FieldGroupFieldFactory;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
-import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
-import fr.univlorraine.mondossierweb.utils.Utils;
+import java.util.LinkedList;
+import java.util.Locale;
 
 
 
@@ -75,16 +65,13 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 public class PreferencesApplicationWindow extends Window {
 
 	public static final String NAME = "preferencesApplicationWindow";
-
 	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
-
 	public static final String[]  PAV_FIELD_ORDER = {"valeur"}; 
 
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient ConfigController configController;
-
 	private BeanItemContainer<PreferencesApplicationValeurs> pavContainer;
 	
 	/* Composants */
@@ -94,7 +81,7 @@ public class PreferencesApplicationWindow extends Window {
 
 	/**
 	 * Crée une fenêtre d'édition des preferences applicative
-	 * @param préférence à éditer
+	 * @param prefApp à éditer
 	 */
 	public void init(PreferencesApplication prefApp) {
 		/* Style */
@@ -121,21 +108,20 @@ public class PreferencesApplicationWindow extends Window {
 
 
 		fieldGroup.setFieldFactory(new FieldGroupFieldFactory() {
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			@SuppressWarnings("rawtypes")
 			public <T extends Field> T createField(Class<?> dataType, Class<T> fieldType) {
-				if (fieldType==NativeSelect.class){
+				if (fieldType == NativeSelect.class){
 					final NativeSelect field = new NativeSelect();
 					field.addItem("true");
 					field.addItem("false");
 					field.setNullSelectionAllowed(false);
 					field.setImmediate(true);
 					//field.setValue(centre.getTemSrv());
-					field.addValueChangeListener(new ValueChangeListener() {						
+					field.addValueChangeListener(new Property.ValueChangeListener() {
 						@Override
-						public void valueChange(ValueChangeEvent event) {
+						public void valueChange(Property.ValueChangeEvent event) {
 							field.setValue(event.getProperty().getValue());
 						}
 					});
@@ -144,10 +130,9 @@ public class PreferencesApplicationWindow extends Window {
 					final TextField field = new TextField();
 					field.setImmediate(true);
 					field.addTextChangeListener(new FieldEvents.TextChangeListener() {
-						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void textChange(TextChangeEvent event) {
+						public void textChange(FieldEvents.TextChangeEvent event) {
 							if(!field.isReadOnly()){
 								field.setValue(event.getText());
 							}
@@ -159,9 +144,6 @@ public class PreferencesApplicationWindow extends Window {
 
 			}
 		});
-
-
-
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.setSpacing(true);
@@ -210,25 +192,22 @@ public class PreferencesApplicationWindow extends Window {
 					pavTable.setColumnHeader("valeur", "Valeur");
 					pavTable.setSelectable(true);
 					pavTable.setImmediate(true);
-					pavTable.addItemSetChangeListener(new ItemSetChangeListener() {
-						private static final long serialVersionUID = 1L;
+					pavTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
 						@Override
-						public void containerItemSetChange(ItemSetChangeEvent event) {
+						public void containerItemSetChange(Container.ItemSetChangeEvent event) {
 							pavTable.sanitizeSelection();
 						}
 					});
 					pavTable.addValueChangeListener(new Property.ValueChangeListener() {
-						private static final long serialVersionUID = 1L;
 						@Override
-						public void valueChange(ValueChangeEvent event) {
+						public void valueChange(Property.ValueChangeEvent event) {
 							boutonSupprimerPav.setEnabled(true);
 						}
 
 					});
 					boutonSupprimerPav.addClickListener(new Button.ClickListener() {
-						private static final long serialVersionUID = 1L;
 						@Override
-						public void buttonClick(ClickEvent event) {
+						public void buttonClick(Button.ClickEvent event) {
 							if(pavTable.getValue()!=null &&  pavTable.getValue() instanceof PreferencesApplicationValeurs){
 								PreferencesApplicationValeurs pavChoisie =  ((PreferencesApplicationValeurs)pavTable.getValue());
 								supprimerPav(prefApp, pavChoisie);
@@ -269,10 +248,12 @@ public class PreferencesApplicationWindow extends Window {
 		btnAnnuler = new Button(applicationContext.getMessage(NAME+".btnAnnuler", null, getLocale()), FontAwesome.TIMES);
 		btnAnnuler.addClickListener(e -> close());
 		buttonsLayout.addComponent(btnAnnuler);
+		btnAnnuler.addStyleName("admin-button");
 		buttonsLayout.setComponentAlignment(btnAnnuler, Alignment.MIDDLE_LEFT);
 
 		btnEnregistrer = new Button(applicationContext.getMessage(NAME+".btnSave", null, getLocale()), FontAwesome.SAVE);
 		btnEnregistrer.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		btnEnregistrer.addStyleName("admin-button");
 		btnEnregistrer.addClickListener(e -> {
 			try {
 				/* Valide la saisie */
@@ -281,7 +262,7 @@ public class PreferencesApplicationWindow extends Window {
 				configController.saveAppParameter(prefApp);
 				/* Ferme la fenêtre */
 				close();
-			} catch (CommitException ce) {
+			} catch (FieldGroup.CommitException ce) {
 			}
 		});
 		buttonsLayout.addComponent(btnEnregistrer);
@@ -293,7 +274,7 @@ public class PreferencesApplicationWindow extends Window {
 
 	private void refreshPavContainer(PreferencesApplication prefApp) {
 		pavContainer.removeAllItems();
-		if(prefApp.getPreferencesApplicationValeurs()!=null && prefApp.getPreferencesApplicationValeurs().size()>0){
+		if(prefApp.getPreferencesApplicationValeurs()!=null && !prefApp.getPreferencesApplicationValeurs().isEmpty()){
 			for(PreferencesApplicationValeurs pav : prefApp.getPreferencesApplicationValeurs()){
 				pavContainer.addBean(pav);
 			}
@@ -324,8 +305,6 @@ public class PreferencesApplicationWindow extends Window {
 		}else{
 			Notification.show(applicationContext.getMessage(NAME+".notification.valeur.presente",null, getLocale()));
 		}
-		
-		
 	}
 
 
@@ -356,13 +335,4 @@ public class PreferencesApplicationWindow extends Window {
 		}
 		refreshPavContainer(prefApp);
 	}
-
-	/**
-	 * 
-	 * @param val
-	 * @return vrai si la valeur est booleenne
-	 */
-	/*boolean estUneValeurBooleenne(String val){
-		return (StringUtils.hasText(val)&& (val.equals("true") || val.equals("false")));
-	}*/
 }

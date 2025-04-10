@@ -18,21 +18,15 @@
  */
 package fr.univlorraine.mondossierweb.entities.mdw;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Embeddable
 @Data
 public class FavorisPK implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7240432999800071780L;
 
 	@Column(name="LOGIN")
 	private String login;

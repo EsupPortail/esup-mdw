@@ -18,9 +18,9 @@
  */
 package fr.univlorraine.mondossierweb.beans;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 
 
@@ -31,8 +31,6 @@ import lombok.Data;
 @Data
 public class Resultat implements Serializable{
 
-	
-	private static final long serialVersionUID = 4809562988462399839L;
 		/**
 		 * la session.
 		 */

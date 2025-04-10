@@ -30,14 +30,12 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.Component;
 
-
 /**
  * @author Marcus Hellberg (marcus@vaadin.com) 
  *  Further modified by Johannes Tuikkala (johannes@vaadin.com)
  *  modified by Charlie Dubois
  */
 public class JMeterServlet extends SpringVaadinServlet {
-    private static final long serialVersionUID = 898354532369443197L;
 
     public JMeterServlet() {
         System.setProperty(getPackageName() + "." + "disable-xsrf-protection",
@@ -68,10 +66,8 @@ public class JMeterServlet extends SpringVaadinServlet {
     }
 
     public static class JMeterService extends VaadinServletService {
-        private static final long serialVersionUID = -5874716650679865909L;
-
         public JMeterService(VaadinServlet servlet,
-                DeploymentConfiguration deploymentConfiguration)
+                             DeploymentConfiguration deploymentConfiguration)
                 throws ServiceException {
             super(servlet, deploymentConfiguration);
         }
@@ -84,8 +80,6 @@ public class JMeterServlet extends SpringVaadinServlet {
     }
 
     public static class JMeterSession extends VaadinSession {
-        private static final long serialVersionUID = 4596901275146146127L;
-
         public JMeterSession(VaadinService service) {
             super(service);
         }

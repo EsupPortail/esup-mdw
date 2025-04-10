@@ -18,15 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.uicomponents;
 
-import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
+import org.springframework.context.ApplicationContext;
 
 
 public class BasicErreurMessageLayout extends VerticalLayout{

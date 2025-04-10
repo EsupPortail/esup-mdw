@@ -1,13 +1,18 @@
 /* ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium */
-.valo-ul.v-app {
-background: #F0F0F0 !important;
+
+.valo-ul {
+	--mobile_main_color: rgb(71,74, 77);
+	--light_gray: rgb(197, 197, 197);
+	--pastel_green: #0da50d73;
+	--pastel_blue: #3057ed8a;
+	font-size: small;
 }
 
 .valo-ul .v-slot-btn-reset {
-border-right: 1px solid #c5c5c5 !important;
-border-left: 0px solid #c5c5c5 !important;
-border-top: 1px solid #c5c5c5 !important;
-border-bottom: 1px solid #c5c5c5 !important;
+border-right: 1px solid var(--light_gray) !important;
+border-left: 0px solid var(--light_gray) !important;
+border-top: 1px solid var(--light_gray) !important;
+border-bottom: 1px solid var(--light_gray) !important;
 height: 35px !important;
 background: white !important;
 height: 35px !important;
@@ -18,38 +23,65 @@ height: 35px !important;
 }
 
 .valo-ul .v-button-btn-reset .v-button-wrap {
-	color: #464646 !important;
+	color: var(--mobile_main_color) !important;
   	text-shadow: none !important;
 }
 
 .valo-ul .panel-without-bottom-line-separator {
-	border-right: 1px solid #c5c5c5 !important;
-	border-left: 1px solid #c5c5c5 !important;
-	border-top: 1px solid #c5c5c5 !important;
-	border-bottom: 0px solid #c5c5c5 !important;
+	border-right: 1px solid var(--light_gray) !important;
+	border-left: 1px solid var(--light_gray) !important;
+	border-top: 1px solid var(--light_gray) !important;
+	border-bottom: 0px solid var(--light_gray) !important;
+}
+
+.valo-ul .v-slot-textfield-resetable{
+	z-index : 1;
 }
 
 .valo-ul .textfield-resetable {
-border-radius: 0px !important;
+/* border-radius: 0px !important; */
 border-right: 0px !important;
-border-left: 1px solid #c5c5c5 !important;
-border-top: 1px solid #c5c5c5 !important;
-border-bottom: 1px solid #c5c5c5 !important;
+border-left: 1px solid var(--light_gray) !important;
+border-top: 1px solid var(--light_gray) !important;
+border-bottom: 1px solid var(--light_gray) !important;
+}
+
+.valo-ul .left-input-cmp {
+	border-radius: 10px 0px 0px 10px !important;
+}
+
+.valo-ul .left-input-cmp-with-popup {
+	border-radius: 10px 0px 0px 0px !important;
+}
+
+.valo-ul .right-input-cmp {
+	border-radius: 0px 10px 10px 0px !important;
+}
+
+.valo-ul .v-textfield:focus {
+	outline: none !important;
+	box-shadow: 0 0 0 2px #8b8b8b !important;
 }
 
 .valo-ul .v-popupview-popup-googlepopupview {
 	position: absolute;
-	left: 0px !important;
-	top: 87px !important;
-	width: 100% !important;
-	padding: 0px 0px !important;
+	left: -2px !important;
+	top: 6.3em !important;
+	width: calc(100% - 7.5em) !important;
+	padding: 0em 0em 0em 0em !important;
 	z-index: 2 !important;
+	margin-left: 0.6em !important;
+	border-radius: 0px 0px 10px 10px !important;
+	border-left: 2px solid #8b8b8b;
+	border-right: 2px solid #8b8b8b;
+	border-bottom: 2px solid #8b8b8b;
 }
 
 .valo-ul .v-table-googletable{
 	 width: 100% !important;
     overflow-x: hidden !important;
 	overflow-y: hidden !important;
+	border-radius: 0px 0px 10px 10px !important;
 }
 .valo-ul .v-table-body-googletable{
      width: 100% !important;
@@ -57,13 +89,21 @@ border-bottom: 1px solid #c5c5c5 !important;
 	overflow-y: hidden !important;
 }
 
+.valo-ul .layout-checked{
+	border-bottom: 4px solid var(--mobile_main_color) !important;
+}
+
+.valo-ul .layout-unchecked{
+	border-bottom: 1px solid var(--mobile_main_color) !important;
+}
+
 .valo-ul .layout-checkbox-checked{
-	border-bottom: 4px solid rgb(85,96,164) !important;
+	border-bottom: 4px solid var(--mobile_main_color) !important;
 	height: 25px !important;
 }
 
 .valo-ul .layout-checkbox-unchecked{
-	border-bottom: 1px solid rgb(85,96,164) !important;
+	border-bottom: 1px solid var(--mobile_main_color) !important;
 	height: 25px !important;
 }
 
@@ -71,18 +111,14 @@ border-bottom: 1px solid #c5c5c5 !important;
 	text-decoration: line-through !important;
 }
 
-.valo-ul .v-touchkit-navpanel-container{
-	background: #F0F0F0 !important;
-}
-
 .valo-ul .v-horizontallayout-v-layout-multiline {
-height: 100% !important;
-width: 100% !important;
+	height: 100% !important;
+	width: 100% !important;
 }
 
 .valo-ul .v-slot-v-layout-multiline {
-height: 100% !important;
-width: 100% !important;
+	height: 100% !important;
+	width: 100% !important;
 }
 
 
@@ -91,30 +127,31 @@ width: 100% !important;
 }
 
 .valo-ul .layout-bottom-line-separator{
-	border-bottom: 1px solid #d1d1ce !important;
+	border-bottom: 1px solid var(--light_gray) !important;
 	background-color: white !important;
 	height: 100% !important;
 }
 
 .valo-ul .bold-label{
 	font-weight: bold !important;
+	font-size: small;
 }
 
 .valo-ul .bold-italic-label{
 	font-weight: bold !important;
 	font-style: italic !important;
+	font-size: small;
 }
 
 .valo-ul .main-layout-bottom-line-separator{
-	border-bottom: 1px solid #d1d1ce !important;
-	background-color: rgb(194, 197, 199) !important;
+	border-bottom: 1px solid var(--light_gray) !important;
+	background-color: var(--light_gray) !important;
 	height: 100% !important;
 }
 
 .valo-ul .root-layout-bottom-line-separator{
-	border-bottom: 1px solid #d1d1ce !important;
-	background-color: rgb(85,96,164) !important;
-	/* background-color: rgb(67, 69, 69); */
+	border-bottom: 1px solid var(--light_gray) !important;
+	background-color: var(--mobile_main_color) !important;
 	color: white !important;
 	height: 100% !important;
 }
@@ -124,7 +161,7 @@ width: 100% !important;
 }
 
 .valo-ul .layout-level-blue-indicator{
-	border-bottom: 4px solid #3057ed8a !important;
+	border-bottom: 4px solid var(--pastel_blue) !important;
 	vertical-align: bottom !important;
 }
 .valo-ul .v-slot.v-slot-layout-level-blue-indicator {
@@ -136,7 +173,7 @@ width: 100% !important;
 }
 
 .valo-ul .layout-level-green-indicator{
-	border-bottom: 4px solid #0da50d73 !important;
+	border-bottom: 4px solid var(--pastel_green)!important;
 	vertical-align: bottom !important;
 }
 .valo-ul .v-slot.v-slot-layout-level-green-indicator {
@@ -144,80 +181,150 @@ width: 100% !important;
 }
 
 .valo-ul .layout-level-primary-indicator {
-	border-top: 4px solid rgb(85,96,164) !important;
+	border-top: 4px solid var(--mobile_main_color) !important;
 	vertical-align: bottom !important;
 }
 
 .valo-ul .line-separator{
-border-top: 1px solid #d5d5d5 !important;
+border-top: 1px solid var(--light_gray) !important;
 }
 
 .valo-ul .navigation-bar{
-background-color: rgb(85,96,164) !important;
+background-color: var(--mobile_main_color) !important;
+}
+
+.valo-ul .red-button-icon {
+	color: #ff0000 !important;
+}
+
+.valo-ul .red-button-icon:hover {
+	color: #bb382e !important;
+}
+
+.valo-ul .v-button-text-size-medium .v-button-wrap .v-button-caption {
+	font-size: medium !important;
+}
+
+.valo-ul .v-formlayout-row {
+	font-size: small;
+}
+
+.valo-ul .v-small {
+	font-size: small;
 }
 
 
 .valo-ul .v-button .v-button-wrap .v-button-caption {
-line-height: normal !important;
-white-space: normal !important;
-height: 100% !important;
-font-size: 15px !important;
+	line-height: normal !important;
+	white-space: normal !important;
+	height: 100% !important;
+	font-size: small;
 }
 
 .valo-ul .v-disabled {
 opacity: 1.0 !important;
 }
 
+.valo-ul .v-label-small {
+	font-size: small !important;
+}
 
-.valo-ul .v-panel-caption-v-colored-panel-caption {
-	background: rgb(85,96,164) !important;
-	color: #FFFFFF !important;
+.valo-ul .layout-dip-etp-mobile {
+	margin-bottom: 0.6em;
 }
-.valo-ul .v-panel-centertitle-panel {
-	width: 100% !important;
+
+.valo-ul .layout-aucun-res-mobile {
+	margin-bottom: 0.6em;
 }
+
+.valo-ul .layout-lib-note-mobile {
+	padding-left: 0.6em;
+	padding-right: 0.5em;
+}
+
+.valo-ul .v-panel-caption-v-medium-panel-caption {
+	background: #dfdfdf !important;
+	color: #666666 !important;
+	font-size: medium !important;
+}
+
 
 .valo-ul .layout-rang-mobile {
-	border-top: 1px solid #d1d1ce;
+	border-top: 1px solid var(--light_gray);
 }
 
 .valo-ul .libelle-rang-mobile {
 	text-align: right;
 	padding-right: 0.5em;
 	font-weight: bold;
+	font-size: small;
 }
 
 .valo-ul .value-rang-mobile {
 	padding-left: 0.3em;
 	font-weight: 500;
+	font-size: small;
 }
 
 .valo-ul .libelle-rang-mobile-detail {
 	text-align: right;
 	padding-right: 0.5em;
 	font-weight: 500;
+	font-size: small;
 }
 
 .valo-ul .value-rang-mobile-detail {
 	padding-left: 0.3em;
 	font-weight: bold;
+	font-size: small;
 }
 
+.valo-ul .v-panel-lefttitle-panel {
+	width: 100% !important;
+	text-align: left !important;
+}
+.valo-ul .v-panel-centertitle-panel {
+	width: 100% !important;
+}
 
-.valo-ul .v-panel-caption-centertitle-panel {
-text-align: center !important;
+.valo-ul .v-panel-caption-lefttitle-panel {
+  text-align: left !important;
   border-right: 0px !important;
   border-left: 0px !important;
   border-bottom: 0px !important;
 }
 
-.valo-ul .v-panel-caption-v-panel-caption-centertitle-panel {
-text-align: center !important;
-font-size: 14px !important;
-font-weight: bold !important;
+.valo-ul .indent-2-em {
+	padding-left: 1em;
+}
+.valo-ul .indent-3-em {
+	padding-left: 2em;
+}
+.valo-ul .indent-4-em {
+	padding-left: 3em;
+}
+.valo-ul .indent-5-em {
+	padding-left: 4em;
+}
+.valo-ul .indent-6-em {
+	padding-left: 5em;
+}
+.valo-ul .indent-7-em {
+	padding-left: 6em;
+}
+.valo-ul .indent-8-em {
+	padding-left: 7em;
 }
 
+.valo-ul .v-panel-caption-v-panel-caption-lefttitle-panel {
+text-align: left !important;
+font-size: medium !important;
+}
 
+.valo-ul .logo-mobile {
+	height: 2.5em;
+	margin-left: 0.4em;
+}
 
 .valo-ul .label-centre {
 	text-align: center !important;
@@ -332,13 +439,17 @@ content: none !important;
 
 }
 
+.valo-ul .v-window-header {
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
 .valo-ul .v-tabsheet-tabs-menu-mobile {
 	width: 100%;
 }
 
 .valo-ul .v-tabsheet-tabcontainer-menu-mobile {
 	width: 100%;
-	box-shadow : 0 2px 2px -10px rgba(0,0,0,.2), 0 1px 15px 0 rgb(85,96,164), 0 1px 18px 0 rgba(0,0,0,.12);
+	box-shadow : 0 2px 2px -10px rgba(0,0,0,.2), 0 1px 15px 0 var(--mobile_main_color), 0 1px 18px 0 rgba(0,0,0,.12);
 	z-index: 10;
 	min-height: 45px;
 }
@@ -376,21 +487,33 @@ width: 100% !important;
 	-webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0) !important;
 }
 
-
 .valo-ul .v-nav-button:before {
 content: none !important;
 
 }
-
 
 .valo-ul .v-popover-blank {
 	background-color: white !important;
 	background-image: none !important;
 }
 
+.valo-ul .v-menubar-mobile {
+	border: none !important;
+	color: white !important;
+}
+
+.valo-ul .v-menubar-menuitem-ellipsis-icon .v-menubar-submenu-indicator + .v-menubar-menuitem-caption:after {
+	content: none !important;
+}
+
+.valo-ul .v-menubar-menuitem-ellipsis-icon {
+	background-color: var(--mobile_main_color) !important;
+}
+
 .valo-ul .v-label-navbar {
-color: #FFFFFF !important;
-text-align: center !important;
+	color: white !important;
+	text-align: center !important;
+	font-size: larger;
 }
 
 
@@ -405,7 +528,8 @@ text-align: center !important;
 
 .valo-ul .label-bold-with-bottom{
 	font-weight: bold !important;
-	border-bottom: 1px solid #d1d1ce !important;
+	font-size: small;
+	border-bottom: 1px solid var(--light_gray) !important;
 }
 
 .valo-ul .v-button-caption {
@@ -422,7 +546,7 @@ text-shadow: none !important;
 
 .valo-ul .v-touchkit-tabbar-toolbar .v-touchkit-toolbar .v-button-selected {
 	color: white !important;
-  background: rgba(85, 96, 164, 1.0) !important;
+  background: var(--mobile_main_color) !important;
 	font-weight: lighter !important;
 }
 
@@ -431,7 +555,7 @@ text-shadow: none !important;
 	line-height: 0.7 !important;
 }
 .valo-ul .v-touchkit-toolbar .v-button-wrap .v-button-caption {
-	font-size: 12px !important;
+	font-size: small !important;
 	height: 12px !important;
 }
 .valo-ul .v-touchkit-toolbar .v-button-wrap .v-icon {
@@ -441,7 +565,7 @@ text-shadow: none !important;
 
 
 .valo-ul .v-Notification {
-	background: rgb(32, 32, 35) !important;
+	background: var(--mobile_main_color) !important;
 	    border-radius: 0px !important;
 }
 
@@ -480,7 +604,7 @@ border-radius: 0;
 box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.25);
 padding: 12px 15px;
 background-color: #444;
-background-color: rgba(68, 68, 68, 0.9);
+background-color: var(--mobile_main_color);
 line-height: 22px;
 text-align: center;
 }
@@ -496,9 +620,9 @@ width: 24px !important;
 -webkit-box-sizing: border-box;
 -moz-box-sizing: border-box;
 box-sizing: border-box;
-border: 2px solid rgba(79, 175, 108, 0.2);
-border-top-color: #4faf6c;
-border-right-color: #4faf6c;
+border: 2px solid var(--light_gray);
+border-top-color: var(--pastel_green);
+border-right-color: var(--pastel_green);
 border-radius: 100%;
 -webkit-animation: v-rotate-360 500ms infinite linear;
 -moz-animation: v-rotate-360 500ms infinite linear;
@@ -511,7 +635,7 @@ vertical-align: middle;
 .v-ie8 .valo-ul .v-reconnect-dialog .spinner, .v-ie9 .valo-ul .v-reconnect-dialog .spinner {
 border: none;
 border-radius: 2px;
-background: #fff url(../valo/shared/img/spinner.gif) no-repeat 50% 50%;
+background: white url(../valo/shared/img/spinner.gif) no-repeat 50% 50%;
 background-size: 80%;
 }
 

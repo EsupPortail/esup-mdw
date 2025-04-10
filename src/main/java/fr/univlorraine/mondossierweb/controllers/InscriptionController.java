@@ -18,25 +18,6 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import javax.annotation.Resource;
-
-import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -52,8 +33,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Alignment;
-
 import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
@@ -63,14 +42,29 @@ import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Gestion des inscriptions et du certificat de scolarité
  */
 @Component
+@Slf4j
 public class InscriptionController {
-
-	private Logger LOG = LoggerFactory.getLogger(InscriptionController.class);
 
 	/**
 	 * marges.
@@ -121,8 +115,6 @@ public class InscriptionController {
 		nomFichier = nomFichier.replaceAll(" ","_");
 
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public InputStream getStream() {
 				try {
@@ -147,10 +139,10 @@ public class InscriptionController {
 						return new ByteArrayInputStream(baosPDF.toByteArray());
 					}
 				} catch (DocumentException e) {
-					LOG.error("Erreur à la génération du certificat : DocumentException ",e);
+					log.error("Erreur à la génération du certificat : DocumentException ",e);
 					return null;
 				} catch (IOException e) {
-					LOG.error("Erreur à la génération du certificat : IOException ",e);
+					log.error("Erreur à la génération du certificat : IOException ",e);
 					return null;
 				}
 
@@ -289,7 +281,7 @@ public class InscriptionController {
 			} 
 
 			if (etudiant.getCod_nne() != null) {
-				Paragraph pNNE = new Paragraph("\n"+applicationContext.getMessage("pdf.certificat.id", null, Locale.getDefault())+" : " + etudiant.getCod_nne().toLowerCase(), normal);
+				Paragraph pNNE = new Paragraph("\n"+applicationContext.getMessage("pdf.certificat.id", null, Locale.getDefault())+" : " + etudiant.getCod_nne().toUpperCase(), normal);
 				pNNE.setAlignment(Element.ALIGN_LEFT);
 				document.add(pNNE);
 			}
@@ -351,7 +343,7 @@ public class InscriptionController {
 
 			//ajout signature
 			if (signataire.getImg_sig_std() != null && signataire.getImg_sig_std().length > 0){
-				LOG.debug(signataire.getImg_sig_std().toString());
+				log.debug(signataire.getImg_sig_std().toString());
 				Image imageSignature = Image.getInstance(signataire.getImg_sig_std());
 
 				int largeurSignature = configController.getDimensionPDFSignature();
@@ -391,13 +383,13 @@ public class InscriptionController {
 			}
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du certificat : BadElementException ",e);
+			log.error("Erreur à la génération du certificat : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du certificat : MalformedURLException ",e);
+			log.error("Erreur à la génération du certificat : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du certificat : IOException ",e);
+			log.error("Erreur à la génération du certificat : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du certificat : DocumentException ",e);
+			log.error("Erreur à la génération du certificat : DocumentException ",e);
 		}
 		// step 6: fermeture du document.
 		document.close();

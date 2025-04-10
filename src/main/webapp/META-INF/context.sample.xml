@@ -29,7 +29,7 @@
 	<!-- Base MySQL propre à l'application -->
 	<Resource name="jdbc/dbMdw" type="javax.sql.DataSource" username="usermdw"
 		password="xxxxx" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/mdw"
-		maxActive="20" maxIdle="4" maxWait="10000" removeAbandoned="true"
+			  maxTotal="20" maxIdle="4" maxWaitMillis="10000" removeAbandonedOnBorrow="true"
 		removeAbandonedTimeout="600" logAbandoned="true" validationQuery="select '1'" />
 
 	<!-- Connexion sur Apogée -->
@@ -39,10 +39,10 @@
 		password="xxxxx"
 		driverClassName="oracle.jdbc.driver.OracleDriver"
 		url="jdbc:oracle:thin:@apogee.univ.fr:1521:APOGEE"
-		maxActive="20"
+			  maxTotal="20"
 		maxIdle="4"
-		maxWait="10000"
-		removeAbandoned="true"
+			  maxWaitMillis="10000"
+		removeAbandonedOnBorrow="true"
 		removeAbandonedTimeout="600"
 		logAbandoned="true"
 		validationQuery="select '1' from dual" />
@@ -146,7 +146,7 @@
 	<Parameter name="pdf.sign.reason" value="" />
 	<Parameter name="pdf.sign.location" value="" />
 	<Parameter name="pdf.sign.contact" value="" />
-	<!-- (facultatif) TSA Signature compatible ALT : Nécessité de posséder un certificat délivré par une authentité de certification externe 
+	<!-- (facultatif) TSA Signature compatible ALT : Nécessité de posséder un certificat délivré par une entité de certification externe
 	     La signature Alt doit être activée pour les pdf dans l'adminView (onglet PDF) -->
 	<Parameter name="pdf.sign.alt.tsa.url" value="http://timestamp.digicert.com" />
 	<Parameter name="pdf.sign.alt.tsa.username" value="toto" />
@@ -158,13 +158,14 @@
 	<Parameter name="autoredirect.to.mobileview" value="true"/>
 	
 	<!-- Configuration de l'envoi de mails d'erreur -->
-	<Parameter name="mail.smtpHost" value="smtp-sig.univ-lorraine.fr" />
+	<Parameter name="mail.smtpHost" value="smtp.univ.fr" />
+	<Parameter name="mail.smtpPort" value="25" />
 	<Parameter name="mail.from" value="mdw@univ.fr" />
 	<Parameter name="mail.to" value="error@univ.fr" />
 	<Parameter name="mail.startDisabling" value="00:01" />
 	<Parameter name="mail.stopDisabling" value="00:02" />
 	<!-- liste des erreurs à ignorer séparées par un point virgule -->
-	<Parameter name="liste.erreur.a.ignorer" value="ClientAbortException;IllegalStateException;SocketTimeoutException"/>
+	<Parameter name="liste.erreur.a.ignorer" value="ClientAbortException;IllegalStateException;SocketTimeoutException;RpcInvocationException"/>
 
 	<!-- ELASTICSEARCH -->
  	<Parameter name="param.elasticsearch.url" value="localhost" /> 

@@ -18,13 +18,13 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import java.util.UUID;
-
-import javax.annotation.Resource;
-
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
+import net.sf.ehcache.CacheManager;
+import org.apereo.cas.client.session.SingleSignOutFilter;
+import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
-import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -35,20 +35,19 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
-import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
-//import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
-import net.sf.ehcache.CacheManager;
+import jakarta.annotation.Resource;
+import java.util.UUID;
 
 
 
@@ -60,7 +59,7 @@ import net.sf.ehcache.CacheManager;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true, jsr250Enabled=true, prePostEnabled=true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 
 	@Resource
 	private Environment environment;
@@ -74,36 +73,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
-	@Bean(name="authenticationManager")
-	@Override
+	/*@Bean(name="authenticationManager")
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
+	}*/
+	@Autowired
+	private AuthenticationConfiguration configuration;
+	@Bean
+	AuthenticationManager authenticationManager() throws Exception {
+		return configuration.getAuthenticationManager();
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.exceptionHandling()
-				.authenticationEntryPoint(casEntryPoint())
-				.and()
-			.authorizeRequests()
-				.anyRequest().authenticated()
-				.and()
-			.addFilterBefore(singleSignOutFilter(), LogoutFilter.class)
-			.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()))
-			.addFilter(casAuthenticationFilter())
-			// La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection
-			.csrf().disable()
-			.headers()
-			         /* Autorise l'affichage en iFrame */
-			         .frameOptions().disable()
-			         /* Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https */
-			         .cacheControl().disable();
+	/*@Override
+	protected void configure(HttpSecurity http) throws Exception {*/
+	@Bean
+	public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+		http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(casEntryPoint()));
+		http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
+
+		http.addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class);
+		http.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()));
+		http.addFilter(casAuthenticationFilter());
+
+		// La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection
+		http.csrf(c -> c.disable());
+
+		// Autorise l'affichage en iFrame et Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
+		http.headers(h -> h
+					.frameOptions(o -> o.disable())
+					.cacheControl(c -> c.disable()));
+
+		return http.build();
 	}
 
-	@Override
+	@Autowired
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(casAuthenticationProvider());
-	
 	}
 
 	
@@ -117,12 +122,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	}
 
+	@Bean
+	public SecurityContextLogoutHandler securityContextLogoutHandler() {
+		return new SecurityContextLogoutHandler();
+	}
+
 	/* Configuration CAS */
 	@Bean
 	public SingleSignOutFilter singleSignOutFilter() {
-		SingleSignOutFilter filter = new SingleSignOutFilter();
-		filter.setCasServerUrlPrefix(environment.getRequiredProperty("app.url"));
-		return filter;
+		final SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();
+		singleSignOutFilter.setIgnoreInitConfiguration(true);
+		return singleSignOutFilter;
 	}
 
 	@Bean
@@ -161,7 +171,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	
 	@Bean(name="userDetailsService")
-	@Override
 	public UserDetailsService userDetailsServiceBean() throws Exception {
 		return mdwUserDetailsService;
 	}

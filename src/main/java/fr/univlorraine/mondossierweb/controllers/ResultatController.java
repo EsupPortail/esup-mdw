@@ -20,20 +20,40 @@ package fr.univlorraine.mondossierweb.controllers;
 
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.*;
+import fr.univlorraine.mondossierweb.beans.CacheIP;
+import fr.univlorraine.mondossierweb.beans.CacheResultatsElpEpr;
+import fr.univlorraine.mondossierweb.beans.CacheResultatsVdiVet;
+import fr.univlorraine.mondossierweb.beans.Diplome;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatElpEprDTO5;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatVdiVetDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.EpreuveElpDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.EtapeResVdiVetDTO2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.PedagogiqueMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatElpDTO3;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatEprDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVdiDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ResultatVetDTO;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEpreuveElpDto24;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauEtapeResVdiVetDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatElpDto33;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatEprDto2;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVdiDto;
+import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVetDto;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -45,6 +65,7 @@ import java.util.Locale;
  * Gestion de la récupération des notes et résultats
  */
 @Component(value = "resultatController")
+@Slf4j
 public class ResultatController {
 
     private static final String ACRONYME_CORRESPONDANCE = "COR";
@@ -52,7 +73,7 @@ public class ResultatController {
      * proxy pour faire appel aux infos sur les résultats du WS .
      */
     private final PedagogiqueMetierServiceInterface pedagogiqueService = ServiceProvider.getService(PedagogiqueMetierServiceInterface.class);
-    private Logger LOG = LoggerFactory.getLogger(ResultatController.class);
+
     /* Injections */
     @Resource
     private transient ApplicationContext applicationContext;
@@ -142,9 +163,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage() != null && ex.getMessage().contains("remoteerror")) {
-                LOG.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
 
@@ -234,9 +255,9 @@ public class ResultatController {
             } catch (Exception ex) {
                 //Si on est dans un cas d'erreur non expliqué
                 if (ex.getMessage().contains("remoteerror")) {
-                    LOG.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                    log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
                 } else {
-                    LOG.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                    log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
                 }
             }
         }
@@ -293,7 +314,7 @@ public class ResultatController {
                         d.setCod_dip(rdto.getDiplome().getCodDip());
                         d.setCod_vrs_vdi(rdto.getDiplome().getCodVrsVdi().toString());
 
-                        int annee2 = new Integer(rdto.getAnnee()) + 1;
+                        int annee2 = Integer.valueOf(rdto.getAnnee()) + 1;
 
 
                         d.setAnnee(rdto.getAnnee() + "/" + annee2);
@@ -370,7 +391,7 @@ public class ResultatController {
                         for (EtapeResVdiVetDTO2 etape : etapes.getItem()) {
 
                             Etape et = new Etape();
-                            int anneeEtape = new Integer(etape.getCodAnu());
+                            int anneeEtape = Integer.valueOf(etape.getCodAnu());
                             et.setAnnee(anneeEtape + "/" + (anneeEtape + 1));
                             et.setCode(etape.getEtape().getCodEtp());
                             et.setVersion(etape.getEtape().getCodVrsVet().toString());
@@ -442,7 +463,7 @@ public class ResultatController {
                                     //et.getResultats().add(r);
                                     try {
                                         int session = Integer.parseInt(ret.getSession().getCodSes());
-                                        if (et.getResultats().size() > 0 && et.getResultats().size() >= session) {
+                                        if (!et.getResultats().isEmpty() && et.getResultats().size() >= session) {
                                             //ajout du résultat à la bonne place dans la liste
                                             et.getResultats().add((session - 1), r);
                                         } else {
@@ -488,9 +509,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().contains("remoteerror")) {
-                LOG.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
 
@@ -501,10 +522,10 @@ public class ResultatController {
 
         boolean insere = false;
         int rang = 0;
-        int anneeEtape = new Integer(et.getAnnee().substring(0, 4));
+        int anneeEtape = Integer.valueOf(et.getAnnee().substring(0, 4));
         while (!insere && rang < e.getEtapes().size()) {
 
-            int anneeEtapeEnCours = new Integer(e.getEtapes().get(rang).getAnnee().substring(0, 4));
+            int anneeEtapeEnCours = Integer.valueOf(e.getEtapes().get(rang).getAnnee().substring(0, 4));
             if (anneeEtape > anneeEtapeEnCours) {
                 e.getEtapes().add(rang, et);
                 insere = true;
@@ -591,7 +612,7 @@ public class ResultatController {
                             if (contientResultatsMixte(relpdto.getItem()) && temSesUniVet == null) {
                                 // Récupération du témoin de session unique de la VET correspondante
                                 temSesUniVet = multipleApogeeService.getTemSesUniVet(et.getCode(), et.getVersion());
-                                LOG.debug("temoinEtatDelib " + et.getCode() + "/" + et.getVersion() + " : " + temSesUniVet);
+                                log.debug("temoinEtatDelib " + et.getCode() + "/" + et.getVersion() + " : " + temSesUniVet);
                             }
                             //on parcourt les résultats pour l'ELP:
                             for (ResultatElpDTO3 rpd : relpdto.getItem()) {
@@ -611,7 +632,7 @@ public class ResultatController {
 
                                             int codsession = 0;
                                             if (rpd.getSession() != null) {
-                                                codsession = new Integer(rpd.getSession().getCodSes());
+                                                codsession = Integer.valueOf(rpd.getSession().getCodSes());
                                             } else {
                                                 //Pour info, on arrive ici car on peut etre en VAC: validation d'acquis
                                             }
@@ -741,7 +762,7 @@ public class ResultatController {
                                         }
                                     }
                                 } else {
-                                    LOG.debug("Résultat ignoré  car temSesUniVet = " + temSesUniVet + " pour VET " + et.getCode() + "/" + et.getVersion());
+                                    log.debug("Résultat ignoré  car temSesUniVet = " + temSesUniVet + " pour VET " + et.getCode() + "/" + et.getVersion());
                                 }
                             }
                         }
@@ -772,7 +793,7 @@ public class ResultatController {
                         }
 
                         //ajout de l'élément dans la liste
-                        if (liste1.size() == 0 || sourceExtractionApogee) {
+                        if (liste1.isEmpty() || sourceExtractionApogee) {
                             liste1.add(elp);
                         } else {
                             //ajout de l'élément dans la liste par ordre alphabétique
@@ -829,7 +850,7 @@ public class ResultatController {
 
                             if (repdto != null && repdto.getItem() != null && !repdto.getItem().isEmpty()) {
                                 for (ResultatEprDTO red : repdto.getItem()) {
-                                    int codsession = new Integer(red.getSession().getCodSes());
+                                    int codsession = Integer.valueOf(red.getSession().getCodSes());
                                     //09/01/13
                                     //On recupere la note si :
                                     //  On a reseigné une liste de type épreuve à afficher et le type de l'épreuve en fait partie
@@ -873,7 +894,7 @@ public class ResultatController {
                                                     elp2.setBareme1(red.getBarNotEpr());
                                                 }
                                             }
-                                            if (elp2.getNote1() != null && !elp2.getNote1().equals("")) {
+                                            if (elp2.getNote1() != null && !elp2.getNote1().isEmpty()) {
                                                 EprNotee = true;
                                             }
 
@@ -909,7 +930,7 @@ public class ResultatController {
                             }
                             //ajout de l'épreuve dans la liste en tant qu'élément si elle a une note ou un résultat (si on veut afficher les résultats)
                             if (EprNotee || (confAffResultatsEpreuve && EprResult)) {
-                                LOG.debug("*****Ajout epreuve à la liste : " + elp2.getCode());
+                                log.debug("*****Ajout epreuve à la liste : " + elp2.getCode());
                                 liste1.add(elp2);
                             }
                         }
@@ -918,7 +939,7 @@ public class ResultatController {
             }
             //ajout des éléments dans la liste de l'étudiant en commençant par la ou les racine
             int niveauRacine = 1;
-            if (liste1.size() > 0) {
+            if (!liste1.isEmpty()) {
                 int i = 0;
                 while (i < liste1.size()) {
                     ElementPedagogique el = liste1.get(i);
@@ -939,33 +960,31 @@ public class ResultatController {
             }
 
 
-            //suppression des épreuve seules et quand elles ont les mêmes notes que l'element pere:
-            if (!sourceExtractionApogee && e.getElementsPedagogiques().size() > 0) {
+            //suppression des épreuve seules et quand elles ont les mêmes notes et résultats que l'élément pere:
+            if (!sourceExtractionApogee && !e.getElementsPedagogiques().isEmpty()) {
                 int i = 1;
                 boolean suppr = false;
                 while (i < e.getElementsPedagogiques().size()) {
                     suppr = false;
                     ElementPedagogique elp = e.getElementsPedagogiques().get(i);
                     if (elp.isEpreuve()) {
+                        // Récupération de l'ELP précédent dans la liste
                         ElementPedagogique elp0 = e.getElementsPedagogiques().get(i - 1);
-                        if (i < (e.getElementsPedagogiques().size() - 1)) {
-                            ElementPedagogique elp1 = e.getElementsPedagogiques().get(i + 1);
-                            if (!elp0.isEpreuve() && !elp1.isEpreuve()) {
-                                if (elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
-                                    //on supprime l'element i
-                                    e.getElementsPedagogiques().remove(i);
-                                    suppr = true;
-                                }
-                            }
-                        } else {
-                            if (!elp0.isEpreuve() && elp0.getNote1().equals(elp.getNote1()) && elp0.getNote2().equals(elp.getNote2())) {
+                        // Si on doit tester si l'épreuve peut être supprimée de la liste
+                        if (testerEpreuve(e, i)) {
+                            // 04/04/2025 : Ajout des résultats dans la condition ci-dessous
+                            if (!elp0.isEpreuve() && elp0.getLevel() == (elp.getLevel() + 1)
+                                    && Utils.isEquals(elp0.getNote1(),elp.getNote1()) && Utils.isEquals(elp0.getNote2(),elp.getNote2())
+                                    && Utils.isEquals(elp0.getRes1(),elp.getRes1()) && Utils.isEquals(elp0.getRes2(),elp.getRes2())) {
                                 //on supprime l'element i
                                 e.getElementsPedagogiques().remove(i);
                                 suppr = true;
                             }
                         }
                     }
+                    // Si on n'a pas supprimé d'élément dans la liste
                     if (!suppr) {
+                        // On incrémente le compteur
                         i++;
                     }
                 }
@@ -974,7 +993,7 @@ public class ResultatController {
 
             //Gestion des temoins fictif si temoinFictif est renseigné dans monDossierWeb.xml
             if (configController.getTemoinFictif() != null && !configController.getTemoinFictif().equals("")) {
-                if (e.getElementsPedagogiques().size() > 0) {
+                if (!e.getElementsPedagogiques().isEmpty()) {
                     List<Integer> listeRangAsupprimer = new LinkedList<Integer>();
                     int rang = 0;
                     //on note les rangs des éléments à supprimer
@@ -997,7 +1016,7 @@ public class ResultatController {
             // Gestion de la descendance des semestres si temNotesEtuSem est renseigné et à true dans monDossierWeb.xml
             // et qu'il ne s'agit pas d'une extraction
             if (configController.isTemNotesEtuSem() && !sourceExtractionApogee) {
-                if (e.getElementsPedagogiques().size() > 0) {
+                if (!e.getElementsPedagogiques().isEmpty()) {
                     List<Integer> listeRangAsupprimer = new LinkedList<Integer>();
                     int rang = 0;
 
@@ -1007,7 +1026,7 @@ public class ResultatController {
                     //on note les rangs des éléments à supprimer
                     for (ElementPedagogique el : e.getElementsPedagogiques()) {
                         if (el.getTemSemestre() != null && !el.getTemSemestre().equals("") && el.getTemSemestre().equals("O")) {
-                            curSemLevel = new Integer(el.getLevel());
+                            curSemLevel = Integer.valueOf(el.getLevel());
                             supDesc = el.getEtatDelib() != null && !el.getEtatDelib().equals("") && !el.getEtatDelib().equals("T");
                         } else if (el.getLevel() <= curSemLevel) {
                             supDesc = false;
@@ -1036,7 +1055,7 @@ public class ResultatController {
             ep.setLevel(1);
             ep.setLibelle(et.getLibelle());
             e.setDeliberationTerminee(et.isDeliberationTerminee());
-            if (et.getResultats().size() > 0) {
+            if (!et.getResultats().isEmpty()) {
                 for (Resultat r : et.getResultats()) {
                     if (r != null) {
                         //Si c'est un résultat de session 1 ou de session unique
@@ -1059,34 +1078,28 @@ public class ResultatController {
                     }
 
                 }
-
-                /* ANCIEN CODE : avant d'ajouter codeSession à Resultat.java*/
-				/*if (et.getResultats().get(0).getNote() != null){
-					ep.setNote1(et.getResultats().get(0).getNote().toString());
-					ep.setBareme1(et.getResultats().get(0).getBareme());
-				}
-				if (et.getResultats().get(0).getAdmission() != null)
-					ep.setRes1(et.getResultats().get(0).getAdmission());
-
-				}
-			if (et.getResultats().size() > 1) {
-				if (et.getResultats().get(1).getNote() != null){
-					ep.setNote2(et.getResultats().get(1).getNote().toString());
-					ep.setBareme2(et.getResultats().get(1).getBareme());
-				}
-				if (et.getResultats().get(1).getAdmission() != null)
-					ep.setRes2(et.getResultats().get(1).getAdmission());*/
             }
             e.getElementsPedagogiques().add(0, ep);
 
         } catch (Exception ex) {
+            log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             //Si on est dans un cas d'erreur non expliqué
-            if (ex.getMessage().contains("remoteerror")) {
-                LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+           /* if (ex.getMessage().contains("remoteerror")) {
+                log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
-            }
+                log.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+            }*/
         }
+    }
+
+    private static boolean testerEpreuve(Etudiant e, int i) {
+        // Si on n'est pas sur le dernier ELP  de la liste
+        if (i < (e.getElementsPedagogiques().size() - 1)) {
+            // Si l'ELP suivant n'est pas une épreuve
+           return !e.getElementsPedagogiques().get(i + 1).isEpreuve();
+        }
+        // On est sur le dernier ELP on doit tester
+        return true;
     }
 
 
@@ -1105,13 +1118,13 @@ public class ResultatController {
                 } else {
                     // Si c'et une MCC différente de celle trouvée jusque là
                     if (sessionUnique.booleanValue() != su.booleanValue()) {
-                        LOG.debug("contientResultatsMixte true");
+                        log.debug("contientResultatsMixte true");
                         return true;
                     }
                 }
             }
         }
-        LOG.debug("contientResultatsMixte false");
+        log.debug("contientResultatsMixte false");
         return false;
     }
 
@@ -1217,9 +1230,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().contains("remoteerror")) {
-                LOG.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                LOG.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             }
         }
     }
@@ -1285,9 +1298,9 @@ public class ResultatController {
         } catch (Exception ex) {
             //Si on est dans un cas d'erreur non expliqué
             if (ex.getMessage().equals("remoteerror")) {
-                LOG.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(), ex);
+                log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(), ex);
             } else {
-                LOG.info(ex.getMessage() + " pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant(" + et.getAnnee() + "," + et.getCode() + "/" + et.getVersion() + ")");
+                log.info(ex.getMessage() + " pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant(" + et.getAnnee() + "," + et.getCode() + "/" + et.getVersion() + ")");
             }
         }
 
@@ -1296,12 +1309,12 @@ public class ResultatController {
 
     public boolean utilisationExtractionApogee(String annee) {
 
-        int anneeEnCours = new Integer(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
-        int anneeDemandee = new Integer(annee);
+        int anneeEnCours = Integer.valueOf(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
+        int anneeDemandee = Integer.valueOf(annee);
 
         // Si l'application est paramétrée pour utiliser les extractions sur la dernière année ouverte au résultats
         if (configController.isNotesAnneeOuverteResExtractionApogee()) {
-            int anneeRes = new Integer(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
+            int anneeRes = Integer.valueOf(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
             // Si l'année en question est la dernière ouverte aux résultats
             if (anneeDemandee == anneeRes) {
                 return true;
@@ -1344,7 +1357,7 @@ public class ResultatController {
             ajouterCacheResultatVdiVet(true, e);
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheResultatVdiVet(new Integer(rang), e);
+            recupererCacheResultatVdiVet(Integer.valueOf(rang), e);
         }
     }
 
@@ -1357,7 +1370,7 @@ public class ResultatController {
             ajouterCacheResultatVdiVet(false, e);
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheResultatVdiVet(new Integer(rang), e);
+            recupererCacheResultatVdiVet(Integer.valueOf(rang), e);
         }
     }
 
@@ -1370,7 +1383,7 @@ public class ResultatController {
 
         //Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
         if (utilisationExtractionApogee(etape.getAnnee().substring(0, 4), sourceResultat)) {
-            LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
+            log.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
             //On regarde si on a pas déjà les infos dans le cache:
             String rang = getRangDetailInscriptionEnCache(etape, GenericUI.getCurrent().getEtudiant());
 
@@ -1380,11 +1393,11 @@ public class ResultatController {
                 ajouterCacheDetailInscription(etape, GenericUI.getCurrent().getEtudiant());
             } else {
                 //on récupére les infos du cache grace au rang :
-                recupererCacheDetailInscription(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+                recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
             }
 
         } else {
-            LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
+            log.info("Méthode de récupération de l'IP identique à la récupération des notes");
             //Méthode de récupération de l'IP commune aux notes
             renseigneDetailNotesEtResultatsEtudiant(etape);
         }
@@ -1399,7 +1412,7 @@ public class ResultatController {
 
         //Si on devait se baser sur l'extraction apogée pour récupérer les notes à l'étape
         if (utilisationExtractionApogee(etape.getAnnee().substring(0, 4), sourceResultat)) {
-            LOG.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
+            log.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
             //On regarde si on a pas déjà les infos dans le cache:
             String rang = getRangDetailInscriptionEnCache(etape, GenericUI.getCurrent().getEtudiant());
 
@@ -1409,10 +1422,10 @@ public class ResultatController {
                 ajouterCacheDetailInscription(etape, GenericUI.getCurrent().getEtudiant());
             } else {
                 //on récupére les infos du cache grace au rang :
-                recupererCacheDetailInscription(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+                recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
             }
         } else {
-            LOG.info("Méthode de récupération de l'IP identique à la récupération des notes");
+            log.info("Méthode de récupération de l'IP identique à la récupération des notes");
             //Méthode de récupération de l'IP commune aux notes
             renseigneDetailNotesEtResultats(etape, isGestionnaire);
         }
@@ -1430,7 +1443,7 @@ public class ResultatController {
             ajouterCacheDetailNotesEtResultats(etape, true, GenericUI.getCurrent().getEtudiant());
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheDetailNotesEtResultats(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
         }
     }
 
@@ -1444,7 +1457,7 @@ public class ResultatController {
             ajouterCacheDetailNotesEtResultats(etape, false, GenericUI.getCurrent().getEtudiant());
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheDetailNotesEtResultats(new Integer(rang), GenericUI.getCurrent().getEtudiant());
+            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
         }
     }
 
@@ -1571,7 +1584,7 @@ public class ResultatController {
         CacheResultatsElpEpr cree = new CacheResultatsElpEpr();
         cree.setVueEtudiant(vueEtudiant);
         cree.setEtape(etape);
-        if (e.getElementsPedagogiques() != null && e.getElementsPedagogiques().size() > 0) {
+        if (e.getElementsPedagogiques() != null && !e.getElementsPedagogiques().isEmpty()) {
             cree.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getElementsPedagogiques()));
         }
         e.getCacheResultats().getResultElpEpr().add(cree);
@@ -1584,7 +1597,7 @@ public class ResultatController {
     public void ajouterCacheDetailInscription(Etape etape, Etudiant e) {
         CacheIP cip = new CacheIP();
         cip.setEtape(etape);
-        if (e.getElementsPedagogiques() != null && e.getElementsPedagogiques().size() > 0) {
+        if (e.getElementsPedagogiques() != null && !e.getElementsPedagogiques().isEmpty()) {
             cip.setElementsPedagogiques(new LinkedList<ElementPedagogique>(e.getElementsPedagogiques()));
         }
         e.getCacheResultats().getIp().add(cip);
@@ -1662,7 +1675,7 @@ public class ResultatController {
 
     public boolean isAfficherRangElpEpr() {
         List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
-        if (lelp != null && lelp.size() > 0) {
+        if (lelp != null && !lelp.isEmpty()) {
             List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
             if (codesAutorises != null && codesAutorises.contains(lelp.get(0).getCode())) {
                 return true;

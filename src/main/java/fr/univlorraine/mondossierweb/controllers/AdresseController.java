@@ -18,22 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
-
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import fr.univlorraine.apowsutils.ServiceProvider;
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.utils.Utils;
@@ -47,14 +32,24 @@ import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.GeographieMetierServiceInterface;
 import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Gestion des adresses
  */
 @Component
+@Slf4j
 public class AdresseController {
-
-	private Logger LOG = LoggerFactory.getLogger(AdresseController.class);
 
 	private static final String COD_HEBERG_DOMICILE_PARENTAL = "4";
 	private static final String COD_PAY_FRANCE = "100";
@@ -89,7 +84,7 @@ public class AdresseController {
 			try {
 				listeTypeHebergement=etudiantService.recupererTypeHebergement(null, null, null);
 			} catch (Exception e) {
-				LOG.error("Problème lors de getTypesHebergement", e);
+				log.error("Problème lors de getTypesHebergement", e);
 			}
 		}
 		return listeTypeHebergement;
@@ -100,7 +95,7 @@ public class AdresseController {
 			try {
 				listePays = geographieService.recupererPays(null, "O");
 			} catch (Exception e) {
-				LOG.error("Problème lors de getTypesHebergement", e);
+				log.error("Problème lors de getTypesHebergement", e);
 			}
 		}
 		return listePays;
@@ -138,7 +133,7 @@ public class AdresseController {
 				}
 			} 
 		}catch(Exception e ){
-			LOG.info("Problème à la récupération de communes pour le code postal : "+codePostal,e);
+			log.info("Problème à la récupération de communes pour le code postal : "+codePostal,e);
 		}
 		return lvilles;
 	}
@@ -316,20 +311,21 @@ public class AdresseController {
 			CoordonneesMajDTO cdtomaj = new CoordonneesMajDTO();
 			cdtomaj.setAnnee(annee);
 			cdtomaj.setTypeHebergement(adresseAnnuelle.getType());
-			cdtomaj.setEmail(cdto.getEmail());
+			// Si email = null le WS Apogée génère un NPE
+			cdtomaj.setEmail(cdto.getEmail() != null ? cdto.getEmail() : "");
 			cdtomaj.setNumTelPortable(cdto.getNumTelPortable());
 			cdtomaj.setAdresseAnnuelle(adanmaj);
 			cdtomaj.setAdresseFixe(adfixmaj);
 
-			LOG.debug("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+adresseAnnuelle.getType());
+			log.debug("==== MAJ ADRESSE ==="+cdto.getAnnee()+" "+adresseAnnuelle.getType());
 			etudiantService.mettreAJourAdressesEtudiant(cdtomaj, cod_etu);
 
 			ok = true;
 		} catch (Exception ex) {
 			if(ex != null && ex.getMessage() != null && (ex.getMessage().contains("technical.data.nullretrieve") || ex.getMessage().contains("technical.parameter.nonpresentinput"))) {
-				LOG.warn("Probleme " + ex.getMessage() + " lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu);
+				log.warn("Probleme " + ex.getMessage() + " lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu);
 			}else {
-				LOG.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
+				log.error("Probleme avec le WS lors de la maj des adresses de l'etudiant dont codetu est : " + cod_etu,ex);
 			}
 		}
 		return ok;
@@ -357,7 +353,7 @@ public class AdresseController {
 				}
 			}
 		} catch (Exception e) {
-			LOG.info("Probleme avec le WS lors de la getCodeInseeVille : "+codepostal ,e);
+			log.info("Probleme avec le WS lors de la getCodeInseeVille : "+codepostal ,e);
 		}
 		return null;
 

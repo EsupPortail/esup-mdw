@@ -6,6 +6,19 @@
 
 # IntelliJ
 .idea/
+.smarttomcat/
 
 /target/
 /**/favicon.ico
+
+# Resources
+/src/main/webapp/META-INF/context.xml
+/src/main/resources/apogeeRequest.xml
+/src/main/resources/configUrlServices.properties
+/src/main/resources/configUrlServicesdev*.properties
+/src/main/resources/configUrlServicestest*.properties
+/src/main/resources/configUrlServicespreprod*.properties
+/src/main/resources/configUrlServicesprod*.properties
+/src/main/resources/repository/gouv/education/apogee/apo-webservices-client/**/apo-webservices-client-*.jar
+/src/main/resources/i18n/messages.properties
+/src/main/resources/i18n/vaadin-messages.properties

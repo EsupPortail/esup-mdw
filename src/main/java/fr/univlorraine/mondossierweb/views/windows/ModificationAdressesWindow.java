@@ -18,42 +18,36 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
+import fr.univlorraine.mondossierweb.MainUI;
+import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.controllers.AdresseController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
+import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.beans.Adresse;
-import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.controllers.AdresseController;
-import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
-import gouv.education.apogee.commun.client.ws.EtudiantMetier.TypeHebergementDTO;
-import gouv.education.apogee.commun.client.ws.GeographieMetier.CommuneDTO2;
-import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
+import java.util.List;
 
 
 /**
@@ -65,7 +59,6 @@ import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
 public class ModificationAdressesWindow extends Window {
 
 	public static final String NAME = "modificationAdressesWindow";
-
 	private static final String COD_HEBERG_DOMICILE_PARENTAL = "4";
 	private static final String COD_PAY_FRANCE = "100";
 
@@ -79,10 +72,7 @@ public class ModificationAdressesWindow extends Window {
 
 	/* Composants */
 	private Button btnAnnuler = new Button();
-
 	private Button btnValider = new Button();
-
-
 	private NativeSelect lhebergement;
 	private TextField fieldAnnu1;
 	private TextField fieldAnnu2;
@@ -94,8 +84,6 @@ public class ModificationAdressesWindow extends Window {
 	private NativeSelect lville1;
 	private TextField fieldVilleEtranger1;
 	private Label labelChoixHebergement;
-
-
 	private TextField fieldFixe1;
 	private TextField fieldFixe2;
 	private TextField fieldFixe3;
@@ -106,15 +94,13 @@ public class ModificationAdressesWindow extends Window {
 	private NativeSelect lville2;
 	private TextField fieldVilleEtranger2;
 
-
 	/**
 	 * Crée une fenêtre de confirmation
-	 * @param message
-	 * @param titre
+	 * @param etudiant
+	 * @param modificationTelephoneAutorisee
 	 */
-	public void init(Etudiant etudiant, boolean modificationTelephoneAutorisee) {
+	public void init(Etudiant etudiant, boolean modificationTelephoneAutorisee, boolean modificationAdresseAnnuelleAutorisee) {
 		/* Style */
-		//setWidth(900, Unit.PIXELS);
 		setModal(true);
 		setResizable(false);
 		setClosable(false);
@@ -125,9 +111,8 @@ public class ModificationAdressesWindow extends Window {
 		layout.setSpacing(true);
 		setContent(layout);
 
-
 		/* Titre */
-		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
+		setCaption(applicationContext.getMessage(NAME + ".title", null, getLocale()));
 
 		/* Layout pour afficher les erreurs */
 		VerticalLayout erreursLayout = new VerticalLayout();
@@ -140,35 +125,35 @@ public class ModificationAdressesWindow extends Window {
 		layout.addComponent(panelslayout);
 
 		/* Panel adresse annuelle */
-		Panel adressesAnnuellePanel = new Panel(applicationContext.getMessage(NAME+".panel.adresseannuelle.title", null, getLocale())+" "+MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAnnee());
+		Panel adressesAnnuellePanel = new Panel(applicationContext.getMessage(NAME + ".panel.adresseannuelle.title", null, getLocale()) + " " + MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAnnee());
 
 		FormLayout formAdresseAnnuelleLayout = new FormLayout();
 		formAdresseAnnuelleLayout.setSpacing(true);
 		formAdresseAnnuelleLayout.setMargin(true);
 
 		//TypeHebergement
-		String captionHebergement = applicationContext.getMessage(NAME+".typehebergement", null, getLocale());
+		String captionHebergement = applicationContext.getMessage(NAME + ".typehebergement", null, getLocale());
 		List<TypeHebergementDTO> hebergements = adresseController.getTypesHebergement();
 		lhebergement = new NativeSelect();
 		lhebergement.setCaption(captionHebergement);
 		lhebergement.setNullSelectionAllowed(false);
 		lhebergement.setRequired(true);
 		lhebergement.setWidth("326px");
-		for(TypeHebergementDTO h : hebergements){
+		for (TypeHebergementDTO h : hebergements) {
 			lhebergement.addItem(h.getCodTypeHebergement());
 			lhebergement.setItemCaption(h.getCodTypeHebergement(), h.getLibWebTypeHebergement());
 		}
 		lhebergement.setValue(etudiant.getAdresseAnnuelle().getType());
-		lhebergement.addValueChangeListener(new ValueChangeListener() {
+		lhebergement.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				String selectedValue = (String) event.getProperty().getValue();
 
 				//Si un hébergement autre que la Domicile parental a été choisi
-				if(!selectedValue.equals(COD_HEBERG_DOMICILE_PARENTAL)){
+				if (!selectedValue.equals(COD_HEBERG_DOMICILE_PARENTAL)) {
 					activeFormulaireAdresseAnnuelle();
 
-				}else{
+				} else {
 					desactiveFormulaireAdresseAnnuelle();
 				}
 			}
@@ -177,11 +162,11 @@ public class ModificationAdressesWindow extends Window {
 		formAdresseAnnuelleLayout.addComponent(lhebergement);
 
 		//labelChoixHebergement
-		labelChoixHebergement = new Label(applicationContext.getMessage(NAME+".labelhebergement", null, getLocale()));
+		labelChoixHebergement = new Label(applicationContext.getMessage(NAME + ".labelhebergement", null, getLocale()));
 		formAdresseAnnuelleLayout.addComponent(labelChoixHebergement);
 
 		//AdresseAnnuelle1
-		fieldAnnu1 = new TextField(applicationContext.getMessage(NAME+".annu1", null, getLocale()));
+		fieldAnnu1 = new TextField(applicationContext.getMessage(NAME + ".annu1", null, getLocale()));
 		fieldAnnu1.setValue(etudiant.getAdresseAnnuelle().getAdresse1());
 		fieldAnnu1.setNullRepresentation("");
 		fieldAnnu1.setWidth("326px");
@@ -190,7 +175,7 @@ public class ModificationAdressesWindow extends Window {
 		formAdresseAnnuelleLayout.addComponent(fieldAnnu1);
 
 		//AdresseAnnuelle2
-		fieldAnnu2 = new TextField(applicationContext.getMessage(NAME+".annu2", null, getLocale()));
+		fieldAnnu2 = new TextField(applicationContext.getMessage(NAME + ".annu2", null, getLocale()));
 		fieldAnnu2.setValue(etudiant.getAdresseAnnuelle().getAdresse2());
 		fieldAnnu2.setNullRepresentation("");
 		fieldAnnu2.setWidth("326px");
@@ -198,46 +183,43 @@ public class ModificationAdressesWindow extends Window {
 		formAdresseAnnuelleLayout.addComponent(fieldAnnu2);
 
 		//AdresseAnnuelle3
-		fieldAnnu3 = new TextField(applicationContext.getMessage(NAME+".annu3", null, getLocale()));
+		fieldAnnu3 = new TextField(applicationContext.getMessage(NAME + ".annu3", null, getLocale()));
 		fieldAnnu3.setValue(etudiant.getAdresseAnnuelle().getAdresse3());
 		fieldAnnu3.setNullRepresentation("");
 		fieldAnnu3.setWidth("326px");
 		fieldAnnu3.setMaxLength(32);
 		formAdresseAnnuelleLayout.addComponent(fieldAnnu3);
 
-
-
 		//Liste des Pays
-		String captionPays= applicationContext.getMessage(NAME+".pays1", null, getLocale());
+		String captionPays = applicationContext.getMessage(NAME + ".pays1", null, getLocale());
 		List<PaysDTO> pays = adresseController.getPays();
 		lpays1 = new NativeSelect();
 		lpays1.setCaption(captionPays);
 		lpays1.setNullSelectionAllowed(false);
 		lpays1.setRequired(true);
 		lpays1.setWidth("326px");
-		for(PaysDTO p : pays){
+		for (PaysDTO p : pays) {
 			lpays1.addItem(p.getCodePay());
-			lpays1.setItemCaption(p.getCodePay(),p.getLibPay());
+			lpays1.setItemCaption(p.getCodePay(), p.getLibPay());
 		}
 		lpays1.setValue(etudiant.getAdresseAnnuelle().getCodPays());
-		lpays1.addValueChangeListener(new ValueChangeListener() {
+		lpays1.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				String selectedValue = (String) event.getProperty().getValue();
 
 				//Si un pays autre que France a été choisi
-				if(!selectedValue.equals(COD_PAY_FRANCE)){
+				if (!selectedValue.equals(COD_PAY_FRANCE)) {
 					activerChampPourAdresseAnnuelleEtranger();
-				}else{
+				} else {
 					activerChampPourAdresseAnnuelleEnFrance();
 				}
 			}
 		});
 		formAdresseAnnuelleLayout.addComponent(lpays1);
 
-
 		//Ville pour adresse à l'étranger
-		fieldVilleEtranger1 = new TextField(applicationContext.getMessage(NAME+".villeetranger1", null, getLocale()));
+		fieldVilleEtranger1 = new TextField(applicationContext.getMessage(NAME + ".villeetranger1", null, getLocale()));
 		fieldVilleEtranger1.setValue(etudiant.getAdresseAnnuelle().getAdresseetranger());
 		fieldVilleEtranger1.setNullRepresentation("");
 		fieldVilleEtranger1.setWidth("326px");
@@ -246,84 +228,78 @@ public class ModificationAdressesWindow extends Window {
 		formAdresseAnnuelleLayout.addComponent(fieldVilleEtranger1);
 
 		//codePostal1 pour adresses en france
-		fieldCodePostal1 = new TextField(applicationContext.getMessage(NAME+".codepostal1", null, getLocale()));
+		fieldCodePostal1 = new TextField(applicationContext.getMessage(NAME + ".codepostal1", null, getLocale()));
 		fieldCodePostal1.setValue(etudiant.getAdresseAnnuelle().getCodePostal());
 		fieldCodePostal1.setNullRepresentation("");
 		fieldCodePostal1.setWidth("326px");
 		fieldCodePostal1.setMaxLength(5);
 		fieldCodePostal1.setRequired(true);
-		//fieldCodePostal1.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		fieldCodePostal1.addTextChangeListener(new TextChangeListener() {
+		fieldCodePostal1.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
-			public void textChange(TextChangeEvent event) {
+			public void textChange(FieldEvents.TextChangeEvent event) {
 				updateListeVillesAnnuelle(event.getText());
 			}
 		});
-
 		formAdresseAnnuelleLayout.addComponent(fieldCodePostal1);
 
 		//Ville pour adresse en france
 		List<CommuneDTO2> villes1 = adresseController.getVilles(etudiant.getAdresseAnnuelle().getCodePostal());
 		lville1 = new NativeSelect();
-		lville1.setCaption(applicationContext.getMessage(NAME+".ville1", null, getLocale()));
+		lville1.setCaption(applicationContext.getMessage(NAME + ".ville1", null, getLocale()));
 		lville1.setNullSelectionAllowed(false);
 		lville1.setRequired(true);
 		lville1.setWidth("326px");
-		for(CommuneDTO2 v : villes1){
+		for (CommuneDTO2 v : villes1) {
 			lville1.addItem(v.getLibCommune());
-			lville1.setItemCaption(v.getLibCommune(),v.getLibCommune());
+			lville1.setItemCaption(v.getLibCommune(), v.getLibCommune());
 		}
 		codePostalVillesAnnu = etudiant.getAdresseAnnuelle().getCodePostal();
 		lville1.setValue(etudiant.getAdresseAnnuelle().getVille());
-		lville1.addValueChangeListener(new ValueChangeListener() {
+		lville1.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				updateCodePostalVilleAnnuelle();
 			}
 		});
 		formAdresseAnnuelleLayout.addComponent(lville1);
 
-
 		//activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
-		if(etudiant.getAdresseAnnuelle().getCodPays().equals(COD_PAY_FRANCE)){
+		if (etudiant.getAdresseAnnuelle().getCodPays().equals(COD_PAY_FRANCE)) {
 			activerChampPourAdresseAnnuelleEnFrance();
-		}else{
+		} else {
 			activerChampPourAdresseAnnuelleEtranger();
 		}
 
-
 		//Téléphone1
-		fieldTelephone1 = new TextField(applicationContext.getMessage(NAME+".tel1", null, getLocale()));
+		fieldTelephone1 = new TextField(applicationContext.getMessage(NAME + ".tel1", null, getLocale()));
 		fieldTelephone1.setValue(etudiant.getAdresseAnnuelle().getNumerotel());
 		fieldTelephone1.setNullRepresentation("");
 		fieldTelephone1.setWidth("326px");
 		fieldTelephone1.setMaxLength(15);
 		fieldTelephone1.setRequired(false);
-		if(modificationTelephoneAutorisee) {
+		if (modificationTelephoneAutorisee) {
 			formAdresseAnnuelleLayout.addComponent(fieldTelephone1);
 		}
 
 		//ajout du panel adresse Annuelle
 		adressesAnnuellePanel.setContent(formAdresseAnnuelleLayout);
-		panelslayout.addComponent(adressesAnnuellePanel);
-
-
-		//Si un hébergement autre que la Domicile parental a été choisi
-		if(!etudiant.getAdresseAnnuelle().getType().equals(COD_HEBERG_DOMICILE_PARENTAL)){
-			activeFormulaireAdresseAnnuelle();
-		}else{
-			desactiveFormulaireAdresseAnnuelle();
+		// Si modification adresse annuelle autorisée
+		if (modificationAdresseAnnuelleAutorisee) {
+			// Ajout panel de l'adresse annuelle dans la vue
+			panelslayout.addComponent(adressesAnnuellePanel);
+			//Si un hébergement autre que la Domicile parental a été choisi
+			if (!etudiant.getAdresseAnnuelle().getType().equals(COD_HEBERG_DOMICILE_PARENTAL)) {
+				activeFormulaireAdresseAnnuelle();
+			} else {
+				desactiveFormulaireAdresseAnnuelle();
+			}
 		}
-
-
 
 		/* Panel adresse fixe */
 		Panel adressesFixePanel = new Panel(applicationContext.getMessage(NAME+".panel.adressefixe.title", null, getLocale()));
-
 		FormLayout formAdresseFixeLayout = new FormLayout();
 		formAdresseFixeLayout.setSpacing(true);
 		formAdresseFixeLayout.setMargin(true);
-
 
 		//AdresseFixe1
 		fieldFixe1 = new TextField(applicationContext.getMessage(NAME+".fixe1", null, getLocale()));
@@ -350,8 +326,6 @@ public class ModificationAdressesWindow extends Window {
 		fieldFixe3.setMaxLength(32);
 		formAdresseFixeLayout.addComponent(fieldFixe3);
 
-
-
 		//Liste des Pays
 		lpays2 = new NativeSelect();
 		lpays2.setCaption(captionPays);
@@ -363,9 +337,9 @@ public class ModificationAdressesWindow extends Window {
 			lpays2.setItemCaption(p.getCodePay(),p.getLibPay());
 		}
 		lpays2.setValue(etudiant.getAdresseFixe().getCodPays());
-		lpays2.addValueChangeListener(new ValueChangeListener() {
+		lpays2.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				String selectedValue = (String) event.getProperty().getValue();
 
 				//Si un pays autre que France a été choisi
@@ -377,7 +351,6 @@ public class ModificationAdressesWindow extends Window {
 			}
 		});
 		formAdresseFixeLayout.addComponent(lpays2);
-
 
 		//Ville pour adresse à l'étranger
 		fieldVilleEtranger2 = new TextField(applicationContext.getMessage(NAME+".villeetranger2", null, getLocale()));
@@ -396,9 +369,9 @@ public class ModificationAdressesWindow extends Window {
 		fieldCodePostal2.setMaxLength(5);
 		fieldCodePostal2.setRequired(true);
 		//fieldCodePostal1.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		fieldCodePostal2.addTextChangeListener(new TextChangeListener() {
+		fieldCodePostal2.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
-			public void textChange(TextChangeEvent event) {
+			public void textChange(FieldEvents.TextChangeEvent event) {
 				updateListeVillesFixe(event.getText());
 			}
 		});
@@ -418,16 +391,15 @@ public class ModificationAdressesWindow extends Window {
 		}
 		codePostalVillesFixe = etudiant.getAdresseFixe().getCodePostal();
 		lville2.setValue(etudiant.getAdresseFixe().getVille());
-		lville2.addValueChangeListener(new ValueChangeListener() {
+		lville2.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(Property.ValueChangeEvent event) {
 				updateCodePostalVilleFixe();
 			}
 		});
 		formAdresseFixeLayout.addComponent(lville2);
 
-
-		//activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
+		//Activation des champs utiles en fonction de l'adresse de l'étudiant avant la modification
 		if(etudiant.getAdresseFixe().getCodPays().equals(COD_PAY_FRANCE)){
 			activerChampPourAdresseFixeEnFrance();
 		}else{
@@ -446,17 +418,11 @@ public class ModificationAdressesWindow extends Window {
 			formAdresseFixeLayout.addComponent(fieldTelephone2);
 		}
 
-
 		//ajout du panel adresse fixe
 		adressesFixePanel.setContent(formAdresseFixeLayout);
 		panelslayout.addComponent(adressesFixePanel);
 
-
-
-
-
-
-		/* Boutons */
+		// Boutons
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setSpacing(true);
@@ -465,7 +431,6 @@ public class ModificationAdressesWindow extends Window {
 		btnValider.setIcon(FontAwesome.CHECK);
 		btnValider.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		btnValider.addClickListener(e -> {
-
 			Adresse adresseAnnuelle = new Adresse();
 			adresseAnnuelle.setType(lhebergement.getValue().toString());
 			adresseAnnuelle.setAdresse1(fieldAnnu1.getValue());
@@ -476,7 +441,6 @@ public class ModificationAdressesWindow extends Window {
 			adresseAnnuelle.setVille((lville1.getValue()==null)? null : lville1.getValue().toString());
 			adresseAnnuelle.setAdresseetranger(fieldVilleEtranger1.getValue());
 			adresseAnnuelle.setNumerotel(fieldTelephone1.getValue());
-
 
 			Adresse adresseFixe = new Adresse();
 			adresseFixe.setAdresse1(fieldFixe1.getValue());
@@ -496,7 +460,7 @@ public class ModificationAdressesWindow extends Window {
 				close();
 			}else{
 				//affichage erreurs
-				if(retour!=null && retour.size()>0){
+				if(retour!=null && !retour.isEmpty()){
 					String errorMsg="";
 					for(String erreur : retour){
 						if(!errorMsg.equals(""))
@@ -527,7 +491,6 @@ public class ModificationAdressesWindow extends Window {
 		/* Centre la fenêtre */
 		center();
 	}
-
 
 	private void activerChampPourAdresseAnnuelleEnFrance() {
 		fieldVilleEtranger1.setVisible(false);
@@ -564,12 +527,6 @@ public class ModificationAdressesWindow extends Window {
 
 	}
 
-
-
-
-
-
-
 	private void activerChampPourAdresseFixeEnFrance() {
 		fieldVilleEtranger2.setVisible(false);
 		fieldCodePostal2.setVisible(true);
@@ -581,9 +538,7 @@ public class ModificationAdressesWindow extends Window {
 		fieldVilleEtranger2.setVisible(true);
 		fieldCodePostal2.setVisible(false);
 		lville2.setVisible(false);
-
 	}
-
 
 	private void updateCodePostalVilleFixe() {
 		fieldCodePostal2.setValue(codePostalVillesFixe);
@@ -602,9 +557,7 @@ public class ModificationAdressesWindow extends Window {
 				lville2.setValue(villes2.get(0).getLibCommune());
 			}
 		}
-
 	}
-
 
 	private void activeFormulaireAdresseAnnuelle(){
 		//active les champs adresse annuelle
@@ -617,8 +570,6 @@ public class ModificationAdressesWindow extends Window {
 		lville1.setVisible(lpays1.getValue().equals(COD_PAY_FRANCE));
 		fieldVilleEtranger1.setVisible(!lpays1.getValue().equals(COD_PAY_FRANCE));
 		labelChoixHebergement.setVisible(false);
-
-
 	}
 
 	private void desactiveFormulaireAdresseAnnuelle(){

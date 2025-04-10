@@ -18,37 +18,19 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MdwTouchkitUI;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
@@ -57,22 +39,34 @@ import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.CssUtils;
 import fr.univlorraine.mondossierweb.views.windows.SignificationsMobileWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Page du détail des notes sur mobile
  */
 @SuppressWarnings("serial")
 @Component @Scope("prototype")
+@Slf4j
 @SpringView(name = NotesDetailMobileView.NAME)
 @JavaScript("notesDetailMobileView.js")
 public class NotesDetailMobileView extends VerticalLayout implements View {
-
-	private Logger LOG = LoggerFactory.getLogger(NotesDetailMobileView.class);
-
+	
 	public static final String NAME = "notesDetailMobileView";
-
-
 
 	/* Injections */
 	@Resource
@@ -87,23 +81,15 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	private transient NoteController noteController;
 	@Resource
 	private transient ConfigController configController;
-
 	@Resource
 	private transient ObjectFactory<SignificationsMobileWindow> significationsMobileWindowFactory;
 
 	private Etape etape;
-
 	private String codetu;
-
 	int compteurElp;
-
 	String elpPere;
-
 	private Map<String,LinkedList<HorizontalLayout>> layoutList;
-
-
 	private Button returnButton;
-
 	private Button significationButton;
 
 	/**
@@ -116,9 +102,8 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 	@SuppressWarnings("deprecation")
 	public void refresh(Etape etapeToDisplay, String codetuToDisplay){
-
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null && 
+		if(UI.getCurrent() instanceof MdwTouchkitUI && MdwTouchkitUI.getCurrent() !=null && MdwTouchkitUI.getCurrent().getEtudiant()!=null &&
 			((userController.isEtudiant() && configController.isAffNotesEtudiant() && !MdwTouchkitUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) || 
 				(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
 				(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) ){
@@ -134,15 +119,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 			//On repassera dans la création que si on n'a pas dejà créé la vue
 			if(codetu==null || etape == null){
 				compteurElp=0;
-
 				removeAllComponents();
 
 				/* Style */
 				setMargin(false);
 				setSpacing(false);
 				setSizeFull();
-
-
 
 				//Test si user enseignant
 				if(userController.isEnseignant()){
@@ -156,7 +138,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				//NAVBAR
 				HorizontalLayout navbar=new HorizontalLayout();
 				navbar.setSizeFull();
-				navbar.setHeight("40px");
+				navbar.setHeight(CssUtils.NAVBAR_HEIGHT);
 				navbar.setStyleName("navigation-bar");
 
 				//Bouton retour
@@ -175,7 +157,6 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				labelNavBar.setStyleName("v-label-navbar");
 				navbar.addComponent(labelNavBar);
 				navbar.setComponentAlignment(labelNavBar, Alignment.MIDDLE_CENTER);
-
 				navbar.setExpandRatio(labelNavBar, 1);
 
 				//Significations
@@ -186,19 +167,15 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					significationButton.addClickListener(e->{
 						//afficher les significations
 						SignificationsMobileWindow w = significationsMobileWindowFactory.getObject();
-						w.init(true);
+						w.init(!configController.isIndentNiveauElpMobile());
 						UI.getCurrent().addWindow(w);
 					});
 					navbar.addComponent(significationButton);
 					navbar.setComponentAlignment(significationButton, Alignment.MIDDLE_RIGHT);
 				}
 
-
 				addComponent(navbar);
-
-
 				layoutList = new  HashMap<String,LinkedList<HorizontalLayout>>();
-
 				etape=etapeToDisplay;
 				codetu=codetuToDisplay;
 
@@ -209,24 +186,15 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 				layout.setSpacing(true);
 				layout.setStyleName("v-scrollableelement");
 
-				/* Titre */
-				//setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-
-
 				List<ElementPedagogique> lelp = MdwTouchkitUI.getCurrent().getEtudiant().getElementsPedagogiques();
-
-
-
-				if(lelp!=null && lelp.size()>0){
-					//Panel notesPanel = new Panel();
-					//notesPanel.setSizeFull();
-
+				if(lelp!=null && !lelp.isEmpty()){
 					VerticalLayout notesLayout = new VerticalLayout();
-					//notesLayout.setSpacing(true);
 
 					HorizontalLayout libSessionLayout = new HorizontalLayout();
 					libSessionLayout.setSizeFull();
-					libSessionLayout.addComponent(new Label());
+					Label emptyLabel = new Label();
+					libSessionLayout.addComponent(emptyLabel);
+					libSessionLayout.setExpandRatio(emptyLabel, CssUtils.RATIO_LIB_NOTE);
 
 					HorizontalLayout sessionLayout = new HorizontalLayout();
 					sessionLayout.setSizeFull();
@@ -245,6 +213,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					}
 
 					libSessionLayout.addComponent(sessionLayout);
+					libSessionLayout.setExpandRatio(sessionLayout, CssUtils.RATIO_NOTES_NOTE);
 
 					notesLayout.addComponent(libSessionLayout);
 
@@ -257,12 +226,12 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					HorizontalLayout layoutPere=null;
 					int nbFils=0;
 
-					LOG.info("Liste des ELP à afficher : ");
-					for(ElementPedagogique elp : lelp){
+					log.info("Liste des ELP à afficher : ");
+					for (ElementPedagogique elp : lelp) {
 
 						compteurElp++;
 
-						LOG.info(compteurElp+"-(level="+elp.getLevel()+") - "+elp.getCode()+" - "+elp.getLibelle());
+						log.info(compteurElp+"-(level="+elp.getLevel()+") - "+elp.getCode()+" - "+elp.getLibelle());
 
 						//Si on est sur un element de niveau 1, différent du premier element de la liste (qui est un rappel de l'etape)
 						if(elp.getLevel()==1 && compteurElp>1){
@@ -271,11 +240,11 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						HorizontalLayout libElpLayout = new HorizontalLayout();
 
 						//Le premier élément est ignoré car c'est un rappel de l'étape sélectionée
-						if(compteurElp>1){
-							if(elp.getLevel()==1){
+						if (compteurElp > 1) {
+							if (elp.getLevel() == 1) {
 
 								//Si l'ELP de niveau 1 précédent n'avait aucun fils
-								if(layoutPere!=null && nbFils==0){
+								if (layoutPere != null && nbFils == 0) {
 									//C'est un élément de niveau 1 non cliquable
 									//Fond blanc et une ligne en border-bottom
 									layoutPere.setStyleName("layout-bottom-line-separator");
@@ -292,14 +261,14 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 
 								libElpLayout.setId("layout_pere_"+elp.getCode());
 
-							}else{
+							} else {
 								libElpLayout.addStyleName("layout-bottom-line-separator");
 								if(!StringUtils.hasText(elpPere)){
 									// ANOMALIE , Arborescence non complete
-									// TODO On affichera toute la liste des ELP sans les indicateurs de niveau ni JS pour déplier
+									// On affichera toute la liste des ELP sans les indicateurs de niveau ni JS pour déplier
 									libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_");
 									arborescenceValide=false;
-								}else{
+								} else {
 									nbFils++;
 									libElpLayout.setId(compteurElp+"_"+elp.getCode()+"_layout_fils_"+elpPere);
 									//ajout dans la hashMap
@@ -307,7 +276,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 								}
 
 							}
-						}else{
+						} else {
 							//on affiche la racine (qui est un rappel de l'etape) en blanc sur un fond très sombre
 							libElpLayout.addStyleName("root-layout-bottom-line-separator");
 						}
@@ -323,42 +292,21 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							libElpLabel.setStyleName("bold-label");
 						}
 
-
 						//Si on n'est pas sur le premier elp de la liste (rappel de l'étape) on affiche un indicateur de niveau
 						if(arborescenceValide && compteurElp>1){
-							HorizontalLayout levelMainLayout = new HorizontalLayout();
-							levelMainLayout.setSizeFull();
-							levelMainLayout.setSpacing(true);
-							levelMainLayout.setStyleName("level-indicator-layout");
-
-							int k=0;
-							for(int i=0; i<elp.getLevel();i++){
-								//Ajout d'un level
-								k++;
-								Label libLevelLayout = new Label();
-								libLevelLayout.setSizeFull();
-								libLevelLayout.setHeight("8px");
-								if(blueLevel){
-									libLevelLayout.setStyleName("layout-level-blue-indicator");
-								}else{
-									libLevelLayout.setStyleName("layout-level-green-indicator");
-								}
-								levelMainLayout.addComponent(libLevelLayout);
+							if(!configController.isIndentNiveauElpMobile()){
+								//Ajout des indicateurs dans le layout
+								libVerticalLayout.addComponent(getLevelIndicator(elp.getLevel(), blueLevel));
+							} else {
+								// Ajout identation
+								libElpLabel.addStyleName("indent-" + elp.getLevel() + "-em");
 							}
-							//On pense avoir 7 level maxi 
-							for(int j=k; j<8;j++){
-								Label libLevelSpaceLayout = new Label();
-								libLevelSpaceLayout.setSizeFull();
-								libLevelSpaceLayout.setHeight("8px");
-								levelMainLayout.addComponent(libLevelSpaceLayout);
-							}
-							//Ajout des indicateurs dans le layout
-							libVerticalLayout.addComponent(levelMainLayout);
 						}
+
 						//Ajout du libellé dans le layout
 						libVerticalLayout.addComponent(libElpLabel);
-
 						libElpLayout.addComponent(libVerticalLayout);
+						libElpLayout.setExpandRatio(libVerticalLayout, CssUtils.RATIO_LIB_NOTE);
 
 						HorizontalLayout noteLayout = new HorizontalLayout();
 						noteLayout.setSizeFull();
@@ -419,9 +367,8 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 						if((configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) && StringUtils.hasText(elp.getRang())){
 							globalResultatLayout.addComponent(getRangComponent(elp.getRang()));
 						}
-						
 						libElpLayout.addComponent(globalResultatLayout);
-
+						libElpLayout.setExpandRatio(globalResultatLayout, CssUtils.RATIO_NOTES_NOTE);
 						notesLayout.addComponent(libElpLayout);
 
 						//Au départ, on cache les éléments de niveau supérieur à 1
@@ -443,7 +390,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 							String pere = entry.getKey();
 							LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
 							// traitements
-							if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+							if(listeLayoutFils!=null && !listeLayoutFils.isEmpty()){
 								String affichagejavascriptfils = "";
 								for(HorizontalLayout hl : listeLayoutFils){
 									affichagejavascriptfils += "if(document.getElementById('"+hl.getId()+"').style.display==\"none\"){document.getElementById('"+hl.getId()+"').style.display = \"block\";}else{document.getElementById('"+hl.getId()+"').style.display = \"none\";}";
@@ -466,11 +413,9 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 					labelAucunResultat.setStyleName(ValoTheme.LABEL_BOLD);
 					messageLayout.addComponent(labelAucunResultat);
 					layout.addComponent(messageLayout);
-
 				}
 
 				addComponent(layout);
-
 				setExpandRatio(layout, 1);
 
 			}else{
@@ -479,7 +424,37 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 		}
 	}
 
-	
+	private com.vaadin.ui.Component getLevelIndicator(int niveau, boolean isBlue) {
+		HorizontalLayout levelMainLayout = new HorizontalLayout();
+		levelMainLayout.setSizeFull();
+		levelMainLayout.setSpacing(true);
+		levelMainLayout.setStyleName("level-indicator-layout");
+
+		int k=0;
+		for (int i = 0; i < niveau; i++) {
+			//Ajout d'un level
+			k++;
+			Label libLevelLayout = new Label();
+			libLevelLayout.setSizeFull();
+			libLevelLayout.setHeight("8px");
+			if(isBlue){
+				libLevelLayout.setStyleName("layout-level-blue-indicator");
+			}else{
+				libLevelLayout.setStyleName("layout-level-green-indicator");
+			}
+			levelMainLayout.addComponent(libLevelLayout);
+		}
+		//On pense avoir 7 level maxi
+		for (int j = k; j < 8; j++) {
+			Label libLevelSpaceLayout = new Label();
+			libLevelSpaceLayout.setSizeFull();
+			libLevelSpaceLayout.setHeight("8px");
+			levelMainLayout.addComponent(libLevelSpaceLayout);
+		}
+		return levelMainLayout;
+	}
+
+
 	private com.vaadin.ui.Component getRangComponent(String r) {
 		HorizontalLayout rl = new HorizontalLayout();
 		rl.setStyleName("layout-rang-mobile");
@@ -496,7 +471,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 	}
 	
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 
 	}
 
@@ -508,7 +483,7 @@ public class NotesDetailMobileView extends VerticalLayout implements View {
 			String pere = entry.getKey();
 			LinkedList<HorizontalLayout> listeLayoutFils = entry.getValue();
 			// traitements
-			if(listeLayoutFils!=null && listeLayoutFils.size()>0){
+			if(listeLayoutFils!=null && !listeLayoutFils.isEmpty()){
 				String affichagejavascriptfils = "";
 				for(HorizontalLayout hl : listeLayoutFils){
 					//On masque par défaut tous les fils

@@ -49,12 +49,6 @@ public class RequestUtils {
 			properties.loadFromXML(fileInput);
 			fileInput.close();
 
-//			Enumeration enuKeys = properties.keys();
-//			while (enuKeys.hasMoreElements()) {
-//				String key = (String) enuKeys.nextElement();
-//				String value = properties.getProperty(key);
-//				System.out.println(key + ": " + value);
-//			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

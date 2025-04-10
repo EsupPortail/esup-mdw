@@ -29,6 +29,7 @@ import fr.univlorraine.mondossierweb.views.FavorisMobileView;
 import fr.univlorraine.mondossierweb.views.ListeInscritsView;
 import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
 import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +37,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,13 +112,12 @@ public class RechercheController {
 
 	public void accessToDetail(String code, String type, String annee) {
 		Map<String, String> parameterMap = new HashMap<>();
-		parameterMap.put("code",code);
-		parameterMap.put("type",type);
-		parameterMap.put("annee",annee);
+		parameterMap.put("code", code);
+		parameterMap.put("type", type);
+		parameterMap.put("annee", annee);
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
-				//MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
 				MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
 			}
 		}
@@ -129,7 +128,6 @@ public class RechercheController {
 					parameterMap.replace("type",Utils.VET);
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
-				//MainUI.getCurrent().navigateToListeInscrits(parameterMap);
 				MainUI.getCurrent().goTo(ListeInscritsView.NAME, parameterMap);
 			}
 		}
@@ -138,7 +136,7 @@ public class RechercheController {
 			//Si l'utilisateur est enseignant ou si il s'agit bien de l'étudiant concerné
 			//if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
 				parameterMap.replace("type",Utils.ETU);
-				MainUI.getCurrent().setEtudiant(new Etudiant(code));
+			MainUI.getCurrent().setEtudiant(new Etudiant(code));
 				etudiantController.recupererEtatCivil();
 				//Si l'étudiant n'existe pas
 				if(MainUI.getCurrent().getEtudiant()==null){
@@ -177,25 +175,26 @@ public class RechercheController {
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 				parameterMap.replace("type",Utils.ETU);
 
-				if(MdwTouchkitUI.getCurrent().getEtudiant()==null || !MdwTouchkitUI.getCurrent().getEtudiant().getCod_etu().equals(code)){
 					MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
 					etudiantController.recupererEtatCivil();
-					if((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
-						(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
-						(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())){
-						etudiantController.recupererCalendrierExamens();
+					// S'il n'y a pas eu d'anomalie pendant la récupération de l'état civil
+					if (MdwTouchkitUI.getCurrent().getEtudiant() != null) {
+						if ((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) ||
+								(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
+								(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())) {
+							etudiantController.recupererCalendrierExamens();
+						}
+						if ((userController.isEtudiant() && configController.isAffNotesEtudiant()) ||
+								(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
+								(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) {
+							resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
+						}
+						if (fromSearch) {
+							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();
+						} else {
+							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
+						}
 					}
-					if((userController.isEtudiant() && configController.isAffNotesEtudiant()) || 
-						(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
-						(userController.isGestionnaire() && configController.isAffNotesGestionnaire())){
-					resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
-					}
-				}
-				if(fromSearch){
-					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();
-				}else{
-					MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
-				}
 		}
 	}
 

@@ -18,13 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Component
 @org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
@@ -112,7 +111,7 @@ public class InscriptionServiceImpl implements InscriptionService{
 				"and tem_iae_prm = 'O' "+
 				"ORDER BY COD_ANU DESC").getResultList();
 
-		if(llib!=null && llib.size()>0){
+		if(llib!=null && !llib.isEmpty()){
 			return llib.get(0);
 		}
 

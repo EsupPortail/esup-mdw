@@ -18,13 +18,32 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import com.vaadin.ui.ComboBox;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.vaadin.v7.ui.ComboBox;
 import fr.univlorraine.apowsutils.ServiceProvider;
 import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.beans.*;
+import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
+import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
+import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
+import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.converters.EmailConverterInterface;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit;
 import fr.univlorraine.mondossierweb.entities.apogee.Inscrit.Vet;
@@ -34,17 +53,32 @@ import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import gouv.education.apogee.commun.client.ws.OffreFormationMetier.*;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.CollectionDTO4;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.ElementPedagogiDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.GroupeDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.OffreFormationMetierServiceInterface;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.RecupererGroupeDTO3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauCollection4;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauElementPedagogi3;
+import gouv.education.apogee.commun.client.ws.OffreFormationMetier.TableauGroupe3;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,9 +95,8 @@ import java.util.Map;
  * Gestion de l'affichage de la liste des inscrits
  */
 @Component
+@Slf4j
 public class ListeInscritsController {
-
-	private Logger LOG = LoggerFactory.getLogger(ListeInscritsController.class);
 
 	/**
 	 * marges.
@@ -155,7 +188,7 @@ public class ListeInscritsController {
 				List<String> annees = multipleApogeeService.getAnneesFromVetDesc(e, anneeMax);
 
 				//Si on a récupéré aucune année, on ajoute l'année en cours par défaut.
-				if(annees.size()==0){
+				if(annees.isEmpty()){
 					annees.add(etudiantController.getAnneeUnivEnCours(ui));
 				}
 
@@ -221,8 +254,7 @@ public class ListeInscritsController {
 	 * Récupération des inscrits à un ELP
 	 * @param parameterMap
 	 * @param annee
-	 * @param etape
-	 * @param groupe
+	 * @param ui
 	 */
 	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee, GenericUI ui) {
 
@@ -297,7 +329,7 @@ public class ListeInscritsController {
 		List<VersionEtape> letape = null;
 
 		//test si on a des inscrits
-		if(listeInscrits!=null && listeInscrits.size()>0){
+		if(listeInscrits!=null && !listeInscrits.isEmpty()){
 			//on init la liste de VET à vide
 			letape = new LinkedList<VersionEtape>();
 
@@ -328,7 +360,7 @@ public class ListeInscritsController {
 		//Récupération des groupes de l'ELP
 		List<ElpDeCollection> listeGroupes = recupererGroupes(e.getAnnee(), code);
 		//Si on a récupérer des groupes
-		if(listeGroupes!=null && listeGroupes.size()>0){
+		if(listeGroupes!=null && !listeGroupes.isEmpty()){
 			//On stocke la liste des groupes au niveau de l'ui
 			ui.setListeGroupesInscrits(listeGroupes);
 		}
@@ -419,7 +451,7 @@ public class ListeInscritsController {
 	 */
 	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee, GenericUI ui) {
 
-		if(listeInscrits!=null && listeInscrits.size()>0){
+		if(listeInscrits!=null && !listeInscrits.isEmpty()){
 			//setLoginInscrits(listeInscrits);
 			setIdEtpInscrits(listeInscrits);
 			setMailInscrits(listeInscrits);
@@ -429,7 +461,7 @@ public class ListeInscritsController {
 
 		//On parcourt les groupes, on recup les inscrit puis 
 		//pour chaque inscrit on ajoute les id des groupes auxquels il appartient dans un attribut ";codgpe;"
-		if(listeGroupes!=null && listeGroupes.size()>0){
+		if(listeGroupes!=null && !listeGroupes.isEmpty()){
 
 			for(ElpDeCollection edc : listeGroupes){
 				for(CollectionDeGroupes cdg : edc.getListeCollection()){
@@ -462,7 +494,7 @@ public class ListeInscritsController {
 
 
 	private boolean listeContient(List<BigDecimal> lcodindinscrits, String cod_ind) {
-		if(lcodindinscrits.size()>0 && cod_ind!=null){
+		if(!lcodindinscrits.isEmpty() && cod_ind!=null){
 			for(BigDecimal s: lcodindinscrits){
 				if(s.toString().equals(cod_ind)){
 					return true;
@@ -515,16 +547,16 @@ public class ListeInscritsController {
 	
 	/**
 	 * renseigne l'url photo d'un inscrit
-	 * @param listeInscrits
+	 * @param inscrit
 	 */
-	public String getUrlPhoto(Inscrit i) {
+	public String getUrlPhoto(Inscrit inscrit) {
 		// Si la photo est valuée et stockée directement dans la chaine de caracteres
-		if(i.getUrlphoto() != null && i.getUrlphoto().startsWith(Utils.DATA_IMAGE)) {
+		if(inscrit.getUrlphoto() != null && inscrit.getUrlphoto().startsWith(Utils.DATA_IMAGE)) {
 			// on ne recalcule pas la photo
-			return i.getUrlphoto();
+			return inscrit.getUrlphoto();
 		}
 		
-		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(i.getCod_ind(), i.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
+		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 
 
@@ -603,7 +635,7 @@ public class ListeInscritsController {
 			}
 
 		}catch(Exception e){
-			LOG.debug("Aucun Groupe pour "+codElp+ " - "+annee);
+			log.debug("Aucun Groupe pour "+codElp+ " - "+annee);
 		}
 		return listeElp;
 	}
@@ -615,9 +647,9 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind,ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
 
-		LOG.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
+		log.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp, avecInfoNaissance);
@@ -625,7 +657,7 @@ public class ListeInscritsController {
 			byte[] bytes = baos.toByteArray();
 			return new ByteArrayInputStream(bytes);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération de la liste en xls : IOException ",e);
+			log.error("Erreur à la génération de la liste en xls : IOException ",e);
 			return null;
 		}
 
@@ -932,7 +964,7 @@ public class ListeInscritsController {
 	 */
 	public InputStream getPdfStream(List<Inscrit> linscrits, List<String> listecodind, String libObj, String annee) {
 
-		LOG.debug("generation pdf : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
+		log.debug("generation pdf : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size());
 		try {
 			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
 			PdfWriter docWriter = null;
@@ -951,10 +983,10 @@ public class ListeInscritsController {
 			byte[] bytes = baosPDF.toByteArray();
 			return new ByteArrayInputStream(bytes);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du trombinoscope : DocumentException ",e);
+			log.error("Erreur à la génération du trombinoscope : DocumentException ",e);
 			return null;
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du trombinoscope : IOException ",e);
+			log.error("Erreur à la génération du trombinoscope : IOException ",e);
 			return null;
 		}
 
@@ -966,8 +998,6 @@ public class ListeInscritsController {
 
 	/**
 	 * configure le document pdf.
-	 * @param width
-	 * @param height
 	 * @param margin
 	 * @return doc
 	 */
@@ -1141,13 +1171,13 @@ public class ListeInscritsController {
 			document.add(table);
 
 		} catch (BadElementException e) {
-			LOG.error("Erreur à la génération du trombinoscope : BadElementException ",e);
+			log.error("Erreur à la génération du trombinoscope : BadElementException ",e);
 		} catch (MalformedURLException e) {
-			LOG.error("Erreur à la génération du trombinoscope : MalformedURLException ",e);
+			log.error("Erreur à la génération du trombinoscope : MalformedURLException ",e);
 		} catch (IOException e) {
-			LOG.error("Erreur à la génération du trombinoscope : IOException ",e);
+			log.error("Erreur à la génération du trombinoscope : IOException ",e);
 		} catch (DocumentException e) {
-			LOG.error("Erreur à la génération du trombinoscope : DocumentException ",e);
+			log.error("Erreur à la génération du trombinoscope : DocumentException ",e);
 		}
 
 		// step 6: fermeture du document.

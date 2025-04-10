@@ -26,12 +26,10 @@ import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationCate
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesApplicationValeursRepository;
 import fr.univlorraine.mondossierweb.repositories.mdw.UtilisateurSwapRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,9 +38,6 @@ import java.util.List;
  */
 @Component
 public class ConfigController {
-
-	private Logger LOG = LoggerFactory.getLogger(ConfigController.class);
-
 
 	@Resource
 	private PreferencesApplicationRepository preferencesApplicationRepository;
@@ -212,6 +207,8 @@ public class ConfigController {
 	public boolean isModificationAdressesAutorisee() {
 		return getBooleanValueForParameter("modificationAdresses");
 	}
+
+	public boolean isModificationAdresseAnnuelleAutorisee() { return getBooleanValueForParameter("modificationAdresseAnnuelle"); }
 	
 	public boolean isModificationTelephoneAutorisee() {
 		return getBooleanValueForParameter("modificationTelephone");
@@ -568,7 +565,16 @@ public class ConfigController {
 	public String getLogoUniversitePdf() {
 		return getValeurForParameter("logoUniversitePdf");
 	}
-	
+
+	public String getLogoUniversiteMobile() {
+		return getValeurForParameter("logoUniversiteMobile");
+	}
+	public String getLogoUniversiteEns() {
+		return getValeurForParameter("logoUniversiteEns");
+	}
+	public String getLogoUniversiteEtu() {
+		return getValeurForParameter("logoUniversiteEtu");
+	}
 	public int getLogoUniversitePdfDimension(){
 		return  Integer.parseInt(getValeurForParameter("logoUniversitePdfDimension"));
 	}
@@ -618,6 +624,9 @@ public class ConfigController {
 	public String getNotesAnneePivotExtractionApogee() {
 		return  getValeurForParameter("notesAnneePivotExtractionApogee");
 	}
+	public boolean isIndentNiveauElpMobile() {
+		return  getBooleanValueForParameter("indentNiveauElpMobile");
+	}
 	public boolean isNotesAnneeOuverteResExtractionApogee() {
 		return getBooleanValueForParameter("notesAnneeOuverteResExtractionApogee");
 	}
@@ -660,8 +669,7 @@ public class ConfigController {
 	public boolean isSignaturePdfDetailNote() {
 		return getBooleanValueForParameter("detailNoteSignature");
 	}
-
-	
+	public boolean isAffInscriptionsAutreCursus()  { return getBooleanValueForParameter("affInscriptionsAutreCursus"); 	}
 	public boolean isSignatureAltPdfCalendrier() {
 		return getBooleanValueForParameter("calendrierSignatureAlt");
 	}
@@ -710,7 +718,7 @@ public class ConfigController {
 		LinkedList<String> values = new LinkedList<String>();
 		PreferencesApplication pa = preferencesApplicationRepository.findById(parameter).orElse(null);
 		if(pa!=null && pa.getPrefId()!=null){
-			if(pa.getPreferencesApplicationValeurs()!=null && pa.getPreferencesApplicationValeurs().size()>0){
+			if(pa.getPreferencesApplicationValeurs()!=null && !pa.getPreferencesApplicationValeurs().isEmpty()){
 				for(PreferencesApplicationValeurs valeur : pa.getPreferencesApplicationValeurs()){
 					values.add(valeur.getValeur());
 				}
@@ -789,4 +797,7 @@ public class ConfigController {
 		utilisateurSwapRepository.saveAndFlush(swap);
 
 	}
+
+
+
 }

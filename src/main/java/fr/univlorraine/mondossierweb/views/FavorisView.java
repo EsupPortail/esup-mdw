@@ -18,49 +18,49 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.FavorisController;
+import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
+import fr.univlorraine.mondossierweb.controllers.RechercheController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Favoris
  */
-@Component @Scope("prototype")
+@Component
+@Scope("prototype")
 @SpringView(name = FavorisView.NAME)
+@Slf4j
 public class FavorisView extends VerticalLayout implements View {
-
-	private static final long serialVersionUID = 6309734175451108885L;
-
-
 	public static final String NAME = "favorisView";
-
-
 	public static final String[] FAV_FIELDS_ORDER = {"Type","id", "Libelle", "Actions"};
-
-
 
 	/* Injections */
 	@Resource
@@ -75,10 +75,7 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient ConfigController configController;
-
-
-	/** Thread pool  */
-	ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private RechercheControllerThread rct;
 
 	private List<String> liste_types_inscrits;
 
@@ -101,8 +98,6 @@ public class FavorisView extends VerticalLayout implements View {
 
 		//On vérifie le droit d'accéder à la vue
 		if(configController.isApplicationActive() && UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
-
-
 			removeAllComponents();
 			/* Style */
 			setMargin(true);
@@ -122,9 +117,7 @@ public class FavorisView extends VerticalLayout implements View {
 			globalLayout.setSizeFull();
 			globalLayout.setSpacing(true);
 
-
-
-			if(lfav!=null && lfav.size()>0){
+			if(lfav!=null && !lfav.isEmpty()){
 				bic = new BeanItemContainer<>(Favoris.class,lfav);
 				bic.addNestedContainerProperty("id.typfav");
 				bic.addNestedContainerProperty("id.idfav");
@@ -161,13 +154,11 @@ public class FavorisView extends VerticalLayout implements View {
 			labelAucunFavoriLayout.setVisible(false);
 			globalLayout.addComponent(labelAucunFavoriLayout);
 
-			if(lfav==null || lfav.size()==0){
+			if(lfav==null || lfav.isEmpty()){
 				labelAucunFavoriLayout.setVisible(true);
 			}
 
-
 			addComponent(globalLayout);
-
 		}
 	}
 
@@ -175,8 +166,8 @@ public class FavorisView extends VerticalLayout implements View {
 	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
 	 */
 	@Override
-	public void enter(ViewChangeEvent event) {
-		//LOG.debug("ENTER FAVORIS VIEW");
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		//log.debug("ENTER FAVORIS VIEW");
 	}
 
 	class DisplayIdColumnGenerator implements Table.ColumnGenerator {
@@ -222,11 +213,12 @@ public class FavorisView extends VerticalLayout implements View {
 			btnfav.setIcon(FontAwesome.TRASH_O);
 			btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
 			btnfav.addStyleName("deletefavbutton");
+			btnfav.addStyleName("left-action-button");
 			btnfav.setDescription("Supprimer des favoris");
 			//Gestion du clic sur le bouton de suppression du favori
-			btnfav.addClickListener(new ClickListener() {
+			btnfav.addClickListener(new Button.ClickListener() {
 				@Override
-				public void buttonClick(ClickEvent event) {
+				public void buttonClick(Button.ClickEvent event) {
 					FavorisPK fpk = new FavorisPK();
 					fpk.setIdfav(idObj);
 					fpk.setLogin(userController.getCurrentUserName());
@@ -236,19 +228,18 @@ public class FavorisView extends VerticalLayout implements View {
 					bic.removeItem(itemId);
 					favorisTable.sanitizeSelection();
 					favorisTable.setPageLength(favorisTable.getItemIds().size() );
-					if(favorisTable.getItemIds().size()<1){
+					if(favorisTable.getItemIds().isEmpty()){
 						favorisTable.setVisible(false);
 						labelAucunFavoriLayout.setVisible(true);
 					}
-
-
 				}
 			});
 			boutonActionLayout.addComponent(btnfav);
 
+			Button btnArbo = null;
 			// Si on peut accéder à l'arborescence depuis le favori
 			if(typeObj!=null && liste_type_arbo!=null && liste_type_arbo.contains(typeObj)){
-				Button btnArbo=new Button();
+				btnArbo = new Button();
 				btnArbo.setIcon(FontAwesome.SITEMAP);
 				btnArbo.setDescription(applicationContext.getMessage(NAME+".accesarborescence", null, getLocale()));
 				btnArbo.addClickListener(e->{
@@ -258,9 +249,13 @@ public class FavorisView extends VerticalLayout implements View {
 			}
 			// Si on peut accéder à la liste des inscrits depuis le favori
 			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
+				if (btnArbo != null) {
+					btnArbo.addStyleName("middle-action-button");
+				}
 				Button btnListeInscrits=new Button();
 				btnListeInscrits.setIcon(FontAwesome.USERS);
 				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				btnListeInscrits.addStyleName("right-action-button");
 				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
 				btnListeInscrits.addClickListener(e->{
 
@@ -268,20 +263,12 @@ public class FavorisView extends VerticalLayout implements View {
 					if(PropertyUtils.isPushEnabled() && PropertyUtils.isShowLoadingIndicator()){
 						//affichage de la pop-up de loading
 						MainUI.getCurrent().startBusyIndicator();
+						MainUI.getCurrent().push();
 
 						//Execution de la méthode en parallèle dans un thread
-						executorService.execute(new Runnable() {
-							public void run() {
-								MainUI.getCurrent().access(new Runnable() {
-									@Override
-									public void run() {
-										rechercheController.accessToDetail(idObj,typeObj,null);
-										//close de la pop-up de loading
-										MainUI.getCurrent().stopBusyIndicator();
-									}
-								} );
-							}
-						});
+						rct = new RechercheControllerThread(MainUI.getCurrent(),rechercheController,idObj,typeObj);
+						rct.start();
+
 					}else{
 						//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
 						rechercheController.accessToDetail(idObj,typeObj,null);
@@ -289,9 +276,9 @@ public class FavorisView extends VerticalLayout implements View {
 
 				});
 				boutonActionLayout.addComponent(btnListeInscrits);
+			} else {
+				btnArbo.addStyleName("right-action-button");
 			}
-
-
 			return boutonActionLayout;
 		}
 	}
@@ -316,9 +303,26 @@ public class FavorisView extends VerticalLayout implements View {
 				boutonActionLayout.addComponent(lib);
 			}
 
-			//Recuperer le libelle de l'objet dans Apogée
-
 			return boutonActionLayout;
+		}
+	}
+
+	private static class RechercheControllerThread extends Thread {
+		private final MainUI mainUI;
+		private final RechercheController rechercheController;
+		private final String typeObj;
+		private final String idObj;
+
+		public RechercheControllerThread(MainUI mainUI, RechercheController rechercheController, String idObj, String typeObj) {
+			this.mainUI = mainUI;
+			this.rechercheController = rechercheController;
+			this.idObj = idObj;
+			this.typeObj = typeObj;
+		}
+		@Override
+		public void run() {
+			mainUI.access(() -> rechercheController.accessToDetail(idObj,typeObj,null));
+			mainUI.access(() -> mainUI.stopBusyIndicator());
 		}
 	}
 }

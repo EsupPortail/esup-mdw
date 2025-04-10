@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb;
 
+
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -28,46 +29,54 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.ui.Transport;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UI;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
-import fr.univlorraine.mondossierweb.controllers.*;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.ListeInscritsController;
+import fr.univlorraine.mondossierweb.controllers.ResultatController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.*;
+import fr.univlorraine.mondossierweb.views.AccesBloqueView;
+import fr.univlorraine.mondossierweb.views.AccesRefuseView;
+import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
+import fr.univlorraine.mondossierweb.views.ErreurView;
+import fr.univlorraine.mondossierweb.views.FavorisMobileView;
+import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
+import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
+import fr.univlorraine.mondossierweb.views.NavigationManagerView;
+import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
+import fr.univlorraine.mondossierweb.views.NotesMobileView;
+import fr.univlorraine.mondossierweb.views.RechercheMobileView;
+import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
 import fr.univlorraine.tools.vaadin.GoogleAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.LogAnalyticsTracker;
 import fr.univlorraine.tools.vaadin.PiwikAnalyticsTracker;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
-import org.springframework.mobile.device.Device;
-import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -75,14 +84,13 @@ import java.util.Map;
 @Scope("prototype")
 @Component
 @Theme("valo-ul")
-@StyleSheet("mobileView.css")
+@StyleSheet({"mobileView.css"})
 @SuppressWarnings("serial")
-//@OfflineModeEnabled(false)
+@SpringUI(path = "m")
 @Push(transport = Transport.WEBSOCKET_XHR)
 @Viewport("user-scalable=no,initial-scale=1.0")
+@Slf4j
 public class MdwTouchkitUI extends GenericUI{
-
-	private Logger LOG = LoggerFactory.getLogger(MdwTouchkitUI.class);
 
 	/**
 	 * Nombre maximum de tentatives de reconnexion lors d'une déconnexion.
@@ -97,21 +105,17 @@ public class MdwTouchkitUI extends GenericUI{
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
+	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
+	@Resource
 	private transient Environment environment;
 	@Resource
 	private transient UserController userController;
-	@Resource
-	private transient UiController uiController;
-	@Resource
-	private transient RechercheArborescenteController rechercheArborescenteController;
 	@Resource
 	private transient EtudiantController etudiantController;
 	@Resource(name="${resultat.implementation}")
 	private transient ResultatController resultatController;
 	@Resource
 	private transient ListeInscritsController listeInscritsController;
-	@Resource
-	private transient FavorisController favorisController;
 	@Resource
 	private transient ConfigController configController;
 	@Resource
@@ -149,13 +153,13 @@ public class MdwTouchkitUI extends GenericUI{
 	private TabSheet menuEtudiant;
 
 	//Onglet infoAnnuelles du dossier étudiant
-	private Tab tabInfoAnnuelles;
+	private TabSheet.Tab tabInfoAnnuelles;
 
 	//Onglet Calendrier du dossier étudiant
-	private Tab tabCalendrier;
+	private TabSheet.Tab tabCalendrier;
 
 	//Onglet notes du dossier étudiant
-	private Tab tabNotes;
+	private TabSheet.Tab tabNotes;
 
 	//Etape concernées par le détail des notes
 	@Setter
@@ -187,7 +191,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 	@Override
 	protected void init(VaadinRequest request) {
-		LOG.debug("init(); MdwTouchkitUI");
+		log.debug("init(); MdwTouchkitUI");
 
 		VaadinSession.getCurrent().setErrorHandler(e -> {
 
@@ -201,7 +205,7 @@ public class MdwTouchkitUI extends GenericUI{
 			while (cause instanceof Throwable) {
 				/* Gère les erreurs de fragment dans les urls */
 				if (cause instanceof URISyntaxException) {
-					LOG.info("Erreur de fragment ");
+					log.info("Erreur de fragment ");
 					// Retour à la racine
 					Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
 					return;
@@ -209,7 +213,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 				/* Gère les accès non autorisés */
 				if (cause instanceof AccessDeniedException) {
-					Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+					Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
 					displayViewFullScreen(AccesRefuseView.NAME);
 					return;
 				}
@@ -219,7 +223,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 					/* Gérer les erreurs à ignorer */
 					if (PropertyUtils.getListeErreursAIgnorer().contains(simpleName)) {
-						Notification.show(cause.getMessage(), Type.ERROR_MESSAGE);
+						Notification.show(cause.getMessage(), Notification.Type.ERROR_MESSAGE);
 						navigator.navigateTo(ErreurView.NAME);
 						return;
 					}
@@ -227,7 +231,7 @@ public class MdwTouchkitUI extends GenericUI{
 				cause = cause.getCause();
 			}
 			/* Traite les autres erreurs normalement */
-			LOG.error(e.getThrowable().toString(), e.getThrowable());
+			log.error(e.getThrowable().toString(), e.getThrowable());
 			// Affiche de la vue d'erreur
 			navigator.navigateTo(ErreurView.NAME);
 		});
@@ -245,8 +249,8 @@ public class MdwTouchkitUI extends GenericUI{
 
 		/* Gestion de l'acces a un dossier précis via url deepLinking (ne peut pas être fait dans navigator 
 				car le fragment ne correspond pas à une vue existante) */
-		getPage().addUriFragmentChangedListener(new UriFragmentChangedListener() {
-			public void uriFragmentChanged(UriFragmentChangedEvent source) {
+		getPage().addUriFragmentChangedListener(new Page.UriFragmentChangedListener() {
+			public void uriFragmentChanged(Page.UriFragmentChangedEvent source) {
 
 				//On bloque l'accès aux vues desktop
 				/*	if(!Utils.isViewMobile(source.getUriFragment())){
@@ -263,15 +267,6 @@ public class MdwTouchkitUI extends GenericUI{
 
 			}
 		});
-
-		/* Ex de Device Detection */
-		Device currentDevice = DeviceUtils.getCurrentDevice((HttpServletRequest) request);
-		if(currentDevice.isMobile())
-			LOG.debug("device : mobile");
-		if(currentDevice.isTablet())
-			LOG.debug("device : tablet");
-		if(currentDevice.isNormal())
-			LOG.debug("device : normal");
 
 		//Paramétrage du comportement en cas de perte de connexion
 		configReconnectDialog();
@@ -291,9 +286,6 @@ public class MdwTouchkitUI extends GenericUI{
 		});
 
 		navigator.addViewChangeListener(new ViewChangeListener() {
-
-			private static final long serialVersionUID = 9183991275107545154L;
-
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
 
@@ -377,7 +369,7 @@ public class MdwTouchkitUI extends GenericUI{
 							navigateToDossierEtudiant();
 						}
 					} catch (Exception ex) {
-						LOG.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
+						log.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
 						navigator.navigateTo(ErreurView.NAME);
 					}
 
@@ -407,13 +399,38 @@ public class MdwTouchkitUI extends GenericUI{
 	 * Affiche du message d'intro pour les enseignants
 	 */
 	private void afficherMessageIntroEnseignants() {
-		afficherMessageIntro(applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()));
 
+		//On Recupere dans la base si l'utilisateur a indiqué une préférence pour l'affichage du message d'introduction
+		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
+
+		//Par défaut, on affiche le message
+		boolean afficherMessage = true;
+
+		//Si on a une préférence indiquée par l'utilisateur en ce qui concerne l'affichage du message d'intro
+		if(StringUtils.hasText(val)){
+			//On récupère ce choix dans afficherMessage
+			afficherMessage = Boolean.valueOf(val);
+		}
+
+		//Si on doit afficher le message
+		if(afficherMessage) {
+			String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
+			HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+			hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),true);
+			hbw.addCloseListener(g->{
+				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
+				boolean choix = hbw.getCheckBox().getValue();
+				//Test si l'utilisateur a coché la case pour ne plus afficher le message
+				if(choix){
+					//mettre a jour dans la base de données
+					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
+				}
+			});
+			UI.getCurrent().addWindow(hbw);
+		}
 	}
 
-	/**
-	 * Affiche du message d'intro
-	 */
+	/*
 	private void afficherMessageIntro(String text){
 
 		Notification note = new Notification(text, "", Notification.TYPE_TRAY_NOTIFICATION, true);
@@ -421,7 +438,7 @@ public class MdwTouchkitUI extends GenericUI{
 		note.setDelayMsec(6000);
 		note.show(this.getPage());
 
-	}
+	}*/
 
 	/**
 	 * Affichage de la vue Liste Inscrits depuis la vue Search
@@ -533,9 +550,9 @@ public class MdwTouchkitUI extends GenericUI{
 		}
 
 		//Détection du retour sur la vue du détail des notes pour mettre à jour le JS
-		menuEtudiant.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+		menuEtudiant.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
+			public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
 				//test si on se rend sur la vue des notes
 				if(menuEtudiant.getSelectedTab().equals(noteNavigationManager)){
 					//test si on se rend sur le détail des notes
@@ -675,7 +692,7 @@ public class MdwTouchkitUI extends GenericUI{
 
 	private void reloadIfUriFragmentError(String uriFragment) {
 		if(uriFragment != null && uriFragment.contains("#")) {
-			LOG.warn("fragment erroné :"+uriFragment);
+			log.warn("fragment erroné :"+uriFragment);
 			// Retour à la racine
 			Page.getCurrent().setLocation(PropertyUtils.getAppUrl()+"/m");
 		}

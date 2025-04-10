@@ -18,37 +18,34 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.HierarchicalContainer;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TreeTable;
+import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBaseCollectionGroupe;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * Fenêtre du détail des groupes
@@ -59,8 +56,6 @@ import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBaseCollectionGroupe;
 public class DetailGroupesWindow extends Window {
 
 	public static final String NAME = "groupesWindow";
-
-
 	public static final String ID_PROPERTY = "id";
 	public static final String CODE_COLLECTION_PROPERTY = "cod_coll";
 	public static final String CODE_GROUPE_PROPERTY = "cod_gpe";
@@ -73,12 +68,10 @@ public class DetailGroupesWindow extends Window {
 	public static final String[] DETAIL_FIELDS_ORDER = {CODE_COLLECTION_PROPERTY, CODE_GROUPE_PROPERTY,LIBELLE_GROUPE_PROPERTY,
 		CAP_MAX_PROPERTY,CAP_INT_PROPERTY,NB_INSCRITS_PROPERTY};
 
-
 	@Resource
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
-
 
 	private List<ElpDeCollection> lgroupes;
 
@@ -108,7 +101,6 @@ public class DetailGroupesWindow extends Window {
 		setModal(true);
 		setResizable(false);
 
-
 		/* Layout */
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
@@ -117,7 +109,6 @@ public class DetailGroupesWindow extends Window {
 
 		/* Titre */
 		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-
 
 		//Sous titre avec l'année 
 		HorizontalLayout titleLayout = new HorizontalLayout();
@@ -139,12 +130,10 @@ public class DetailGroupesWindow extends Window {
 		
 		layout.addComponent(titleLayout);
 
-
-
 		Panel panelDetailGroupes= new Panel(elpLibelle);
 		panelDetailGroupes.setSizeFull();
 
-		if(lgroupes!=null && lgroupes.size()>0){
+		if(lgroupes!=null && !lgroupes.isEmpty()){
 			TreeTable detailGroupesTable = new TreeTable();
 			detailGroupesTable.setSizeFull();
 			HierarchicalContainer hc = new HierarchicalContainer();
@@ -190,7 +179,6 @@ public class DetailGroupesWindow extends Window {
 				}
 			}
 
-
 			detailGroupesTable.addContainerProperty(ID_PROPERTY, String.class, "");
 			detailGroupesTable.addContainerProperty(CODE_COLLECTION_PROPERTY, String.class, "");
 			detailGroupesTable.addContainerProperty(CODE_GROUPE_PROPERTY, String.class, "");
@@ -221,13 +209,9 @@ public class DetailGroupesWindow extends Window {
 
 		layout.addComponent(panelDetailGroupes);
 
-
-
 		Panel panelCollectionInfo= new Panel(applicationContext.getMessage(NAME+".info.title", null, getLocale()));
 		panelCollectionInfo.setIcon(FontAwesome.INFO_CIRCLE);
-
 		panelCollectionInfo.addStyleName("significationpanel");
-
 
 		VerticalLayout significationLayout = new VerticalLayout();
 		significationLayout.setMargin(true);
@@ -237,28 +221,18 @@ public class DetailGroupesWindow extends Window {
 		mapSignificationLabel.setStyleName(ValoTheme.LABEL_SMALL);
 		mapSignificationLabel.setContentMode(ContentMode.HTML);
 
-
 		significationLayout.addComponent(mapSignificationLabel);
-
 		panelCollectionInfo.setContent(significationLayout);
-
 		layout.addComponent(panelCollectionInfo);
-
-
 		layout.setExpandRatio(panelDetailGroupes, 1);
-
 
 		setContent(layout);
 
-
 		/* Centre la fenêtre */
 		center();
-
-
 	}
 
 	private void renseignerItem(Item i, ObjetBaseCollectionGroupe obj) {
-
 		i.getItemProperty(ID_PROPERTY).setValue(obj.getId());
 		i.getItemProperty(CODE_COLLECTION_PROPERTY).setValue(obj.getCod_coll());
 		i.getItemProperty(CODE_GROUPE_PROPERTY).setValue(obj.getCod_gpe());
@@ -289,7 +263,7 @@ public class DetailGroupesWindow extends Window {
 			if(StringUtils.hasText(el.getLibelle())){
 
 				//indentation des libelles dans la liste:
-				int rg = new Integer(el.getLevel());
+				int rg = Integer.valueOf(el.getLevel());
 				String libelp = el.getLibelle();
 				String lib = "";
 				for (int j = 2; j <= rg; j++) {
@@ -307,11 +281,4 @@ public class DetailGroupesWindow extends Window {
 			return libLabel;
 		}
 	}
-
-
-
-
-
-
-
 }

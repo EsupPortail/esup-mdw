@@ -18,21 +18,19 @@
  */
 package fr.univlorraine.mondossierweb.entities.listeners;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import javax.annotation.Resource;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
-
+import fr.univlorraine.tools.vaadin.EntityPusher;
+import fr.univlorraine.tools.vaadin.EntityPusher.EntityAction;
+import jakarta.annotation.Resource;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
 
-import fr.univlorraine.tools.vaadin.EntityPusher;
-import fr.univlorraine.tools.vaadin.EntityPusher.EntityAction;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Appelle les méthodes des EntityPusher correspondants lors de l'insertion, la modification ou la suppression d'une entité.

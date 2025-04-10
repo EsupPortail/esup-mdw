@@ -18,14 +18,14 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
+
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.ProgressBar;
+import com.vaadin.v7.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class LoadingIndicatorWindow extends Window {
-
 	public LoadingIndicatorWindow() {
 		super();
 		setModal(true);
@@ -33,7 +33,6 @@ public class LoadingIndicatorWindow extends Window {
 		setResizable(false);
 		setClosable(false);
 		addStyleName("loadingIndicatorWindow");
-
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
@@ -46,5 +45,4 @@ public class LoadingIndicatorWindow extends Window {
 
 		center();
 	}
-
 }

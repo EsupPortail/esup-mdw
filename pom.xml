@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>1.7.8</version>
+	<version>2.0.6</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -34,24 +34,34 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
-		<vaadin.version>7.7.35</vaadin.version>
-	 	<!-- <springframework.version>5.3.18</springframework.version> -->
-		<springframework.version>5.3.39</springframework.version>
-		<spring.data.jpa.version>2.6.3</spring.data.jpa.version>
-		<spring.security.version>4.2.20.RELEASE</spring.security.version>
-		<!-- Sign PDF problem <spring.security.version>5.6.2</spring.security.version>  -->
-		<aspectj.version>1.8.2</aspectj.version>
-		<slf4j.version>1.7.32</slf4j.version>
-		<groovy.version>2.3.6</groovy.version>
-		<mysql.connector.version>5.1.49</mysql.connector.version>
-		<ojdbc7.version>12.1.3-0-0</ojdbc7.version>  
-		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-		<maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
-		<tomcat.version>7.0.109</tomcat.version>
+		<!-- JAVA -->
+		<java.version>21</java.version>
+		<!-- VAADIN -->
+		<vaadin.version>7.7.45</vaadin.version>
+		<vaadin-compatibility-server-version>8.27.5</vaadin-compatibility-server-version>
+		<vaadin.spring.version>4.0.0</vaadin.spring.version>
+		<!-- SPRING -->
+		<spring.version>6.2.2</spring.version>
+		<spring.data.jpa.version>3.4.2</spring.data.jpa.version>
+		<spring.security.version>6.3.6</spring.security.version>
+		<!-- JPA -->
+		<hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
+		<eclipselink.version>4.0.5</eclipselink.version>
+		<!-- MYSQL -->
+		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
 		<!-- WS Apogee AMUE -->
-		<!-- <apo.ws.version>6.50.00</apo.ws.version> -->
-		<apo.ws.version>6.50.30</apo.ws.version>
+		<apo.ws.version>6.50.50</apo.ws.version>
+		<!-- Lib oracle -->
+		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
+		<!-- OTHERS -->
+		<fasterxml.jackson.version>2.16.1</fasterxml.jackson.version>
+		<aspectj.version>1.8.2</aspectj.version>
+		<logback.version>1.5.18</logback.version>
+		<slf4j.version>1.7.36</slf4j.version>
+		<gmavenplus.version>3.0.2</gmavenplus.version>
+		<groovy.version>4.0.15</groovy.version>
+		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+		<cargo-maven-plugin.version>1.9.8</cargo-maven-plugin.version>
 	</properties>
 
 	<distributionManagement>
@@ -67,13 +77,12 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	
 	<scm>
 		<url>https://github.com/EsupPortail/esup-mdw</url>
  		<connection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/EsupPortail/esup-mdw.git</developerConnection>
 	  	<tag>HEAD</tag>
-  </scm>
+  	</scm>
 
 	<repositories>
 		<repository>
@@ -81,19 +90,11 @@
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 
-		<!--  <repository>
-				<id>vaadin-prereleases</id>
-				<name>Vaadin Pre-releases</name>
-				<url>https://maven.vaadin.com/vaadin-prereleases</url>
-		</repository>  -->
-
-
 		<!-- Univ Lorraine repositories -->
 		<repository>
 			<id>ul-public-releases</id>
 			<url>https://maven.univ-lorraine.fr/content/repositories/public-releases</url>
 		</repository>
-		
 		
 		<repository>
 			<id>local_repository</id>
@@ -112,77 +113,54 @@
 			<releases>
 			</releases>
 		</repository>
-		
-		<!-- Oracle -->
-	<!--  	 <repository>
-            <id>maven.oracle.com</id>
-            <releases>
-                  <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                  <enabled>false</enabled>
-            </snapshots>
-            <url>https://maven.oracle.com</url>
-            <layout>default</layout>
-          </repository> -->
 			
 	</repositories>
-	
-	<!-- <pluginRepositories>
-<pluginRepository>
-<id>vaadin-prereleases</id>
-<name>Vaadin Pre-releases</name>
-<url>https://maven.vaadin.com/vaadin-prereleases</url>
-</pluginRepository>
-</pluginRepositories>  -->
-	
-	<!-- <pluginRepositories>
-  <pluginRepository>
-    <id>maven.oracle.com</id>
-    <url>https://maven.oracle.com</url>
-  </pluginRepository>
-</pluginRepositories> -->
-	
+
 	<profiles>
-	
-   <!--  <profile>
-        <id>doclint-java8-disable</id>
-        <activation>
-            <jdk>[1.8,)</jdk>
-        </activation>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.1</version>
-                    <configuration>
-                        <additionalparam>-Xdoclint:none</additionalparam>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile> -->
-    
 		<profile>
 			<id>deploiement-national</id>
 			<build>
-				<finalName>${project.name}-${project-distribution.version}</finalName>
+				<finalName>${project.name}-${project.version}</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources</directory>
 						<excludes>
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
-							<exclude>i18n/*messages.properties</exclude>
-							<exclude>images/logo.png</exclude>
+							<exclude>images/*.png</exclude>
+							<exclude>images/*.jpg</exclude>
+							<exclude>VAADIN/themes/valo-ul/favicon.ico</exclude>
 							<exclude>**/*.scss</exclude>
-							<exclude>**/favicon.ico</exclude>
+							<exclude>i18n/messages.properties,</exclude>
+							<exclude>i18n/vaadin-messages.properties,</exclude>
 							<exclude>configUrlServices.properties</exclude>
+							<exclude>configUrlServicesp*.properties</exclude>
+							<exclude>configUrlServicest*.properties</exclude>
 							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
 					</resource>
 				</resources>
+				<plugins>
+				  <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.4.0</version>
+					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+						<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
+						<webResources>
+							<resource>
+								<!-- this is relative to the pom.xml directory -->
+								<directory>${basedir}</directory>
+								<includes>
+									<include>LICENSE-2.0.txt</include>
+									<include>LICENSE-VAADIN.txt</include>
+								</includes>
+							</resource>
+						</webResources>
+					</configuration>
+				  </plugin>
+				</plugins>
 			</build>
 		</profile>
 		
@@ -192,7 +170,8 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<build>		
+			<build>
+				<finalName>${project.name}-${project.version}</finalName>
 				<resources>		
 					<resource>
 						<directory>src/main/resources</directory>
@@ -200,40 +179,20 @@
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
 							<exclude>**/*.scss</exclude>
-							<!-- <exclude>**/*sample.*</exclude>  -->
-							<!--  <exclude>i18n/*sample.*</exclude> -->
-							<exclude>configUrlServices.properties</exclude>
-							<exclude>apogeeRequest.xml</exclude>
 						</excludes>
 					</resource>
 				</resources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>3.4.0</version>
+						<configuration>
+							<failOnMissingWebXml>false</failOnMissingWebXml>
+						</configuration>
+					</plugin>
+				</plugins>
 			</build>
-		</profile>
-
-		<!-- Profile d'activation du repo oracle -->
-		<profile>
-			<id>repository-oracle</id>
-			<repositories>
-			<!-- Oracle Repository -->
-				<repository>
-		            <id>maven.oracle.com</id>
-		            <releases>
-		                  <enabled>true</enabled>
-		            </releases>
-		            <snapshots>
-		                  <enabled>false</enabled>
-		            </snapshots>
-		            <url>https://maven.oracle.com</url>
-		            <layout>default</layout>
-		          </repository>
-			</repositories>
-			<dependencies> 
-				<dependency>
-		            <groupId>com.oracle.weblogic</groupId>
-		            <artifactId>ojdbc7</artifactId>
-		            <version>${ojdbc7.version}</version>
-		        </dependency>		        
-			</dependencies>
 		</profile>
     
 </profiles>
@@ -241,34 +200,26 @@
 	<build>
 		<resources>
 			<resource>
-				<!-- Filtre le fichier app.properties -->
+				<!-- Filtre le fichier app.properties pour valuer app.name et app.version -->
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>app.properties</include>
 				</includes>
 			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>assembly/</exclude>
-					<exclude>repository/</exclude>
-					<exclude>**/*.scss</exclude>
-					<exclude>**/*sample.*</exclude>
-				</excludes>
-			</resource>
 		</resources>
 
 		<plugins>
-		
-		<plugin>
+
+			<!--
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven-javadoc-plugin.version}</version>
 				<configuration>
 					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
-			</plugin>
+			</plugin> -->
 			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -281,56 +232,6 @@
 			</plugin>
 			
 			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>${vaadin.version}</version>
-				<configuration>
-					<generatedWidgetsetDirectory>${basedir}/src/main/java/fr/univlorraine/mondossierweb</generatedWidgetsetDirectory>
-						<!--  <modules>
-                                <module>fr.univlorraine.mondossierweb.AppWidgetset</module>
-                            </modules>-->
-                            <extraJvmArgs>-Xmx512M -Xss4096k</extraJvmArgs>
-					<!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
-						way compatible with Vaadin eclipse plugin. -->
-					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
-					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
-					<noServer>true</noServer>
-					<!-- Remove draftCompile when project is ready -->
-					<draftCompile>false</draftCompile>
-					<compileReport>true</compileReport>
-					<style>OBF</style>
-					<strict>true</strict>
-					<runTarget>http://localhost:18080/</runTarget>
-					<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-				</configuration>
-				<!-- <executions>
-					<execution>
-						<goals>
-							<goal>resources</goal>
-							<goal>update-widgetset</goal>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions> -->
-			</plugin>
-			<!--  GWT compiler plugin -->
-			<plugin>
-   				<groupId>org.codehaus.mojo</groupId>
-   				<artifactId>gwt-maven-plugin</artifactId>
-   				<version>2.8.2</version>
-   				<configuration>
-       				<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
-   				</configuration>
-   				<executions>
-       				<execution>
-           				<goals>
-               				<goal>compile</goal>
-           				</goals>
-       				</execution>
-   				</executions>
-			</plugin>
-			
-			<plugin>
     			<groupId>com.mycila</groupId>
     			<artifactId>license-maven-plugin</artifactId>
     			<version>2.3</version>
@@ -340,14 +241,14 @@
             		<owner>ESUP-Portail</owner>
         		</properties>
         		<includes>
-        		<include>**/*.java</include>
-        		<!-- <include>**/*.properties</include> -->
-        		<include>**/*.xml</include>
+        			<include>**/*.java</include>
+        			<include>**/*.xml</include>
         		</includes>
         		 <excludes>
             		<exclude>src/main/java/com/vaadin/ui/ConnectorTracker.java</exclude>
             		<exclude>**/*.gwt.xml</exclude>
             		<exclude>**/*.properties</exclude>
+					<exclude>.smarttomcat/mdw-vaadin/**/*.xml</exclude>
         		</excludes>
     			</configuration>
     			<executions>
@@ -371,67 +272,11 @@
                     </licenseMapping>
                 </configuration>
 	    	</plugin>
-			
-			<!-- Active le compile-time weaving, pour configurer l'AOP -->
-			<!-- <plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.6</version>
-				<configuration>
-					<showWeaveInfo>true</showWeaveInfo>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<complianceLevel>${java.version}</complianceLevel>
-					<forceAjcCompile>true</forceAjcCompile>
-					<sources />
-					<weaveDirectories>
-						<weaveDirectory>${project.build.outputDirectory}</weaveDirectory>
-					</weaveDirectories>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aspects</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjtools</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>  -->
 
-			<!-- Active le Static Weaving d'EclipseLink -->
-			<!-- Scan des annotations -->
-			<!--  <plugin>
-				<groupId>org.reflections</groupId>
-				<artifactId>reflections-maven</artifactId>
-				<version>0.9.9-RC2</version>
-				<configuration>
-					<destinations>${project.build.directory}/generated-persistenceinfo/reflections.xml</destinations>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>reflections</goal>
-						</goals>
-						<phase>process-classes</phase>
-					</execution>
-				</executions>  
-			</plugin> -->
 			  <plugin>
     			<groupId>org.codehaus.gmavenplus</groupId>
     			<artifactId>gmavenplus-plugin</artifactId>
-    			<version>1.5</version>
+				  <version>${gmavenplus.version}</version>
     			<executions>
         			<execution>
             		<phase>process-classes</phase>
@@ -452,14 +297,21 @@
         			<dependency>
             			<groupId>org.reflections</groupId>
             			<artifactId>reflections</artifactId>
-            			<version>0.9.10</version>
+            			<!--<version>0.9.10</version>-->
+						<version>0.10.2</version>
         			</dependency>
         			<dependency>
-           	 		<groupId>org.codehaus.groovy</groupId>
-            			<artifactId>groovy-all</artifactId>
+           	 			<groupId>org.apache.groovy</groupId>
+            			<artifactId>groovy</artifactId>
             			<version>${groovy.version}</version>
             			<scope>runtime</scope>
         			</dependency>
+					<dependency>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-ant</artifactId>
+						<version>${groovy.version}</version>
+						<scope>runtime</scope>
+					</dependency>
 					<dependency>
     					<groupId>org.dom4j</groupId>
     					<artifactId>dom4j</artifactId>
@@ -471,9 +323,8 @@
 			<plugin>
 				<groupId>org.codehaus.gmaven</groupId>
 				<artifactId>groovy-maven-plugin</artifactId>
-				<version>2.0</version>
+				<version>2.1.1</version>
 				<executions>
-					
 					<execution>
 						<id>generatePersistenceXml</id>
 						<phase>process-classes</phase>
@@ -491,8 +342,8 @@
 								file.newWriter()
 
 								def reflections = new XmlParser().parse(new File(project.build.directory + '/generated-persistenceinfo/reflections.xml'))
-								def entityClasses = reflections.TypeAnnotationsScanner.entry.find{it.key.text() == 'javax.persistence.Entity'}?.values?.value
-								def converterClasses = reflections.TypeAnnotationsScanner.entry.find{it.key.text() == 'javax.persistence.Converter'}?.values?.value
+								def entityClasses = reflections.TypesAnnotated.entry.find{it.key.text() == 'javax.persistence.Entity'}?.values?.value
+								def converterClasses = reflections.TypesAnnotated.entry.find{it.key.text() == 'javax.persistence.Converter'}?.values?.value
 
 								file &lt;&lt; '&lt;?xml version="1.0" encoding="UTF-8"?&gt;'
 								file &lt;&lt; '\n&lt;persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_1.xsd"&gt;'
@@ -540,26 +391,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Traite les entités avec StaticWeave -->
-		<!--  <plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.3.2</version>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<killAfter>-1</killAfter>
-							<classpathScope>compile</classpathScope>
-							<mainClass>org.eclipse.persistence.tools.weaving.jpa.StaticWeave</mainClass>
-							<commandlineArgs>-loglevel ALL -persistenceinfo ${project.build.directory}/generated-persistenceinfo ${project.build.outputDirectory} ${project.build.outputDirectory}</commandlineArgs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
 			
 			<!-- Traite les entités avec StaticWeave2 -->
 			 <plugin>
@@ -585,47 +416,11 @@
 					<dependency>
 						<groupId>org.eclipse.persistence</groupId>
 						<artifactId>eclipselink</artifactId>
-						  <version>2.5.2</version>
-						<!-- <version>2.3.2</version> -->
+						<!-- <version>2.5.2</version> -->
+						<version>${eclipselink.version}</version>
 					</dependency>
 				</dependencies>
-			</plugin> 
-			
-
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<warSourceExcludes>META-INF/context.xml</warSourceExcludes>
-					<packagingExcludes>**/configUrlServices.properties,**/configUrlServicesp*.properties,**/configUrlServicest*.properties,**/apogeeRequest.xml,**/*messages.properties, **/*.sample.css,VAADIN/gwt-unitCache/**</packagingExcludes>
-					<webResources>
-            			<resource>
-              			<!-- this is relative to the pom.xml directory -->
-              				<directory>${basedir}</directory>
-              				 <includes>
-                				<include>LICENSE-2.0.txt</include>
-                				<include>LICENSE-VAADIN.txt</include>
-              				 </includes>
-            			</resource>
-          			</webResources>
-				</configuration>
 			</plugin>
-
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.2</version>
-				 <dependencies>
-                         <dependency>
-                                  <groupId>org.apache.maven.scm</groupId>
-                                 <artifactId>maven-scm-provider-gitexe</artifactId>
-                                <version>1.9.4</version>
-                         </dependency>
-                  </dependencies>
-			</plugin> -->
 			
 			<plugin>
     			<artifactId>maven-scm-plugin</artifactId>
@@ -660,6 +455,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -677,163 +473,13 @@
 							</sources>
 						</configuration>
 					</execution>
-					
-					<!-- Le numero de version n'integre pas le snapshot. Cela créé une variable project-distribution.version -->
-					<execution>
-						<id>regex-property</id>
-						<goals>
-							<goal>regex-property</goal>
-						</goals>
-						<configuration>
-							<name>project-distribution.version</name>
-							<value>${project.version}</value>
-							<regex>(\d+)\.(\d+)\.(\d+)-SNAPSHOT</regex>
-							<replacement>$1.$2.$3</replacement>
-							<failIfNoMatch>false</failIfNoMatch>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 
-			
-
-			<!-- Embedded Tomcat -->
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-          		<artifactId>tomcat7-maven-plugin</artifactId> 
-				<version>2.2</version>
-				<configuration>
-					<path>/</path>
-					<contextFile>src/main/webapp/META-INF/context.xml</contextFile>
-					<warDirectory>${project.build.directory}/${project.build.finalName}</warDirectory>
-					<protocol>org.apache.coyote.http11.Http11NioProtocol</protocol>
-					<!-- <systemProperties>
-					<java.library.path>${basedir}\lib</java.library.path>
-					</systemProperties> -->
-				</configuration>
-				<dependencies>
-					<!-- Tomcat (JDK11) -->
-			    	<dependency>
-			        	<groupId>org.apache.tomcat.embed</groupId>
-			        	<artifactId>tomcat-embed-core</artifactId>
-			        	<version>${tomcat.version}</version>
-			    	</dependency>
- 
-			    	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-util</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			 
-			     	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-coyote</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			 
-			     	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-api</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			 
-			     	<dependency>
-			        	<groupId>org.apache.tomcat</groupId>
-			        	<artifactId>tomcat-jdbc</artifactId>
-			        	<version>${tomcat.version}</version>
-			     	</dependency>
-			 
-			      	<dependency>
-			         	<groupId>org.apache.tomcat</groupId>
-			         	<artifactId>tomcat-dbcp</artifactId>
-			         	<version>${tomcat.version}</version>
-			      	</dependency>
-			 
-			       	<dependency>
-			          	<groupId>org.apache.tomcat</groupId>
-			          	<artifactId>tomcat-servlet-api</artifactId>
-			          	<version>${tomcat.version}</version>
-			       	</dependency>
-			 
-			       <dependency>
-			          <groupId>org.apache.tomcat</groupId>
-			          <artifactId>tomcat-jsp-api</artifactId>
-			          <version>${tomcat.version}</version>
-			        </dependency>
-			 
-			        <dependency>
-			           <groupId>org.apache.tomcat</groupId>
-			           <artifactId>tomcat-jasper</artifactId>
-			           <version>${tomcat.version}</version>
-			        </dependency>
-			 
-			        <dependency>
-			           <groupId>org.apache.tomcat</groupId>
-			           <artifactId>tomcat-jasper-el</artifactId>
-			           <version>${tomcat.version}</version>
-			        </dependency>
-			 
-			        <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-el-api</artifactId>
-			            <version>${tomcat.version}</version>
-			        </dependency>
-			 
-			         <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-catalina</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			 
-			          <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-tribes</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			 
-			         <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-catalina-ha</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			 
-			          <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-annotations-api</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			 
-			          <dependency>
-			            <groupId>org.apache.tomcat</groupId>
-			            <artifactId>tomcat-juli</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			 
-			          <dependency>
-			            <groupId>org.apache.tomcat.embed</groupId>
-			            <artifactId>tomcat-embed-logging-juli</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			 
-			          <dependency>
-			            <groupId>org.apache.tomcat.embed</groupId>
-			            <artifactId>tomcat-embed-logging-log4j</artifactId>
-			            <version>${tomcat.version}</version>
-			          </dependency>
-			          
-			          <dependency>
-			    		<groupId>javax.xml.bind</groupId>
-			    		<artifactId>jaxb-api</artifactId>
-			    		<version>2.3.1</version>
-					</dependency>
-		
-				</dependencies>
-			</plugin>
-			
-			<!-- Assemblement de l'appli -->
+			<!-- Assemblage de l'appli -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${maven-assembly-plugin.version}</version><!--$NO-MVN-MAN-VER$-->
+				<version>3.7.1</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/resources/assembly/distribution.xml</descriptor>
@@ -841,32 +487,60 @@
 				</configuration>
 			</plugin>
 			
-			 <!-- FlyWay Plugin -->
-    <plugin>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-maven-plugin</artifactId>
-        <version>3.2.1</version>
-        <configuration>
-            <url>jdbc:mysql://localhost:3306/mdw</url>
-            <user>root</user>
-            <baselineOnMigrate>true</baselineOnMigrate>
-            <!-- <locations>
-            <location>classpath:db-migration</location>
-            </locations> -->
-            <!-- <sqlMigrationPrefix>Migration-</sqlMigrationPrefix>
-            <sqlMigrationSeparator>_</sqlMigrationSeparator>
-            <sqlMigrationSuffix>.sql</sqlMigrationSuffix> -->
-        </configuration>
-        <dependencies>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.connector.version}</version>
-            </dependency>
-        </dependencies>
-    </plugin>
-    
-    
+			<!-- FlyWay Plugin -->
+    		<plugin>
+        		<groupId>org.flywaydb</groupId>
+        		<artifactId>flyway-maven-plugin</artifactId>
+        		<version>3.2.1</version>
+        		<configuration>
+            		<url>jdbc:mysql://localhost:3306/mdw</url>
+            		<user>root</user>
+            		<baselineOnMigrate>true</baselineOnMigrate>
+        		</configuration>
+        		<dependencies>
+					<dependency>
+						<groupId>com.mysql</groupId>
+						<artifactId>mysql-connector-j</artifactId>
+						<version>${mysql.connector.j.version}</version>
+					</dependency>
+        		</dependencies>
+    		</plugin>
+
+			<!-- Plugin cargo pour lancer l'appli en phase de dev -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
+				<version>${cargo-maven-plugin.version}</version>
+				<configuration>
+					<container>
+						<containerId>tomcat10x</containerId>
+						<type>embedded</type>
+					</container>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+							<cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
+						</properties>
+						<configfiles>
+							<configfile>
+								<file>src/main/webapp/META-INF/context.xml</file>
+								<todir>conf/</todir>
+							</configfile>
+						</configfiles>
+					</configuration>
+					<deployables>
+						<deployable>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<type>war</type>
+							<properties>
+								<context>/</context>
+							</properties>
+						</deployable>
+					</deployables>
+				</configuration>
+			</plugin>
+
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -1001,89 +675,34 @@
 	</build>
 
 	<dependencies>
-	
-		<!-- Old Vaadin dependency -->
-		<!--  <dependency>
-			<groupId>com.vaadin.addon</groupId>
-			<artifactId>vaadin-touchkit-agpl</artifactId>
-			<version>4.1.0</version>
-			<type>jar</type>
-		</dependency>-->  
 		
 		<!-- Vaadin dependencies -->
+		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-compatibility-server-mpr-jakarta -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
-			<version>${vaadin.version}</version>
-			<!--  <exclusions>
-              <exclusion>
-    				<groupId>org.jsoup</groupId>
-    				<artifactId>jsoup</artifactId>
-              </exclusion>
-            </exclusions>-->
-		</dependency>
-		<!--  <dependency>
-    		<groupId>org.jsoup</groupId>
-    		<artifactId>jsoup</artifactId>
-    		<version>1.8.1</version>
-		</dependency>-->
-		<!-- <dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiled</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>-->
-		<dependency>
-    <groupId>com.vaadin</groupId>
-    <artifactId>vaadin-client-compiler</artifactId>
-    <version>${vaadin.version}</version>
-    <scope>provided</scope>
-    <exclusions>
-          <exclusion>
-                  <groupId>com.vaadin.external.gwt</groupId>
-                  <artifactId>gwt-dev</artifactId>
-              </exclusion>
-              <exclusion>
-                  <groupId>com.vaadin.external.gwt</groupId>
-                  <artifactId>gwt-elemental</artifactId>
-              </exclusion>
-    </exclusions>
-</dependency>
-<!--  <dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-		</dependency>-->
-<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-			<!-- exclusion pour mettre à la main GWT 2.8 à la place de 2.7 -->
-             <exclusion>
-                   <groupId>com.vaadin.external.gwt</groupId>
-                   <artifactId>gwt-elemental</artifactId>
-             </exclusion>
-    </exclusions>
+			<artifactId>vaadin-compatibility-server-mpr-jakarta</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
 		</dependency>
 		<dependency>
-    <groupId>com.google.gwt</groupId>
-    <artifactId>gwt-elemental</artifactId>
-    <version>2.8.2</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>com.google.gwt</groupId>
-    <artifactId>gwt-dev</artifactId>
-    <version>2.8.2</version>
-    <scope>provided</scope>
-</dependency>
-		
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-compatibility-shared</artifactId>
+            <version>${vaadin-compatibility-server-version}</version>
+        </dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-push</artifactId>
-			<version>${vaadin.version}</version>
+			<artifactId>vaadin-compatibility-client-compiled</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-compatibility-client</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-push-jakarta -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push-jakarta</artifactId>
+			<version>${vaadin-compatibility-server-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -1092,49 +711,42 @@
 		</dependency>
 		
 		<!-- Vaadin add-ons -->
-		<!--  <dependency>
-			<groupId>ru.xpoft.vaadin</groupId>
-			<artifactId>spring-vaadin-integration</artifactId>
-			<version>3.1</version>
-		</dependency>  -->
-		
-		<!-- Vaadin add-ons -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring</artifactId>
-			<version>1.0.2</version>
+			<version>${vaadin.spring.version}</version>
 		</dependency>
-	
-	
-		<!-- Servlet 3 -->
+
+		<!-- Jakarta Servlet -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Annotation API (nécessaire pour JDK11) -->
+
+		<!-- Annotation API -->
 		<dependency>
-        	<groupId>javax.annotation</groupId>
-        	<artifactId>javax.annotation-api</artifactId>
-        	<version>1.3.2</version>
-    	</dependency>
-    	
-    	<!-- Jaxb API (nécessaire pour JDK11) -->
-    	<dependency>
-    		<groupId>javax.xml.bind</groupId>
-    		<artifactId>jaxb-api</artifactId>
-    		<version>2.3.1</version>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>3.0.0</version>
 		</dependency>
-		
-		   <!-- Javax SOAP (nécessaire pour JDK11) -->
+
+		<!-- Jaxb API -->
+		<!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>4.0.2</version>
+		</dependency>
+
+		<!-- Javax SOAP (nécessaire pour JDK11) -->
 		 <dependency>
     		<groupId>javax.xml.soap</groupId>
     		<artifactId>javax.xml.soap-api</artifactId>
     		<version>1.4.0</version>
 		</dependency>
- 
 
     	<!-- Jaxb API (nécessaire pour JDK11) -->
     	<dependency>
@@ -1157,28 +769,12 @@
     		<version>1.1.2</version>
 		</dependency>
 
- 
  		<!-- Activation API (nécessaire pour JDK11) -->
 		<dependency>
     		<groupId>javax.activation</groupId>
     		<artifactId>activation</artifactId>
     		<version>1.1.1</version>
 		</dependency>
-		
-		<!-- JAVAX WS (nécessaire pour JDK11)
-		<dependency>
-    		<groupId>com.sun.xml.ws</groupId>
-    		<artifactId>jaxws-ri</artifactId>
-    		<version>2.3.1</version>
-    		<type>pom</type>
-		</dependency> -->
-		
-		<!-- aspectj (nécessaire pour JDK11)
-		<dependency>
-    		<groupId>com.github.m50d</groupId>
-    		<artifactId>aspectj-maven-plugin</artifactId>
-    		<version>1.11.1</version>
-		</dependency> -->
     	
 		<!-- JCache -->
 		<dependency>
@@ -1188,20 +784,13 @@
 			<scope>provided</scope>
 		</dependency>
 
-		
-
-		<!-- WS Apogee AMUE -->
-		<!--  <dependency>
-			<groupId>gouv.education.apogee</groupId>
-			<artifactId>apo-webservicesclient</artifactId>
-			<version>5.20.lcc</version>
-		</dependency> -->
 		<!-- WS Apogee Lib AMUE 2021 -->
 		<dependency>
 			<groupId>gouv.education.apogee</groupId>
 			<artifactId>apo-webservices-client</artifactId>
 			 <version>${apo.ws.version}</version>
 		</dependency>
+
 		<!-- Utils UL Lib AMUE 2021 -->
 		 <dependency>
             <groupId>fr.univlorraine</groupId>
@@ -1209,8 +798,7 @@
            	 <version>1.0.0</version> 
            	<!-- <version>1.0.1</version> --> 
         </dependency>
-		
-		
+
 		<!-- PhotoServer UL -->
 		<dependency>
   			<groupId>fr.univlorraine.photoserver</groupId>
@@ -1222,32 +810,27 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${springframework.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<!-- Spring Data JPA -->
@@ -1273,27 +856,12 @@
 			<artifactId>spring-security-ldap</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-
-		<!-- Spring Mobile -->
-		<dependency>
-    		<groupId>org.springframework.mobile</groupId>
-    		<artifactId>spring-mobile-device</artifactId>
-    		<version>1.1.2.RELEASE</version>
-		</dependency>
-		
-		<!-- JPA implementation (JDK11) -->
-		<!-- <dependency>
-    			<groupId>org.eclipse.persistence</groupId>
-    			<artifactId>javax.persistence</artifactId>
-    			  <version>2.2.1</version> 
-		</dependency> -->
 				
 		<!-- JPA implementation -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
-			<!--  <version>2.6.0-M3</version>-->
-			<version>2.7.6</version><!-- (JDK11)  -->
+			<version>${eclipselink.version}</version>
 		</dependency>
 
 		<!-- Beans validator -->
@@ -1303,10 +871,9 @@
 			<version>1.1.0.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<!-- <version>5.1.2.Final</version>  -->
-			<version>6.1.0.Final</version>
+			<version>${hibernate-validator.version}</version>
 		</dependency>
 
 		<!-- AOP -->
@@ -1325,7 +892,6 @@
 			<artifactId>cglib</artifactId>
 			<version>3.1</version>
 		</dependency>
-
 
 		<!-- Logging -->
 		<dependency>
@@ -1346,9 +912,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<!--  <version>1.1.9</version> -->
-			<version>1.2.8</version>
-			<scope>runtime</scope>
+			 <version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.janino</groupId>
@@ -1356,39 +920,39 @@
 			<version>2.7.6</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<!-- La version 1.4.* est celle requise par logback -->
-			<version>1.4.7</version>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-mail</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-activation</artifactId>
+			<version>2.0.2</version>
+			<scope>runtime</scope>
 		</dependency>
 		
 		<!-- Tools UnivLorraine -->
 	  	<dependency>
 			<groupId>fr.univlorraine</groupId>
 			<artifactId>tools</artifactId>
-			<!-- <version>1.5.9</version> -->
 			<version>1.5.11</version>
-		</dependency> 
+		</dependency>
 		
 		<!-- Lombok eclipse plugin -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<!-- <version>1.14.8</version> -->
-			<version>1.18.8</version> <!-- (nécessaire depuis JDK11) -->
+			<!-- <version>1.18.8</version> -->
+			<version>1.18.36</version> <!-- (nécessaire depuis JDK21) -->
 		</dependency>
 		
 		<!-- ElasticSearch -->
 		 <dependency>
     		<groupId>fr.univlorraine</groupId>
     		<artifactId>mdw-tools</artifactId>
-    		<!--  <version>1.0.3</version> -->   
-    	    <!--  <version>2.0.3</version> -->
-    	    <!--  <version>2.0.4</version> -->
     	        <version>2.0.5</version>
 		 </dependency>
-		
-		
+
 		<!-- esup-portal WS client -->
 		<dependency>
     		<groupId>esup</groupId>
@@ -1424,45 +988,33 @@
 			<artifactId>wsdl4j</artifactId>
 			<version>1.6.3</version>
 		</dependency>
-		<!-- Fin dépendances liées à la perte de la lib AMUE  -->
 		
 		<!-- EHCACHE -->
 		<dependency>
-    		<groupId>ehcache</groupId>
+    		<groupId>net.sf.ehcache</groupId>
     		<artifactId>ehcache</artifactId>
     		<version>1.2.3</version>
 		</dependency>
-		
-		
+
 		<!-- MYSQL -->
-			<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.connector.version}</version>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql.connector.j.version}</version>
 		</dependency>
 		
 		<!-- XLSX -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<!-- <version>3.10-FINAL</version>  --> 
-			<!-- <version>3.17</version> -->
-			 <version>4.1.1</version>
+			 <version>4.1.2</version>
 		</dependency>
 		<dependency>
     		<groupId>org.apache.poi</groupId>
     		<artifactId>poi-ooxml</artifactId>
-    		<!-- <version>3.10-FINAL</version>   -->
-			<!-- <version>3.17</version> -->
-			 <version>4.1.1</version>
+			 <version>4.1.2</version>
 		</dependency>
-		
-		<!-- ITEXT -->
-		<!-- <dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>2.1.7</version>
-		</dependency> -->
+
 		<dependency>
     		<groupId>com.itextpdf</groupId>
     		<artifactId>itextpdf</artifactId>
@@ -1471,7 +1023,7 @@
 		<dependency>
     		<groupId>org.bouncycastle</groupId>
     		<artifactId>bcprov-jdk15to18</artifactId>
-    		<version>1.76</version>
+    		<version>1.78</version>
 		</dependency>
 		<dependency>
     		<groupId>org.bouncycastle</groupId>
@@ -1479,33 +1031,19 @@
     		<version>1.70</version>
 		</dependency>
 
-		
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-ext</artifactId>
 			<version>1.7</version>
 		</dependency>
-		
-		<!-- Groovy -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-all</artifactId>
-			<version>${groovy.version}</version>
-		</dependency>
-		
+
 		 <!-- Flyway -->
     	<dependency>
         	<groupId>org.flywaydb</groupId>
         	<artifactId>flyway-core</artifactId>
         	<version>3.2.1</version>
     	</dependency>   
-    	
-    	<!-- JWT -->
-    	<!--  <dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-		</dependency>-->
+
 		<!-- JWT -->
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -1513,41 +1051,33 @@
 			<version>3.18.1</version>
 		</dependency>
 
-
 		<!-- jackson -->
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-         <!-- <version>2.6.7</version> -->
-         <!-- <version>2.9.10</version> -->
-         <!-- <version>2.12.7</version> -->
-         <version>2.13.4</version>
-    </dependency>
+    	<dependency>
+        	<groupId>com.fasterxml.jackson.core</groupId>
+        	<artifactId>jackson-annotations</artifactId>
+         	<version>${fasterxml.jackson.version}</version>
+    	</dependency>
+    	<dependency>
+        	<groupId>com.fasterxml.jackson.core</groupId>
+        	<artifactId>jackson-core</artifactId>
+        	<version>${fasterxml.jackson.version}</version>
+    	</dependency>
+    	<dependency>
+        	<groupId>com.fasterxml.jackson.core</groupId>
+        	<artifactId>jackson-databind</artifactId>
+        	<version>${fasterxml.jackson.version}</version>
+    	</dependency>
+    	<dependency>
+    		<groupId>com.fasterxml.jackson.dataformat</groupId>
+    		<artifactId>jackson-dataformat-smile</artifactId>
+        	<version>${fasterxml.jackson.version}</version>
+		</dependency>
 
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-         <!--  <version>2.6.7</version> -->
-         <!-- <version>2.9.10</version> -->
-       <!-- <version>2.12.7</version> -->
-        <version>2.13.4</version>
-    </dependency>
-
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <!--  <version>2.6.7.5</version> --> 
-        <!-- <version>2.9.10.8</version> --> 
-       <!-- <version>2.12.7.1</version> -->
-        <version>2.13.4.2</version>
-    </dependency> 
-    <dependency>
-    	<groupId>com.fasterxml.jackson.dataformat</groupId>
-    	<artifactId>jackson-dataformat-smile</artifactId>
-    	<!-- <version>2.9.10</version> -->
-        <!-- <version>2.12.7</version> -->
-        <version>2.13.4</version>
-	</dependency>
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc11</artifactId>
+			<version>${oracle.ojdbc.version}</version>
+		</dependency>
 
 	</dependencies>
 

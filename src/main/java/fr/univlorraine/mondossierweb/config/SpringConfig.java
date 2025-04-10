@@ -18,11 +18,12 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.spring.annotation.EnableVaadin;
+import fr.univlorraine.mondossierweb.Initializer;
+import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
+import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeServiceImpl;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,13 +39,9 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
 
-import com.vaadin.spring.annotation.EnableVaadin;
-
-import fr.univlorraine.mondossierweb.Initializer;
-import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
-import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeServiceImpl;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import fr.univlorraine.mondossierweb.utils.Utils;
+import jakarta.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Configuration Spring

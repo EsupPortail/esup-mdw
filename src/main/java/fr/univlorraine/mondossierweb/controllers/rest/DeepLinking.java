@@ -18,7 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.controllers.rest;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;

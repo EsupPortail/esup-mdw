@@ -18,11 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.beans;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Data;
 
 /**
  * représente une étape
@@ -31,7 +31,6 @@ import lombok.Data;
 @Data
 public class Etape implements Serializable {
 
-	private static final long serialVersionUID = -4920377897525522629L;
 	/**
 	 * code de l'étape.
 	 */

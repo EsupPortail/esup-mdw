@@ -18,19 +18,18 @@
  */
 package fr.univlorraine.mondossierweb.entities.mdw;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -38,8 +37,6 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "prefId")
 @ToString(exclude = {"preferencesApplicationValeurs"})
 public class PreferencesApplication implements Serializable {
-
-	private static final long serialVersionUID = 5299213936744275485L;
 
 	@Id
 	@Column(name="PREF_ID")
