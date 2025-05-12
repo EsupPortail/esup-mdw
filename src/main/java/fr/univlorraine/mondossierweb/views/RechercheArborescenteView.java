@@ -552,9 +552,37 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnDeplier.setIcon(FontAwesome.SITEMAP);
 				btnDeplier.setDescription(applicationContext.getMessage(NAME+".deplierarbo", null, getLocale()));
 				btnDeplier.addClickListener(e->{
+
+					/*if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
+						//affichage de la pop-up de loading
+						MainUI.getCurrent().startBusyIndicator();
+						MainUI.getCurrent().push();
+
+						//Execution de la méthode en parallèle dans un thread
+						rac = new RechercheArboThread(MainUI.getCurrent(),table, itemId);
+						rac.start();
+
+						//Execution de la méthode en parallèle dans un thread
+						executorService.execute(new Runnable() {
+							public void run() {
+								MainUI.getCurrent().access(new Runnable() {
+									@Override
+									public void run() {
+										deplierNoeudComplet((String)itemId);
+										selectionnerLigne((String)itemId);
+										table.setCurrentPageFirstItemId((String)itemId);
+										//close de la pop-up de loading
+										MainUI.getCurrent().stopBusyIndicator();
+									}
+								} );
+							}
+						});
+
+					}else{*/
 						deplierNoeudComplet((String)itemId);
 						selectionnerLigne((String)itemId);
 						table.setCurrentPageFirstItemId((String)itemId);
+					//}
 				});
 				boutonActionLayout.addComponent(btnDeplier);
 			}
@@ -647,7 +675,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				deplierNoeudComplet(fils);
 			}
 		}
-	}	
+	}
 
 	private void deplierNoeud(String itemId, boolean afficherMessage){
 		if(!table.hasChildren(itemId)){
