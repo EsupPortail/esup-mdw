@@ -59,6 +59,7 @@ import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
 import fr.univlorraine.mondossierweb.entities.vaadin.ObjetBase;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteService;
 import fr.univlorraine.mondossierweb.services.apogee.ComposanteServiceImpl;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.utils.miscellaneous.ReferencedButton;
 import jakarta.annotation.PostConstruct;
@@ -111,6 +112,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 	@Resource
 	private transient ConfigController configController;
 
+	private RechercheArboThread rat;
 	private HierarchicalContainer hc;
 	private TreeTable table;
 	private List<String> markedRows;
@@ -417,7 +419,7 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 			table.setColumnHeader(TRUE_ID_PROPERTY, applicationContext.getMessage(NAME+".table.trueObjectId", null, getLocale()));
 			table.addGeneratedColumn("type", new DisplayTypeColumnGenerator());
 			table.setColumnHeader("type", applicationContext.getMessage(NAME+".table.type", null, getLocale()));
-			table.addGeneratedColumn("actions", new ActionsColumnGenerator());
+			table.addGeneratedColumn("actions", new ActionsColumnGenerator(this));
 			table.setColumnHeader("actions", applicationContext.getMessage(NAME+".table.actions", null, getLocale()));
 			initEffectue=true;
 		}else{
@@ -469,6 +471,14 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 
 	/** Formats the position in a column containing Date objects. */
 	class ActionsColumnGenerator implements Table.ColumnGenerator {
+
+		RechercheArborescenteView rechercheArborescenteView;
+
+		public ActionsColumnGenerator(RechercheArborescenteView rechercheArborescenteView) {
+			super();
+			this.rechercheArborescenteView = rechercheArborescenteView;
+		}
+
 		/**
 		 * Generates the cell containing the value. The column is
 		 * irrelevant in this use case.
@@ -553,36 +563,19 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				btnDeplier.setDescription(applicationContext.getMessage(NAME+".deplierarbo", null, getLocale()));
 				btnDeplier.addClickListener(e->{
 
-					/*if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
+					if(PropertyUtils.isPushEnabled() &&  PropertyUtils.isShowLoadingIndicator()){
 						//affichage de la pop-up de loading
 						MainUI.getCurrent().startBusyIndicator();
 						MainUI.getCurrent().push();
 
 						//Execution de la méthode en parallèle dans un thread
-						rac = new RechercheArboThread(MainUI.getCurrent(),table, itemId);
-						rac.start();
-
-						//Execution de la méthode en parallèle dans un thread
-						executorService.execute(new Runnable() {
-							public void run() {
-								MainUI.getCurrent().access(new Runnable() {
-									@Override
-									public void run() {
-										deplierNoeudComplet((String)itemId);
-										selectionnerLigne((String)itemId);
-										table.setCurrentPageFirstItemId((String)itemId);
-										//close de la pop-up de loading
-										MainUI.getCurrent().stopBusyIndicator();
-									}
-								} );
-							}
-						});
-
-					}else{*/
+						rat = new RechercheArboThread(MainUI.getCurrent(), rechercheArborescenteView, (String) itemId);
+						rat.start();
+					}else{
 						deplierNoeudComplet((String)itemId);
-						selectionnerLigne((String)itemId);
+						selectionnerLigne((String) itemId);
 						table.setCurrentPageFirstItemId((String)itemId);
-					//}
+					}
 				});
 				boutonActionLayout.addComponent(btnDeplier);
 			}
@@ -874,6 +867,30 @@ public class RechercheArborescenteView extends VerticalLayout implements View {
 				}
 			}
 
+		}
+	}
+
+	public void deplierTout(String itemId) {
+		deplierNoeudComplet((String)itemId);
+		selectionnerLigne((String)itemId);
+		table.setCurrentPageFirstItemId((String)itemId);
+	}
+
+	private static class RechercheArboThread extends Thread {
+		private final MainUI mainUI;
+		private final RechercheArborescenteView rechercheArborescenteView;
+		private String itemId;
+
+		public RechercheArboThread(MainUI mainUI, RechercheArborescenteView rechercheArborescenteView, String itemId) {
+			this.mainUI = mainUI;
+			this.rechercheArborescenteView = rechercheArborescenteView;
+			this.itemId = itemId;
+		}
+		@Override
+		public void run() {
+			mainUI.access(() -> rechercheArborescenteView.deplierTout(itemId));
+			//close de la pop-up de loading
+			mainUI.access(() -> mainUI.stopBusyIndicator());
 		}
 	}
 }
