@@ -865,6 +865,17 @@ public class NoteController {
 			}
 
 			if (formatPortrait) {
+				if (configController.isAffichageNNEPdfNotesPortrait() && etudiant.getCod_nne() != null) {
+					Paragraph p02 = new Paragraph(applicationContext.getMessage("pdf.nne", null, Locale.getDefault())+ " : " + etudiant.getCod_nne(), normal);
+					p02.setIndentationLeft(5);
+					document.add(p02);
+				}
+				if (configController.isAffichageDateNaissancePdfNotesPortrait() && etudiant.getDatenaissance() != null) {
+					Paragraph p04 = new Paragraph(applicationContext.getMessage("pdf.datenaissance", null, Locale.getDefault()) + " : " + etudiant.getDatenaissance(), normal);
+					p04.setIndentationLeft(5);
+					document.add(p04);
+				}
+				
 				// on teste s'il y a bien des elps presents
 				String annee = "";
 				if (!etudiant.getElementsPedagogiques().isEmpty()){
@@ -898,6 +909,7 @@ public class NoteController {
 			boolean afficherRangElpEpr = resultatController.isAfficherRangElpEpr();
 			boolean affRangEtudiant = configController.isAffRangEtudiant();
 			boolean affECTSEtudiant =configController.isAffECTSEtudiant();
+			boolean affMentionElpEtudiant = configController.isAffMentionElpEtudiant();																  
 			boolean renommerSession1 = renommerSession1(etudiant.getElementsPedagogiques());
 			boolean afficherSession2 = afficherSession2(etudiant.getElementsPedagogiques());
 
@@ -907,7 +919,7 @@ public class NoteController {
 			switch(nbColonne) {
 			case 7 : 	//isAffRangEtudiant  OU isAffECTSEtudiant
 				if(formatPortrait){
-					tabWidth = new int[]{33,90,22,15,30,22,30};
+					tabWidth = new int[]{33,90,15,22,30,22,30};
 				} else {
 					tabWidth = new int[]{33,110,22,22,22,22,15};
 				}
@@ -928,6 +940,14 @@ public class NoteController {
 				break;
 			}
 
+			if (affMentionElpEtudiant) {
+				int cellMentionWidth = 18;
+				int[] tabTemp = new int[tabWidth.length + 1];
+				System.arraycopy(tabWidth, 0, tabTemp, 0, tabWidth.length);
+				tabTemp[tabTemp.length - 1] = cellMentionWidth;
+				tabWidth = tabTemp;
+			}
+			
 			table2= new PdfPTable(afficherSession2 ? tabWidth.length : (tabWidth.length - 2));
 			table2.setWidthPercentage(98);
 			
@@ -955,6 +975,7 @@ public class NoteController {
 			Paragraph p3 = new Paragraph(applicationContext.getMessage("pdf.label", null, Locale.getDefault()),normalbig);
 			Paragraph parRang = new Paragraph(applicationContext.getMessage("pdf.rank", null, Locale.getDefault()),normalbig);
 			Paragraph parEcts = new Paragraph(applicationContext.getMessage("pdf.ects", null, Locale.getDefault()),normalbig);
+			Paragraph parMention = new Paragraph(applicationContext.getMessage("pdf.mention", null, Locale.getDefault()), normalbig);																												
 
 			PdfPCell ct4 = new PdfPCell(new Paragraph(applicationContext.getMessage( renommerSession1 ? "pdf.session1bis" : "pdf.session1", null, Locale.getDefault()), normalbig));
 			PdfPCell ct5 = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.resultat", null, Locale.getDefault()), normalbig));
@@ -967,6 +988,7 @@ public class NoteController {
 			PdfPCell ct3 = new PdfPCell(p3);
 			PdfPCell cellRang = new PdfPCell(parRang);
 			PdfPCell cellEcts = new PdfPCell(parEcts);
+			PdfPCell cellMention = new PdfPCell(parMention);									   
 
 			//ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
 			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
@@ -977,7 +999,7 @@ public class NoteController {
 			ct7.setBorder(Rectangle.BOTTOM); ct7.setBorderColorBottom(BaseColor.BLACK);
 			cellRang.setBorder(Rectangle.BOTTOM); cellRang.setBorderColorBottom(BaseColor.BLACK);
 			cellEcts.setBorder(Rectangle.BOTTOM); cellEcts.setBorderColorBottom(BaseColor.BLACK);
-
+			cellMention.setBorder(Rectangle.BOTTOM); cellMention.setBorderColorBottom(BaseColor.BLACK);																				  
 
 			if (formatPortrait) {
 				table2.addCell(ct2);
@@ -1011,6 +1033,10 @@ public class NoteController {
 				}
 			}
 
+			if (affMentionElpEtudiant) {
+				table2.addCell(cellMention);
+			}
+			
 			for (int i = 0; i < etudiant.getElementsPedagogiques().size(); i++) {
 
 				Paragraph pa2 = new Paragraph(etudiant.getElementsPedagogiques().get(i).getCode(), normal);
@@ -1092,9 +1118,14 @@ public class NoteController {
 					}
 				}
 
+				if (affMentionElpEtudiant) {
+					Paragraph paMention = new Paragraph(etudiant.getElementsPedagogiques().get(i).getCodMention(), normal);
+					PdfPCell cellTextMention = new PdfPCell(paMention);
+					cellTextMention.setBorder(Rectangle.NO_BORDER);
+					table2.addCell(cellTextMention);
+				}				
 			}
-
-
+			
 			document.add(table);
 			document.add(table2);
 			document.add(new Paragraph("\n"));
