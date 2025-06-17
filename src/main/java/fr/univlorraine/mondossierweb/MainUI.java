@@ -296,7 +296,6 @@ public class MainUI extends GenericUI {
 		//car le fragment ne correspond pas à une vue existante)
 		getPage().addUriFragmentChangedListener(new Page.UriFragmentChangedListener() {
 			public void uriFragmentChanged(Page.UriFragmentChangedEvent source) {
-
 				//Si l'application est en maintenance on bloque l'accès
 				if(!applicationActive() && (source.getUriFragment() == null ||
 						(!source.getUriFragment().contains(AccesBloqueView.NAME) &&
@@ -309,8 +308,6 @@ public class MainUI extends GenericUI {
 					}
 				}
 			}
-
-
 		});
 
 		//Paramétrage du comportement en cas de perte de connexion
