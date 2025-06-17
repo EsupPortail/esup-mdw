@@ -298,20 +298,15 @@ public class MainUI extends GenericUI {
 			public void uriFragmentChanged(Page.UriFragmentChangedEvent source) {
 
 				//Si l'application est en maintenance on bloque l'accès
-				if(!applicationActive() &&
-						!source.getUriFragment().contains(AccesBloqueView.NAME) &&
-						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())){
+				if(!applicationActive() && (source.getUriFragment() == null ||
+						(!source.getUriFragment().contains(AccesBloqueView.NAME) &&
+						!(source.getUriFragment().contains(AdminView.NAME) && userController.isAdmin())))){
 					displayViewFullScreen(AccesBloqueView.NAME);
 				}else{
-
 					reloadIfUriFragmentError(source.getUriFragment());
-
-					if(source.getUriFragment().contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) 
-							&& userController.isEnseignant()){
+					if(source.getUriFragment() != null && source.getUriFragment().contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT) && userController.isEnseignant()){
 						rechercheController.accessToDossierEtudiantDeepLinking(source.getUriFragment());
-
 					}
-
 				}
 			}
 
