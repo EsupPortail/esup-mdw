@@ -721,14 +721,10 @@ public class EtudiantController {
 						}
 
 						//récupération de l'état de l'inscription
-						if(insdto.getEtatIae()!=null && StringUtils.hasText(insdto.getEtatIae().getCodeEtatIAE())){
+						if (insdto.getEtatIae() != null && StringUtils.hasText(insdto.getEtatIae().getCodeEtatIAE())) {
 							insc.setEtatIae(insdto.getEtatIae().getCodeEtatIAE());
-							if(insdto.getEtatIae().getCodeEtatIAE().equals(Utils.ETAT_IAE_EN_COURS)){
-								insc.setEstEnCours(true);
-							}else{
-								insc.setEstEnCours(false);
-							}
-						}else{
+							insc.setEstEnCours(insdto.getEtatIae().getCodeEtatIAE().equals(Utils.ETAT_IAE_EN_COURS));
+						} else {
 							insc.setEtatIae(null);
 							insc.setEstEnCours(false);
 						}
@@ -994,6 +990,7 @@ public class EtudiantController {
 		if ( !ins.isEstEnRegle() && userController.isEtudiant()){
 			return false;
 		}
+
 		//interdit l'édition de certificat pour les étudiants si il reste des pièces justificatives non validées
 		if(userController.isEtudiant() && !configController.isCertificatScolaritePiecesNonValidees()){
 			//Si il reste des PJ non valides

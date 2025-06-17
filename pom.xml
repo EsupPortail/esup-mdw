@@ -25,7 +25,7 @@
 	<groupId>fr.univlorraine</groupId>
 	<artifactId>mdw-vaadin</artifactId>
 	<packaging>war</packaging>
-	<version>2.0.6</version>
+	<version>2.0.8</version>
 	<name>mondossierweb</name>
 
 	<prerequisites>
@@ -37,7 +37,7 @@
 		<!-- JAVA -->
 		<java.version>21</java.version>
 		<!-- VAADIN -->
-		<vaadin.version>7.7.45</vaadin.version>
+			<vaadin.version>7.7.45</vaadin.version>
 		<vaadin-compatibility-server-version>8.27.5</vaadin-compatibility-server-version>
 		<vaadin.spring.version>4.0.0</vaadin.spring.version>
 		<!-- SPRING -->
