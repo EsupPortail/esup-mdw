@@ -941,7 +941,7 @@ public class NoteController {
 			}
 
 			if (affMentionElpEtudiant) {
-				int cellMentionWidth = 18;
+				int cellMentionWidth = formatPortrait ? 20 : 18;
 				int[] tabTemp = new int[tabWidth.length + 1];
 				System.arraycopy(tabWidth, 0, tabTemp, 0, tabWidth.length);
 				tabTemp[tabTemp.length - 1] = cellMentionWidth;
