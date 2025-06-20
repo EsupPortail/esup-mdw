@@ -337,7 +337,7 @@ public class MdwTouchkitUI extends GenericUI{
 					//On se rend par défaut à la vue des favoris
 					navigator.navigateTo(FavorisMobileView.NAME);
 					//On affiche le message d'intro
-					afficherMessageIntroEnseignants();
+					afficherMessageIntro(true);
 
 				}else{
 					// Si l'utilisateur est étudiant
@@ -367,6 +367,8 @@ public class MdwTouchkitUI extends GenericUI{
 							}
 							//On affiche le dossier
 							navigateToDossierEtudiant();
+							//On affiche le message d'intro
+							afficherMessageIntro(false);
 						}
 					} catch (Exception ex) {
 						log.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : "+codetu ,ex);
@@ -398,7 +400,7 @@ public class MdwTouchkitUI extends GenericUI{
 	/**
 	 * Affiche du message d'intro pour les enseignants
 	 */
-	private void afficherMessageIntroEnseignants() {
+	private void afficherMessageIntro(boolean enseignant) {
 
 		//On Recupere dans la base si l'utilisateur a indiqué une préférence pour l'affichage du message d'introduction
 		String val  = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE);
@@ -414,19 +416,21 @@ public class MdwTouchkitUI extends GenericUI{
 
 		//Si on doit afficher le message
 		if(afficherMessage) {
-			String message = applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale());
-			HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
-			hbw.init(message,applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()),true);
-			hbw.addCloseListener(g->{
-				//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
-				boolean choix = hbw.getCheckBox().getValue();
-				//Test si l'utilisateur a coché la case pour ne plus afficher le message
-				if(choix){
-					//mettre a jour dans la base de données
-					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
-				}
-			});
-			UI.getCurrent().addWindow(hbw);
+			String message = enseignant ? applicationContext.getMessage("helpWindowMobile.text.enseignant", null, getLocale()) : applicationContext.getMessage("helpWindowMobile.text.etudiant", null, getLocale());
+			if(StringUtils.hasText(message)) {
+				HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
+				hbw.init(message, applicationContext.getMessage("messageIntroMobileWindow.title", null, getLocale()), true);
+				hbw.addCloseListener(g -> {
+					//On va enregistrer en base que l'utilisateur ne souhaite plus afficher le message si la checkbox proposée par la pop-up a été cochée
+					boolean choix = hbw.getCheckBox().getValue();
+					//Test si l'utilisateur a coché la case pour ne plus afficher le message
+					if (choix) {
+						//mettre a jour dans la base de données
+						userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_MOBILE_PREFERENCE, "false");
+					}
+				});
+				UI.getCurrent().addWindow(hbw);
+			}
 		}
 	}
 
