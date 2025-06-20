@@ -1075,6 +1075,7 @@ public class ResultatController {
                             if (r.getAdmission() != null)
                                 ep.setRes2(r.getAdmission());
                         }
+						ep.setCodMention(r.getCodMention());									
                     }
 
                 }
