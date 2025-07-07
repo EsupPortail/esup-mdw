@@ -954,7 +954,7 @@ public class EtudiantController {
 		return true;
 	}
 
-	public boolean proposerCertificat(Inscription ins, Etudiant etu, boolean mobile) {
+	public boolean proposerCertificat(Inscription ins, Etudiant etu) {
 
 		// autoriser ou non la generation de certificats de scolarite.
 		if (!configController.isCertificatScolaritePDF()) {
@@ -973,7 +973,7 @@ public class EtudiantController {
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
 
 		// si on autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
-		if ((mobile || !configController.isCertificatScolariteTouteAnnee()) && !codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
+		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
 			return false;
 		}
 		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();

@@ -100,12 +100,12 @@ public class InscriptionController {
 
 		// verifie les autorisations
 		if(GenericUI.getCurrent() instanceof MainUI){
-			if(!etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant(),false)){
+			if(!etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant())){
 				return null;
 			}
 		}
 		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
-			if(!etudiantController.proposerCertificat(inscription, MdwTouchkitUI.getCurrent().getEtudiant(),true)){
+			if(!etudiantController.proposerCertificat(inscription, MdwTouchkitUI.getCurrent().getEtudiant())){
 				return null;
 			}
 		}
