@@ -206,12 +206,12 @@ public class MdwUserDetailsService implements UserDetailsService {
 			boolean doctorantNonGestionnaire = false;
 
 			//Si un des profils du compte ldap correspond au profil gestionnaire (potentiellement "enseignant" en priorité)
-			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_GEST)) { 
+			if (profisLdap != null && profisLdap.contains(Utils.LDAP_GEST)) {
 				return new String[]{Utils.GEST_USER};
 			}
 			
 			//Si un des profils du compte ldap correspond au profil doctorant (potentiellement "enseignant" en priorité)
-			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_DOCTORANT)) { 
+			if (profisLdap != null && profisLdap.contains(Utils.LDAP_DOCTORANT)) {
 				// On cherche d'abord à savoir si c'est un gestionnaire
 				if(determineGestionnaire(username)) {
 					return new String[]{Utils.GEST_USER};
@@ -222,11 +222,10 @@ public class MdwUserDetailsService implements UserDetailsService {
 					return new String[]{Utils.TEACHER_USER};
 				}
 				doctorantNonEnseignant = true;
-				
 			}
 
 			//Si un des profils du compte ldap correspond au profil étudiant
-			if (profisLdap != null && !profisLdap.isEmpty() && profisLdap.contains(Utils.LDAP_ETUDIANT)) {
+			if (profisLdap != null && profisLdap.contains(Utils.LDAP_ETUDIANT)) {
 
 				//On vérifie si il y a un blocage sur l'étudiant
 				String codetu = daoCodeLoginEtudiant.getCodEtuFromLogin(username);
@@ -263,7 +262,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 				return new String[]{Utils.TEACHER_USER};
 			}
 
-			log.info("utilisateur "+username+" n' est pas dans le LDAP en tant qu' etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
+			log.info("utilisateur "+username+" n' est pas dans le LDAP en tant qu'etudiant, n'appartient à aucun groupe uportal, et n'est pas dans la table utilisateur d'APOGEE -> UTILISATEUR NON AUTORISE !");
 			return new String[]{Utils.UNAUTHORIZED_USER};
 
 		}
