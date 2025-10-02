@@ -98,7 +98,7 @@
 	<Parameter name="attributLdapCodEtu" value="supannEtuId" />
 	
 	
-	<!-- Attribut ldap permettant de caractériser un doctorant (l'application vérifira l'accès "enseignant" en priorité ). Ex : edupersonaffiliation  -->
+	<!-- Attribut ldap permettant de caractériser un doctorant (l'application vérifiera l'accès "enseignant" en priorité ). Ex : edupersonaffiliation  -->
 	<Parameter name="attributLdapDoctorant" value="" />
 	<!-- Liste des valeurs (séparées par ;) de l'attribut ldap ci-dessus permettant de caractériser un doctorant. Ex : researcher -->
 	<Parameter name="valeursAttributLdapDoctorant" value="" />

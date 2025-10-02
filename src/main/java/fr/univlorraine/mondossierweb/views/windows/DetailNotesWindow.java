@@ -187,6 +187,9 @@ public class DetailNotesWindow extends Window {
 						detailNotesTable.setColumnCollapsed(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), true);
 					}
 				}
+				if(configController.isAffMentionElpEtudiant()) {
+					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME + ".table.elp.mention", null, getLocale()), new MentionColumnGenerator());
+				}
 				detailNotesTable.setColumnReorderingAllowed(false);
 				detailNotesTable.setSelectable(false);
 				detailNotesTable.setImmediate(true);
@@ -642,4 +645,27 @@ public class DetailNotesWindow extends Window {
 			return libLabel;
 		}
 	}
+	
+	/** Formats the position in a column containing Date objects. */
+	class MentionColumnGenerator implements Table.ColumnGenerator {
+		/**
+		 * Generates the cell containing the value. The column is
+		 * irrelevant in this use case.
+		 */
+		public Object generateCell(Table source, Object itemId,
+								   Object columnId) {
+
+			Item item = source.getItem(itemId);
+
+			// RECUPERATION DE LA VALEUR
+			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
+			ElementPedagogique el = (ElementPedagogique) bid.getBean();
+			Label libLabel = new Label();
+
+			if(StringUtils.hasText(el.getCodMention())){
+				libLabel.setValue(el.getCodMention());
+			}
+			return libLabel;
+		}
+	}															 
 }

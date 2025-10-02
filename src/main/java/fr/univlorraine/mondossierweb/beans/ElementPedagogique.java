@@ -99,7 +99,11 @@ public class ElementPedagogique implements Serializable {
 	 * l'état de délibération
 	 */
 	private String etatDelib;
-	
+
+	/**
+	 * la mention obtenue
+	 */
+	private String codMention;
 
 	/**
 	 * constructeur.

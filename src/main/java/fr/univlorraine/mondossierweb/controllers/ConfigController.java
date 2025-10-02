@@ -226,6 +226,10 @@ public class ConfigController {
 		return getBooleanValueForParameter("affMentionEtudiant");
 	}
 	
+	public boolean isAffMentionElpEtudiant() {
+		return getBooleanValueForParameter("affMentionElpEtudiant");
+	}
+	
 	public boolean isAffMessageNotesInformatives() {
 		return getBooleanValueForParameter("affMessageNotesInformatives");
 	}
@@ -368,7 +372,12 @@ public class ConfigController {
 	public boolean isAffichageDateNaissancePdfNotesPaysage() {
 		return getBooleanValueForParameter("affDateNaissancePdfNotesPaysage");
 	}
+	public boolean isAffichageDateNaissancePdfNotesPortrait() {
+		return getBooleanValueForParameter("affDateNaissancePdfNotesPortrait");
+	}														
 
+	public boolean isAffichageNNEPdfNotesPortrait() { return getBooleanValueForParameter("affNNEPdfNotesPortrait"); }																											  
+	
 	public List<String> getListeCertScolProfilDesactive(){
 		return getListValeurForParameter("certScolProfilDesactive");
 	}
