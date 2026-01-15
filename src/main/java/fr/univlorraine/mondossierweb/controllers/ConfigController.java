@@ -323,12 +323,20 @@ public class ConfigController {
 		return getBooleanValueForParameter("affAmenagementEnseignant");
 	}
 	
-	public boolean isAffInfosContactGestionnaire() {
-		return getBooleanValueForParameter("affInfosContactGestionnaire");
+	public boolean isAffContactTelGestionnaire() {
+		return getBooleanValueForParameter("affContactTelGestionnaire");
 	}
 
-	public boolean isAffInfosContactEnseignant() {
-		return getBooleanValueForParameter("affInfosContactEnseignant");
+	public boolean isAffContactTelEnseignant() {
+		return getBooleanValueForParameter("affContactTelEnseignant");
+	}
+	//---
+	public boolean isAffContactMailGestionnaire() {
+		return getBooleanValueForParameter("affContactMailGestionnaire");
+	}
+
+	public boolean isAffContactMailEnseignant() {
+		return getBooleanValueForParameter("affContactMailEnseignant");
 	}
 
 	public boolean isAffCalendrierEpreuvesGestionnaire() {
