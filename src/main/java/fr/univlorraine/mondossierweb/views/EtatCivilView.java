@@ -235,8 +235,8 @@ public class EtatCivilView extends VerticalLayout implements View {
 
 					/* Infos de contact */
 					if(userController.isEtudiant() || 
-						(userController.isEnseignant() && configController.isAffInfosContactEnseignant()) || 
-						(userController.isGestionnaire() && configController.isAffInfosContactGestionnaire())){
+						(userController.isEnseignant() && (configController.isAffContactTelEnseignant() || configController.isAffContactMailEnseignant())) ||
+						(userController.isGestionnaire() && (configController.isAffContactTelGestionnaire() || configController.isAffContactMailGestionnaire()))){
 						panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
 						renseignerPanelContact();
 						globalLayout.addComponent(panelContact);
@@ -264,13 +264,19 @@ public class EtatCivilView extends VerticalLayout implements View {
 		formContactLayout.setSpacing(true);
 		formContactLayout.setMargin(true);
 
-		String captionTelPortable = applicationContext.getMessage(NAME+".portable.title", null, getLocale());
-		fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
-		formatTextField(fieldTelPortable);
-		fieldTelPortable.setMaxLength(15);
-		formContactLayout.addComponent(fieldTelPortable);
+		if(userController.isEtudiant()
+				|| (userController.isGestionnaire() && configController.isAffContactTelGestionnaire())
+				|| (userController.isEnseignant() && configController.isAffContactTelEnseignant())) {
+			String captionTelPortable = applicationContext.getMessage(NAME + ".portable.title", null, getLocale());
+			fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
+			formatTextField(fieldTelPortable);
+			fieldTelPortable.setMaxLength(15);
+			formContactLayout.addComponent(fieldTelPortable);
+		}
 
-		if(userController.isEtudiant()){
+		if(userController.isEtudiant()
+				|| (userController.isGestionnaire() && configController.isAffContactMailGestionnaire())
+				|| (userController.isEnseignant() && configController.isAffContactMailEnseignant())) {
 			String captionMailPerso = applicationContext.getMessage(NAME+".mailperso.title", null, getLocale());
 			fieldMailPerso = new TextField(captionMailPerso, MainUI.getCurrent().getEtudiant().getEmailPerso());
 			formatTextField(fieldMailPerso);
