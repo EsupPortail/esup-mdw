@@ -51,7 +51,8 @@
 		<!-- MYSQL -->
 		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
 		<!-- WS Apogee AMUE -->
-		<apo.ws.version>6.50.50</apo.ws.version>
+		<!--<apo.ws.version>6.50.50</apo.ws.version>-->
+		<apo.ws.version>6.60.70</apo.ws.version>
 		<!-- Lib oracle -->
 		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
 		<!-- OTHERS -->
