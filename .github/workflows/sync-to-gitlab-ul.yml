@@ -1,0 +1,24 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches:
+      - develop  # pour synchroniser toutes les branches, remplacer par : '**'
+      - master
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Important pour récupérer tout l'historique
+
+      - name: Push to GitLab
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@gitlab.univ-lorraine.fr/dn-sied/esup-mdw.git
+          git push gitlab --all --force
+          git push gitlab --tags --force
