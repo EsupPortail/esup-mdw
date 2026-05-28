@@ -141,13 +141,10 @@ public class UserController {
 	 * @return la valeur pour l'utilisateur de la préférence en parametre
 	 */
 	public String getPreference(String preference) {
-
 		PreferencesUtilisateur pu = preferencesUtilisateurRepository.findOnePrefFromLoginAndPrefid(getCurrentUserName(), preference);
-
 		if(pu!=null && pu.getId()!=null && pu.getValeur()!=null){
 			return pu.getValeur();
 		}
-
 		return null;
 	}
 
@@ -165,7 +162,6 @@ public class UserController {
 		pu.setId(pupk);
 		pu.setValeur(valeur);
 		preferencesUtilisateurRepository.save(pu);
-
 	}
 
 
@@ -186,7 +182,6 @@ public class UserController {
 	 * @return true si l'utilisateur a un rôle
 	 */
 	public boolean hasRoleInProperty(final String propertyName) {
-
 		return getCurrentAuthentication().getAuthorities().stream()
 				.map(GrantedAuthority::getAuthority)
 				.anyMatch(propertyName::contains);
