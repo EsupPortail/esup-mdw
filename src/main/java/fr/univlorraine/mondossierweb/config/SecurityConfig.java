@@ -19,7 +19,9 @@
 package fr.univlorraine.mondossierweb.config;
 
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.security.VaadinInternalRequestMatcher;
 import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
+import jakarta.annotation.Resource;
 import net.sf.ehcache.CacheManager;
 import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
@@ -45,10 +47,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import jakarta.annotation.Resource;
 import java.util.UUID;
-
 
 
 /**
@@ -95,8 +96,12 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 		http.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()));
 		http.addFilter(casAuthenticationFilter());
 
-		// La protection Spring Security contre le Cross Scripting Request Forgery est désactivée, Vaadin implémente sa propre protection
-		http.csrf(c -> c.disable());
+		// Désactive CSRF uniquement pour les requêtes Vaadin (qui a son propre mécanisme)
+		http.csrf(csrf -> csrf
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				/* … sauf pour les requêtes internes Vaadin */
+				.ignoringRequestMatchers(new VaadinInternalRequestMatcher())
+		);
 
 		// Autorise l'affichage en iFrame et Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
 		http.headers(h -> h

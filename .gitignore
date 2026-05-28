@@ -11,6 +11,9 @@
 /target/
 /**/favicon.ico
 
+# IA
+.opencodeignore
+
 # Resources
 /src/main/webapp/META-INF/context.xml
 /src/main/resources/apogeeRequest.xml
