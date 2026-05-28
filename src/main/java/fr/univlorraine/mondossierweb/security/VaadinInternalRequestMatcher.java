@@ -49,12 +49,8 @@ public class VaadinInternalRequestMatcher implements RequestMatcher {
         if (path.isEmpty()) path = "/";
 
         String queryString = request.getQueryString();
-
-        System.out.println(" PATH: " + path);
-        System.out.println(" queryString: " + queryString);
         for (String vaadinPath : VAADIN_INTERNAL_PATHS) {
             if (path.startsWith(vaadinPath)) {
-                System.out.println(" REQUETE VAADIN");
                 return true;
             }
         }
@@ -66,8 +62,6 @@ public class VaadinInternalRequestMatcher implements RequestMatcher {
                 }
             }
         }
-
-        System.out.println(" REQUETE NON VAADIN");
         return false;
     }
 }
