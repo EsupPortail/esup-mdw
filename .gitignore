@@ -11,8 +11,9 @@
 /target/
 /**/favicon.ico
 
-# IA
+#IA
 .opencodeignore
+AGENTS.md
 
 # Resources
 /src/main/webapp/META-INF/context.xml

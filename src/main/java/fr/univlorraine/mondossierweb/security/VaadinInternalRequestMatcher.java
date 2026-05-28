@@ -21,25 +21,54 @@ package fr.univlorraine.mondossierweb.security;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class VaadinInternalRequestMatcher implements RequestMatcher {
-    private static final List<String> INTERNAL_VAADIN_PARAMETERS =
-            Arrays.asList("v-r", "v-browserDetails", "v-sh", "v-ws");
+    // Chemins utilisés par Vaadin 7 en interne
+    private static final String[] VAADIN_INTERNAL_PATHS = {
+            "/VAADIN/",
+            "/PUSH",
+            "/UIDL/",        // Vaadin 7 : les requêtes AJAX passent par /UIDL/
+            "/HEARTBEAT/",   // Heartbeat Vaadin
+            "/APP/",         // Ressources Vaadin
+    };
+
+    private static final String[]   INTERNAL_VAADIN_PARAMETER= {
+            "v-", "continue&v-"
+    };
+
+    private static final String VAADIN_ROOT_PATH = "/";
+
+    /**
+     *
+     * @param request the request to check for a match
+     * @return TRUE = "doit être ignoré par CSRF"
+     */
     @Override
     public boolean matches(HttpServletRequest request) {
-        /* 1. Requêtes Ajax UIDL / heartbeat */
-        String vr = request.getParameter("v-r");
-        if ("uidl".equals(vr) || "heartbeat".equals(vr)) {
-            return true;
+
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        if (path.isEmpty()) path = "/";
+
+        String queryString = request.getQueryString();
+
+        System.out.println(" PATH: " + path);
+        System.out.println(" queryString: " + queryString);
+        for (String vaadinPath : VAADIN_INTERNAL_PATHS) {
+            if (path.startsWith(vaadinPath)) {
+                System.out.println(" REQUETE VAADIN");
+                return true;
+            }
         }
-        /* 2. Push & WebSocket */
-        if (request.getRequestURI().startsWith(request.getContextPath() + "/PUSH/")) {
-            return true;
+
+        if (path.equals(VAADIN_ROOT_PATH) && queryString != null) {
+            for (String param : INTERNAL_VAADIN_PARAMETER) {
+                if (queryString.startsWith(param)) {
+                    return true;
+                }
+            }
         }
-        /* 3. Fichiers statiques Vaadin (/VAADIN/**) */
-        return request.getRequestURI().startsWith(request.getContextPath() + "/VAADIN/");
+
+        System.out.println(" REQUETE NON VAADIN");
+        return false;
     }
 }
 

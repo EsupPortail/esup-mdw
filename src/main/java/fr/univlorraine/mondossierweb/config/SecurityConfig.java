@@ -47,7 +47,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.UUID;
 
@@ -97,11 +96,9 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 		http.addFilter(casAuthenticationFilter());
 
 		// Désactive CSRF uniquement pour les requêtes Vaadin (qui a son propre mécanisme)
-		http.csrf(csrf -> csrf
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-				/* … sauf pour les requêtes internes Vaadin */
-				.ignoringRequestMatchers(new VaadinInternalRequestMatcher())
-		);
+		//http.csrf(csrf -> csrf.disable());
+		http.csrf(csrf -> csrf.ignoringRequestMatchers(new VaadinInternalRequestMatcher()));
+		//http.csrf(c -> c.ignoringRequestMatchers("/HEARTBEAT/**", "/PUSH/**", "/UIDL/**","/vaadin/**", "/VAADIN/**"));
 
 		// Autorise l'affichage en iFrame et Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
 		http.headers(h -> h
