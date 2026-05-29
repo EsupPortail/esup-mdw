@@ -349,9 +349,8 @@ public class PdfUtils {
 			byte[] signatureBytes = crl.getSignature();
 			DEROctetString octetString = new DEROctetString(signatureBytes);
 			byte[] octetBytes = octetString.getEncoded();
-			byte[] octetHash = hashBytesSha1(octetBytes);
-			PdfName octetName = new PdfName(Utilities.convertToHex(octetHash));
-			return octetName;
+			byte[] octetHash = hashBytesSha256(octetBytes);
+			return new PdfName(Utilities.convertToHex(octetHash));
 		}
 
 		static PdfName getOcspHashKey(byte[] basicResponseBytes) throws NoSuchAlgorithmException, IOException {
@@ -359,9 +358,8 @@ public class PdfUtils {
 			byte[] signatureBytes = basicResponse.getSignature().getBytes();
 			DEROctetString octetString = new DEROctetString(signatureBytes);
 			byte[] octetBytes = octetString.getEncoded();
-			byte[] octetHash = hashBytesSha1(octetBytes);
-			PdfName octetName = new PdfName(Utilities.convertToHex(octetHash));
-			return octetName;
+			byte[] octetHash = hashBytesSha256(octetBytes);
+			return new PdfName(Utilities.convertToHex(octetHash));
 		}
 
 		static PdfName getSignatureHashKey(PdfDictionary dic, boolean encrypted) throws NoSuchAlgorithmException, IOException {
@@ -373,13 +371,12 @@ public class PdfUtils {
 					bc = pkcs.getEncoded();
 				}
 			}
-			byte[] bt = hashBytesSha1(bc);
+			byte[] bt = hashBytesSha256(bc);
 			return new PdfName(Utilities.convertToHex(bt));
 		}
 
-		static byte[] hashBytesSha1(byte[] b) throws NoSuchAlgorithmException {
-			MessageDigest sh = MessageDigest.getInstance("SHA1");
-			return sh.digest(b);
+		static byte[] hashBytesSha256(byte[] b) throws NoSuchAlgorithmException {
+			return MessageDigest.getInstance("SHA-256").digest(b);
 		}
 
 		//
@@ -423,7 +420,7 @@ public class PdfUtils {
 		//
 		static X509Certificate getIssuerCertificate(X509Certificate certificate) throws IOException, StreamParsingException {
 			String url = getCACURL(certificate);
-			if (url != null && url.length() > 0) {
+			if (url != null && !url.isEmpty()) {
 				HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
 				if (con.getResponseCode() / 100 != 2) {
 					throw new IOException(MessageLocalization.getComposedMessage("invalid.http.response.1", con.getResponseCode()));
