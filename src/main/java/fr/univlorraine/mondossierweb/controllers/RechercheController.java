@@ -133,18 +133,15 @@ public class RechercheController {
 		}
 
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
-			//Si l'utilisateur est enseignant ou si il s'agit bien de l'étudiant concerné
-			//if(userController.isEnseignant() || ( userController.isEtudiant() && userController.getCodetu().equals(code))){
-				parameterMap.replace("type",Utils.ETU);
+			parameterMap.replace("type",Utils.ETU);
 			MainUI.getCurrent().setEtudiant(new Etudiant(code));
-				etudiantController.recupererEtatCivil();
-				//Si l'étudiant n'existe pas
-				if(MainUI.getCurrent().getEtudiant()==null){
-					MainUI.getCurrent().afficherErreurView();
-				}else{
-					MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
-				}
-			//}
+			etudiantController.recupererEtatCivil();
+			//Si l'étudiant n'existe pas
+			if(MainUI.getCurrent().getEtudiant()==null){
+				MainUI.getCurrent().afficherErreurView();
+			}else{
+				MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+			}
 		}
 	}
 
