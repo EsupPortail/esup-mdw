@@ -100,9 +100,10 @@ public class Utils {
 	 * type utilisateur non-autorisé.
 	 */
 	public static final String UNAUTHORIZED_USER = "unauthorized";
-	
-	
-	
+
+	public static final String CAS_RETURN_URL = "/login/cas";
+
+	public static final String CAS_LOGIN_URL = "/login";
 
 	public static final int NB_MAX_RESULT_QUICK_SEARCH=5;
 

@@ -59,6 +59,11 @@
 	<!-- URL du CAS -->
 	<Parameter name="cas.url" value="https://auth.univ.fr" />
 
+	<!-- Nombre max de requête par minute pour une même IP sur l'url /login/cas -->
+	<!-- Indiquer 0 par défaut pour désactiver le mécanisme de rate limiting -->
+	<Parameter name="ratelimiter.maxrequest" value="0" />
+
+
 	<!--  Duree max des sessions inactives en secondes -->
 	<Parameter name="param.session.maxinactiveinterval" value="240" />
 	
@@ -233,7 +238,7 @@
 	<!-- photoEsupSgc : implémentation pour utiliser ESUP-SGC (paramètre param.esupsgc.urlphoto ci-dessous à renseigner)
 	<Parameter name="serveurphoto.implementation" value="photoEsupSgc" /> -->
 
-	
+
 	<!-- Config Photoserver UL 
 	<Parameter name="param.photoserver.ressourceurl"
 		value="http://photoserver-test.univ-lorraine.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&amp;chksum=%chksum%" />

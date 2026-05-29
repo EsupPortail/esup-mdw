@@ -18,11 +18,11 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import org.springframework.util.StringUtils;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.springframework.util.StringUtils;
 
 /**
  * @author Charlie Dubois
@@ -419,5 +419,9 @@ public class PropertyUtils {
 	}
 
 
-
+	public static int getRateLimiterMaxRequest() {
+		String value = System.getProperty("context.ratelimiter.maxrequest");
+		if(!StringUtils.hasText(value)) return 0;
+		return Integer.parseInt(value);
+	}
 }

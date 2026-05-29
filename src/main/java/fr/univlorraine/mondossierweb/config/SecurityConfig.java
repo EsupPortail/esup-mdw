@@ -21,6 +21,8 @@ package fr.univlorraine.mondossierweb.config;
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import fr.univlorraine.mondossierweb.security.VaadinInternalRequestMatcher;
 import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
+import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
 import net.sf.ehcache.CacheManager;
 import org.apereo.cas.client.session.SingleSignOutFilter;
@@ -91,6 +93,10 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 		http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(casEntryPoint()));
 		http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
 
+		// Si on doit activer le rate-limiter sur /login/cas
+		if (PropertyUtils.getRateLimiterMaxRequest() > 0) {
+			http.addFilterBefore(new RateLimitFilter(PropertyUtils.getRateLimiterMaxRequest()), CasAuthenticationFilter.class);
+		}
 		http.addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class);
 		http.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()));
 		http.addFilter(casAuthenticationFilter());
@@ -140,7 +146,7 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 	@Bean
 	public ServiceProperties casServiceProperties() {
 		ServiceProperties casServiceProperties = new ServiceProperties();
-		casServiceProperties.setService(environment.getRequiredProperty("app.url") + "/login/cas");
+		casServiceProperties.setService(environment.getRequiredProperty("app.url") + Utils.CAS_RETURN_URL);
 		casServiceProperties.setSendRenew(false);
 		return casServiceProperties;
 	}
@@ -155,7 +161,7 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CasAuthenticationEntryPoint casEntryPoint() {
 		CasAuthenticationEntryPoint casEntryPoint = new CasAuthenticationEntryPoint();
-		casEntryPoint.setLoginUrl(environment.getRequiredProperty("cas.url") + "/login");
+		casEntryPoint.setLoginUrl(environment.getRequiredProperty("cas.url") + Utils.CAS_LOGIN_URL);
 		casEntryPoint.setServiceProperties(casServiceProperties());
 		return casEntryPoint;
 	}
