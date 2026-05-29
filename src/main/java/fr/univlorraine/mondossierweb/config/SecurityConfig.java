@@ -102,7 +102,7 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 
 		// Autorise l'affichage en iFrame et Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
 		http.headers(h -> h
-					.frameOptions(o -> o.disable())
+					.frameOptions(o -> o.deny())
 					.cacheControl(c -> c.disable()));
 
 		return http.build();
