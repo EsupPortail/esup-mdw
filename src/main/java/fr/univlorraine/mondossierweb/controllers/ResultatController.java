@@ -31,6 +31,7 @@ import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeServiceImpl;
+import fr.univlorraine.mondossierweb.utils.LogMaskingUtil;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.ContratPedagogiqueResultatElpEprDTO5;
@@ -165,7 +166,7 @@ public class ResultatController {
             if (ex.getMessage() != null && ex.getMessage().contains("remoteerror")) {
                 log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.warn(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + LogMaskingUtil.mask(e.getCod_etu()), ex);
             }
         }
 
@@ -257,7 +258,7 @@ public class ResultatController {
                 if (ex.getMessage().contains("remoteerror")) {
                     log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
                 } else {
-                    log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                    log.warn(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + LogMaskingUtil.mask(e.getCod_etu()), ex);
                 }
             }
         }
@@ -511,7 +512,7 @@ public class ResultatController {
             if (ex.getMessage().contains("remoteerror")) {
                 log.error("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                log.info("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.warn("Probleme avec le WS lors de la recherche des notes et résultats pour etudiant dont codetu est : " + LogMaskingUtil.mask(e.getCod_etu()), ex);
             }
         }
 
@@ -1084,12 +1085,6 @@ public class ResultatController {
 
         } catch (Exception ex) {
             log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
-            //Si on est dans un cas d'erreur non expliqué
-           /* if (ex.getMessage().contains("remoteerror")) {
-                log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
-            } else {
-                log.info("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
-            }*/
         }
     }
 
@@ -1233,7 +1228,7 @@ public class ResultatController {
             if (ex.getMessage().contains("remoteerror")) {
                 log.error(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
             } else {
-                log.info(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + e.getCod_etu(), ex);
+                log.warn(ex.getMessage() + " Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codetu est : " + LogMaskingUtil.mask(e.getCod_etu()), ex);
             }
         }
     }
@@ -1301,7 +1296,7 @@ public class ResultatController {
             if (ex.getMessage().equals("remoteerror")) {
                 log.error("Probleme avec le WS lors de la recherche des notes et résultats a une étape pour etudiant dont codind est : " + e.getCod_ind(), ex);
             } else {
-                log.info(ex.getMessage() + " pour etudiant dont codind est : " + e.getCod_ind() + " recupererDetailNotesEtResultatsEnseignant(" + et.getAnnee() + "," + et.getCode() + "/" + et.getVersion() + ")");
+                log.warn(ex.getMessage() + " pour etudiant dont codind est : " + LogMaskingUtil.mask(e.getCod_ind()) + " recupererDetailNotesEtResultatsEnseignant(" + et.getAnnee() + "," + LogMaskingUtil.mask(et.getCode()) + "/" + et.getVersion() + ")");
             }
         }
 

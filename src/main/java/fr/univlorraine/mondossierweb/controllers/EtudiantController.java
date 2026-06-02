@@ -39,6 +39,7 @@ import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
+import fr.univlorraine.mondossierweb.utils.LogMaskingUtil;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
@@ -364,7 +365,7 @@ public class EtudiantController {
 					}
 				} catch (Exception ex) {
 					GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
-					log.info("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
+					log.warn("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
 				} 
 
 				TableauIndBacDTO2 bacvo = iaetu.getListeBacs();
@@ -412,7 +413,7 @@ public class EtudiantController {
 						}
 					}
 				} else {
-					log.info("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
 					BacEtatCivil bec = new BacEtatCivil();
 					bec.setLib_bac("/");
 					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
@@ -442,11 +443,11 @@ public class EtudiantController {
 
 			} catch (ServerSOAPFaultException ssx) {
 				//Erreur côté WebService (ex : data.nullretrieve)
-				log.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
+				log.warn("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
-				log.info("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
+				log.warn("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
 				GenericUI.getCurrent().setEtudiant(null);
 			} catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
@@ -631,17 +632,17 @@ public class EtudiantController {
 						GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
 					}
 				}else{
-					log.info("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()));
 				}
 			} catch (ServerSOAPFaultException ssx) {
 				//Erreur côté WebService (ex : data.nullretrieve)
-				log.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
+				log.warn("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),ssx);
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
-				log.info("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
+				log.warn("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),cte);
 			}  catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					log.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()));
 				}else {
 					log.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
 				}
@@ -799,14 +800,14 @@ public class EtudiantController {
 				try{
 					GenericUI.getCurrent().getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
 				} catch(Exception e){
-					log.info("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+					log.warn("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),e);
 				}
 
 				//Tentative de récupération des informations relatives à la quittance des droits payés
 				try{
 					GenericUI.getCurrent().getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
 				} catch(Exception e){
-					log.info("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),e);
+					log.warn("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),e);
 				}
 			}
 
@@ -1149,7 +1150,7 @@ public class EtudiantController {
 				succes = true;
 			} catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					log.warn("Probleme " + ex.getMessage() + " lors de la maj des contacts de l'etudiant dont codetu est : " + codetu);
+					log.warn("Probleme " + ex.getMessage() + " lors de la maj des contacts de l'etudiant dont codetu est : " + LogMaskingUtil.mask(codetu));
 				}else {
 					log.error("Probleme avec le WS lors de la maj des contacts de l'etudiant dont codetu est : " + codetu,ex);
 				}
