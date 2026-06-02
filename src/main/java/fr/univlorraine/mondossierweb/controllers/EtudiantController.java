@@ -152,7 +152,6 @@ public class EtudiantController {
 			IdentifiantsEtudiantDTO2 idetu;
 
 			if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
-				//idetu = monProxyEtu.recupererIdentifiantsEtudiant_v2(codetu, null, null, null, null, null, null, null, null, "N");
 				idetu = etudiantService.recupererIdentifiantsEtudiantV2(codetu, null, null, null, null, null, null, null, "N");
 			} else {
 				idetu = etudiantService.recupererIdentifiantsEtudiantV2(codetu, null, null, null, null, null, null, null, "O");
@@ -203,8 +202,6 @@ public class EtudiantController {
 					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
-				//InfoAdmEtuDTO iaetu = monProxyEtu.recupererInfosAdmEtu(GenericUI.getCurrent().getEtudiant().getCod_etu());
-				//InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
 				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
 
 				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
@@ -787,8 +784,7 @@ public class EtudiantController {
 			}
 
 
-			//première inscription universitaire : 
-			//InfoAdmEtuDTO2 iaetu = etudiantService.recupererInfosAdmEtuV2(GenericUI.getCurrent().getEtudiant().getCod_etu());
+			//première inscription universitaire :
 			InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
 			if (iaetu != null) {
 				GenericUI.getCurrent().getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
