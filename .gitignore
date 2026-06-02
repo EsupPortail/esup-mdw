@@ -25,3 +25,4 @@ AGENTS.md
 /src/main/resources/repository/gouv/education/apogee/apo-webservices-client/**/apo-webservices-client-*.jar
 /src/main/resources/i18n/messages.properties
 /src/main/resources/i18n/vaadin-messages.properties
+/mdw-vaadin.iml
