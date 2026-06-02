@@ -163,7 +163,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			" where sig.COD_SIG = std.COD_SIG (+) "+
 			" and sig.COD_SIG = '"+codeSignataire+"'";
 		
-		log.info("getSignataireQuittance Request : " + request);
+		log.debug("getSignataireQuittance Request : " + request);
 		Signataire signataire = (Signataire)entityManagerApogee.createNativeQuery(request, Signataire.class).getSingleResult();
 		return signataire;
 	}
@@ -213,10 +213,10 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 		//Si on a une requête SQL pour surcharger la requête livrée avec l'application
 		if(StringUtils.hasText(requestUtils.getInscritsEtapeJuinSep())){
 			//On utilise la requête indiquée dans le fichier XML
-			log.info("getInscritsEtapeJuinSep => Utilisation de la requête du fichier apogeeRequest.xml");
+			log.debug("getInscritsEtapeJuinSep => Utilisation de la requête du fichier apogeeRequest.xml");
 			requeteSQL = requestUtils.getInscritsEtapeJuinSep().replaceAll("#COD_ETP#", etape.getCode()).replaceAll("#COD_VRS_VET#", etape.getVersion()).replaceAll("#COD_ANU#", etape.getAnnee());
 		} else {
-			log.info("getInscritsEtapeJuinSep => Utilisation de la requête intégrée à MDW");
+			log.debug("getInscritsEtapeJuinSep => Utilisation de la requête intégrée à MDW");
 			requeteSQL = "select rownum, i.cod_ind,i.cod_etu, i.lib_pr1_ind, I.lib_nom_pat_ind NOM, I.LIB_NOM_USU_IND NOM_USUEL, "+
 					" to_char(i.date_nai_ind,'DD/MM/YYYY') date_nai_ind,   "+
 					" decode(rj.tem_iae_ko_vet,0,'Oui','Non') iae, "+
@@ -270,7 +270,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" and cod_vrs_vet = "+e.getVersion()).getSingleResult();
 			return libelle;
 		}catch(NoResultException | EmptyResultDataAccessException ex){
-			log.info("Aucun lib_web_vet trouvé pour étape : "+e.getCode()+"/"+e.getVersion());
+			log.warn("Aucun lib_web_vet trouvé pour étape : "+e.getCode()+"/"+e.getVersion());
 		}
 		return null;
 	}
@@ -284,7 +284,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 				" where cod_etp = '"+codeEtp+"'").getSingleResult();
 			return libelle;
 		}catch(NoResultException | EmptyResultDataAccessException ex){
-			log.info("Aucun lic_etp trouvé pour étape : "+codeEtp);
+			log.warn("Aucun lic_etp trouvé pour étape : "+codeEtp);
 		}
 		return null;
 	}
@@ -345,7 +345,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					"and elp.COD_ELP='"+codElp+"'", NatureElp.class).getSingleResult();
 				return nature.getLib_nel();
 			}catch(NoResultException | EmptyResultDataAccessException e){
-				log.info("Aucune nature trouvee pour ELP : "+codElp);
+				log.warn("Aucune nature trouvee pour ELP : "+codElp);
 			}
 		}
 		return null;
@@ -479,25 +479,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			" and iaa.cod_ind="+cod_ind ).getSingleResult();
 		return etaEdtCrt;
 	}
-
-	/*@Override
-	public boolean isDossierInscriptionValide(String cod_ind, String cod_anu) {
-		try {
-			@SuppressWarnings("unchecked")
-			String temDosIaaPj = (String) entityManagerApogee.createNativeQuery("select iaa.tem_dos_iaa_pj "+
-				" from apogee.ins_adm_anu iaa"+
-				" where iaa.cod_anu="+cod_anu+
-				" and iaa.cod_ind="+cod_ind ).getSingleResult();
-			if(temDosIaaPj != null && temDosIaaPj.equals("O")) {
-				return true;
-			} else {
-				log.info("isDossierInscriptionValide - Dossier IAA non valide pour " + cod_ind + " en " + cod_anu);
-			}
-		}catch(NoResultException nre) {
-			log.info("isDossierInscriptionValide - Aucune IAA pour " + cod_ind + " en " + cod_anu);
-		}
-		return false;
-	}*/
 
 	@Override
 	public Boolean getTemSesUniVet(String codEtp, String codVrsVet) {
