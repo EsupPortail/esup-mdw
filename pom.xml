@@ -55,12 +55,13 @@
 		<mysql.connector.j.version>9.2.0</mysql.connector.j.version>
 		<!-- WS Apogee AMUE -->
 		<!--<apo.ws.version>6.50.50</apo.ws.version>-->
-		<apo.ws.version>6.60.70</apo.ws.version>
-		<!-- <apo.ws.version>6.70.20</apo.ws.version> -->
+		<!-- <apo.ws.version>6.60.70</apo.ws.version>-->
+		<apo.ws.version>6.70.20</apo.ws.version>
 		<!-- Lib oracle -->
 		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
 		<!-- OTHERS -->
-		<fasterxml.jackson.version>2.16.1</fasterxml.jackson.version>
+		<!--<fasterxml.jackson.version>2.16.1</fasterxml.jackson.version>-->
+		<fasterxml.jackson.version>2.18.6</fasterxml.jackson.version>
 		<aspectj.version>1.8.2</aspectj.version>
 		<logback.version>1.5.18</logback.version>
 		<slf4j.version>1.7.36</slf4j.version>
@@ -68,6 +69,8 @@
 		<groovy.version>4.0.15</groovy.version>
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 		<cargo-maven-plugin.version>1.9.8</cargo-maven-plugin.version>
+		<!-- <poi.version>4.1.2</poi.version> -->
+		<poi.version>5.4.1</poi.version>
 	</properties>
 
 	<distributionManagement>
@@ -1008,12 +1011,12 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			 <version>4.1.2</version>
+			<version>${poi.version}</version>
 		</dependency>
 		<dependency>
     		<groupId>org.apache.poi</groupId>
     		<artifactId>poi-ooxml</artifactId>
-			 <version>4.1.2</version>
+			<version>${poi.version}</version>
 		</dependency>
 
 		<dependency>
