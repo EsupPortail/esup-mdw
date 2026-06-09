@@ -42,9 +42,12 @@
 		<vaadin-compatibility-server-version>8.27.5</vaadin-compatibility-server-version>
 		<vaadin.spring.version>4.0.0</vaadin.spring.version>
 		<!-- SPRING -->
-		<spring.version>6.2.2</spring.version>
-		<spring.data.jpa.version>3.4.2</spring.data.jpa.version>
-		<spring.security.version>6.3.6</spring.security.version>
+		<!-- <spring.version>6.2.2</spring.version> -->
+		<spring.version>6.2.18</spring.version>
+		<!--<spring.data.jpa.version>3.4.2</spring.data.jpa.version>-->
+		<spring.data.jpa.version>3.4.13</spring.data.jpa.version>
+		<!--<spring.security.version>6.3.6</spring.security.version>-->
+		<spring.security.version>6.3.10</spring.security.version>
 		<!-- JPA -->
 		<hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
 		<eclipselink.version>4.0.5</eclipselink.version>
@@ -71,12 +74,12 @@
 		<repository>
 			<id>ul-releases</id>
 			<name>Université de Lorraine Releases</name>
-			<url>http://maven.univ-lorraine.fr/content/repositories/releases</url>
+			<url>http://nexus.univ-lorraine.fr/content/repositories/maven-releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>ul-snapshots</id>
 			<name>Université de Lorraine Snapshots</name>
-			<url>http://maven.univ-lorraine.fr/content/repositories/snapshots</url>
+			<url>http://nexus.univ-lorraine.fr/content/repositories/maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -91,7 +94,7 @@
 		<!-- Univ Lorraine repositories -->
 		<repository>
 			<id>ul-public-releases</id>
-			<url>https://maven.univ-lorraine.fr/content/repositories/public-releases</url>
+			<url>https://nexus.univ-lorraine.fr/content/repositories/maven-public-releases</url>
 		</repository>
 		
 		<repository>
