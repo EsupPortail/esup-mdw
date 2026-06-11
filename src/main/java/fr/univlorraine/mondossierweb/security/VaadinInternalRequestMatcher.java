@@ -46,6 +46,10 @@ public class VaadinInternalRequestMatcher implements RequestMatcher {
     public boolean matches(HttpServletRequest request) {
 
         String path = request.getRequestURI().substring(request.getContextPath().length());
+
+        if (path.startsWith("/m/") || path.equals("/m")) {
+            path = path.substring(2);
+        }
         if (path.isEmpty()) path = "/";
 
         String queryString = request.getQueryString();
