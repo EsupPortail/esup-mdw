@@ -167,7 +167,6 @@ public class Initializer implements WebApplicationInitializer {
 		springVaadinServlet.setAsyncSupported(true);
 
 
-
 		if(Boolean.valueOf(servletContext.getInitParameter("startServletMobile"))){
 			/* Spring-Vaadin Touchkit Servlet  */
 			ServletRegistration.Dynamic springTouchkitVaadinServlet = servletContext.addServlet("springTouchkitVaadin", MDWTouchkitServlet.class);
@@ -176,10 +175,12 @@ public class Initializer implements WebApplicationInitializer {
 			/* Utilise les messages Spring pour les messages d'erreur Vaadin (cf. http://vaadin.xpoft.ru/#system_messages) */
 			//springTouchkitVaadinServlet.setInitParameter("systemMessagesBeanName", "DEFAULT");
 			springTouchkitVaadinServlet.setInitParameter(Constants.PARAMETER_WIDGETSET, WIDGETSET_TO_USE);
+			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(30));
 			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_CLOSE_IDLE_SESSIONS, String.valueOf(true));
 
 			/* Configure le Push */
-			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
+			// springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, PushMode.DISABLED.name());
+			springTouchkitVaadinServlet.setInitParameter(Constants.SERVLET_PARAMETER_PUSH_MODE, Boolean.valueOf(servletContext.getInitParameter("enablePush")) ? PushMode.AUTOMATIC.name() : PushMode.DISABLED.name());
 			/* Active le support des servlet 3 et des requêtes asynchrones (cf. https://vaadin.com/wiki/-/wiki/Main/Working+around+push+issues) */
 			springTouchkitVaadinServlet.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT_SERVLET3, String.valueOf(true));
 
@@ -188,12 +189,10 @@ public class Initializer implements WebApplicationInitializer {
 			
 		}
 
-
 		/* Servlet REST */
 		ServletRegistration.Dynamic restServlet = servletContext.addServlet("deepLinking", new DispatcherServlet(springContext));
 		restServlet.setLoadOnStartup(1);
 		restServlet.addMapping("/link", "/link/*", "/adminView");
-		
 	}
 
 
