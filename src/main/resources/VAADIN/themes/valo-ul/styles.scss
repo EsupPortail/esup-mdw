@@ -195,14 +195,14 @@
 		padding: 10px;
 	}
 
-	/*.valo-ul .v-slot-global-tab-button {
-		width: unset;
+	.v-slot-global-tab-button {
+		width: unset !important;
 	}
 
-	.valo-ul .global-tab-button-layout.right-aligned-tabs {
+	.global-tab-button-layout.right-aligned-tabs {
 		text-align: right;
 	}
-
+/*
 	.valo-ul .global-tab-button-layout.right-aligned-tabs .global-tab-button {
 		float: right;
 		margin-left: 4px;
