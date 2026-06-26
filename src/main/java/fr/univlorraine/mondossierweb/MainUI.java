@@ -213,6 +213,18 @@ public class MainUI extends GenericUI {
 	//Le sous menu Recherche affiché aux enseignants (affiche les onglets recherche rapide, rechercher arbo, liste inscrits, favoris)
 	private TabSheet tabSheetEnseignant= new TabSheet();
 
+	//Barre de boutons accessible pour remplacer tabSheetGlobal
+	private HorizontalLayout globalTabButtonLayout = new HorizontalLayout();
+	private Button globalTabRechercheButton;
+	private Button globalTabAssistanceButton;
+	private Button globalTabDossierButton;
+	private VerticalLayout globalTabContentLayout = new VerticalLayout();
+
+	//.Index des onglets pour la barre de boutons
+	private static final int TAB_RECHERCHE = 0;
+	private static final int TAB_ASSISTANCE = 1;
+	private static final int TAB_DOSSIER = 2;
+
 	/** The view provider. */
 	@Resource
 	private SpringViewProvider viewProvider;
@@ -437,42 +449,49 @@ public class MainUI extends GenericUI {
 					layoutDossierEtudiant.setSizeFull();
 
 
-					//Si user enseignant
-					if(userController.isEnseignant()){
-						//On consultera les notes en vue enseignant
-						vueEnseignantNotesEtResultats=true;
+				//Si user enseignant
+				if(userController.isEnseignant()){
+					//On consultera les notes en vue enseignant
+					vueEnseignantNotesEtResultats=true;
 
-						//Construit le menu horizontal pour les enseignants
-						tabSheetGlobal.setSizeFull();
-						tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
+					//Initialisation des variables pour les onglets globaux
+					rangTabRecherche=0;
+					rangTabDossierEtudiant = 1;
 
-						rangTabRecherche=0;
-						rangTabDossierEtudiant = 1;
+					// Initialisation du tabSheetGlobal pour la compatibilité avec le code existant
+					tabSheetGlobal.setSizeFull();
+					tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
 
-						//ajout de l'onglet principal 'recherche'
-						layoutOngletRecherche = new VerticalLayout();
-						ajoutOngletRecherche();
-						layoutOngletRecherche.setSizeFull();
-						tabSheetGlobal.addTab(layoutOngletRecherche, applicationContext.getMessage("mainUI.recherche.title", null, getLocale()), FontAwesome.SEARCH);
+					//ajout de l'onglet principal 'recherche'
+					layoutOngletRecherche = new VerticalLayout();
+					ajoutOngletRecherche();
+					layoutOngletRecherche.setSizeFull();
+					tabSheetGlobal.addTab(layoutOngletRecherche, applicationContext.getMessage("mainUI.recherche.title", null, getLocale()), FontAwesome.SEARCH);
 
-						//ajout de l'onglet principal 'assistance'
-						tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
+					//ajout de l'onglet principal 'assistance'
+					tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
 
-						//ajout de l'onglet dossier étudiant
-						addTabDossierEtudiant();
+					//ajout de l'onglet dossier étudiant (pour la compatibilité)
+					addTabDossierEtudiant();
 
-						//Ce tabSheet sera aligné à droite
-						tabSheetGlobal.addStyleName("right-aligned-tabs");
+					//Ce tabSheet sera aligné à droite
+					tabSheetGlobal.addStyleName("right-aligned-tabs");
 
-						//Ce tabSheet sera decalé vers le haut
-						// tabSheetGlobal.addStyleName("top-shift-tabs");
+					// Initialisation de la barre de boutons accessible
+					initGlobalTabButtons();
 
-						//Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
-						Utils.ajoutLogoBandeauEnseignant(configController.getLogoUniversiteEns(), mainVerticalLayout, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
+					// Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
+					Utils.ajoutLogoBandeauEnseignant(configController.getLogoUniversiteEns(), mainVerticalLayout, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
 
-						mainVerticalLayout.addComponent(tabSheetGlobal);
-						mainVerticalLayout.setSizeFull();
-						mainVerticalLayout.setExpandRatio(tabSheetGlobal, 1);
+					// Ajout de la barre de boutons et du contenu au layout principal
+					mainVerticalLayout.addComponent(globalTabButtonLayout);
+					mainVerticalLayout.addComponent(globalTabContentLayout);
+					mainVerticalLayout.setSizeFull();
+					mainVerticalLayout.setExpandRatio(globalTabContentLayout, 1);
+
+					// Sélection de l'onglet Recherche par défaut (après que globalTabContentLayout soit attaché)
+					// Utiliser access() pour s'assurer que l'UI est complètement initialisée
+					UI.getCurrent().access(() -> selectGlobalTab(TAB_RECHERCHE));
 					}else{
 						//On consultera les notes en vue etudiant
 						vueEnseignantNotesEtResultats=false;
@@ -649,7 +668,6 @@ public class MainUI extends GenericUI {
 	private void ajoutOngletRecherche() {
 		tabSheetEnseignant.setSizeFull();
 
-
 		//Onglet recherche rapide
 		tabSheetEnseignant.addTab(rechercheRapideView, applicationContext.getMessage("mainUI.rechercherapide.title", null, getLocale()), FontAwesome.SEARCH);
 		viewEnseignantTab.put(rechercheRapideView.NAME, 0);
@@ -737,8 +755,113 @@ public class MainUI extends GenericUI {
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(false);
 		//L'onglet possible une croix pour être fermé
 		tabSheetGlobal.getTab(rangTabDossierEtudiant).setClosable(true);
+	}
 
+	/**
+	 * Initialise la barre de boutons accessible pour remplacer tabSheetGlobal
+	 */
+	private void initGlobalTabButtons() {
+		// Configuration du layout de la barre de boutons
+		globalTabButtonLayout.setSpacing(false);
+		globalTabButtonLayout.addStyleName("global-tab-button-layout");
+		globalTabButtonLayout.setWidth(100, Unit.PERCENTAGE);
 
+		// Configuration du layout de contenu
+		globalTabContentLayout.setSizeFull();
+		globalTabContentLayout.addStyleName("global-tab-content");
+
+		// Création du bouton Recherche
+		globalTabRechercheButton = new Button(
+				applicationContext.getMessage("mainUI.recherche.title", null, getLocale()),
+				FontAwesome.SEARCH);
+		globalTabRechercheButton.addStyleName("global-tab-button");
+		globalTabRechercheButton.addStyleName("global-tab-button-selected");
+		globalTabRechercheButton.setDescription(applicationContext.getMessage("mainUI.recherche.title", null, getLocale()));
+		globalTabRechercheButton.addClickListener(e -> selectGlobalTab(TAB_RECHERCHE));
+		globalTabRechercheButton.setTabIndex(0);
+
+		// Création du bouton Assistance
+		globalTabAssistanceButton = new Button(
+				applicationContext.getMessage(AssistanceView.NAME + ".title", null, getLocale()),
+				FontAwesome.SUPPORT);
+		globalTabAssistanceButton.addStyleName("global-tab-button");
+		globalTabAssistanceButton.setDescription(applicationContext.getMessage(AssistanceView.NAME + ".title", null, getLocale()));
+		globalTabAssistanceButton.addClickListener(e -> selectGlobalTab(TAB_ASSISTANCE));
+		globalTabAssistanceButton.setTabIndex(0);
+
+		// Création du bouton Dossier (caché par défaut)
+		globalTabDossierButton = new Button(
+				applicationContext.getMessage("mainUI.dossier.title", null, getLocale()),
+				FontAwesome.USER);
+		globalTabDossierButton.addStyleName("global-tab-button");
+		globalTabDossierButton.setDescription(applicationContext.getMessage("mainUI.dossier.title", null, getLocale()));
+		globalTabDossierButton.addClickListener(e -> selectGlobalTab(TAB_DOSSIER));
+		globalTabDossierButton.setTabIndex(0);
+		globalTabDossierButton.setVisible(false);
+
+		// Ajout des boutons au layout
+		globalTabButtonLayout.addComponents(
+				globalTabRechercheButton,
+				globalTabAssistanceButton,
+				globalTabDossierButton);
+
+		// Alignement à droite des boutons
+		globalTabButtonLayout.addStyleName("right-aligned-tabs");
+
+		// Initialisation du contenu avec l'onglet Recherche sélectionné
+		selectGlobalTab(TAB_RECHERCHE);
+	}
+
+	/**
+	 * Sélectionne un onglet global via la barre de boutons
+	 * @param tabIndex Index de l'onglet à sélectionner
+	 */
+	private void selectGlobalTab(int tabIndex) {
+		// Vérifier que les composants sont bien initialisés et attachés
+		if (globalTabContentLayout == null || layoutOngletRecherche == null || assistanceView == null || layoutDossierEtudiant == null) {
+			return;
+		}
+
+		// Vérifier que globalTabContentLayout est attaché à un parent
+		if (globalTabContentLayout.getParent() == null) {
+			return;
+		}
+
+		// Réinitialisation des styles de sélection
+		globalTabRechercheButton.removeStyleName("global-tab-button-selected");
+		globalTabAssistanceButton.removeStyleName("global-tab-button-selected");
+		globalTabDossierButton.removeStyleName("global-tab-button-selected");
+
+		// Sélection de l'onglet correspondant
+		switch (tabIndex) {
+			case TAB_RECHERCHE:
+				globalTabRechercheButton.addStyleName("global-tab-button-selected");
+				globalTabContentLayout.removeAllComponents();
+				globalTabContentLayout.addComponent(layoutOngletRecherche);
+				break;
+			case TAB_ASSISTANCE:
+				globalTabAssistanceButton.addStyleName("global-tab-button-selected");
+				globalTabContentLayout.removeAllComponents();
+				globalTabContentLayout.addComponent(assistanceView);
+				break;
+			case TAB_DOSSIER:
+				globalTabDossierButton.addStyleName("global-tab-button-selected");
+				globalTabContentLayout.removeAllComponents();
+				globalTabContentLayout.addComponent(layoutDossierEtudiant);
+				break;
+		}
+	}
+
+	/**
+	 * Affiche ou cache le bouton Dossier
+	 * @param visible true pour afficher, false pour cacher
+	 */
+	private void setDossierTabButtonVisible(boolean visible) {
+		globalTabDossierButton.setVisible(visible);
+		// Si on cache le bouton et qu'il est sélectionné, revenir à l'onglet Recherche
+		if (!visible && globalTabDossierButton.getStyleName().contains("global-tab-button-selected")) {
+			selectGlobalTab(TAB_RECHERCHE);
+		}
 	}
 
 	/**
@@ -971,6 +1094,7 @@ public class MainUI extends GenericUI {
 
 		// Au cas où on soit sur l'onglet "Dossier"
 		tabSheetGlobal.setSelectedTab(rangTabRecherche);
+		selectGlobalTab(TAB_RECHERCHE);
 
 		// On affiche l'onglet
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
@@ -1002,6 +1126,7 @@ public class MainUI extends GenericUI {
 		tabSheetEnseignant.setSelectedTab(numtab);
 		//On se rend sur l'onglet Recherche dans le tabSheet principal au cas où on vienne du dossier d'un étudiant
 		tabSheetGlobal.setSelectedTab(rangTabRecherche);
+		selectGlobalTab(TAB_RECHERCHE);
 	}
 
 	/**
@@ -1017,6 +1142,7 @@ public class MainUI extends GenericUI {
 		tabSheetEnseignant.setSelectedTab(numtab);
 		//On se rend sur l'onglet Recherche dans le tabSheet principal au cas où on vienne du dossier d'un étudiant
 		tabSheetGlobal.setSelectedTab(rangTabRecherche);
+		selectGlobalTab(TAB_RECHERCHE);
 	}
 
 	/**
@@ -1027,7 +1153,7 @@ public class MainUI extends GenericUI {
 
 		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
 
-		//Si l'onglet a été closed
+		//Si l'onglet a été closed (pour la compatibilité avec l'ancien code)
 		if(tabDossierEtu==null || tabSheetGlobal.getTabPosition(tabDossierEtu)<0){
 			//On recréé l'onglet
 			addTabDossierEtudiant();
@@ -1041,14 +1167,17 @@ public class MainUI extends GenericUI {
 		//On reconstruit le menu pour l'étudiant concerné
 		buildMainMenuEtudiant();
 
-		//On rend visible l'onglet "Dossier" dans le tabSheet principal
-		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(true);
+		//On rend visible l'onglet "Dossier" dans la barre de boutons
+		setDossierTabButtonVisible(true);
 
 		//par défaut on affiche la vue état-civil
 		navigator.navigateTo(EtatCivilView.NAME);
 
-		//On se rend sur l'onglet "Dossier" dans le tabSheet principal
-		tabSheetGlobal.setSelectedTab(rangTabDossierEtudiant);
+		//On se rend sur l'onglet "Dossier" dans la barre de boutons
+		selectGlobalTab(TAB_DOSSIER);
+
+		// Mise à jour de la visibilité dans tabSheetGlobal pour la compatibilité
+		tabSheetGlobal.getTab(rangTabDossierEtudiant).setVisible(true);
 
 	}
 
