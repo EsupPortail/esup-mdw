@@ -806,6 +806,9 @@ public class MainUI extends GenericUI {
 				globalTabDossierButton);
 
 		// Alignement à droite des boutons
+		globalTabButtonLayout.setComponentAlignment(globalTabRechercheButton, Alignment.MIDDLE_RIGHT);
+		globalTabButtonLayout.setComponentAlignment(globalTabAssistanceButton, Alignment.MIDDLE_RIGHT);
+		globalTabButtonLayout.setComponentAlignment(globalTabDossierButton, Alignment.MIDDLE_RIGHT);
 		globalTabButtonLayout.addStyleName("right-aligned-tabs");
 
 		// Initialisation du contenu avec l'onglet Recherche sélectionné
