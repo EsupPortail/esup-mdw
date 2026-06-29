@@ -195,7 +195,7 @@ public class MainUI extends GenericUI {
 	//Le menu de la partie "dossier étudiant"
 	private CssLayout mainMenu = new CssLayout();
 
-	//Le layout contenant le menu
+	//Le layout contenant le menu affiché à l'étudiant (Etat-Civil, Inscription etc.)
 	private CssLayout menuLayout = new CssLayout(mainMenu);
 
 	//Contenu de la partie "dossier étudiant" contentLayout affiche la vue à afficher dans le dossier via le "navigator"
@@ -204,20 +204,22 @@ public class MainUI extends GenericUI {
 	//Layout principal de la partie "dossier étudiant" : contient le menu et le contentlayout
 	private HorizontalLayout layoutDossierEtudiant = new HorizontalLayout(menuLayout, contentLayout);
 
+	//Barre de boutons accessibles aux enseignants : onglets Recherche, Dossier, Assistance
+	private HorizontalLayout globalTabButtonLayout = new HorizontalLayout();
+	private Button globalTabRechercheButton;
+	private Button globalTabAssistanceButton;
+	// Layout du bouton "Dossier" et du bouton "X" pour fermer l'onglet
+	private HorizontalLayout globalTabDossierButtonLayout = new HorizontalLayout();
+	private Button globalTabDossierButton;
+	private Button globalTabDossierCloseButton = new Button(FontAwesome.CLOSE);
+	// Contient le contenu sélectionné via globalTabButtonLayout
+	private VerticalLayout globalTabContentLayout = new VerticalLayout();
+
 	//Layout de l'onglet Recherche
 	private VerticalLayout layoutOngletRecherche;
 
 	//Le sous menu Recherche affiché aux enseignants (affiche les onglets recherche rapide, rechercher arbo, liste inscrits, favoris)
 	private TabSheet tabSheetEnseignant= new TabSheet();
-
-	//Barre de boutons accessible aux enseignants (onglets Recherche, Dossier, Assistance)
-	private HorizontalLayout globalTabButtonLayout = new HorizontalLayout();
-	private Button globalTabRechercheButton;
-	private Button globalTabAssistanceButton;
-	private HorizontalLayout globalTabDossierButtonLayout = new HorizontalLayout();
-	private Button globalTabDossierButton;
-	private Button globalTabDossierCloseButton = new Button(FontAwesome.CLOSE);
-	private VerticalLayout globalTabContentLayout = new VerticalLayout();
 
 	//.Index des onglets pour la barre de boutons
 	private static final int TAB_RECHERCHE = 0;
