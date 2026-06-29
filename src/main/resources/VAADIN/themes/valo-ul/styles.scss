@@ -61,7 +61,12 @@
 	.v-button-primary {
 		min-width: 0px;
 	}
-	
+
+	.v-button:focus:not(:focus-visible) {
+		outline: none;
+		box-shadow: none;
+	}
+
 	.flexwrap {
 	
     	.itembox {
@@ -157,8 +162,7 @@
 	.global-tab-button {
 		background: #f5f5f5;
 		border: 1px solid #ccc;
-		border-bottom: 1px solid #fff;
-		padding: 8px 16px;
+		/*padding: 8px 16px;*/
 		/* margin-right: 4px; */
 		margin-top: 1em;
 		cursor: pointer;
@@ -166,6 +170,8 @@
 		color: #333;
 		min-width: 120px;
 		text-align: center;
+		border-radius: 0px;
+		box-shadow: none !important;
 	}
 
 	.global-tab-button:hover {
@@ -174,9 +180,9 @@
 
 	.global-tab-button-selected {
 		background: #fff;
-		/* border-bottom: 1px solid #fff; */
 		font-weight: bold;
 		color: $v-focus-color;
+		border-bottom: none !important;
 	}
 
 	.global-tab-content {
