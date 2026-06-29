@@ -189,7 +189,7 @@ public class MainUI extends GenericUI {
 	// Variable permettant de stocker les paramètres lors du passage d'une vue à l'autre
 	private Map<String, String> urlParameterMapListeInscrits;
 
-	//Le composant principal de la page (contient tabSheetGlobal ou layoutDossierEtudiant en fonction du type de l'utilisateur)
+	//Le composant principal de la page (contient globalTabButtonLayout ou layoutDossierEtudiant en fonction du type de l'utilisateur)
 	private VerticalLayout mainVerticalLayout=new VerticalLayout();
 
 	//Le menu de la partie "dossier étudiant"
@@ -204,16 +204,13 @@ public class MainUI extends GenericUI {
 	//Layout principal de la partie "dossier étudiant" : contient le menu et le contentlayout
 	private HorizontalLayout layoutDossierEtudiant = new HorizontalLayout(menuLayout, contentLayout);
 
-	//le tabSheet global affiché aux enseignants (contient les onglets Recherche et Dossier)
-	//private TabSheet tabSheetGlobal = new TabSheet();
-
-	//Layout de l'onglet Recherche de tabSheetGlobal
+	//Layout de l'onglet Recherche
 	private VerticalLayout layoutOngletRecherche;
 
 	//Le sous menu Recherche affiché aux enseignants (affiche les onglets recherche rapide, rechercher arbo, liste inscrits, favoris)
 	private TabSheet tabSheetEnseignant= new TabSheet();
 
-	//Barre de boutons accessible pour remplacer tabSheetGlobal
+	//Barre de boutons accessible aux enseignants (onglets Recherche, Dossier, Assistance)
 	private HorizontalLayout globalTabButtonLayout = new HorizontalLayout();
 	private Button globalTabRechercheButton;
 	private Button globalTabAssistanceButton;
@@ -461,10 +458,7 @@ public class MainUI extends GenericUI {
 					ajoutOngletRecherche();
 					layoutOngletRecherche.setSizeFull();
 
-					// Initialisation du tabSheetGlobal pour la compatibilité avec le code existant
-					//initTabSheetGlobal();
-
-					// Initialisation de la barre de boutons qui remplace le tabSheetGlobal
+					// Initialisation de la barre de boutons (onglets Recherche, Dossier, Assistance)
 					initGlobalTabButtons();
 
 					// Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
@@ -570,33 +564,6 @@ public class MainUI extends GenericUI {
 			displayViewFullScreen(AccesRefuseView.NAME);
 		}
 	}
-
-	/*
-	private void initTabSheetGlobal() {
-		tabSheetGlobal.setSizeFull();
-		tabSheetGlobal.addStyleName(ValoTheme.TABSHEET_FRAMED);
-		tabSheetGlobal.addTab(layoutOngletRecherche, applicationContext.getMessage("mainUI.recherche.title", null, getLocale()), FontAwesome.SEARCH);
-		//ajout de l'onglet principal 'assistance'
-		tabSheetGlobal.addTab(assistanceView, applicationContext.getMessage(assistanceView.NAME + ".title", null, getLocale()), FontAwesome.SUPPORT);
-		//ajout de l'onglet dossier étudiant (pour la compatibilité)
-		addTabDossierEtudiant();
-		//Ce tabSheet sera aligné à droite
-		tabSheetGlobal.addStyleName("right-aligned-tabs");
-	}*/
-
-	/**
-	 * Ajout de l'onglet principal "dossier" contenant le dossier de l'étudiant
-	 */
-	/*private void addTabDossierEtudiant() {
-		log.debug("Création du l'onglet du dossier de l'étudiant");
-		//Ajout de l'onglet "Dossier"
-		tabDossierEtu = tabSheetGlobal.addTab(layoutDossierEtudiant, applicationContext.getMessage("mainUI.dossier.title", null, getLocale()), FontAwesome.USER);
-		tabSheetGlobal.setTabPosition(tabDossierEtu, RANG_TAB_DOSSIER_ETUDIANT);
-		//On cache l'onglet par défaut
-		tabSheetGlobal.getTab(RANG_TAB_DOSSIER_ETUDIANT).setVisible(false);
-		//L'onglet possible une croix pour être fermé
-		tabSheetGlobal.getTab(RANG_TAB_DOSSIER_ETUDIANT).setClosable(true);
-	}*/
 
 	private boolean fragmentVersView(String fragment, String viewName) {
 		return fragment != null && fragment.equals(FRAGMENT_PREFIX + viewName);
@@ -756,7 +723,7 @@ public class MainUI extends GenericUI {
 	}
 
 	/**
-	 * Initialise la barre de boutons accessible pour remplacer tabSheetGlobal
+	 * Initialise la barre de boutons (onglets Recherche, Dossier, Assistance)
 	 */
 	private void initGlobalTabButtons() {
 		// Configuration du layout de la barre de boutons
@@ -1124,7 +1091,6 @@ public class MainUI extends GenericUI {
 		}
 
 		// Au cas où on soit sur l'onglet "Dossier"
-		//tabSheetGlobal.setSelectedTab(RANG_TAB_RECHERCHE);
 		selectGlobalTab(TAB_RECHERCHE);
 
 		// On affiche l'onglet
@@ -1155,8 +1121,7 @@ public class MainUI extends GenericUI {
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		//On se rend sur l'onglet pour afficher la vue des favoris
 		tabSheetEnseignant.setSelectedTab(numtab);
-		//On se rend sur l'onglet Recherche dans le tabSheet principal au cas où on vienne du dossier d'un étudiant
-		//tabSheetGlobal.setSelectedTab(RANG_TAB_RECHERCHE);
+		//On se rend sur l'onglet Recherche au cas où on vienne du dossier d'un étudiant
 		selectGlobalTab(TAB_RECHERCHE);
 	}
 
@@ -1171,8 +1136,7 @@ public class MainUI extends GenericUI {
 		tabSheetEnseignant.getTab(numtab).setVisible(true);
 		//On se rend sur l'onglet pour afficher la vue RechercheRapide
 		tabSheetEnseignant.setSelectedTab(numtab);
-		//On se rend sur l'onglet Recherche dans le tabSheet principal au cas où on vienne du dossier d'un étudiant
-		//tabSheetGlobal.setSelectedTab(RANG_TAB_RECHERCHE);
+		//On se rend sur l'onglet Recherche au cas où on vienne du dossier d'un étudiant
 		selectGlobalTab(TAB_RECHERCHE);
 	}
 
@@ -1183,12 +1147,6 @@ public class MainUI extends GenericUI {
 	public void navigateToDossierEtudiant(Map<String, String> parameterMap) {
 
 		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToDossierEtudiant : "+etudiant.getCod_etu());
-
-		//Si l'onglet a été closed (pour la compatibilité avec l'ancien code)
-		/*if(tabDossierEtu==null || tabSheetGlobal.getTabPosition(tabDossierEtu)<0){
-			// On recréé l'onglet
-			addTabDossierEtudiant();
-		}*/
 
 		//Si le menu a déjà été initialisé
 		if(mainMenu!=null){
@@ -1206,10 +1164,6 @@ public class MainUI extends GenericUI {
 
 		//On se rend sur l'onglet "Dossier" dans la barre de boutons
 		selectGlobalTab(TAB_DOSSIER);
-
-		// Mise à jour de la visibilité dans tabSheetGlobal pour la compatibilité
-		//tabSheetGlobal.getTab(RANG_TAB_DOSSIER_ETUDIANT).setVisible(true);
-
 	}
 
 	public void startBusyIndicator() {
