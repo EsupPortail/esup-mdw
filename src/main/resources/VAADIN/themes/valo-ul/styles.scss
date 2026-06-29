@@ -62,11 +62,6 @@
 		min-width: 0px;
 	}
 
-	.v-button:focus:not(:focus-visible) {
-		outline: none;
-		box-shadow: none;
-	}
-
 	.flexwrap {
 	
     	.itembox {
@@ -182,7 +177,12 @@
 		background: #fff;
 		font-weight: bold;
 		color: $v-focus-color;
-		border-bottom: none !important;
+		border: none !important;
+	}
+
+	.global-tab-button:focus:not(:focus-visible) {
+		outline: none;
+		/* box-shadow: none; */
 	}
 
 	.global-tab-content {

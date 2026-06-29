@@ -398,7 +398,6 @@ public class MainUI extends GenericUI {
 						return false; //la vue enseignant demandée n'est pas gérée (ex :vue mobile appelée depuis la version desktop)
 					}
 				}
-
 				return true;
 			}
 
