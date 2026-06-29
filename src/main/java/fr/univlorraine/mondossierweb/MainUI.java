@@ -398,6 +398,7 @@ public class MainUI extends GenericUI {
 						return false; //la vue enseignant demandée n'est pas gérée (ex :vue mobile appelée depuis la version desktop)
 					}
 				}
+				log.debug("beforeViewChange " + event.getViewName() +" : access granted");
 				return true;
 			}
 
@@ -407,7 +408,7 @@ public class MainUI extends GenericUI {
 				//On récupère l'élément du menu concerné par la vue à afficher
 				Button button = viewButtons.get(event.getViewName());
 
-				if (button instanceof Button) {
+				if (button != null) {
 					//on applique le style "selected" sur l'objet du menu concerné par la vue affichée
 					button.addStyleName(SELECTED_ITEM);
 				}
