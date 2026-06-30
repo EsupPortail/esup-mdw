@@ -218,8 +218,12 @@ public class MainUI extends GenericUI {
 	private HorizontalLayout enseignantTabButtonLayout = new HorizontalLayout();
 	private Button rechercheRapideButton;
 	private Button rechercheArborescenteButton;
-	private Button favorisButton;
+	// Layout du bouton "Dossier" et du bouton "X" pour fermer l'onglet
+	private HorizontalLayout listeInscritsButtonLayout = new HorizontalLayout();
 	private Button listeInscritsButton;
+	private Button listeInscritsCloseButton = new Button(FontAwesome.CLOSE);
+	private Button favorisButton;
+
 
 	//.Index des onglets pour la barre de boutons
 	private static final int TAB_RECHERCHE = 0;
@@ -242,11 +246,6 @@ public class MainUI extends GenericUI {
 
 	// Noms des vues et boutons du menu associés 
 	private Map<String, Button> viewButtons = new HashMap<>();
-
-	// Noms des vues et index du tab associé 
-	private Map<String, Integer> viewEnseignantTab = new HashMap<>();
-
-
 
 	/**
 	 * @see com.vaadin.ui.UI#getCurrent()
@@ -674,7 +673,6 @@ public class MainUI extends GenericUI {
 		rechercheRapideButton.setDescription(applicationContext.getMessage("mainUI.rechercherapide.title", null, getLocale()));
 		rechercheRapideButton.addClickListener(e -> selectEnseignantTab(TAB_RECHERCHE_RAPIDE));
 		rechercheRapideButton.setTabIndex(0);
-		viewEnseignantTab.put(rechercheRapideView.NAME, TAB_RECHERCHE_RAPIDE);
 
 		// ***************************************************
 		// Création du bouton Recherche Arborescente
@@ -686,7 +684,6 @@ public class MainUI extends GenericUI {
 		rechercheArborescenteButton.setDescription(applicationContext.getMessage("mainUI.recherchearbo.title", null, getLocale()));
 		rechercheArborescenteButton.addClickListener(e -> selectEnseignantTab(TAB_RECHERCHE_ARBO));
 		rechercheArborescenteButton.setTabIndex(0);
-		viewEnseignantTab.put(rechercheArborescenteView.NAME, TAB_RECHERCHE_ARBO);
 
 		// ***************************************************
 		// Création du bouton Favoris
@@ -696,33 +693,40 @@ public class MainUI extends GenericUI {
 		favorisButton.setDescription("Favoris");
 		favorisButton.addClickListener(e -> selectEnseignantTab(TAB_FAVORIS));
 		favorisButton.setTabIndex(0);
-		viewEnseignantTab.put(favorisView.NAME, TAB_FAVORIS);
 
 		// ***************************************************
 		// Création du bouton Liste Inscrits (masqué par défaut)
 		// ***************************************************
-		listeInscritsButton = new Button(
-				applicationContext.getMessage("mainUI.listeinscrits.title", null, getLocale()) + " ", 
-				FontAwesome.USERS);
+		listeInscritsButtonLayout.setSpacing(false);
+		listeInscritsButtonLayout.addStyleName("enseignant-tab-button-inscrits-layout");
+		// Bouton "Liste Inscrits"
+		listeInscritsButton = new Button(applicationContext.getMessage("mainUI.listeinscrits.title", null, getLocale()) + " ", FontAwesome.USERS);
 		listeInscritsButton.addStyleName("enseignant-tab-button");
+		listeInscritsButton.addStyleName("enseignant-tab-button-left");
 		listeInscritsButton.setDescription(applicationContext.getMessage("mainUI.listeinscrits.title", null, getLocale()));
 		listeInscritsButton.addClickListener(e -> selectEnseignantTab(TAB_LISTE_INSCRITS));
 		listeInscritsButton.setTabIndex(0);
-		listeInscritsButton.setVisible(false);
-		viewEnseignantTab.put(listeInscritsView.NAME, TAB_LISTE_INSCRITS);
+		// Bouton fermer l'onglet "Liste Inscrits"
+		listeInscritsCloseButton.addStyleName("enseignant-tab-button");
+		listeInscritsCloseButton.addStyleName("tab-button-inscrits-close");
+		listeInscritsCloseButton.addClickListener(e -> closeListeInscrits());
+		// Ajout des boutons au layout
+		listeInscritsButtonLayout.addComponents(listeInscritsButton, listeInscritsCloseButton);
+		// layout "Liste Inscrits" masqué par défaut
+		listeInscritsButtonLayout.setVisible(false);
 
 		// Ajout des boutons au layout
 		enseignantTabButtonLayout.addComponents(
 				rechercheRapideButton,
 				rechercheArborescenteButton,
 				favorisButton,
-				listeInscritsButton);
+				listeInscritsButtonLayout);
 
 		// Alignement des boutons
 		enseignantTabButtonLayout.setComponentAlignment(rechercheRapideButton, Alignment.MIDDLE_LEFT);
 		enseignantTabButtonLayout.setComponentAlignment(rechercheArborescenteButton, Alignment.MIDDLE_LEFT);
 		enseignantTabButtonLayout.setComponentAlignment(favorisButton, Alignment.MIDDLE_LEFT);
-		enseignantTabButtonLayout.setComponentAlignment(listeInscritsButton, Alignment.MIDDLE_LEFT);
+		enseignantTabButtonLayout.setComponentAlignment(listeInscritsButtonLayout, Alignment.MIDDLE_LEFT);
 
 		// Ajout de la barre de boutons et du contenu au layout principal
 		layoutOngletRecherche.addComponent(enseignantTabButtonLayout);
@@ -835,6 +839,16 @@ public class MainUI extends GenericUI {
 		globalTabDossierButtonLayout.setVisible(false);
 	}
 
+	private void closeListeInscrits() {
+		// Si l'onglet sélectionné est "ListeInscrits"
+		if (listeInscritsButton.getStyleName().contains("enseignant-tab-button-selected")) {
+			// On bascule automatiquement sur l'onglet Favoris
+			selectEnseignantTab(TAB_FAVORIS);
+		}
+		// On masque l'onglet "listeInscrits"
+		listeInscritsButtonLayout.setVisible(false);
+	}
+
 	/**
 	 * Sélectionne un onglet global via la barre de boutons
 	 * @param tabIndex Index de l'onglet à sélectionner
@@ -887,6 +901,7 @@ public class MainUI extends GenericUI {
 		rechercheArborescenteButton.removeStyleName("enseignant-tab-button-selected");
 		favorisButton.removeStyleName("enseignant-tab-button-selected");
 		listeInscritsButton.removeStyleName("enseignant-tab-button-selected");
+		listeInscritsCloseButton.removeStyleName("enseignant-tab-button-selected");
 
 		// Récupérer le layout contenu dans layoutOngletRecherche
 		VerticalLayout contentLayout = (VerticalLayout) layoutOngletRecherche.getComponent(1);
@@ -918,6 +933,8 @@ public class MainUI extends GenericUI {
 				break;
 			case TAB_LISTE_INSCRITS:
 				listeInscritsButton.addStyleName("enseignant-tab-button-selected");
+				listeInscritsCloseButton.addStyleName("enseignant-tab-button-selected");
+				listeInscritsButtonLayout.setVisible(true);
 				// Initialisation de la vue si nécessaire
 				if(urlParameterMapListeInscrits != null){
 					listeInscritsController.recupererLaListeDesInscrits(urlParameterMapListeInscrits, null, this);
@@ -1137,15 +1154,13 @@ public class MainUI extends GenericUI {
 	 */
 	private void navigateToRechercheArborescente() {
 		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheArborescente");
-		//récupération de l'onglet qui affiche la vue RechercheArborescente
-		int numtab = viewEnseignantTab.get(rechercheArborescenteView.NAME);
 		//Si on a des paramètres renseignés
 		if(urlParameterMapRechArb!=null){
 			//initialisation de la vue avec les paramètres (on se place sur un élément précis de l'arborescence)
 			rechercheArborescenteView.initFromParameters(urlParameterMapRechArb);
 		}
 		//On sélectionne l'onglet pour afficher la vue
-		selectEnseignantTab(numtab);
+		selectEnseignantTab(TAB_RECHERCHE_ARBO);
 		//On se rend sur l'onglet Recherche au cas où on vienne du dossier d'un étudiant
 		selectGlobalTab(TAB_RECHERCHE);
 	}
@@ -1155,8 +1170,6 @@ public class MainUI extends GenericUI {
 	 */
 	private void navigateToListeInscrits() {
 		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToListeInscrits");
-		//récupération de l'onglet qui affiche la vue ListeInscrits
-		int numtab = viewEnseignantTab.get(listeInscritsView.NAME);
 
 		//Si on a des paramètres renseignés
 		if(urlParameterMapListeInscrits != null){
@@ -1173,7 +1186,7 @@ public class MainUI extends GenericUI {
 		selectGlobalTab(TAB_RECHERCHE);
 
 		// On se rend sur l'onglet pour afficher la vue ListeInscrits
-		selectEnseignantTab(numtab);
+		selectEnseignantTab(TAB_LISTE_INSCRITS);
 	}
 
 	public void goTo(String view, Map<String, String> parameterMap) {
@@ -1191,10 +1204,8 @@ public class MainUI extends GenericUI {
 	 */
 	private void navigateToFavoris() {
 		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToFavoris");
-		//récupération de l'onglet qui affiche la vue des favoris
-		int numtab = viewEnseignantTab.get(favorisView.NAME);
 		//On se rend sur l'onglet pour afficher la vue des favoris
-		selectEnseignantTab(numtab);
+		selectEnseignantTab(TAB_FAVORIS);
 		//On se rend sur l'onglet Recherche au cas où on vienne du dossier d'un étudiant
 		selectGlobalTab(TAB_RECHERCHE);
 	}
@@ -1204,10 +1215,8 @@ public class MainUI extends GenericUI {
 	 */
 	private void navigateToRechercheRapide() {
 		log.debug("MainUI "+userController.getCurrentUserName()+" navigateToRechercheRapide");
-		//récupération de l'onglet qui affiche la vue RechercheRapide
-		int numtab = viewEnseignantTab.get(rechercheRapideView.NAME);
 		//On se rend sur l'onglet pour afficher la vue RechercheRapide
-		selectEnseignantTab(numtab);
+		selectEnseignantTab(TAB_RECHERCHE_RAPIDE);
 		//On se rend sur l'onglet Recherche au cas où on vienne du dossier d'un étudiant
 		selectGlobalTab(TAB_RECHERCHE);
 	}
