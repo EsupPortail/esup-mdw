@@ -201,11 +201,6 @@
 		color: $v-focus-color;
 		border: none !important;
 	}
-	/* Style des boutons quand le focus n'est pas 'visible' */
-	.global-tab-button:focus:not(:focus-visible) {
-		outline: none;
-		/* box-shadow: none; */
-	}
 	/* Style de la zone du contenu sélectionné par les boutons du menu */
 	.global-tab-content {
 		border: none;
@@ -285,11 +280,6 @@
 		color: $v-focus-color;
 		border-bottom: 1px solid #343a40;
 	}
-	/* Style des boutons quand le focus n'est pas 'visible' */
-	.enseignant-tab-button:focus:not(:focus-visible) {
-		outline: none;
-		/* box-shadow: none; */
-	}
 	/* Style de la zone du contenu sélectionné par les boutons du menu */
 	.enseignant-tab-content {
 		border: none;
@@ -316,6 +306,15 @@
 	/* Style des boutons Dossier et "X" alignés à droite */
 	.enseignant-tab-button-dossier-layout.right-aligned-tabs {
 		text-align: right;
+	}
+
+/* ************************************************************************** */
+/* Suppression de la bordure de focus après clic pour les boutons spécifiques */
+/* ************************************************************************** */
+	.global-tab-button-selected:focus,
+	.enseignant-tab-button-selected:focus{
+		outline: none !important;
+		box-shadow: none !important;
 	}
 
 }
