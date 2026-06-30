@@ -28,7 +28,7 @@ border-bottom: 1px solid #c5c5c5 !important;
 .v-slot-googlepopupview {
 	position: absolute;
 	 left:120px;
-	 top: 150px;
+	 top: 148px;
 	z-index: 2;
 }
 
