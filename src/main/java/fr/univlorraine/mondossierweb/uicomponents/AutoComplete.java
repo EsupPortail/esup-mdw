@@ -105,7 +105,7 @@ public class AutoComplete extends TextField {
 			choices.setWidth(getWidth(), getWidthUnits());
 
 			// Si on n'a encore jamais affiché la popup
-			if(choicesPopup==null){
+			if (choicesPopup == null) {
 				//on créé la popup
 				choicesPopup = new PopupView(new PopupTextFieldContent());
 				//On lui ajoute le style css googlepopupview
