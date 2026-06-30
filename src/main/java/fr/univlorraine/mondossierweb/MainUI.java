@@ -794,7 +794,7 @@ public class MainUI extends GenericUI {
 		globalTabDossierCloseButton.addStyleName("global-tab-button");
 		globalTabDossierCloseButton.addStyleName("tab-button-dossier-close");
 		globalTabDossierCloseButton.addStyleName("global-tab-button-right");
-		globalTabDossierCloseButton.addClickListener(e -> closeDossier());
+		globalTabDossierCloseButton.addClickListener(e -> setDossierTabButtonVisible(false));
 		// Ajout des boutons au layout
 		globalTabDossierButtonLayout.addComponents(globalTabDossierButton, globalTabDossierCloseButton);
 		// layout "Dossier" masqué par défaut
@@ -826,17 +826,6 @@ public class MainUI extends GenericUI {
 
 		// Initialisation du contenu avec l'onglet Recherche sélectionné
 		selectGlobalTab(TAB_RECHERCHE);
-	}
-
-	private void closeDossier() {
-		// Si l'onglet sélectionné n'est ni "Recherche" ni "Assistance"
-		if (!(globalTabRechercheButton.getStyleName().contains("global-tab-button-selected") ||
-				globalTabAssistanceButton.getStyleName().contains("global-tab-button-selected"))) {
-			// On bascule automatiquement sur l'onglet Recherche
-			selectGlobalTab(TAB_RECHERCHE);
-		}
-		// On masque l'onglet "Dossier"
-		globalTabDossierButtonLayout.setVisible(false);
 	}
 
 	/**
@@ -943,7 +932,7 @@ public class MainUI extends GenericUI {
 	private void setDossierTabButtonVisible(boolean visible) {
 		globalTabDossierButtonLayout.setVisible(visible);
 		// Si on cache le bouton et qu'il est sélectionné, revenir à l'onglet Recherche
-		if (!visible && globalTabDossierButtonLayout.getStyleName().contains("global-tab-button-selected")) {
+		if (!visible && globalTabDossierButton.getStyleName().contains("global-tab-button-selected")) {
 			selectGlobalTab(TAB_RECHERCHE);
 		}
 	}
