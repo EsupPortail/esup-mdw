@@ -311,8 +311,8 @@
 /* ************************************************************************** */
 /* Suppression de la bordure de focus après clic pour les boutons spécifiques */
 /* ************************************************************************** */
-	.global-tab-button-selected:focus,
-	.enseignant-tab-button-selected:focus{
+	.global-tab-button-selected:focus::after,
+	.enseignant-tab-button-selected:focus::after {
 		outline: none !important;
 		box-shadow: none !important;
 	}
