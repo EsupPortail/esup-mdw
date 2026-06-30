@@ -709,7 +709,7 @@ public class MainUI extends GenericUI {
 		// Bouton fermer l'onglet "Liste Inscrits"
 		listeInscritsCloseButton.addStyleName("enseignant-tab-button");
 		listeInscritsCloseButton.addStyleName("tab-button-inscrits-close");
-		listeInscritsCloseButton.addClickListener(e -> closeListeInscrits());
+		listeInscritsCloseButton.addClickListener(e -> setListeInscritsButtonVisible(false));
 		// Ajout des boutons au layout
 		listeInscritsButtonLayout.addComponents(listeInscritsButton, listeInscritsCloseButton);
 		// layout "Liste Inscrits" masqué par défaut
@@ -746,10 +746,10 @@ public class MainUI extends GenericUI {
 	 * @param visible true pour afficher, false pour cacher
 	 */
 	private void setListeInscritsButtonVisible(boolean visible) {
-		listeInscritsButton.setVisible(visible);
-		// Si on cache le bouton et qu'il est sélectionné, revenir à l'onglet Recherche Rapide
+		listeInscritsButtonLayout.setVisible(visible);
+		// Si on cache le bouton et qu'il est sélectionné, revenir à l'onglet Favoris
 		if (!visible && listeInscritsButton.getStyleName().contains("enseignant-tab-button-selected")) {
-			selectEnseignantTab(TAB_RECHERCHE_RAPIDE);
+			selectEnseignantTab(TAB_FAVORIS);
 		}
 	}
 
@@ -837,16 +837,6 @@ public class MainUI extends GenericUI {
 		}
 		// On masque l'onglet "Dossier"
 		globalTabDossierButtonLayout.setVisible(false);
-	}
-
-	private void closeListeInscrits() {
-		// Si l'onglet sélectionné est "ListeInscrits"
-		if (listeInscritsButton.getStyleName().contains("enseignant-tab-button-selected")) {
-			// On bascule automatiquement sur l'onglet Favoris
-			selectEnseignantTab(TAB_FAVORIS);
-		}
-		// On masque l'onglet "listeInscrits"
-		listeInscritsButtonLayout.setVisible(false);
 	}
 
 	/**
