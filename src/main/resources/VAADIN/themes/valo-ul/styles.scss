@@ -143,24 +143,21 @@
 	display: none;
 }
 
-	.v-tabsheet-framed > .v-tabsheet-content {
+.v-tabsheet-framed > .v-tabsheet-content {
 		border: none !important;
-	}
+}
 
-	/* Style pour la barre de boutons accessible (remplacement des onglets) */
+/* *************************************************** */
+/* Style pour les onglets Recherche/Dossier/Assistance */
+/* *************************************************** */
+
+	/* Style pour la barre de menu */
 	.global-tab-button-layout {
 		margin: 0;
 		padding: 0;
 		background-color: #343a40;
 	}
-	/* Style pour le layout avec le bouton "Dossier" et le bouton "X" pour clore l'onglet */
-	.global-tab-button-dossier-layout {
-		margin: 0;
-		padding: 0;
-		background: none;
-		width: unset !important
-	}
-
+	/* Style des boutons de la barre de menu */
 	.global-tab-button {
 		background: #f5f5f5;
 		/*padding: 8px 16px;*/
@@ -169,62 +166,150 @@
 		border: 1px solid #ccc;
 		cursor: pointer;
 		font-weight: normal;
-		color: #333;
+		color: #696969;
 		min-width: 120px;
 		text-align: center;
 		border-radius: 0px;
 		box-shadow: none !important;
 	}
+	/* Style pour le layout avec le bouton "Dossier" et le bouton "X" pour clore l'onglet */
+	.global-tab-button-dossier-layout {
+		margin: 0;
+		padding: 0;
+		background: none;
+		width: unset !important
+	}
+	/* Style pour le bouton Dossier */
 	.global-tab-button-left {
 		border-right: none;
+		padding-left: 1.2em;
+		padding-right: 0.5em;
+		min-width: 0.1em;
 	}
+	/* Style pour le bouton "X" */
 	.global-tab-button-right {
 		border-left: none;
 	}
-
-
+	/* Style au survol des boutons du menu */
 	.global-tab-button:hover {
 		background-color: #e9e9e9;
 	}
-
+	/* Style des boutons selected du menu */
 	.global-tab-button-selected {
 		background: #fff;
 		font-weight: bold;
 		color: $v-focus-color;
 		border: none !important;
 	}
-
+	/* Style des boutons quand le focus n'est pas 'visible' */
 	.global-tab-button:focus:not(:focus-visible) {
 		outline: none;
 		/* box-shadow: none; */
 	}
-
+	/* Style de la zone du contenu sélectionné par les boutons du menu */
 	.global-tab-content {
 		border: none;
 		background-color: #fff;
 	}
+	/* Style du bouton "X" */
 	.tab-button-dossier-close {
 		min-width: 1em;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
 	}
-
+	/* Style des slots des boutons du menu */
 	.v-slot-global-tab-button {
 		width: unset !important;
 	}
+	/* Style des slots des boutons Dossier du menu */
 	.v-slot-global-tab-button-dossier-layout {
 		width: unset !important;
 	}
-
+	/* Style des boutons du menu alignés à droite */
 	.global-tab-button-layout.right-aligned-tabs {
 		text-align: right;
 	}
+	/* Style des boutons Dossier et "X" alignés à droite */
 	.global-tab-button-dossier-layout.right-aligned-tabs {
 		text-align: right;
 	}
-/*
-	.valo-ul .global-tab-button-layout.right-aligned-tabs .global-tab-button {
-		float: right;
-		margin-left: 4px;
-		margin-right: 0;
-	}*/
+
+
+
+/* ************************************************************************** */
+/* Style pour les onglets RechercheRapide/RechercheArbo/Favoris/ListeInscrits */
+/* ************************************************************************** */
+
+	/* Style pour la barre de menu */
+	.enseignant-tab-button-layout {
+		margin: 0;
+		padding: 0;
+		background-color: #fff;
+		border-bottom: 1px solid #dfdfdf;
+	}
+	/* Style des boutons de la barre de menu */
+	.enseignant-tab-button {
+		background: #fff;
+		/*padding: 8px 16px;*/
+		/* margin-right: 4px; */
+		/*margin-top: 1em;*/
+		border: none;
+		cursor: pointer;
+		font-weight: normal;
+		color: #696969;
+		min-width: 120px;
+		text-align: center;
+		border-radius: 0px;
+		box-shadow: none !important;
+	}
+	/* Style pour le layout avec le bouton "Dossier" et le bouton "X" pour clore l'onglet */
+	.enseignant-tab-button-inscrits-layout {
+		margin: 0;
+		padding: 0;
+		background: none;
+		width: unset !important
+	}
+	/* Style au survol des boutons du menu */
+	.enseignant-tab-button:hover {
+		background-color: #e9e9e9;
+	}
+	/* Style des boutons selected du menu */
+	.enseignant-tab-button-selected {
+		font-weight: bold;
+		color: $v-focus-color;
+		border-bottom: 1px solid #343a40;
+	}
+	/* Style des boutons quand le focus n'est pas 'visible' */
+	.enseignant-tab-button:focus:not(:focus-visible) {
+		outline: none;
+		/* box-shadow: none; */
+	}
+	/* Style de la zone du contenu sélectionné par les boutons du menu */
+	.enseignant-tab-content {
+		border: none;
+		background-color: #fff;
+	}
+	/* Style du bouton "X" */
+	.tab-button-inscrits-close {
+		min-width: 1em;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+	}
+	/* Style des slots des boutons du menu */
+	.v-slot-enseignant-tab-button {
+		width: unset !important;
+	}
+	/* Style des slots des boutons Dossier du menu */
+	.v-slot-enseignant-tab-button-inscrits-layout {
+		width: unset !important;
+	}
+	/* Style des boutons du menu alignés à droite */
+	.enseignant-tab-button-layout.right-aligned-tabs {
+		text-align: right;
+	}
+	/* Style des boutons Dossier et "X" alignés à droite */
+	.enseignant-tab-button-dossier-layout.right-aligned-tabs {
+		text-align: right;
+	}
 
 }
