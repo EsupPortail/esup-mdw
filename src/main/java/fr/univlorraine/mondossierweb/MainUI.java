@@ -201,6 +201,7 @@ public class MainUI extends GenericUI {
 	private HorizontalLayout layoutDossierEtudiant = new HorizontalLayout(menuLayout, contentLayout);
 
 	//Barre de boutons accessibles aux enseignants : onglets Recherche, Dossier, Assistance
+	private HorizontalLayout bandeauAndMenuLayout = new HorizontalLayout();
 	private HorizontalLayout globalTabButtonLayout = new HorizontalLayout();
 	private Button globalTabRechercheButton;
 	private Button globalTabAssistanceButton;
@@ -468,12 +469,10 @@ public class MainUI extends GenericUI {
 					// Initialisation de la barre de boutons (onglets Recherche, Dossier, Assistance)
 					initGlobalTabButtons();
 
-					// Le menu horizontal pour les enseignants est définit comme étant le contenu de la page
-					Utils.ajoutLogoBandeauEnseignant(configController.getLogoUniversiteEns(), mainVerticalLayout, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
-
+					// Le menu horizontal pour les enseignants est défini comme étant le contenu de la page
 					mainVerticalLayout.setSizeFull();
 					// Ajout de la barre de boutons et du contenu au layout principal
-					mainVerticalLayout.addComponent(globalTabButtonLayout);
+					mainVerticalLayout.addComponent(bandeauAndMenuLayout);
 					// Ajout du contenu du layout principal
 					mainVerticalLayout.addComponent(globalTabContentLayout);
 					mainVerticalLayout.setExpandRatio(globalTabContentLayout, 1);
@@ -811,6 +810,10 @@ public class MainUI extends GenericUI {
 		globalTabAssistanceButton.addClickListener(e -> selectGlobalTab(TAB_ASSISTANCE));
 		globalTabAssistanceButton.setTabIndex(0);
 
+		bandeauAndMenuLayout.setWidthFull();
+		bandeauAndMenuLayout.addStyleName("bandeau-and-menu");
+
+		Utils.ajoutLogoBandeauEnseignant(configController.getLogoUniversiteEns(), bandeauAndMenuLayout, applicationContext.getMessage("mainUI.app.title",null, UI.getCurrent().getLocale()));
 		// Ajout des boutons au layout
 		globalTabButtonLayout.addComponents(
 				globalTabRechercheButton,
@@ -824,6 +827,7 @@ public class MainUI extends GenericUI {
 		globalTabDossierButtonLayout.addStyleName("right-aligned-tabs");
 		globalTabButtonLayout.addStyleName("right-aligned-tabs");
 
+		bandeauAndMenuLayout.addComponents(globalTabButtonLayout);
 		// Initialisation du contenu avec l'onglet Recherche sélectionné
 		selectGlobalTab(TAB_RECHERCHE);
 	}

@@ -343,9 +343,11 @@ display: inline-block;
 }
 
 .valo-ul .bandeau-ens-menu {
-	position: absolute;
-	z-index: 1;
 	color: white !important;
+}
+
+.valo-ul .bandeau-and-menu {
+	background-color: #343a40;
 }
 
 .valo-ul .contenu-ens-menu {

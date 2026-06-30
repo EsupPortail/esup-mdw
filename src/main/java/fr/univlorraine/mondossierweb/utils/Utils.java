@@ -26,7 +26,6 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.VerticalLayout;
 import fr.univlorraine.mondossierweb.views.AccesBloqueView;
 import fr.univlorraine.mondossierweb.views.AccesRefuseView;
 import fr.univlorraine.mondossierweb.views.AdminView;
@@ -449,8 +448,7 @@ public class Utils {
 		}
 	}
 
-	public static void ajoutLogoBandeauEnseignant(String pathLogo, VerticalLayout vue, String titre) {
-
+	public static void ajoutLogoBandeauEnseignant(String pathLogo, HorizontalLayout vue, String titre) {
 		CssLayout bandeau = new CssLayout();
 		bandeau.addStyleName("bandeau-ens-menu");
 		CssLayout contenu = new CssLayout();
