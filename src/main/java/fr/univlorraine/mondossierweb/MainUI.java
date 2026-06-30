@@ -915,10 +915,10 @@ public class MainUI extends GenericUI {
 				listeInscritsCloseButton.addStyleName("enseignant-tab-button-selected");
 				listeInscritsButtonLayout.setVisible(true);
 				// Initialisation de la vue si nécessaire
-				if(urlParameterMapListeInscrits != null){
+				/*if(urlParameterMapListeInscrits != null){
 					listeInscritsController.recupererLaListeDesInscrits(urlParameterMapListeInscrits, null, this);
 					listeInscritsView.initListe();
-				}
+				}*/
 				contentLayout.removeAllComponents();
 				contentLayout.addComponent(listeInscritsView);
 				break;
