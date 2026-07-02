@@ -102,6 +102,7 @@ public class FavorisView extends VerticalLayout implements View {
 			/* Style */
 			setMargin(true);
 			setSpacing(true);
+			setSizeFull();
 
 			liste_types_inscrits= new LinkedList<String>();
 			liste_types_inscrits.add(Utils.ELP);
@@ -115,14 +116,15 @@ public class FavorisView extends VerticalLayout implements View {
 
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setSizeFull();
-			globalLayout.setSpacing(true);
 
 			if(lfav!=null && !lfav.isEmpty()){
 				bic = new BeanItemContainer<>(Favoris.class,lfav);
 				bic.addNestedContainerProperty("id.typfav");
 				bic.addNestedContainerProperty("id.idfav");
 				favorisTable = new Table(null, bic);
-				favorisTable.setWidth("100%");
+				//favorisTable.setWidth("100%");
+				favorisTable.setSizeFull();
+				favorisTable.setStyleName("scrollabletable");
 
 				favorisTable.addGeneratedColumn("Type", new DisplayTypeColumnGenerator());
 				favorisTable.setColumnHeader("Type", applicationContext.getMessage(NAME+".table.id.typfav", null, getLocale()));
@@ -138,10 +140,8 @@ public class FavorisView extends VerticalLayout implements View {
 				favorisTable.setColumnReorderingAllowed(true);
 				favorisTable.setSelectable(true);
 				favorisTable.setImmediate(true);
-				favorisTable.addStyleName("noscrollabletable");
-				favorisTable.setPageLength(favorisTable.getItemIds().size() );
 				globalLayout.addComponent(favorisTable);
-
+				globalLayout.setExpandRatio(favorisTable, 1);
 			}
 
 			labelAucunFavoriLayout = new HorizontalLayout();
