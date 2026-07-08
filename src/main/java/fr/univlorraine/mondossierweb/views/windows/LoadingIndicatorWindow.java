@@ -18,31 +18,31 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Window;
-import com.vaadin.v7.ui.ProgressBar;
-import com.vaadin.v7.ui.VerticalLayout;
-
+/**
+ * Fenêtre d'attente (indicateur de chargement indéterminé)
+ */
 @SuppressWarnings("serial")
-public class LoadingIndicatorWindow extends Window {
+public class LoadingIndicatorWindow extends Dialog {
+
 	public LoadingIndicatorWindow() {
 		super();
-		setModal(true);
 		setDraggable(false);
 		setResizable(false);
-		setClosable(false);
-		addStyleName("loadingIndicatorWindow");
+		setCloseOnEsc(false);
+		setCloseOnOutsideClick(false);
+		addClassName("loadingIndicatorWindow");
 
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		setContent(layout);
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setPadding(true);
 
-		ProgressBar busyIndicator = new ProgressBar();
+		final ProgressBar busyIndicator = new ProgressBar();
 		busyIndicator.setIndeterminate(true);
-		layout.addComponent(busyIndicator);
-		layout.setComponentAlignment(busyIndicator, Alignment.MIDDLE_CENTER);
+		layout.add(busyIndicator);
 
-		center();
+		add(layout);
 	}
 }

@@ -18,121 +18,75 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.Position;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.views.windows.ConfirmWindow;
-import fr.univlorraine.mondossierweb.views.windows.InputWindow;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContext;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.server.VaadinSession;
+import fr.univlorraine.mondossierweb.security.SecurityUtil;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Gestion des sessions
+ * Gestion des sessions et des UIs connectées.
+ *
+ * Version Flow : les UIs sont enregistrées/désenregistrées par le layout principal
+ * (MainLayout) via {@link #registerUI(UI)} / {@link #unregisterUI(UI)}.
+ * Les confirmations (ConfirmWindow v7) sont désormais à la charge des vues :
+ * la vue affiche un ConfirmDialog puis appelle directement killUser/killSession/killUI.
  */
 @Component
 public class UiController {
 
-	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
-	@Resource
-	private transient LockController lockController;
-	@Resource
-	private transient ObjectFactory<ConfirmWindow> confirmWindowFactory;
-	@Resource
-	private transient ObjectFactory<InputWindow> inputWindowFactory;
-
 	/** Thread pool  */
-	private ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	/* Envoi de messages aux clients connectés */
 
 	/** UIs connectées */
-	private LinkedList<MainUI> uis = new LinkedList<MainUI>();
+	private final LinkedList<UI> uis = new LinkedList<>();
 
 	@SuppressWarnings("unchecked")
-	public synchronized LinkedList<MainUI> getUis() {
-		return (LinkedList<MainUI>) uis.clone();
+	public synchronized List<UI> getUis() {
+		return (List<UI>) uis.clone();
 	}
 
 	/**
 	 * Ajoute une UI à la liste des UIs connectées
 	 * @param ui
 	 */
-	public synchronized void registerUI(final MainUI ui) {
+	public synchronized void registerUI(final UI ui) {
 		uis.add(ui);
-
-		/* Met à jour les AdminViews lorsqu'une UI change de vue */
-		ui.getNavigator().addViewChangeListener(new ViewChangeListener() {
-			@Override
-			public boolean beforeViewChange(ViewChangeEvent event) {
-				return true;
-			}
-
-			@Override
-			public void afterViewChange(ViewChangeEvent event) {
-			}
-		});
 	}
 
 	/**
 	 * Enlève une UI de la liste des UIs connectées
 	 * @param ui
 	 */
-	public synchronized void unregisterUI(MainUI ui) {
+	public synchronized void unregisterUI(UI ui) {
 		uis.remove(ui);
 	}
 
 	/**
 	 * Envoie une notification à tous les clients connectés
-	 * @param notification
+	 * @param message texte de la notification
 	 */
-	public synchronized void sendNotification(Notification notification) {
+	public synchronized void sendNotification(String message) {
 		uis.forEach(ui ->
 			executorService.execute(() ->
-				ui.access(() -> notification.show(ui.getPage()))
+				ui.access(() -> {
+					Notification notification = new Notification(message);
+					notification.setDuration(0);
+					notification.setPosition(Notification.Position.TOP_CENTER);
+					notification.open();
+				})
 			)
 		);
 	}
-
-	/**
-	 * Permet la saisie et l'envoi d'un message à tous les clients connectés
-	 */
-	public void sendMessage() {
-		InputWindow inputWindow = inputWindowFactory.getObject();
-		inputWindow.init(applicationContext.getMessage("admin.sendMessage.message", null, UI.getCurrent().getLocale()), applicationContext.getMessage("admin.sendMessage.title", null, UI.getCurrent().getLocale()));
-		inputWindow.addBtnOkListener(text -> {
-			if (text instanceof String && !text.isEmpty()) {
-				Notification notification = new Notification(applicationContext.getMessage("admin.sendMessage.notificationCaption", new Object[] {text}, UI.getCurrent().getLocale()), Type.TRAY_NOTIFICATION);
-				notification.setDelayMsec(-1);
-				notification.setDescription("\n" + applicationContext.getMessage("admin.sendMessage.notificationDescription", null, UI.getCurrent().getLocale()));
-				notification.setPosition(Position.TOP_CENTER);
-				sendNotification(notification);
-			}
-		});
-		UI.getCurrent().addWindow(inputWindow);
-	}
-
-
-
-
-
-
-
-
 
 	/**
 	 * Vérifie si une UI est toujours active
@@ -140,45 +94,28 @@ public class UiController {
 	 * @return
 	 */
 	public synchronized boolean isUIStillActive(UI ui) {
-		return uis.contains(ui);
+		return uis.contains(ui) && ui.isAttached();
 	}
 
 	/* Tuer des UIs, sessions et utilisateurs */
-
-	/**
-	 * Confirme la fermeture de toutes les sessions associées à un utilisateur
-	 * @param user
-	 */
-	public void confirmKillUser(UserDetails user) {
-		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
-		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmKillUser", new Object[]{user.getUsername()}, UI.getCurrent().getLocale()));
-		confirmWindow.addBtnOuiListener(e -> killUser(user));
-		UI.getCurrent().addWindow(confirmWindow);
-	}
 
 	/**
 	 * Ferme toutes les sessions associées à un utilisateur
 	 * @param user
 	 */
 	public synchronized void killUser(UserDetails user) {
-		for (MainUI mainUI : uis) {
-			SecurityContext securityContext = (SecurityContext) mainUI.getSession().getSession().getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-			if (user.getUsername().equals(securityContext.getAuthentication().getName())) {
-				mainUI.close();
+		for (UI ui : uis) {
+			String username = SecurityUtil.getAuthentication(ui).map(Authentication::getName).orElse(null);
+			if (user.getUsername().equals(username)) {
+				VaadinSession session = ui.getSession();
+				ui.access(() -> {
+					if (session != null) {
+						session.close();
+					}
+					ui.getPage().reload();
+				});
 			}
 		}
-	}
-
-	/**
-	 * Confirme la fermeture d'une session
-	 * @param session
-	 */
-	public void confirmKillSession(VaadinSession session) {
-		SecurityContext securityContext = (SecurityContext) session.getSession().getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
-		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmKillSession", new Object[]{session.getSession().getId(), securityContext.getAuthentication().getName()}, UI.getCurrent().getLocale()));
-		confirmWindow.addBtnOuiListener(e -> killSession(session));
-		UI.getCurrent().addWindow(confirmWindow);
 	}
 
 	/**
@@ -186,18 +123,7 @@ public class UiController {
 	 * @param session
 	 */
 	public void killSession(VaadinSession session) {
-		session.close();
-	}
-
-	/**
-	 * Confirme la fermeture d'une UI
-	 * @param ui
-	 */
-	public void confirmKillUI(UI ui) {
-		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
-		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmKillUI", null, UI.getCurrent().getLocale()));
-		confirmWindow.addBtnOuiListener(e -> killUI(ui));
-		UI.getCurrent().addWindow(confirmWindow);
+		session.access(session::close);
 	}
 
 	/**
@@ -205,18 +131,7 @@ public class UiController {
 	 * @param ui
 	 */
 	public void killUI(UI ui) {
-		ui.close();
-	}
-
-	/**
-	 * Supprime un verrou
-	 * @param lock
-	 */
-	public void confirmRemoveLock(Object lock) {
-		ConfirmWindow confirmWindow = confirmWindowFactory.getObject();
-		confirmWindow.init(applicationContext.getMessage("admin.uiList.confirmRemoveLock", new Object[]{lock}, UI.getCurrent().getLocale()));
-		confirmWindow.addBtnOuiListener(e -> lockController.removeLock(lock));
-		UI.getCurrent().addWindow(confirmWindow);
+		ui.access(ui::close);
 	}
 
 }

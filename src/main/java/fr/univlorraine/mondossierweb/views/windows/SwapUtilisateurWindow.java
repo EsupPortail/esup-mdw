@@ -18,144 +18,138 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
-import com.vaadin.v7.ui.AbstractTextField;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.entities.mdw.UtilisateurSwap;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
- * Fenêtre d'édition des parametre de l'application
- * 
+ * Fenêtre d'édition d'un swap utilisateur
  */
 @SuppressWarnings("serial")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class SwapUtilisateurWindow extends Window {
+public class SwapUtilisateurWindow extends Dialog {
 
 	public static final String NAME = "swapUtilisateurWindow";
-	public static final String[] CONF_APP_FIELDS_ORDER = {"loginSource", "loginCible", "datCre"};
-	@Resource
-	private transient ApplicationContext applicationContext;
+
 	@Resource
 	private transient ConfigController configController;
 
 	/* Composants */
-	private BeanFieldGroup<UtilisateurSwap> fieldGroup;
-	private Button btnEnregistrer;
-	private Button btnAnnuler;
+	private final Binder<UtilisateurSwap> binder = new Binder<>(UtilisateurSwap.class);
+	private final TextField loginSourceField = new TextField();
+	private final TextField loginCibleField = new TextField();
+	private final DateTimePicker datCreField = new DateTimePicker();
 
 	/**
 	 * Crée une fenêtre d'édition du swap utilisateur
 	 * @param swap utilisateur à éditer
+	 * @param ajout true en cas de création
 	 */
-	public void init(UtilisateurSwap swap, boolean ajout) {
+	public void init(final UtilisateurSwap swap, final boolean ajout) {
 		/* Style */
-		setModal(true);
 		setResizable(false);
-		setClosable(false);
+		setCloseOnEsc(false);
+		setCloseOnOutsideClick(false);
 		setWidth("50%");
 
-		/* Layout */
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		layout.setSpacing(true);
-		layout.setWidth("100%");
-		setContent(layout);
-
 		/* Titre */
-		if(ajout){
-			setCaption(applicationContext.getMessage(NAME+".title.ajout", null, getLocale()));
-		}else{
-			setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-		}
+		setHeaderTitle(getTranslation(ajout ? NAME + ".title.ajout" : NAME + ".title"));
+
+		/* Layout */
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setPadding(false);
+		layout.setSpacing(true);
+		layout.setWidthFull();
+		add(layout);
 
 		/* Formulaire */
-		fieldGroup = new BeanFieldGroup<>(UtilisateurSwap.class);
-		fieldGroup.setItemDataSource(swap);
-		FormLayout formLayout = new FormLayout();
-		formLayout.setSpacing(true);
-		formLayout.setSizeUndefined();
-		formLayout.setWidth("100%");
-		for (String fieldName : CONF_APP_FIELDS_ORDER) {
-			String caption = applicationContext.getMessage(NAME+".swapUserTable." + fieldName, null, getLocale());
-			Field<?> field = fieldGroup.buildAndBind(caption, fieldName);
-			if (field instanceof AbstractTextField) {
-				((AbstractTextField) field).setNullRepresentation("");
-				field.setWidth("100%");
-			}
-			if (field instanceof DateField) {
-				((DateField) field).setResolution(DateField.RESOLUTION_MIN);
-			}
-			formLayout.addComponent(field);
+		final FormLayout formLayout = new FormLayout();
+		formLayout.setWidthFull();
+
+		loginSourceField.setWidthFull();
+		formLayout.addFormItem(loginSourceField, getTranslation(NAME + ".swapUserTable.loginSource"));
+		loginCibleField.setWidthFull();
+		formLayout.addFormItem(loginCibleField, getTranslation(NAME + ".swapUserTable.loginCible"));
+		formLayout.addFormItem(datCreField, getTranslation(NAME + ".swapUserTable.datCre"));
+
+		binder.forField(loginSourceField).bind(UtilisateurSwap::getLoginSource, UtilisateurSwap::setLoginSource);
+		binder.forField(loginCibleField).bind(UtilisateurSwap::getLoginCible, UtilisateurSwap::setLoginCible);
+		binder.forField(datCreField)
+			.withConverter(
+				ldt -> ldt == null ? null : Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant()),
+				date -> date == null ? null : LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()))
+			.bind(UtilisateurSwap::getDatCre, UtilisateurSwap::setDatCre);
+		binder.readBean(swap);
+
+		/* À l'ajout, la date d'activation est préremplie à maintenant (sinon DAT_CRE null = swap invalide) */
+		if (ajout && swap.getDatCre() == null) {
+			datCreField.setValue(LocalDateTime.now());
 		}
 
-		fieldGroup.getField("loginSource").setReadOnly(swap.getLoginSource() != null);
-		layout.addComponent(formLayout);
+		loginSourceField.setReadOnly(swap.getLoginSource() != null);
+		layout.add(formLayout);
 
 		/* Ajoute les boutons */
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
-		buttonsLayout.setSpacing(true);
-		buttonsLayout.setMargin(true);
-		layout.addComponent(buttonsLayout);
+		final HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.setWidthFull();
+		buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+		layout.add(buttonsLayout);
 
-		btnAnnuler = new Button(applicationContext.getMessage(NAME+".btnAnnuler", null, getLocale()), FontAwesome.TIMES);
+		final Button btnAnnuler = new Button(getTranslation(NAME + ".btnAnnuler"), VaadinIcon.CLOSE.create());
 		btnAnnuler.addClickListener(e -> close());
-		btnAnnuler.addStyleName("admin-button");
-		buttonsLayout.addComponent(btnAnnuler);
-		buttonsLayout.setComponentAlignment(btnAnnuler, Alignment.MIDDLE_LEFT);
+		btnAnnuler.addClassName("admin-button");
+		buttonsLayout.add(btnAnnuler);
 
-		btnEnregistrer = new Button(applicationContext.getMessage(NAME+".btnSave", null, getLocale()), FontAwesome.SAVE);
-		btnEnregistrer.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnEnregistrer.addStyleName("admin-button");
+		final Button btnEnregistrer = new Button(getTranslation(NAME + ".btnSave"), VaadinIcon.CHECK.create());
+		btnEnregistrer.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		btnEnregistrer.addClassName("admin-button");
 		btnEnregistrer.addClickListener(e -> {
 			try {
 				/* Valide la saisie */
-				fieldGroup.commit();
-				boolean commitok=true;
-				if(ajout){
+				binder.writeBean(swap);
+				boolean commitok = true;
+				if (ajout) {
 					//On regarde si le login source n'est pas déjà dans la table
-					String loginSource = (String)fieldGroup.getField("loginSource").getValue();
-					if(configController.getSwapUtilisateur(loginSource)!=null){
-						commitok=false;
+					final String loginSource = swap.getLoginSource();
+					if (configController.getSwapUtilisateur(loginSource) != null) {
+						commitok = false;
 						//Afficher message d'erreur
-						Notification.show(applicationContext.getMessage(NAME+".error.loginexistant",null, UI.getCurrent().getLocale()), Notification.Type.ERROR_MESSAGE);
+						Notification notification = Notification.show(getTranslation(NAME + ".error.loginexistant"));
+						notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
 					}
 				}
-				if(commitok){
+				if (commitok) {
 					/* Enregistre le swap saisie */
 					configController.saveSwap(swap);
 
 					/* Ferme la fenêtre */
 					close();
 				}
-			} catch (FieldGroup.CommitException ce) {
+			} catch (final ValidationException ce) {
 			}
 		});
-		buttonsLayout.addComponent(btnEnregistrer);
-		buttonsLayout.setComponentAlignment(btnEnregistrer, Alignment.MIDDLE_RIGHT);
-
-		/* Centre la fenêtre */
-		center();
+		buttonsLayout.add(btnEnregistrer);
 	}
 }

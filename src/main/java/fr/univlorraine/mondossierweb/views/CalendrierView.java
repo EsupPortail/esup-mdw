@@ -19,70 +19,60 @@
 package fr.univlorraine.mondossierweb.views;
 
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItem;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.streams.DownloadHandler;
+import com.vaadin.flow.server.streams.DownloadResponse;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.CalendrierController;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.converters.DateToStringConverter;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
-import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import jakarta.annotation.PostConstruct;
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.utils.DownloadFile;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.StringUtils;
 
 /**
- * Page d'accueil
+ * Page du calendrier des épreuves
  */
-@Component @Scope("prototype")
-@SpringView(name = CalendrierView.NAME)
-@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
-public class CalendrierView extends VerticalLayout implements View {
+@SuppressWarnings("serial")
+@Route(value = CalendrierView.NAME, layout = MainLayout.class)
+@Secured(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE)
+public class CalendrierView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
 
 	public static final String NAME = "calendrierView";
+	public static final String ROUTE = NAME;
 
-	public static final String[] CAL_FIELDS = {"datedeb", "heure","duree","epreuve"};
-	
-	public static final String[] CAL_FIELDS_DETAIL = {"datedeb", "heure","duree","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
+	public static final String[] CAL_FIELDS_ORDER = {"datedeb", "heure", "duree", "batiment", "salle", "epreuve"};
 
-	public static final String[] CAL_FIELDS_AVEC_PLACE = {"datedeb", "heure","duree","place","epreuve"};
-	
-	public static final String[] CAL_FIELDS_AVEC_PLACE_DETAIL = {"datedeb", "heure","duree","place","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
+	public static final String[] CAL_FIELDS_ORDER_AVEC_PLACE = {"datedeb", "heure", "duree", "batiment", "salle", "place", "epreuve"};
 
-	public static final String[] CAL_FIELDS_ORDER = {"datedeb", "heure","duree","batiment","salle","epreuve"};
+	public static final String[] CAL_FIELDS_ORDER_DETAIL = {"datedeb", "heure", "duree", "batiment", "salle", "epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
 
-	public static final String[] CAL_FIELDS_ORDER_AVEC_PLACE = {"datedeb", "heure","duree","batiment","salle","place","epreuve"};
+	public static final String[] CAL_FIELDS_ORDER_AVEC_PLACE_DETAIL = {"datedeb", "heure", "duree", "batiment", "salle", "place", "epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
 
-	public static final String[] CAL_FIELDS_ORDER_DETAIL = {"datedeb", "heure","duree","batiment","salle","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
-
-	public static final String[] CAL_FIELDS_ORDER_AVEC_PLACE_DETAIL = {"datedeb", "heure","duree","batiment","salle","place","epreuve", "codeepreuve", "libsession", "codeetape", "versionetape"};
-
-	
 	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
 	@Resource
@@ -91,195 +81,196 @@ public class CalendrierView extends VerticalLayout implements View {
 	private transient CalendrierController calendrierController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient SessionController sessionController;
 
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
-	 * Initialise la vue
+	 * Initialise la vue à chaque navigation.
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void beforeEnter(final BeforeEnterEvent event) {
+		removeAll();
+
+		final Etudiant etudiant = sessionController.getEtudiant();
+
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null &&
-			((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) || 
-				(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
-				(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())) ) {
-			
+		if (etudiant != null
+				&& ((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant())
+					|| (userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant())
+					|| (userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire()))) {
+
 			/* Style */
-			setMargin(true);
+			setPadding(true);
 			setSpacing(true);
 
-			//Si on n'a pas déjà essayer de récupérer le calendrier
-			if(!MainUI.getCurrent().getEtudiant().isCalendrierRecupere()){
+			//Si on n'a pas déjà essayé de récupérer le calendrier
+			if (!etudiant.isCalendrierRecupere()) {
 				etudiantController.recupererCalendrierExamens();
 			}
 
-
 			/* Titre */
 			HorizontalLayout titleLayout = new HorizontalLayout();
-			titleLayout.setWidth("100%");
-			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-			title.addStyleName(ValoTheme.LABEL_H1);
-			titleLayout.addComponent(title);
-			titleLayout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
-			//Test si on a des diplomes ou des etapes
-			if(MainUI.getCurrent().getEtudiant().getCalendrier()!=null && !MainUI.getCurrent().getEtudiant().getCalendrier().isEmpty()){
-				Button pdfButton = new Button();
-				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-				pdfButton.addStyleName("button-big-icon");
-				pdfButton.addStyleName("red-button-icon");
-				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
-				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-				if(PropertyUtils.isPushEnabled()){
-					MyFileDownloader fd = new MyFileDownloader(calendrierController.exportPdf());
-					fd.extend(pdfButton);
-				}else{
-					FileDownloader fd = new FileDownloader(calendrierController.exportPdf());
-					fd.setOverrideContentType(false);
-					fd.extend(pdfButton);
+			titleLayout.setWidthFull();
+			titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			H1 title = new H1(getTranslation(NAME + ".title"));
+			titleLayout.add(title);
+			titleLayout.expand(title);
+			//Test si on a des épreuves
+			if (etudiant.getCalendrier() != null && !etudiant.getCalendrier().isEmpty()) {
+				DownloadFile df = calendrierController.exportPdf();
+				if (df != null) {
+					Button pdfButton = new Button(VaadinIcon.FILE_TEXT_O.create());
+					pdfButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+					pdfButton.addClassName("button-big-icon");
+					pdfButton.addClassName("red-button-icon");
+					pdfButton.setTooltipText(getTranslation(NAME + ".btn.pdf.description"));
+					Anchor pdfAnchor = new Anchor();
+					pdfAnchor.setHref(DownloadHandler.fromInputStream(evt ->
+						new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
+					pdfAnchor.add(pdfButton);
+					titleLayout.add(pdfAnchor);
 				}
-				titleLayout.addComponent(pdfButton);
-				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}
-			addComponent(titleLayout);
-
+			add(titleLayout);
 
 			VerticalLayout globalLayout = new VerticalLayout();
-			globalLayout.setSizeFull();
+			globalLayout.setWidthFull();
+			globalLayout.setPadding(false);
 			globalLayout.setSpacing(true);
 
-
 			/* Message d'info */
-			if(applicationContext.getMessage(NAME+".message.info", null, getLocale()) != null){
-				Panel panelVue= new Panel();
-
-				HorizontalLayout vueLayout = new HorizontalLayout();
-				vueLayout.setMargin(true);
-				vueLayout.setSpacing(true);
-				vueLayout.setSizeFull();
-
-				Label vueLabel=new Label(applicationContext.getMessage(NAME+".message.info", null, getLocale()));
-				vueLabel.setContentMode(ContentMode.HTML);
-				vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
-				vueLayout.addComponent(vueLabel);
-				vueLayout.setExpandRatio(vueLabel, 1);
-
-				panelVue.setContent(vueLayout);
-				globalLayout.addComponent(panelVue);
+			String messageInfo = getTranslation(NAME + ".message.info");
+			if (StringUtils.hasText(messageInfo) && !messageInfo.equals(NAME + ".message.info")) {
+				Html infoLabel = new Html("<div>" + messageInfo + "</div>");
+				Div infoWrapper = new Div(infoLabel);
+				infoWrapper.addClassName(LumoUtility.FontSize.SMALL);
+				globalLayout.add(createPanel(null, infoWrapper));
 			}
-
 
 			/* Le Calendrier */
-			Panel panelCalendrier= new Panel(applicationContext.getMessage(NAME + ".calendrier.title", null, getLocale()));
-			panelCalendrier.setSizeFull();
-
+			Component calendrierContent;
 			// Si on a des données à afficher
-			if(MainUI.getCurrent().getEtudiant()!=null && MainUI.getCurrent().getEtudiant().getCalendrier()!=null && !MainUI.getCurrent().getEtudiant().getCalendrier().isEmpty()){
+			if (etudiant.getCalendrier() != null && !etudiant.getCalendrier().isEmpty()) {
 
-				BeanItemContainer<Examen> bic= new BeanItemContainer<>(Examen.class, MainUI.getCurrent().getEtudiant().getCalendrier());
-				Table calendrierTable = new Table(null, bic);
-				calendrierTable.setWidth("100%");
-				String[] colonnes_to_create = CAL_FIELDS;
-				if(configController.isAffDetailExamen()) {
-					colonnes_to_create = CAL_FIELDS_DETAIL;
+				Grid<Examen> calendrierGrid = new Grid<>();
+				calendrierGrid.setWidthFull();
+				calendrierGrid.setAllRowsVisible(true);
+				calendrierGrid.setSelectionMode(Grid.SelectionMode.NONE);
+				calendrierGrid.setColumnReorderingAllowed(true);
+
+				String[] colonnesToDisplay = CAL_FIELDS_ORDER;
+				if (configController.isAffDetailExamen()) {
+					colonnesToDisplay = CAL_FIELDS_ORDER_DETAIL;
 				}
-				if(configController.isAffNumPlaceExamen()){
-					colonnes_to_create = CAL_FIELDS_AVEC_PLACE;
-					if(configController.isAffDetailExamen()) {
-              	       colonnes_to_create = CAL_FIELDS_AVEC_PLACE_DETAIL;
+				if (configController.isAffNumPlaceExamen()) {
+					colonnesToDisplay = CAL_FIELDS_ORDER_AVEC_PLACE;
+					if (configController.isAffDetailExamen()) {
+						colonnesToDisplay = CAL_FIELDS_ORDER_AVEC_PLACE_DETAIL;
 					}
 				}
-				for (String fieldName : colonnes_to_create) {
-					calendrierTable.setColumnHeader(fieldName, applicationContext.getMessage(NAME+".table." + fieldName, null, getLocale()));
+				for (String fieldName : colonnesToDisplay) {
+					if ("batiment".equals(fieldName)) {
+						calendrierGrid.addComponentColumn(this::buildBatimentColumn)
+							.setHeader(getTranslation(NAME + ".table.batiment"))
+							.setFlexGrow(1);
+					} else if ("salle".equals(fieldName)) {
+						calendrierGrid.addComponentColumn(this::buildSalleColumn)
+							.setHeader(getTranslation(NAME + ".table.salle"))
+							.setFlexGrow(1);
+					} else {
+						calendrierGrid.addColumn(examen -> getExamenFieldValue(examen, fieldName))
+							.setHeader(getTranslation(NAME + ".table." + fieldName))
+							.setFlexGrow("epreuve".equals(fieldName) ? 3 : 1);
+					}
 				}
-				calendrierTable.addGeneratedColumn("batiment", new BatimentColumnGenerator());
-				calendrierTable.addGeneratedColumn("salle", new SalleColumnGenerator());
-				calendrierTable.setColumnHeader("batiment", applicationContext.getMessage(NAME+".table.batiment", null, getLocale()));
-				calendrierTable.setColumnHeader("salle", applicationContext.getMessage(NAME+".table.salle", null, getLocale()));
-				String[] colonnes_to_display = CAL_FIELDS_ORDER;
-				if(configController.isAffDetailExamen()) {
-                    colonnes_to_display = CAL_FIELDS_ORDER_DETAIL;
-				}
-				if(configController.isAffNumPlaceExamen()){
-					colonnes_to_display = CAL_FIELDS_ORDER_AVEC_PLACE;
-					if(configController.isAffDetailExamen()) {
-                        colonnes_to_display = CAL_FIELDS_ORDER_AVEC_PLACE_DETAIL;
-                	}
-				}
-				calendrierTable.setVisibleColumns((Object[]) colonnes_to_display);
-				calendrierTable.setColumnCollapsingAllowed(true);
-				calendrierTable.setColumnReorderingAllowed(true);
-				calendrierTable.setSelectable(false);
-				calendrierTable.setImmediate(true);
-				calendrierTable.setConverter("datedeb", new DateToStringConverter());
-				calendrierTable.setStyleName("noscrollabletable");
-				calendrierTable.setPageLength(calendrierTable.getItemIds().size() );
-
-				panelCalendrier.setContent(calendrierTable);
-			}else{
-				HorizontalLayout labelExamenLayout = new HorizontalLayout();
-				labelExamenLayout.setMargin(true);
-				labelExamenLayout.setSizeFull();
-				Label aucunExamen = new Label(applicationContext.getMessage(NAME + ".examen.aucun", null, getLocale()));
-				aucunExamen.setStyleName(ValoTheme.LABEL_COLORED);
-				aucunExamen.addStyleName(ValoTheme.LABEL_BOLD);
-				labelExamenLayout.addComponent(aucunExamen);
-				panelCalendrier.setContent(labelExamenLayout);
+				calendrierGrid.setItems(etudiant.getCalendrier());
+				calendrierContent = calendrierGrid;
+			} else {
+				Span aucunExamen = new Span(getTranslation(NAME + ".examen.aucun"));
+				aucunExamen.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.BOLD);
+				calendrierContent = aucunExamen;
 			}
-			globalLayout.addComponent(panelCalendrier);
+			globalLayout.add(createPanel(getTranslation(NAME + ".calendrier.title"), calendrierContent));
 
-			addComponent(globalLayout);
+			add(globalLayout);
+		}
+	}
+
+	private String getExamenFieldValue(Examen examen, String fieldName) {
+		switch (fieldName) {
+			case "datedeb":
+				return examen.getDatedeb() != null ? Utils.formatDateToString(examen.getDatedeb()) : "";
+			case "heure":
+				return examen.getHeure();
+			case "duree":
+				return examen.getDuree();
+			case "place":
+				return examen.getPlace();
+			case "epreuve":
+				return examen.getEpreuve();
+			case "codeepreuve":
+				return examen.getCodeepreuve();
+			case "libsession":
+				return examen.getLibsession();
+			case "codeetape":
+				return examen.getCodeetape();
+			case "versionetape":
+				return examen.getVersionetape();
+			default:
+				return "";
 		}
 	}
 
 	/**
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+	 * Colonne bâtiment avec la localisation en info-bulle (ancienne BatimentColumnGenerator).
 	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
+	private Component buildBatimentColumn(Examen ex) {
+		Span libLabel = new Span(ex.getBatiment() != null ? ex.getBatiment() : "");
+		if (StringUtils.hasText(ex.getLocalisation())) {
+			libLabel.getElement().setAttribute("title", ex.getLocalisation());
+		}
+		return libLabel;
 	}
 
-
-
-	/** Formats the position in a column containing Date objects. */
-	class BatimentColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<Examen> bid = (BeanItem<Examen>) item;
-			Examen ex = (Examen) bid.getBean();
-			Label libLabel = new Label();
-			libLabel.setValue(ex.getBatiment());
-			libLabel.setDescription(ex.getLocalisation());
-			return libLabel;
+	/**
+	 * Colonne salle avec le libellé de la salle en info-bulle (ancienne SalleColumnGenerator).
+	 */
+	private Component buildSalleColumn(Examen ex) {
+		Span libLabel = new Span(ex.getSalle() != null ? ex.getSalle() : "");
+		if (StringUtils.hasText(ex.getLibsalle())) {
+			libLabel.getElement().setAttribute("title", ex.getLibsalle());
 		}
+		return libLabel;
 	}
 
-	/** Formats the position in a column containing Date objects. */
-	class SalleColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<Examen> bid = (BeanItem<Examen>) item;
-			Examen ex = (Examen) bid.getBean();
-			Label libLabel = new Label();
-			libLabel.setValue(ex.getSalle());
-			libLabel.setDescription(ex.getLibsalle());
-			return libLabel;
+	/**
+	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
+	 */
+	private Div createPanel(String titre, Component content) {
+		Div panel = new Div();
+		panel.setWidthFull();
+		panel.getStyle()
+			.set("border", "1px solid var(--lumo-contrast-20pct)")
+			.set("border-radius", "var(--lumo-border-radius-m)")
+			.set("overflow", "hidden");
+		if (StringUtils.hasText(titre)) {
+			Div header = new Div(new Span(titre));
+			header.getStyle()
+				.set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+				.set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+				.set("background-color", "var(--lumo-contrast-5pct)")
+				.set("font-weight", "600");
+			panel.add(header);
 		}
+		Div body = new Div(content);
+		body.getStyle().set("padding", "var(--lumo-space-s)");
+		panel.add(body);
+		return panel;
 	}
 
 }

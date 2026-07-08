@@ -18,27 +18,19 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Container;
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
-import com.vaadin.v7.data.fieldgroup.FieldGroupFieldFactory;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.event.FieldEvents;
-import com.vaadin.v7.ui.AbstractTextField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.NativeSelect;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplication;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesApplicationValeurs;
@@ -46,36 +38,29 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Locale;
-
-
 
 /**
  * Fenêtre d'édition des parametre de l'application
- * 
+ *
  */
 @SuppressWarnings("serial")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class PreferencesApplicationWindow extends Window {
+public class PreferencesApplicationWindow extends Dialog {
 
 	public static final String NAME = "preferencesApplicationWindow";
-	public static final String[] CONF_APP_FIELDS_ORDER = {"prefId", "prefDesc", "valeur"};
-	public static final String[]  PAV_FIELD_ORDER = {"valeur"}; 
 
 	@Resource
-	private transient ApplicationContext applicationContext;
-	@Resource
 	private transient ConfigController configController;
-	private BeanItemContainer<PreferencesApplicationValeurs> pavContainer;
-	
+
 	/* Composants */
-	private BeanFieldGroup<PreferencesApplication> fieldGroup;
+	private final Binder<PreferencesApplication> binder = new Binder<>(PreferencesApplication.class);
+	private Grid<PreferencesApplicationValeurs> pavGrid;
 	private Button btnEnregistrer;
 	private Button btnAnnuler;
 
@@ -85,254 +70,188 @@ public class PreferencesApplicationWindow extends Window {
 	 */
 	public void init(PreferencesApplication prefApp) {
 		/* Style */
-		setModal(true);
 		setResizable(false);
-		setClosable(false);
+		setCloseOnEsc(false);
+		setCloseOnOutsideClick(false);
 		setWidth("50%");
 
-
-		/* Layout */
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		layout.setSpacing(true);
-		layout.setWidth("100%");
-		setContent(layout);
-
 		/* Titre */
-		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
+		setHeaderTitle(getTranslation(NAME + ".title"));
 
 		/* Formulaire */
-		fieldGroup = new BeanFieldGroup<>(PreferencesApplication.class);
-		fieldGroup.setItemDataSource(prefApp);
-
-
-
-		fieldGroup.setFieldFactory(new FieldGroupFieldFactory() {
-
-			@Override
-			@SuppressWarnings("rawtypes")
-			public <T extends Field> T createField(Class<?> dataType, Class<T> fieldType) {
-				if (fieldType == NativeSelect.class){
-					final NativeSelect field = new NativeSelect();
-					field.addItem("true");
-					field.addItem("false");
-					field.setNullSelectionAllowed(false);
-					field.setImmediate(true);
-					//field.setValue(centre.getTemSrv());
-					field.addValueChangeListener(new Property.ValueChangeListener() {
-						@Override
-						public void valueChange(Property.ValueChangeEvent event) {
-							field.setValue(event.getProperty().getValue());
-						}
-					});
-					return fieldType.cast(field);
-				}else{
-					final TextField field = new TextField();
-					field.setImmediate(true);
-					field.addTextChangeListener(new FieldEvents.TextChangeListener() {
-
-						@Override
-						public void textChange(FieldEvents.TextChangeEvent event) {
-							if(!field.isReadOnly()){
-								field.setValue(event.getText());
-							}
-						}
-					});
-					return fieldType.cast(field);
-				}
-
-
-			}
-		});
-
 		FormLayout formLayout = new FormLayout();
-		formLayout.setSpacing(true);
-		formLayout.setSizeUndefined();
-		formLayout.setWidth("100%");
-		for (String fieldName : CONF_APP_FIELDS_ORDER) {
-			String caption = applicationContext.getMessage(NAME+".confAppTable." + fieldName, null, getLocale());
-			//Si on est sur un parametre booleen
-			if(fieldName.equals("valeur") && prefApp.getType().equals(Utils.PARAM_TYP_BOOLEAN)){
-				//On forme le nativeSelect
-				Field<?> field = fieldGroup.buildAndBind(caption, fieldName, NativeSelect.class);
-				formLayout.addComponent(field);
-			}else{
-				//Si on est sur un parametre List
-				if(fieldName.equals("valeur") && prefApp.getType().equals(Utils.PARAM_TYP_LIST)){
+		formLayout.setWidthFull();
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
-					//On forme le modificateur de liste
-					VerticalLayout listlayout= new VerticalLayout();
-					listlayout.setWidth("100%");
-					HorizontalLayout nvl= new HorizontalLayout();
-					nvl.setWidth("100%");
-					//champ de saisie
-					final TextField listInputField = new TextField();
-					listInputField.setImmediate(true);
-					listInputField.setNullRepresentation("");
-					listInputField.setWidth("100%");
-					nvl.addComponent(listInputField);
-					//Bouton add
-					Button btnAddInput = new Button(applicationContext.getMessage(NAME+".list.addbtn", null, Locale.getDefault()));
-					btnAddInput.setIcon(FontAwesome.PLUS);
-					btnAddInput.addClickListener(e->addListValueToPrefApp( prefApp,listInputField));
-					nvl.addComponent(btnAddInput);
-					listlayout.addComponent(nvl);
-					nvl.setExpandRatio(listInputField, 1);
-					//bouton supprimer
-					Button boutonSupprimerPav = new Button(applicationContext.getMessage(NAME+".btnPavDelete", null, Locale.getDefault()));
-					boutonSupprimerPav.setEnabled(false);
-					boutonSupprimerPav.setIcon(FontAwesome.MINUS);
-					//affichage des pav
-					pavContainer = new BeanItemContainer<PreferencesApplicationValeurs>(PreferencesApplicationValeurs.class);
-					refreshPavContainer(prefApp);
-					Table pavTable = new Table(null, pavContainer);
-					pavTable.setWidth("100%");
-					pavTable.setHeight("200px");
-					pavTable.setVisibleColumns((Object[]) PAV_FIELD_ORDER);
-					pavTable.setColumnHeader("valeur", "Valeur");
-					pavTable.setSelectable(true);
-					pavTable.setImmediate(true);
-					pavTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
-						@Override
-						public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-							pavTable.sanitizeSelection();
-						}
-					});
-					pavTable.addValueChangeListener(new Property.ValueChangeListener() {
-						@Override
-						public void valueChange(Property.ValueChangeEvent event) {
-							boutonSupprimerPav.setEnabled(true);
-						}
+		TextField prefIdField = new TextField(getTranslation(NAME + ".confAppTable.prefId"));
+		prefIdField.setWidthFull();
+		prefIdField.setReadOnly(prefApp.getPrefId() != null);
+		binder.forField(prefIdField)
+			.withNullRepresentation("")
+			.bind(PreferencesApplication::getPrefId, PreferencesApplication::setPrefId);
+		formLayout.add(prefIdField);
 
-					});
-					boutonSupprimerPav.addClickListener(new Button.ClickListener() {
-						@Override
-						public void buttonClick(Button.ClickEvent event) {
-							if(pavTable.getValue()!=null &&  pavTable.getValue() instanceof PreferencesApplicationValeurs){
-								PreferencesApplicationValeurs pavChoisie =  ((PreferencesApplicationValeurs)pavTable.getValue());
-								supprimerPav(prefApp, pavChoisie);
-							}
-						}
+		TextField prefDescField = new TextField(getTranslation(NAME + ".confAppTable.prefDesc"));
+		prefDescField.setWidthFull();
+		prefDescField.setReadOnly(prefApp.getPrefDesc() != null);
+		binder.forField(prefDescField)
+			.withNullRepresentation("")
+			.bind(PreferencesApplication::getPrefDesc, PreferencesApplication::setPrefDesc);
+		formLayout.add(prefDescField);
 
-					});
-					listlayout.addComponent(pavTable);
-					listlayout.setComponentAlignment(pavTable, Alignment.MIDDLE_LEFT);
-					listlayout.addComponent(boutonSupprimerPav);
-
-					formLayout.addComponent(listlayout);
-
-
-				}else{
-					Field<?> field = fieldGroup.buildAndBind(caption, fieldName);
-					if (field instanceof AbstractTextField) {
-						((AbstractTextField) field).setNullRepresentation("");
-						field.setWidth("100%");
-					}
-					formLayout.addComponent(field);
-				}
-			}
+		//Si on est sur un parametre booleen
+		if (Utils.PARAM_TYP_BOOLEAN.equals(prefApp.getType())) {
+			Select<String> valeurField = new Select<>();
+			valeurField.setLabel(getTranslation(NAME + ".confAppTable.valeur"));
+			valeurField.setItems("true", "false");
+			valeurField.setEmptySelectionAllowed(false);
+			valeurField.setWidthFull();
+			binder.forField(valeurField)
+				.bind(PreferencesApplication::getValeur, PreferencesApplication::setValeur);
+			formLayout.add(valeurField);
+		} else if (Utils.PARAM_TYP_LIST.equals(prefApp.getType())) {
+			//Si on est sur un parametre List : on forme le modificateur de liste
+			formLayout.add(buildListEditor(prefApp));
+		} else {
+			TextField valeurField = new TextField(getTranslation(NAME + ".confAppTable.valeur"));
+			valeurField.setWidthFull();
+			binder.forField(valeurField)
+				.withNullRepresentation("")
+				.bind(PreferencesApplication::getValeur, PreferencesApplication::setValeur);
+			formLayout.add(valeurField);
 		}
 
-		fieldGroup.getField("prefId").setReadOnly(prefApp.getPrefId() != null);
-		fieldGroup.getField("prefDesc").setReadOnly(prefApp.getPrefDesc() != null);
+		binder.readBean(prefApp);
 
-		layout.addComponent(formLayout);
+		add(formLayout);
 
 		/* Ajoute les boutons */
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
-		buttonsLayout.setSpacing(true);
-		buttonsLayout.setMargin(true);
-		layout.addComponent(buttonsLayout);
-
-		btnAnnuler = new Button(applicationContext.getMessage(NAME+".btnAnnuler", null, getLocale()), FontAwesome.TIMES);
+		btnAnnuler = new Button(getTranslation(NAME + ".btnAnnuler"), VaadinIcon.CLOSE.create());
+		btnAnnuler.addClassName("admin-button");
 		btnAnnuler.addClickListener(e -> close());
-		buttonsLayout.addComponent(btnAnnuler);
-		btnAnnuler.addStyleName("admin-button");
-		buttonsLayout.setComponentAlignment(btnAnnuler, Alignment.MIDDLE_LEFT);
+		getFooter().add(btnAnnuler);
 
-		btnEnregistrer = new Button(applicationContext.getMessage(NAME+".btnSave", null, getLocale()), FontAwesome.SAVE);
-		btnEnregistrer.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnEnregistrer.addStyleName("admin-button");
+		btnEnregistrer = new Button(getTranslation(NAME + ".btnSave"), VaadinIcon.CHECK.create());
+		btnEnregistrer.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		btnEnregistrer.addClassName("admin-button");
 		btnEnregistrer.addClickListener(e -> {
 			try {
 				/* Valide la saisie */
-				fieldGroup.commit();
+				binder.writeBean(prefApp);
 				/* Enregistre la conf saisie */
 				configController.saveAppParameter(prefApp);
 				/* Ferme la fenêtre */
 				close();
-			} catch (FieldGroup.CommitException ce) {
+			} catch (ValidationException ve) {
 			}
 		});
-		buttonsLayout.addComponent(btnEnregistrer);
-		buttonsLayout.setComponentAlignment(btnEnregistrer, Alignment.MIDDLE_RIGHT);
-
-		/* Centre la fenêtre */
-		center();
+		getFooter().add(btnEnregistrer);
 	}
 
-	private void refreshPavContainer(PreferencesApplication prefApp) {
-		pavContainer.removeAllItems();
-		if(prefApp.getPreferencesApplicationValeurs()!=null && !prefApp.getPreferencesApplicationValeurs().isEmpty()){
-			for(PreferencesApplicationValeurs pav : prefApp.getPreferencesApplicationValeurs()){
-				pavContainer.addBean(pav);
-			}
+	/**
+	 * @param prefApp
+	 * @return l'éditeur de liste de valeurs d'un parametre de type LIST
+	 */
+	private VerticalLayout buildListEditor(PreferencesApplication prefApp) {
+		VerticalLayout listlayout = new VerticalLayout();
+		listlayout.setWidthFull();
+		listlayout.setPadding(false);
+		listlayout.setSpacing(true);
+
+		HorizontalLayout nvl = new HorizontalLayout();
+		nvl.setWidthFull();
+		//champ de saisie
+		final TextField listInputField = new TextField();
+		listInputField.setWidthFull();
+		nvl.add(listInputField);
+		//Bouton add
+		Button btnAddInput = new Button(getTranslation(NAME + ".list.addbtn"), VaadinIcon.PLUS.create());
+		btnAddInput.addClickListener(e -> addListValueToPrefApp(prefApp, listInputField));
+		nvl.add(btnAddInput);
+		nvl.setFlexGrow(1, listInputField);
+		listlayout.add(nvl);
+
+		//bouton supprimer
+		Button boutonSupprimerPav = new Button(getTranslation(NAME + ".btnPavDelete"), VaadinIcon.MINUS.create());
+		boutonSupprimerPav.setEnabled(false);
+
+		//affichage des pav
+		pavGrid = new Grid<>();
+		pavGrid.setWidthFull();
+		pavGrid.setHeight("200px");
+		pavGrid.addColumn(PreferencesApplicationValeurs::getValeur)
+			.setHeader(getTranslation(NAME + ".confAppTable.valeur"));
+		pavGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+		pavGrid.addSelectionListener(e -> boutonSupprimerPav.setEnabled(e.getFirstSelectedItem().isPresent()));
+		refreshPavGrid(prefApp);
+
+		boutonSupprimerPav.addClickListener(e ->
+			pavGrid.getSelectedItems().stream().findFirst()
+				.ifPresent(pavChoisie -> supprimerPav(prefApp, pavChoisie)));
+
+		listlayout.add(pavGrid);
+		listlayout.add(boutonSupprimerPav);
+		return listlayout;
+	}
+
+	private void refreshPavGrid(PreferencesApplication prefApp) {
+		if (prefApp.getPreferencesApplicationValeurs() != null && !prefApp.getPreferencesApplicationValeurs().isEmpty()) {
+			pavGrid.setItems(prefApp.getPreferencesApplicationValeurs());
+		} else {
+			pavGrid.setItems(Collections.emptyList());
 		}
-		
 	}
 
-	/* vajout d'un element */
-	private void addListValueToPrefApp(PreferencesApplication prefApp,TextField tf){
+	/* ajout d'un element */
+	private void addListValueToPrefApp(PreferencesApplication prefApp, TextField tf) {
 		boolean ajouter = true;
 		String value = tf.getValue();
-		if(prefApp.getPreferencesApplicationValeurs()==null){
-			prefApp.setPreferencesApplicationValeurs(new LinkedList<PreferencesApplicationValeurs> ());
-		}else{
-			for(PreferencesApplicationValeurs p : prefApp.getPreferencesApplicationValeurs()){
-				if(p.getValeur()!=null && p.getValeur().equals(value)){
+		if (prefApp.getPreferencesApplicationValeurs() == null) {
+			prefApp.setPreferencesApplicationValeurs(new LinkedList<PreferencesApplicationValeurs>());
+		} else {
+			for (PreferencesApplicationValeurs p : prefApp.getPreferencesApplicationValeurs()) {
+				if (p.getValeur() != null && p.getValeur().equals(value)) {
 					ajouter = false;
 				}
 			}
 		}
-		tf.setValue(null);
-		if(ajouter){
+		tf.clear();
+		if (ajouter) {
 			PreferencesApplicationValeurs pav = new PreferencesApplicationValeurs();
 			pav.setValeur(value);
 			pav.setPreferencesApplication(prefApp);
 			prefApp.getPreferencesApplicationValeurs().add(pav);
-			refreshPavContainer(prefApp);
-		}else{
-			Notification.show(applicationContext.getMessage(NAME+".notification.valeur.presente",null, getLocale()));
+			refreshPavGrid(prefApp);
+		} else {
+			Notification.show(getTranslation(NAME + ".notification.valeur.presente"));
 		}
 	}
 
-
-	private void supprimerPav( PreferencesApplication prefApp, PreferencesApplicationValeurs pavChoisie) {
-		if(prefApp!=null && prefApp.getPreferencesApplicationValeurs()!=null && pavChoisie!=null && StringUtils.hasText(pavChoisie.getValeur())){
-			if(prefApp.getPreferencesApplicationValeurs().size()==1){
+	private void supprimerPav(PreferencesApplication prefApp, PreferencesApplicationValeurs pavChoisie) {
+		if (prefApp != null && prefApp.getPreferencesApplicationValeurs() != null && pavChoisie != null && StringUtils.hasText(pavChoisie.getValeur())) {
+			if (prefApp.getPreferencesApplicationValeurs().size() == 1) {
 				//On vérifie que c'est bien l'élément à supprimer
 				PreferencesApplicationValeurs p = prefApp.getPreferencesApplicationValeurs().get(0);
-				if(p.getValeur()!=null && p.getValeur().equals(pavChoisie.getValeur())){
+				if (p.getValeur() != null && p.getValeur().equals(pavChoisie.getValeur())) {
 					prefApp.setPreferencesApplicationValeurs(null);
 				}
-			}else{
-				int i=0;
+			} else {
+				int i = 0;
 				int rangToDelete = 0;
 				boolean pavToDeleted = false;
-				for(PreferencesApplicationValeurs p : prefApp.getPreferencesApplicationValeurs()){
+				for (PreferencesApplicationValeurs p : prefApp.getPreferencesApplicationValeurs()) {
 					//On test sur la valur car il se peut que l'objet n'ai pas encore d'id
-					if(!pavToDeleted && p.getValeur()!=null && p.getValeur().equals(pavChoisie.getValeur())){
+					if (!pavToDeleted && p.getValeur() != null && p.getValeur().equals(pavChoisie.getValeur())) {
 						rangToDelete = i;
 						pavToDeleted = true;
 					}
 					i++;
 				}
-				if(pavToDeleted){
+				if (pavToDeleted) {
 					prefApp.getPreferencesApplicationValeurs().remove(rangToDelete);
 				}
 			}
 		}
-		refreshPavContainer(prefApp);
+		refreshPavGrid(prefApp);
 	}
 }

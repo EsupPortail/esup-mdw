@@ -18,169 +18,189 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.InfosAnnuelles;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Anonymat;
-import jakarta.annotation.PostConstruct;
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import jakarta.annotation.Resource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 /**
- * Page d'accueil
+ * Page des informations annuelles
  */
-@Component @Scope("prototype")
-@SpringView(name = InformationsAnnuellesView.NAME)
-@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
-public class InformationsAnnuellesView extends VerticalLayout implements View {
+@SuppressWarnings("serial")
+@Route(value = InformationsAnnuellesView.NAME, layout = MainLayout.class)
+@Secured(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE)
+public class InformationsAnnuellesView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
 
 	public static final String NAME = "informationsAnnuellesView";
+	public static final String ROUTE = NAME;
 
 	/* Injections */
 	@Resource
-	private transient ApplicationContext applicationContext;
-	@Resource
 	private transient UserController userController;
 	@Resource
-	private transient EtudiantController etudiantController;
-	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient SessionController sessionController;
 
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
-	 * Initialise la vue
+	 * Initialise la vue à chaque navigation.
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void beforeEnter(final BeforeEnterEvent event) {
+		removeAll();
+
+		final Etudiant etudiant = sessionController.getEtudiant();
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null &&
-			(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant()) || 
-				(userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire()))){
+		if (etudiant != null
+				&& (userController.isEtudiant()
+					|| (userController.isEnseignant() && configController.isAffInfosAnnuellesEnseignant())
+					|| (userController.isGestionnaire() && configController.isAffInfosAnnuellesGestionnaire()))) {
 			/* Style */
-			setMargin(true);
+			setPadding(true);
 			setSpacing(true);
 
 			/* Titre */
-			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-			title.addStyleName(ValoTheme.LABEL_H1);
-			addComponent(title);
+			add(new H1(getTranslation(NAME + ".title")));
 
+			//Layout avec les blocs d'informations annuelles (responsive : les blocs passent à la ligne)
+			Div globalLayout = new Div();
+			globalLayout.setWidthFull();
+			globalLayout.getStyle()
+				.set("display", "flex")
+				.set("flex-wrap", "wrap")
+				.set("gap", "var(--lumo-space-m)");
 
-			HorizontalLayout globalLayout = new HorizontalLayout();
-			globalLayout.setSizeFull();
-			globalLayout.setSpacing(true);
-
-			for(InfosAnnuelles infos : MainUI.getCurrent().getEtudiant().getInfosAnnuelles()) {
-				Panel panelInfos= new Panel(applicationContext.getMessage(NAME+".infos.title", null, getLocale())+" "+infos.getLibelle());
-
+			for (InfosAnnuelles infos : etudiant.getInfosAnnuelles()) {
 				FormLayout formInfosLayout = new FormLayout();
-				formInfosLayout.setSpacing(true);
-				formInfosLayout.setMargin(true);
+				formInfosLayout.setWidthFull();
+				formInfosLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
 				//Numéro Anonymat visible que si l'utilisateur est étudiant
-				List<Anonymat> lano = null;
-				if(userController.isEtudiant()){
-					lano = infos.getNumerosAnonymat();
-					if(lano!=null) {
+				if (userController.isEtudiant()) {
+					List<Anonymat> lano = infos.getNumerosAnonymat();
+					if (lano != null) {
 						//Si l'étudiant n'a qu'un seul numéro d'anonymat
-						if(lano.size()==1){
-							String captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymat.title", null, getLocale());
-							TextField fieldNumAnonymat = new TextField(captionNumAnonymat, infos.getNumerosAnonymat().get(0).getCod_etu_ano());
-							formatTextField(fieldNumAnonymat);
-							fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-							fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-							formInfosLayout.addComponent(fieldNumAnonymat);
+						if (lano.size() == 1) {
+							addFormValue(formInfosLayout, getTranslation(NAME + ".numanonymat.title"),
+								lano.get(0).getCod_etu_ano(), getTranslation(NAME + ".numanonymat.description"));
 						}
 						//Si l'étudiant a plusieurs numéros d'anonymat
-						if(lano.size()>1){
-							int i=0;
-							for(Anonymat ano : lano){
+						if (lano.size() > 1) {
+							int i = 0;
+							for (Anonymat ano : lano) {
 								String captionNumAnonymat = "";
-								if(i==0){
-									//Pour le premier numéro affiché on affiche le libellé du champ
-									captionNumAnonymat = applicationContext.getMessage(NAME+".numanonymats.title", null, getLocale());
+								String description = null;
+								if (i == 0) {
+									//Pour le premier numéro affiché on affiche le libellé du champ et l'info bulle
+									captionNumAnonymat = getTranslation(NAME + ".numanonymats.title");
+									description = getTranslation(NAME + ".numanonymat.description");
 								}
-								TextField fieldNumAnonymat = new TextField(captionNumAnonymat, ano.getCod_etu_ano()+ " ("+ano.getLib_man()+")");
-								formatTextField(fieldNumAnonymat);
-								if(i==0){
-									//Pour le premier numéro affiché on affiche l'info bulle
-									fieldNumAnonymat.setIcon(FontAwesome.INFO_CIRCLE);
-									fieldNumAnonymat.setDescription(applicationContext.getMessage(NAME+".numanonymat.description", null, getLocale()));
-								}
-								formInfosLayout.addComponent(fieldNumAnonymat);
+								addFormValue(formInfosLayout, captionNumAnonymat,
+									ano.getCod_etu_ano() + " (" + ano.getLib_man() + ")", description);
 								i++;
 							}
 						}
 					}
 				}
 
-				if(userController.isEtudiant() || 
-					(userController.isEnseignant() && configController.isAffBoursierEnseignant()) || 
-					(userController.isGestionnaire() && configController.isAffBoursierGestionnaire())) {
-					String captionBousier = applicationContext.getMessage(NAME+".boursier.title", null, getLocale());
-					TextField fieldNumBoursier = new TextField(captionBousier, infos.isBoursier()  ? applicationContext.getMessage(NAME+".boursier.oui", null, getLocale()) : applicationContext.getMessage(NAME+".boursier.non", null, getLocale()));
-					formatTextField(fieldNumBoursier);
-					formInfosLayout.addComponent(fieldNumBoursier);
+				if (userController.isEtudiant()
+						|| (userController.isEnseignant() && configController.isAffBoursierEnseignant())
+						|| (userController.isGestionnaire() && configController.isAffBoursierGestionnaire())) {
+					addFormValue(formInfosLayout, getTranslation(NAME + ".boursier.title"),
+						infos.isBoursier() ? getTranslation(NAME + ".boursier.oui") : getTranslation(NAME + ".boursier.non"), null);
 				}
-				if(userController.isEtudiant() || 
-					(userController.isEnseignant() && configController.isAffSalarieEnseignant()) || 
-					(userController.isGestionnaire() && configController.isAffSalarieGestionnaire())) {
-					String captionSalarie = applicationContext.getMessage(NAME+".salarie.title", null, getLocale());
-					TextField fieldSalarie = new TextField(captionSalarie, infos.isTemSalarie() == true ? applicationContext.getMessage(NAME+".salarie.oui", null, getLocale()) : applicationContext.getMessage(NAME+".salarie.non", null, getLocale()));
-					formatTextField(fieldSalarie);
-					formInfosLayout.addComponent(fieldSalarie);
+				if (userController.isEtudiant()
+						|| (userController.isEnseignant() && configController.isAffSalarieEnseignant())
+						|| (userController.isGestionnaire() && configController.isAffSalarieGestionnaire())) {
+					addFormValue(formInfosLayout, getTranslation(NAME + ".salarie.title"),
+						infos.isTemSalarie() ? getTranslation(NAME + ".salarie.oui") : getTranslation(NAME + ".salarie.non"), null);
 				}
-				if(userController.isEtudiant() || 
-					(userController.isEnseignant() && configController.isAffAmenagementEnseignant()) ||
-					(userController.isGestionnaire() && configController.isAffAmenagementGestionnaire())) {
-					String captionAmenagementEtude = applicationContext.getMessage(NAME+".amenagementetude.title", null, getLocale());
-					TextField fieldAmenagementEtude = new TextField(captionAmenagementEtude, infos.isTemAmenagementEtude()==true ? applicationContext.getMessage(NAME+".amenagementetude.oui", null, getLocale()) : applicationContext.getMessage(NAME+".amenagementetude.non", null, getLocale()));
-					formatTextField(fieldAmenagementEtude);
-					formInfosLayout.addComponent(fieldAmenagementEtude);
+				if (userController.isEtudiant()
+						|| (userController.isEnseignant() && configController.isAffAmenagementEnseignant())
+						|| (userController.isGestionnaire() && configController.isAffAmenagementGestionnaire())) {
+					addFormValue(formInfosLayout, getTranslation(NAME + ".amenagementetude.title"),
+						infos.isTemAmenagementEtude() ? getTranslation(NAME + ".amenagementetude.oui") : getTranslation(NAME + ".amenagementetude.non"), null);
 				}
 
-
-				panelInfos.setContent(formInfosLayout);
-				globalLayout.addComponent(panelInfos);
+				globalLayout.add(createPanel(getTranslation(NAME + ".infos.title") + " " + infos.getLibelle(), formInfosLayout));
 			}
-			addComponent(globalLayout);
+			add(globalLayout);
 		}
-
-	}
-
-	private void formatTextField(TextField tf){
-		tf.setEnabled(false);
-		tf.setSizeFull();
-		tf.setNullRepresentation("");
-		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
 	}
 
 	/**
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+	 * Ajoute un couple libellé/valeur (valeur en gras) au formulaire,
+	 * avec éventuellement une info-bulle.
 	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
+	private void addFormValue(FormLayout formLayout, String caption, String value, String description) {
+		Span valueSpan = new Span(StringUtils.hasText(value) ? value : "");
+		valueSpan.addClassName(LumoUtility.FontWeight.BOLD);
+		if (StringUtils.hasText(description)) {
+			HorizontalLayout valueLayout = new HorizontalLayout();
+			valueLayout.setSpacing(true);
+			valueLayout.setPadding(false);
+			valueLayout.add(valueSpan);
+			Icon infoIcon = VaadinIcon.INFO_CIRCLE.create();
+			infoIcon.setSize("var(--lumo-icon-size-s)");
+			infoIcon.getElement().setAttribute("title", description);
+			valueLayout.add(infoIcon);
+			formLayout.addFormItem(valueLayout, caption != null ? caption : "");
+		} else {
+			formLayout.addFormItem(valueSpan, caption != null ? caption : "");
+		}
+	}
+
+	/**
+	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
+	 */
+	private Div createPanel(String titre, Component content) {
+		Div panel = new Div();
+		panel.getStyle()
+			.set("border", "1px solid var(--lumo-contrast-20pct)")
+			.set("border-radius", "var(--lumo-border-radius-m)")
+			.set("overflow", "hidden")
+			.set("flex", "1 1 20rem");
+		if (StringUtils.hasText(titre)) {
+			Div header = new Div(new Span(titre));
+			header.getStyle()
+				.set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+				.set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+				.set("background-color", "var(--lumo-contrast-5pct)")
+				.set("font-weight", "600");
+			panel.add(header);
+		}
+		Div body = new Div(content);
+		body.getStyle().set("padding", "var(--lumo-space-m)");
+		panel.add(body);
+		return panel;
 	}
 
 }

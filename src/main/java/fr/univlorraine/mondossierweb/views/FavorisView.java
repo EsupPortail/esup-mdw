@@ -18,20 +18,17 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
 import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController;
@@ -44,9 +41,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.security.access.annotation.Secured;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -54,17 +49,16 @@ import java.util.List;
 /**
  * Favoris
  */
-@Component
-@Scope("prototype")
-@SpringView(name = FavorisView.NAME)
+@SuppressWarnings("serial")
+@Route(value = FavorisView.NAME, layout = MainLayout.class)
+@Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
 @Slf4j
-public class FavorisView extends VerticalLayout implements View {
+public class FavorisView extends VerticalLayout implements BeforeEnterObserver {
+
 	public static final String NAME = "favorisView";
-	public static final String[] FAV_FIELDS_ORDER = {"Type","id", "Libelle", "Actions"};
+	public static final String ROUTE = NAME;
 
 	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
 	@Resource
@@ -75,19 +69,16 @@ public class FavorisView extends VerticalLayout implements View {
 	private transient RechercheController rechercheController;
 	@Resource
 	private transient ConfigController configController;
-	private RechercheControllerThread rct;
 
 	private List<String> liste_types_inscrits;
 
 	private List<String> liste_type_arbo;
 
-	private Table favorisTable;
+	private Grid<Favoris> favorisGrid;
 
 	private List<Favoris> lfav;
 
-	private BeanItemContainer<Favoris> bic;
-
-	private HorizontalLayout labelAucunFavoriLayout ;
+	private HorizontalLayout labelAucunFavoriLayout;
 
 	/**
 	 * Initialise la vue
@@ -95,234 +86,126 @@ public class FavorisView extends VerticalLayout implements View {
 	@PostConstruct
 	public void init() {
 
-
 		//On vérifie le droit d'accéder à la vue
-		if(configController.isApplicationActive() && UI.getCurrent() instanceof MainUI && userController.isEnseignant() ){
-			removeAllComponents();
+		if (configController.isApplicationActive() && userController.isEnseignant()) {
+			removeAll();
 			/* Style */
-			setMargin(true);
+			setPadding(true);
 			setSpacing(true);
 			setSizeFull();
 
-			liste_types_inscrits= new LinkedList<String>();
+			liste_types_inscrits = new LinkedList<>();
 			liste_types_inscrits.add(Utils.ELP);
 			liste_types_inscrits.add(Utils.VET);
 
-			liste_type_arbo= new LinkedList<String>();
+			liste_type_arbo = new LinkedList<>();
 			liste_type_arbo.add(Utils.CMP);
 			liste_type_arbo.add(Utils.VET);
 
 			lfav = favorisController.getFavoris();
 
 			VerticalLayout globalLayout = new VerticalLayout();
+			globalLayout.setPadding(false);
 			globalLayout.setSizeFull();
 
-			if(lfav!=null && !lfav.isEmpty()){
-				bic = new BeanItemContainer<>(Favoris.class,lfav);
-				bic.addNestedContainerProperty("id.typfav");
-				bic.addNestedContainerProperty("id.idfav");
-				favorisTable = new Table(null, bic);
-				//favorisTable.setWidth("100%");
-				favorisTable.setSizeFull();
-				favorisTable.setStyleName("scrollabletable");
+			if (lfav != null && !lfav.isEmpty()) {
+				favorisGrid = new Grid<>();
+				favorisGrid.setSizeFull();
+				favorisGrid.addClassName("scrollabletable");
 
-				favorisTable.addGeneratedColumn("Type", new DisplayTypeColumnGenerator());
-				favorisTable.setColumnHeader("Type", applicationContext.getMessage(NAME+".table.id.typfav", null, getLocale()));
+				favorisGrid.addColumn(fav -> rechercheArborescenteController.getTypeObj(fav.getId().getTypfav(), fav.getId().getIdfav()))
+					.setHeader(getTranslation(NAME + ".table.id.typfav"))
+					.setFlexGrow(1);
+				favorisGrid.addColumn(fav -> fav.getId().getIdfav())
+					.setHeader(getTranslation(NAME + ".table.id.idfav"))
+					.setFlexGrow(1);
+				favorisGrid.addColumn(fav -> favorisController.getLibObjFavori(fav.getId().getTypfav(), fav.getId().getIdfav()))
+					.setFlexGrow(3);
+				favorisGrid.addComponentColumn(this::createActionsColumn)
+					.setFlexGrow(2);
 
-				favorisTable.addGeneratedColumn("id", new DisplayIdColumnGenerator());
-				favorisTable.setColumnHeader("id", applicationContext.getMessage(NAME+".table.id.idfav", null, getLocale()));
-
-				favorisTable.addGeneratedColumn("Libelle", new MyLibelleColumnGenerator());
-				favorisTable.addGeneratedColumn("Actions", new MyActionsColumnGenerator());
-
-				favorisTable.setVisibleColumns((Object[]) FAV_FIELDS_ORDER);
-				favorisTable.setColumnCollapsingAllowed(true);
-				favorisTable.setColumnReorderingAllowed(true);
-				favorisTable.setSelectable(true);
-				favorisTable.setImmediate(true);
-				globalLayout.addComponent(favorisTable);
-				globalLayout.setExpandRatio(favorisTable, 1);
+				favorisGrid.setItems(lfav);
+				globalLayout.add(favorisGrid);
+				globalLayout.setFlexGrow(1, favorisGrid);
 			}
 
 			labelAucunFavoriLayout = new HorizontalLayout();
-			labelAucunFavoriLayout.setMargin(true);
+			labelAucunFavoriLayout.setPadding(true);
 			labelAucunFavoriLayout.setSizeFull();
-			Label aucunFavoris = new Label(applicationContext.getMessage(NAME + ".favoris.aucun", null, getLocale()));
-			aucunFavoris.setStyleName(ValoTheme.LABEL_COLORED);
-			aucunFavoris.addStyleName(ValoTheme.LABEL_BOLD);
-			labelAucunFavoriLayout.addComponent(aucunFavoris);
-			labelAucunFavoriLayout.setVisible(false);
-			globalLayout.addComponent(labelAucunFavoriLayout);
+			Span aucunFavoris = new Span(getTranslation(NAME + ".favoris.aucun"));
+			aucunFavoris.addClassName("font-bold");
+			labelAucunFavoriLayout.add(aucunFavoris);
+			labelAucunFavoriLayout.setVisible(lfav == null || lfav.isEmpty());
+			globalLayout.add(labelAucunFavoriLayout);
 
-			if(lfav==null || lfav.isEmpty()){
+			add(globalLayout);
+		}
+	}
+
+	@Override
+	public void beforeEnter(final BeforeEnterEvent event) {
+		if (!configController.isApplicationActive() || !configController.isPartieEnseignantActive()) {
+			event.forwardTo(AccesBloqueView.class);
+		}
+	}
+
+	private HorizontalLayout createActionsColumn(final Favoris fav) {
+		final String typeObj = fav.getId().getTypfav();
+		final String idObj = fav.getId().getIdfav();
+
+		HorizontalLayout boutonActionLayout = new HorizontalLayout();
+		boutonActionLayout.setSpacing(false);
+
+		Button btnfav = new Button(VaadinIcon.TRASH.create());
+		btnfav.addThemeVariants(ButtonVariant.LUMO_ERROR);
+		btnfav.addClassName("deletefavbutton");
+		btnfav.setTooltipText(getTranslation(NAME + ".suppressionfavori"));
+		//Gestion du clic sur le bouton de suppression du favori
+		btnfav.addClickListener(event -> {
+			FavorisPK fpk = new FavorisPK();
+			fpk.setIdfav(idObj);
+			fpk.setLogin(userController.getCurrentUserName());
+			fpk.setTypfav(typeObj);
+			favorisController.removeFavori(fpk);
+			lfav.remove(fav);
+			favorisGrid.setItems(lfav);
+			if (lfav.isEmpty()) {
+				favorisGrid.setVisible(false);
 				labelAucunFavoriLayout.setVisible(true);
 			}
+		});
+		boutonActionLayout.add(btnfav);
 
-			addComponent(globalLayout);
+		// Si on peut accéder à l'arborescence depuis le favori
+		if (typeObj != null && liste_type_arbo != null && liste_type_arbo.contains(typeObj)) {
+			Button btnArbo = new Button(VaadinIcon.SITEMAP.create());
+			btnArbo.setTooltipText(getTranslation(NAME + ".accesarborescence"));
+			btnArbo.addClickListener(e -> rechercheController.accessToRechercheArborescente(idObj, typeObj));
+			boutonActionLayout.add(btnArbo);
 		}
-	}
-
-	/**
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		//log.debug("ENTER FAVORIS VIEW");
-	}
-
-	class DisplayIdColumnGenerator implements Table.ColumnGenerator {
-
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			String idObj = (String)item.getItemProperty("id.idfav").getValue();
-			//On converti le type pour un affichage lisible
-			return idObj;
-		}
-	}
-
-	class DisplayTypeColumnGenerator implements Table.ColumnGenerator {
-
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			String typeObj = (String)item.getItemProperty("id.typfav").getValue();
-			String idObj = (String)item.getItemProperty("id.idfav").getValue();
-			return rechercheArborescenteController.getTypeObj(typeObj,idObj);
-		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class MyActionsColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			String typeObj = (String)item.getItemProperty("id.typfav").getValue();
-			String idObj = (String)item.getItemProperty("id.idfav").getValue();
-
-			HorizontalLayout boutonActionLayout = new HorizontalLayout();
-
-			Button btnfav=new Button();
-			btnfav.setIcon(FontAwesome.TRASH_O);
-			btnfav.setStyleName(ValoTheme.BUTTON_DANGER);
-			btnfav.addStyleName("deletefavbutton");
-			btnfav.addStyleName("left-action-button");
-			btnfav.setDescription("Supprimer des favoris");
-			//Gestion du clic sur le bouton de suppression du favori
-			btnfav.addClickListener(new Button.ClickListener() {
-				@Override
-				public void buttonClick(Button.ClickEvent event) {
-					FavorisPK fpk = new FavorisPK();
-					fpk.setIdfav(idObj);
-					fpk.setLogin(userController.getCurrentUserName());
-					fpk.setTypfav(typeObj);
-					favorisController.removeFavori(fpk);
-					//favorisTable.removeItem(itemId)
-					bic.removeItem(itemId);
-					favorisTable.sanitizeSelection();
-					favorisTable.setPageLength(favorisTable.getItemIds().size() );
-					if(favorisTable.getItemIds().isEmpty()){
-						favorisTable.setVisible(false);
-						labelAucunFavoriLayout.setVisible(true);
-					}
+		// Si on peut accéder à la liste des inscrits depuis le favori
+		if (typeObj != null && liste_types_inscrits != null && liste_types_inscrits.contains(typeObj)) {
+			Button btnListeInscrits = new Button(VaadinIcon.USERS.create());
+			btnListeInscrits.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+			btnListeInscrits.setTooltipText(getTranslation(NAME + ".acceslisteinscrits"));
+			btnListeInscrits.addClickListener(e -> {
+				//Si on doit afficher une fenêtre de loading pendant l'exécution
+				if (PropertyUtils.isShowLoadingIndicator()) {
+					//affichage de la pop-up de loading
+					MainLayout.getCurrent().ifPresent(MainLayout::startBusyIndicator);
+					final UI ui = UI.getCurrent();
+					//Execution de la méthode en parallèle dans un thread
+					new Thread(() -> {
+						ui.access(() -> rechercheController.accessToDetail(idObj, typeObj, null));
+						ui.access(() -> MainLayout.getCurrent().ifPresent(MainLayout::stopBusyIndicator));
+					}).start();
+				} else {
+					//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
+					rechercheController.accessToDetail(idObj, typeObj, null);
 				}
 			});
-			boutonActionLayout.addComponent(btnfav);
-
-			Button btnArbo = null;
-			// Si on peut accéder à l'arborescence depuis le favori
-			if(typeObj!=null && liste_type_arbo!=null && liste_type_arbo.contains(typeObj)){
-				btnArbo = new Button();
-				btnArbo.setIcon(FontAwesome.SITEMAP);
-				btnArbo.setDescription(applicationContext.getMessage(NAME+".accesarborescence", null, getLocale()));
-				btnArbo.addClickListener(e->{
-					rechercheController.accessToRechercheArborescente(idObj,typeObj);
-				});
-				boutonActionLayout.addComponent(btnArbo);
-			}
-			// Si on peut accéder à la liste des inscrits depuis le favori
-			if(typeObj!=null && liste_types_inscrits!=null && liste_types_inscrits.contains(typeObj)){
-				if (btnArbo != null) {
-					btnArbo.addStyleName("middle-action-button");
-				}
-				Button btnListeInscrits=new Button();
-				btnListeInscrits.setIcon(FontAwesome.USERS);
-				btnListeInscrits.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-				btnListeInscrits.addStyleName("right-action-button");
-				btnListeInscrits.setDescription(applicationContext.getMessage(NAME+".acceslisteinscrits", null, getLocale()));
-				btnListeInscrits.addClickListener(e->{
-
-					//Si on doit afficher une fenêtre de loading pendant l'exécution
-					if(PropertyUtils.isPushEnabled() && PropertyUtils.isShowLoadingIndicator()){
-						//affichage de la pop-up de loading
-						MainUI.getCurrent().startBusyIndicator();
-						MainUI.getCurrent().push();
-
-						//Execution de la méthode en parallèle dans un thread
-						rct = new RechercheControllerThread(MainUI.getCurrent(),rechercheController,idObj,typeObj);
-						rct.start();
-
-					}else{
-						//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
-						rechercheController.accessToDetail(idObj,typeObj,null);
-					}
-
-				});
-				boutonActionLayout.addComponent(btnListeInscrits);
-			} else {
-				btnArbo.addStyleName("right-action-button");
-			}
-			return boutonActionLayout;
+			boutonActionLayout.add(btnListeInscrits);
 		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class MyLibelleColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			String typeObj = (String)item.getItemProperty("id.typfav").getValue();
-			String idObj = (String)item.getItemProperty("id.idfav").getValue();
-
-			HorizontalLayout boutonActionLayout = new HorizontalLayout();
-
-			if(typeObj!=null){
-				Label lib = new Label(favorisController.getLibObjFavori(typeObj,idObj));
-				boutonActionLayout.addComponent(lib);
-			}
-
-			return boutonActionLayout;
-		}
-	}
-
-	private static class RechercheControllerThread extends Thread {
-		private final MainUI mainUI;
-		private final RechercheController rechercheController;
-		private final String typeObj;
-		private final String idObj;
-
-		public RechercheControllerThread(MainUI mainUI, RechercheController rechercheController, String idObj, String typeObj) {
-			this.mainUI = mainUI;
-			this.rechercheController = rechercheController;
-			this.idObj = idObj;
-			this.typeObj = typeObj;
-		}
-		@Override
-		public void run() {
-			mainUI.access(() -> rechercheController.accessToDetail(idObj,typeObj,null));
-			mainUI.access(() -> mainUI.stopBusyIndicator());
-		}
+		return boutonActionLayout;
 	}
 }

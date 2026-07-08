@@ -22,81 +22,70 @@ import fr.univlorraine.mondossierweb.entities.apogee.VObjSeApogee;
 import fr.univlorraine.mondossierweb.entities.converters.BooleanToStringConverter;
 import fr.univlorraine.mondossierweb.repositories.apogee.ComposanteApogeeRepository;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
-import jakarta.persistence.SharedCacheMode;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.springframework.context.annotation.AdviceMode;
+import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
+import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
-import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.util.Properties;
-
+import java.util.Map;
 
 /**
- * Configuration JPA
- * 
- * @author Charlie Dubois
+ * Configuration JPA de la base Apogée (Oracle, lecture seule).
  */
 @Configuration
-@EnableTransactionManagement(mode=AdviceMode.ASPECTJ)
-@EnableJpaRepositories(basePackageClasses=ComposanteApogeeRepository.class, transactionManagerRef="transactionManagerApogee", entityManagerFactoryRef="entityManagerFactoryApogee")
+@EnableJpaRepositories(
+	basePackageClasses = ComposanteApogeeRepository.class,
+	entityManagerFactoryRef = "entityManagerFactoryApogee",
+	transactionManagerRef = "transactionManagerApogee")
 public class JpaConfigApogee {
 
 	public final static String PERSISTENCE_UNIT_NAME = "pun-jpaApogee";
 
+	@Bean
+	@ConfigurationProperties("spring.datasource.apogee")
+	public DataSourceProperties apogeeDataSourceProperties() {
+		return new DataSourceProperties();
+	}
+
 	/**
-	 * Source de données
-	 * @return
+	 * Source de données Apogée
 	 */
 	@Bean
 	public DataSource dataSourceApogee() {
-		JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
-		return dsLookup.getDataSource("java:/comp/env/jdbc/dbApogee");
-	}
-
-
-	/**
-	 * EntityManager Factory
-	 * @return
-	 */
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactoryApogee() {
-		LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-		localContainerEntityManagerFactoryBean.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
-		localContainerEntityManagerFactoryBean.setPackagesToScan(VObjSeApogee.class.getPackage().getName(), BooleanToStringConverter.class.getPackage().getName());
-		localContainerEntityManagerFactoryBean.setDataSource(dataSourceApogee());
-		localContainerEntityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
-
-		Properties jpaProperties = new Properties();
-		/* Active le static weaving d'EclipseLink */
-		jpaProperties.put(PersistenceUnitProperties.WEAVING, "static");
-		/* Désactive le cache partagé */
-		jpaProperties.put(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, String.valueOf(false));
-		localContainerEntityManagerFactoryBean.setSharedCacheMode(SharedCacheMode.NONE);
-		localContainerEntityManagerFactoryBean.setJpaProperties(jpaProperties);
-
-		EclipseLinkJpaVendorAdapter jpaVendorAdapter = new EclipseLinkJpaVendorAdapter();
-		jpaVendorAdapter.setGenerateDdl(false);
-		jpaVendorAdapter.setShowSql(PropertyUtils.getShowSqlApogee());
-		localContainerEntityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
-
-		return localContainerEntityManagerFactoryBean;
+		return apogeeDataSourceProperties().initializeDataSourceBuilder().build();
 	}
 
 	/**
-	 * Transaction Manager
-	 * @return
+	 * EntityManager Factory Apogée
 	 */
 	@Bean
-	public JpaTransactionManager transactionManagerApogee() {
-		return new JpaTransactionManager(entityManagerFactoryApogee().getObject());
+	public LocalContainerEntityManagerFactoryBean entityManagerFactoryApogee(final EntityManagerFactoryBuilder builder) {
+		return builder
+			.dataSource(dataSourceApogee())
+			.packages(VObjSeApogee.class.getPackage().getName(), BooleanToStringConverter.class.getPackage().getName())
+			.persistenceUnit(PERSISTENCE_UNIT_NAME)
+			/* Conserve les noms de colonnes tels que déclarés dans les entités */
+			.properties(Map.of(
+				"hibernate.physical_naming_strategy", "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl",
+				"hibernate.implicit_naming_strategy", "org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl",
+				"hibernate.show_sql", String.valueOf(PropertyUtils.getShowSqlApogee())))
+			.build();
 	}
 
+	/**
+	 * Transaction Manager Apogée
+	 */
+	@Bean
+	public PlatformTransactionManager transactionManagerApogee(
+		@Qualifier("entityManagerFactoryApogee") final EntityManagerFactory entityManagerFactoryApogee) {
+		return new JpaTransactionManager(entityManagerFactoryApogee);
+	}
 }

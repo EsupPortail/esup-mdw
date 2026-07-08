@@ -18,49 +18,46 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import fr.univlorraine.mondossierweb.beans.Adresse;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import fr.univlorraine.mondossierweb.views.windows.ModificationAdressesWindow;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.StringUtils;
 
 /**
- * Page d'accueil
+ * Page des adresses
  */
-@Component @Scope("prototype")
-@SpringView(name = AdressesView.NAME)
-@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
-public class AdressesView extends VerticalLayout implements View {
+@SuppressWarnings("serial")
+@Route(value = AdressesView.NAME, layout = MainLayout.class)
+@Secured(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE)
+public class AdressesView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
 
 	public static final String NAME = "adressesView";
+	public static final String ROUTE = NAME;
 
 	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient UserController userController;
 	@Resource
@@ -68,198 +65,181 @@ public class AdressesView extends VerticalLayout implements View {
 	@Resource
 	private transient ConfigController configController;
 	@Resource
+	private transient SessionController sessionController;
+	@Resource
 	private transient ObjectFactory<ModificationAdressesWindow> modificationAdressesWindowFactory;
-	
 
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
-	 * Initialise la vue
+	 * Initialise la vue à chaque navigation.
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void beforeEnter(final BeforeEnterEvent event) {
+		init();
+	}
+
+	private void init() {
+		final Etudiant etudiant = sessionController.getEtudiant();
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent() != null && MainUI.getCurrent().getEtudiant() != null &&
-			(userController.isEtudiant() || 
-				(userController.isEnseignant() && configController.isAffAdressesEnseignant()) ||
-				(userController.isGestionnaire() && configController.isAffAdressesGestionnaire()))){
-			removeAllComponents();
+		if (etudiant != null
+				&& (userController.isEtudiant()
+					|| (userController.isEnseignant() && configController.isAffAdressesEnseignant())
+					|| (userController.isGestionnaire() && configController.isAffAdressesGestionnaire()))) {
+			removeAll();
 
 			/* Style */
-			setMargin(true);
+			setPadding(true);
 			setSpacing(true);
 
 			/* Titre */
-			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-			title.addStyleName(ValoTheme.LABEL_H1);
-			addComponent(title);
-
+			add(new H1(getTranslation(NAME + ".title")));
 
 			VerticalLayout globalLayout = new VerticalLayout();
-			globalLayout.setSizeFull();
+			globalLayout.setWidthFull();
+			globalLayout.setPadding(false);
 			globalLayout.setSpacing(true);
 
-			//Layout avec les infos etatcivil et contact
-			CssLayout idLayout = new CssLayout();
-			idLayout.setSizeFull();
-			idLayout.setStyleName("flexwrap");
+			//Layout avec les adresses (responsive : les blocs passent à la ligne)
+			Div idLayout = new Div();
+			idLayout.setWidthFull();
+			idLayout.getStyle()
+				.set("display", "flex")
+				.set("flex-wrap", "wrap")
+				.set("gap", "var(--lumo-space-m)");
+			globalLayout.add(idLayout);
 
-			globalLayout.addComponent(idLayout);
-			// Enable Responsive CSS selectors for the layout
-			Responsive.makeResponsive(idLayout);
+			if (etudiant.getAdresseAnnuelle() != null) {
+				Adresse adresseAnnuelle = etudiant.getAdresseAnnuelle();
 
-			if(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
+				FormLayout formAdresseAnnuelleLayout = createFormLayout();
 
-				FormLayout formAdresseAnnuelleLayout = new FormLayout();
-				formAdresseAnnuelleLayout.setSpacing(true);
-				formAdresseAnnuelleLayout.setMargin(true);
+				addFormValue(formAdresseAnnuelleLayout, getTranslation(NAME + ".adresse.title"), adresseAnnuelle.getAdresse1());
 
-				Panel panelAdresseAnnuelle= new Panel(applicationContext.getMessage(NAME+".adresseannuelle.title", null, getLocale())+" "+MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAnnee());
-
-				String captionAdresseAnnuelle = applicationContext.getMessage(NAME+".adresse.title", null, getLocale());
-				Label fieldAdresseAnnuelle = new Label();
-				formatLabel(fieldAdresseAnnuelle, captionAdresseAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse1());
-				formAdresseAnnuelleLayout.addComponent(fieldAdresseAnnuelle);
-
-				String annuelle2 = valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse2(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresse3());
-				if(annuelle2!=null){
-					Label fieldAdresseAnnuelle2 = new Label();
-					formatLabel(fieldAdresseAnnuelle2, null, annuelle2);
-					formAdresseAnnuelleLayout.addComponent(fieldAdresseAnnuelle2);
-				}
-				String captionVilleAnnuelle = applicationContext.getMessage(NAME+".ville.title", null, getLocale());
-				Label fieldVilleAnnuelle = new Label();
-				formatLabel(fieldVilleAnnuelle, captionVilleAnnuelle, valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getAdresseetranger(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getCodePostal(),MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getVille()));
-				formAdresseAnnuelleLayout.addComponent(fieldVilleAnnuelle);
-
-				String captionPaysAnnuelle = applicationContext.getMessage(NAME+".pays.title", null, getLocale());
-				Label fieldPaysAnnuelle = new Label();
-				formatLabel(fieldPaysAnnuelle, captionPaysAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getPays());
-				formAdresseAnnuelleLayout.addComponent(fieldPaysAnnuelle);
-
-				String captionTelephoneAnnuelle = applicationContext.getMessage(NAME+".telephone.title", null, getLocale());
-				Label fieldTelephoneAnnuelle = new Label();
-				formatLabel(fieldTelephoneAnnuelle, captionTelephoneAnnuelle, MainUI.getCurrent().getEtudiant().getAdresseAnnuelle().getNumerotel());
-				formAdresseAnnuelleLayout.addComponent(fieldTelephoneAnnuelle);
-
-				panelAdresseAnnuelle.setContent(formAdresseAnnuelleLayout);
-
-
-				HorizontalLayout adresseAnnuelleGlobalLayout = new HorizontalLayout();
-				adresseAnnuelleGlobalLayout.setSizeUndefined();
-				adresseAnnuelleGlobalLayout.setStyleName("firstitembox");
-				adresseAnnuelleGlobalLayout.addComponent(panelAdresseAnnuelle);
-				adresseAnnuelleGlobalLayout.setExpandRatio(panelAdresseAnnuelle, 1);
-				idLayout.addComponent(adresseAnnuelleGlobalLayout);
-			}
-
-			if(MainUI.getCurrent().getEtudiant().getAdresseFixe()!=null){
-				FormLayout formAdresseFixeLayout = new FormLayout();
-				formAdresseFixeLayout.setSpacing(true);
-				formAdresseFixeLayout.setMargin(true);
-
-				Panel panelAdresseFixe= new Panel(applicationContext.getMessage(NAME+".adressefixe.title", null, getLocale()));
-
-				String captionAdresseFixe = applicationContext.getMessage(NAME+".adresse.title", null, getLocale());
-				Label fieldAdresseFixe = new Label();
-				formatLabel(fieldAdresseFixe, captionAdresseFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse1());
-				formAdresseFixeLayout.addComponent(fieldAdresseFixe);
-
-				String adfixe2=valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse2(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresse3());
-				if(adfixe2!=null){
-					Label fieldAdresseFixe2 = new Label();
-					formatLabel(fieldAdresseFixe2, null, adfixe2);
-					formAdresseFixeLayout.addComponent(fieldAdresseFixe2);
+				String annuelle2 = valuateTextFieldFromMultipleValues(adresseAnnuelle.getAdresse2(), adresseAnnuelle.getAdresse3());
+				if (annuelle2 != null) {
+					addFormValue(formAdresseAnnuelleLayout, null, annuelle2);
 				}
 
-				String captionVilleFixe = applicationContext.getMessage(NAME+".ville.title", null, getLocale());
-				Label fieldVilleFixe = new Label();
-				formatLabel(fieldVilleFixe, captionVilleFixe, valuateTextFieldFromMultipleValues(MainUI.getCurrent().getEtudiant().getAdresseFixe().getAdresseetranger(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getCodePostal(),MainUI.getCurrent().getEtudiant().getAdresseFixe().getVille()));
-				formAdresseFixeLayout.addComponent(fieldVilleFixe);
+				addFormValue(formAdresseAnnuelleLayout, getTranslation(NAME + ".ville.title"),
+					valuateTextFieldFromMultipleValues(adresseAnnuelle.getAdresseetranger(), adresseAnnuelle.getCodePostal(), adresseAnnuelle.getVille()));
+				addFormValue(formAdresseAnnuelleLayout, getTranslation(NAME + ".pays.title"), adresseAnnuelle.getPays());
+				addFormValue(formAdresseAnnuelleLayout, getTranslation(NAME + ".telephone.title"), adresseAnnuelle.getNumerotel());
 
-				String captionPaysFixe = applicationContext.getMessage(NAME+".pays.title", null, getLocale());
-				Label fieldPaysFixe = new Label();
-				formatLabel(fieldPaysFixe, captionPaysFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getPays());
-				formAdresseFixeLayout.addComponent(fieldPaysFixe);
-
-				String captionTelephoneFixe = applicationContext.getMessage(NAME+".telephone.title", null, getLocale());
-				Label fieldTelephoneFixe = new Label();
-				formatLabel(fieldTelephoneFixe, captionTelephoneFixe, MainUI.getCurrent().getEtudiant().getAdresseFixe().getNumerotel());
-				formAdresseFixeLayout.addComponent(fieldTelephoneFixe);
-
-				panelAdresseFixe.setContent(formAdresseFixeLayout);
-
-
-				HorizontalLayout adresseFixeGlobalLayout = new HorizontalLayout();
-				adresseFixeGlobalLayout.setSizeUndefined();
-				adresseFixeGlobalLayout.setStyleName("itembox");
-				adresseFixeGlobalLayout.addComponent(panelAdresseFixe);
-				adresseFixeGlobalLayout.setExpandRatio(panelAdresseFixe, 1);
-				idLayout.addComponent(adresseFixeGlobalLayout);
-
-
+				idLayout.add(createPanel(getTranslation(NAME + ".adresseannuelle.title") + " " + adresseAnnuelle.getAnnee(), formAdresseAnnuelleLayout));
 			}
 
-			addComponent(globalLayout);
+			if (etudiant.getAdresseFixe() != null) {
+				Adresse adresseFixe = etudiant.getAdresseFixe();
 
-			if(userController.isEtudiant() && configController.isModificationAdressesAutorisee() && MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
+				FormLayout formAdresseFixeLayout = createFormLayout();
+
+				addFormValue(formAdresseFixeLayout, getTranslation(NAME + ".adresse.title"), adresseFixe.getAdresse1());
+
+				String adfixe2 = valuateTextFieldFromMultipleValues(adresseFixe.getAdresse2(), adresseFixe.getAdresse3());
+				if (adfixe2 != null) {
+					addFormValue(formAdresseFixeLayout, null, adfixe2);
+				}
+
+				addFormValue(formAdresseFixeLayout, getTranslation(NAME + ".ville.title"),
+					valuateTextFieldFromMultipleValues(adresseFixe.getAdresseetranger(), adresseFixe.getCodePostal(), adresseFixe.getVille()));
+				addFormValue(formAdresseFixeLayout, getTranslation(NAME + ".pays.title"), adresseFixe.getPays());
+				addFormValue(formAdresseFixeLayout, getTranslation(NAME + ".telephone.title"), adresseFixe.getNumerotel());
+
+				idLayout.add(createPanel(getTranslation(NAME + ".adressefixe.title"), formAdresseFixeLayout));
+			}
+
+			add(globalLayout);
+
+			if (userController.isEtudiant() && configController.isModificationAdressesAutorisee() && etudiant.getAdresseAnnuelle() != null) {
 				HorizontalLayout btnLayout = new HorizontalLayout();
-				btnLayout.setSizeFull();
+				btnLayout.setWidthFull();
 				btnLayout.setSpacing(true);
 
-				Button btnModifAdresses = new Button (applicationContext.getMessage(NAME+".bouton.modifieradresses", null, getLocale()));
+				String captionBtnModif = getTranslation(NAME + ".bouton.modifieradresses");
 				// Si on ne peut pas modifier l'adresse annuelle
-				if(!configController.isModificationAdresseAnnuelleAutorisee()) {
+				if (!configController.isModificationAdresseAnnuelleAutorisee()) {
 					// Changement du caption du bouton en conséquence
-					btnModifAdresses.setCaption(applicationContext.getMessage(NAME+".bouton.modifieradressefixe", null, getLocale()));
+					captionBtnModif = getTranslation(NAME + ".bouton.modifieradressefixe");
 				}
-				btnModifAdresses.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				btnModifAdresses.setIcon(FontAwesome.EDIT);
-				btnModifAdresses.addClickListener(e->{
+				Button btnModifAdresses = new Button(captionBtnModif, VaadinIcon.EDIT.create());
+				btnModifAdresses.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+				btnModifAdresses.addClickListener(e -> {
 					ModificationAdressesWindow maw = modificationAdressesWindowFactory.getObject();
-					maw.init(MainUI.getCurrent().getEtudiant(), configController.isModificationTelephoneAutorisee(), configController.isModificationAdresseAnnuelleAutorisee());
-					maw.addCloseListener(f->init());
-					UI.getCurrent().addWindow(maw);
+					maw.init(sessionController.getEtudiant(), configController.isModificationTelephoneAutorisee(), configController.isModificationAdresseAnnuelleAutorisee());
+					maw.addOpenedChangeListener(f -> {
+						if (!f.isOpened()) {
+							init();
+						}
+					});
+					maw.open();
 				});
-				btnLayout.addComponent(btnModifAdresses);
-				btnLayout.setComponentAlignment(btnModifAdresses, Alignment.MIDDLE_LEFT);
-				addComponent(btnLayout);
+				btnLayout.add(btnModifAdresses);
+				add(btnLayout);
 			}
 		}
 	}
 
 	private String valuateTextFieldFromMultipleValues(String string1, String string2) {
-		if(string1 != null && string2 != null){
-			return string1 + " "+string2;
+		if (string1 != null && string2 != null) {
+			return string1 + " " + string2;
 		}
-		if(string1!=null && string2 ==null){
+		if (string1 != null && string2 == null) {
 			return string1;
 		}
-		if(string1==null && string2 !=null){
+		if (string1 == null && string2 != null) {
 			return string2;
 		}
 		return null;
 	}
-	private String valuateTextFieldFromMultipleValues(String string1, String string2,String string3) {
-		return valuateTextFieldFromMultipleValues(valuateTextFieldFromMultipleValues(string1, string2),string3);
+
+	private String valuateTextFieldFromMultipleValues(String string1, String string2, String string3) {
+		return valuateTextFieldFromMultipleValues(valuateTextFieldFromMultipleValues(string1, string2), string3);
 	}
 
-	private void formatLabel(Label label, String caption, String value){
-		if(StringUtils.hasText(caption)){
-			label.setCaption(caption);
-		}
-		if(StringUtils.hasText(value)){
-			label.setValue("<b>"+ value +"</b");
-			label.setContentMode(ContentMode.HTML);
-		}
-		label.setSizeFull();
+	private FormLayout createFormLayout() {
+		FormLayout formLayout = new FormLayout();
+		formLayout.setWidthFull();
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+		return formLayout;
 	}
 
 	/**
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+	 * Ajoute un couple libellé/valeur (valeur en gras) au formulaire.
 	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
+	private void addFormValue(FormLayout formLayout, String caption, String value) {
+		Span valueSpan = new Span(StringUtils.hasText(value) ? value : "");
+		valueSpan.addClassName(LumoUtility.FontWeight.BOLD);
+		formLayout.addFormItem(valueSpan, caption != null ? caption : "");
+	}
+
+	/**
+	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
+	 */
+	private Div createPanel(String titre, Component content) {
+		Div panel = new Div();
+		panel.getStyle()
+			.set("border", "1px solid var(--lumo-contrast-20pct)")
+			.set("border-radius", "var(--lumo-border-radius-m)")
+			.set("overflow", "hidden")
+			.set("flex", "1 1 20rem");
+		if (StringUtils.hasText(titre)) {
+			Div header = new Div(new Span(titre));
+			header.getStyle()
+				.set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+				.set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+				.set("background-color", "var(--lumo-contrast-5pct)")
+				.set("font-weight", "600");
+			panel.add(header);
+		}
+		Div body = new Div(content);
+		body.getStyle().set("padding", "var(--lumo-space-m)");
+		panel.add(body);
+		return panel;
 	}
 
 }

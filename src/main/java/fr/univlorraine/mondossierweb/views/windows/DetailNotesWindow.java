@@ -19,92 +19,107 @@
 package fr.univlorraine.mondossierweb.views.windows;
 
 
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItem;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.streams.DownloadHandler;
+import com.vaadin.flow.server.streams.DownloadResponse;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
-import fr.univlorraine.mondossierweb.utils.MyFileDownloader;
-import fr.univlorraine.mondossierweb.utils.PropertyUtils;
+import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Fenêtre du détail des notes
  */
 @SuppressWarnings("serial")
-@Component
+@org.springframework.stereotype.Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class DetailNotesWindow extends Window {
+public class DetailNotesWindow extends Dialog {
 
 	public static final String NAME = "notesWindow";
-	@Resource
-	private transient ApplicationContext applicationContext;
+
 	@Resource
 	private transient UserController userController;
-	@Resource
-	private transient EtudiantController etudiantController;
-	@Resource(name="${resultat.implementation}")
+	@Resource(name = "${resultat.implementation}")
 	private transient ResultatController resultatController;
 	@Resource
 	private transient NoteController noteController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient SessionController sessionController;
+
 	private Etape etape;
 	private Button btnDisplayFiltres;
-	private Panel panelVue;
+	private Div panelVue;
+	private boolean headerInitialized;
 
 	public void init(Etape et) {
 		etape = et;
+		buildContent();
+	}
+
+	private void buildContent() {
+		removeAll();
+
+		final Etudiant etudiant = sessionController.getEtudiant();
 
 		/* Titre */
-		setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
+		setHeaderTitle(getTranslation(NAME + ".title"));
+
+		/* Bouton de fermeture */
+		if (!headerInitialized) {
+			headerInitialized = true;
+			Button btnFermer = new Button(VaadinIcon.CLOSE.create());
+			btnFermer.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			btnFermer.getElement().setAttribute("aria-label", getTranslation(NAME + ".btnFermer"));
+			btnFermer.addClickListener(e -> close());
+			getHeader().add(btnFermer);
+		}
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && MainUI.getCurrent() != null && MainUI.getCurrent().getEtudiant() != null &&
-			(((userController.isEtudiant() || ((isUserEnseignantWithAccess() || isUserGestionnaireWithAccess()) && !voirCommeEnseignant()))
-					&& configController.isAffNotesEtudiant() && !MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()) ||
-					(isUserEnseignantWithAccess() && voirCommeEnseignant()) ||
-					(isUserGestionnaireWithAccess() && voirCommeEnseignant()))  ){
+		if (etudiant != null
+				&& (((userController.isEtudiant() || ((isUserEnseignantWithAccess() || isUserGestionnaireWithAccess()) && !voirCommeEnseignant()))
+						&& configController.isAffNotesEtudiant() && !etudiant.isNonAutoriseConsultationNotes())
+					|| (isUserEnseignantWithAccess() && voirCommeEnseignant())
+					|| (isUserGestionnaireWithAccess() && voirCommeEnseignant()))) {
 
 			/* Style */
-			setWidth(80, Unit.PERCENTAGE);
-			setHeight(95, Unit.PERCENTAGE);
-			setModal(true);
+			setWidth("80%");
+			setHeight("95%");
 			setResizable(false);
 
 			//Test si user enseignant et en vue Enseignant
-			if(userController.isEnseignant() && voirCommeEnseignant()){
+			if (userController.isEnseignant() && voirCommeEnseignant()) {
 				//On recupere les notes pour un enseignant
 				resultatController.renseigneDetailNotesEtResultats(etape, userController.isGestionnaire());
-			}else{
+			} else {
 				//On récupère les notes pour un étudiant
 				resultatController.renseigneDetailNotesEtResultatsEtudiant(etape);
 			}
@@ -112,227 +127,196 @@ public class DetailNotesWindow extends Window {
 			/* Layout */
 			VerticalLayout layout = new VerticalLayout();
 			layout.setSizeFull();
-			layout.setMargin(true);
+			layout.setPadding(false);
 			layout.setSpacing(true);
 
-			List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
+			List<ElementPedagogique> lelp = etudiant.getElementsPedagogiques();
 
-			//Sous titre avec l'année
+			//Sous titre avec le message d'information
 			HorizontalLayout titleLayout = new HorizontalLayout();
-			titleLayout.setSizeFull();
-			titleLayout.setHeight("20px");
-			Label messageLabel = new Label(applicationContext.getMessage(NAME+".label.messageinfo", null, getLocale()));
-			messageLabel.setContentMode(ContentMode.HTML);
-			messageLabel.setStyleName(ValoTheme.LABEL_SMALL);
-			titleLayout.addComponent(messageLabel);
-			titleLayout.setExpandRatio(messageLabel, 1);
-			titleLayout.setComponentAlignment(messageLabel, Alignment.MIDDLE_LEFT);
+			titleLayout.setWidthFull();
+			titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			Html messageLabel = new Html("<div>" + getTranslation(NAME + ".label.messageinfo") + "</div>");
+			Div messageWrapper = new Div(messageLabel);
+			messageWrapper.addClassName(LumoUtility.FontSize.SMALL);
+			titleLayout.add(messageWrapper);
+			titleLayout.expand(messageWrapper);
 
 			ajouterVoirCommeUnEtudiant(titleLayout);
 
-			if(lelp!=null && !lelp.isEmpty() && configController.isPdfNotesActive()){
-				Button pdfButton = new Button();
-				pdfButton.setStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-				pdfButton.addStyleName("button-icon");
-				pdfButton.addStyleName("red-button-icon");
-				pdfButton.setIcon(FontAwesome.FILE_PDF_O);
-				pdfButton.setDescription(applicationContext.getMessage(NAME + ".btn.pdf.description", null, getLocale()));
-
-				if(PropertyUtils.isPushEnabled()){
-					MyFileDownloader fd = new MyFileDownloader(noteController.exportPdfDetail(etape));
-					fd.extend(pdfButton);
-				}else{
-					FileDownloader fd = new FileDownloader(noteController.exportPdfDetail(etape));
-					fd.extend(pdfButton);
+			if (lelp != null && !lelp.isEmpty() && configController.isPdfNotesActive()) {
+				DownloadFile df = noteController.exportPdfDetail(etape);
+				if (df != null) {
+					Button pdfButton = new Button(VaadinIcon.FILE_TEXT_O.create());
+					pdfButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+					pdfButton.addClassName("button-icon");
+					pdfButton.addClassName("red-button-icon");
+					pdfButton.setTooltipText(getTranslation(NAME + ".btn.pdf.description"));
+					Anchor pdfAnchor = new Anchor();
+					pdfAnchor.setHref(DownloadHandler.fromInputStream(evt ->
+						new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
+					pdfAnchor.add(pdfButton);
+					titleLayout.add(pdfAnchor);
 				}
-				titleLayout.addComponent(pdfButton);
-				titleLayout.setComponentAlignment(pdfButton, Alignment.MIDDLE_RIGHT);
 			}
-			layout.addComponent(titleLayout);
+			layout.add(titleLayout);
 
 			ajouterPanelVoirCommeUnEtudiant(layout);
 
-			Panel panelDetailNotes= new Panel(etape.getLibelle()+" - "+applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" "+ etape.getAnnee());
-			panelDetailNotes.addStyleName("small-font-element");
+			Component detailContent;
+			if (lelp != null && !lelp.isEmpty()) {
+				Grid<ElementPedagogique> detailNotesGrid = new Grid<>();
+				detailNotesGrid.setSizeFull();
+				detailNotesGrid.setSelectionMode(Grid.SelectionMode.NONE);
+				if (contientElpObtenusPrecedemment(lelp)) {
+					detailNotesGrid.addComponentColumn(this::buildAnneeColumn)
+						.setHeader(getTranslation(NAME + ".table.elp.annee")).setFlexGrow(1);
+				}
+				detailNotesGrid.addComponentColumn(this::buildCodeElpColumn)
+					.setHeader(getTranslation(NAME + ".table.elp.code")).setFlexGrow(1);
+				detailNotesGrid.addComponentColumn(this::buildLibelleElpColumn)
+					.setHeader(getTranslation(NAME + ".table.elp.libelle")).setFlexGrow(4);
+				detailNotesGrid.addComponentColumn(el -> buildNoteColumn(el, el.getNote1(), el.getBareme1()))
+					.setHeader(noteController.renommerSession1(lelp)
+						? getTranslation(NAME + ".table.elp.notesession1bis")
+						: getTranslation(NAME + ".table.elp.notesession1"))
+					.setFlexGrow(1);
+				detailNotesGrid.addComponentColumn(el -> buildResultatColumn(el, el.getRes1()))
+					.setHeader(getTranslation(NAME + ".table.elp.resultatsession1")).setFlexGrow(1);
+
+				if (noteController.afficherSession2(lelp)) {
+					detailNotesGrid.addComponentColumn(el -> buildNoteColumn(el, el.getNote2(), el.getBareme2()))
+						.setHeader(getTranslation(NAME + ".table.elp.notesession2")).setFlexGrow(1);
+					detailNotesGrid.addComponentColumn(el -> buildResultatColumn(el, el.getRes2()))
+						.setHeader(getTranslation(NAME + ".table.elp.resultatsession2")).setFlexGrow(1);
+				}
+				if (configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) {
+					detailNotesGrid.addComponentColumn(this::buildRangColumn)
+						.setHeader(getTranslation(NAME + ".table.elp.rang")).setFlexGrow(1);
+				}
+				if (configController.isAffECTSEtudiant()) {
+					detailNotesGrid.addComponentColumn(this::buildEctsColumn)
+						.setHeader(getTranslation(NAME + ".table.elp.ects"))
+						.setFlexGrow(1)
+						.setVisible(!configController.isMasqueECTSEtudiant());
+				}
+				if (configController.isAffMentionElpEtudiant()) {
+					detailNotesGrid.addComponentColumn(this::buildMentionColumn)
+						.setHeader(getTranslation(NAME + ".table.elp.mention")).setFlexGrow(1);
+				}
+				detailNotesGrid.setItems(lelp);
+				detailContent = detailNotesGrid;
+			} else {
+				setHeight("30%");
+				Span labelAucunResultat = new Span(getTranslation(NAME + ".message.aucuneresultat"));
+				labelAucunResultat.addClassName(LumoUtility.FontWeight.BOLD);
+				detailContent = labelAucunResultat;
+			}
+			Div panelDetailNotes = createPanel(etape.getLibelle() + " - " + getTranslation(NAME + ".label.anneeuniv") + " " + etape.getAnnee(), detailContent);
 			panelDetailNotes.setSizeFull();
+			layout.add(panelDetailNotes);
 
-			if(lelp!=null && !lelp.isEmpty()){
-				Table detailNotesTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
-				detailNotesTable.setSizeFull();
-				detailNotesTable.setVisibleColumns(new String[0]);
-				detailNotesTable.setColumnCollapsingAllowed(true);
-				if(contientElpObtenusPrecedemment(lelp)){
-				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.annee", null, getLocale()), new AnneeColumnGenerator());
-				}
-				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
-				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
-				detailNotesTable.addGeneratedColumn(noteController.renommerSession1(lelp) ? 
-						applicationContext.getMessage(NAME+".table.elp.notesession1bis", null, getLocale()):
-						applicationContext.getMessage(NAME+".table.elp.notesession1", null, getLocale())
-						, new Session1ColumnGenerator());
-
-				detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.resultatsession1", null, getLocale()), new ResultatSession1ColumnGenerator());
-				
-				if(noteController.afficherSession2(lelp)) {
-					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.notesession2", null, getLocale()), new Session2ColumnGenerator());
-					detailNotesTable.addGeneratedColumn("resultatsession2", new ResultatSession2ColumnGenerator());
-					detailNotesTable.setColumnHeader("resultatsession2", applicationContext.getMessage(NAME+".table.elp.resultatsession2", null, getLocale()));
-				}
-				if(configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()){
-					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.rang", null, getLocale()), new RangColumnGenerator());
-				}
-				if(configController.isAffECTSEtudiant()){
-					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
-					if(configController.isMasqueECTSEtudiant()){
-						detailNotesTable.setColumnCollapsed(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), true);
+			if (lelp != null && !lelp.isEmpty() && etudiant.isSignificationResultatsUtilisee()) {
+				StringBuilder grilleSignficationResultats = new StringBuilder();
+				@SuppressWarnings("unchecked")
+				Map<String, String> significations = etudiant.getSignificationResultats();
+				Set<String> ss = significations.keySet();
+				for (String k : ss) {
+					if (k != null && !k.equals("") && !k.equals(" ")) {
+						grilleSignficationResultats.append("<b>").append(k).append("</b>&#160;:&#160;").append(significations.get(k));
+						grilleSignficationResultats.append("&#160;&#160;&#160;");
 					}
 				}
-				if(configController.isAffMentionElpEtudiant()) {
-					detailNotesTable.addGeneratedColumn(applicationContext.getMessage(NAME + ".table.elp.mention", null, getLocale()), new MentionColumnGenerator());
-				}
-				detailNotesTable.setColumnReorderingAllowed(false);
-				detailNotesTable.setSelectable(false);
-				detailNotesTable.setImmediate(true);
-				detailNotesTable.addStyleName("scrollabletable");
-				panelDetailNotes.setContent(detailNotesTable);
-			}else{
-				setHeight(30, Unit.PERCENTAGE);
-				HorizontalLayout messageLayout=new HorizontalLayout();
-				messageLayout.setSpacing(true);
-				messageLayout.setMargin(true);
-				Label labelAucunResultat = new Label(applicationContext.getMessage(NAME+".message.aucuneresultat", null, getLocale()));
-				labelAucunResultat.setStyleName(ValoTheme.LABEL_BOLD);
-				messageLayout.addComponent(labelAucunResultat);
-				panelDetailNotes.setContent(messageLayout);
-
-			}
-			layout.addComponent(panelDetailNotes);
-
-			if(lelp!=null && !lelp.isEmpty() && MainUI.getCurrent().getEtudiant().isSignificationResultatsUtilisee()){
-				Panel panelSignificationResultats= new Panel(applicationContext.getMessage(NAME+".info.significations.resultats", null, getLocale()));
-
-				panelSignificationResultats.addStyleName("significationpanel");
-				panelSignificationResultats.addStyleName("small-font-element");
-				panelSignificationResultats.setIcon(FontAwesome.INFO_CIRCLE);
-
-				VerticalLayout significationLayout = new VerticalLayout();
-				significationLayout.setMargin(true);
-				significationLayout.setSpacing(true);
-
-				String grilleSignficationResultats = "";
-				//grilleSignficationResultats = significationResultats.toString().substring(1,significationResultats.toString().length()-1);
-				Set<String> ss = MainUI.getCurrent().getEtudiant().getSignificationResultats().keySet();
-				for(String k : ss){
-					if(k != null && !k.equals("") && !k.equals(" ")){
-						grilleSignficationResultats = grilleSignficationResultats + "<b>"+k+"</b>&#160;:&#160;"+ MainUI.getCurrent().getEtudiant().getSignificationResultats().get(k);
-						grilleSignficationResultats = grilleSignficationResultats + "&#160;&#160;&#160;";
-					}
-				}
-				Label mapSignificationLabel=new Label(grilleSignficationResultats);
-				mapSignificationLabel.setStyleName(ValoTheme.LABEL_SMALL);
-				mapSignificationLabel.setContentMode(ContentMode.HTML);
-				significationLayout.addComponent(mapSignificationLabel);
-
-				panelSignificationResultats.setContent(significationLayout);
-				layout.addComponent(panelSignificationResultats);
+				Div significationLayout = new Div(new Html("<div>" + grilleSignficationResultats + "</div>"));
+				significationLayout.addClassName(LumoUtility.FontSize.SMALL);
+				Div panelSignificationResultats = createPanel(getTranslation(NAME + ".info.significations.resultats"), significationLayout);
+				panelSignificationResultats.addClassName("significationpanel");
+				layout.add(panelSignificationResultats);
 			}
 
-			layout.setExpandRatio(panelDetailNotes, 1);
-			setContent(layout);
-
-
-			/* Centre la fenêtre */
-			center();
+			layout.setFlexGrow(1, panelDetailNotes);
+			add(layout);
 
 		} else {
 			// Acces non autorise
 			VerticalLayout layout = new VerticalLayout();
+			layout.setPadding(false);
 
 			HorizontalLayout titleLayout = new HorizontalLayout();
+			titleLayout.setWidthFull();
 			// Ajouter bloc "Voir comme un étudiant" si nécessaire
 			ajouterVoirCommeUnEtudiant(titleLayout);
 			ajouterPanelVoirCommeUnEtudiant(layout);
-			layout.addComponent(titleLayout);
+			layout.add(titleLayout);
 
 			//Si on est dans le cas d'un blocage apogée
-			if(UI.getCurrent() instanceof MainUI
-					&& MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null
+			if (etudiant != null
 					&& (userController.isEtudiant() || ((isUserEnseignantWithAccess() || isUserGestionnaireWithAccess()) && !voirCommeEnseignant()))
-					&& MainUI.getCurrent().getEtudiant().isNonAutoriseConsultationNotes()){
+					&& etudiant.isNonAutoriseConsultationNotes()) {
 				//message non autorisé.
-				HorizontalLayout refusLayout = new HorizontalLayout();
-				refusLayout.setWidth("100%");
-				Label msg = new Label(applicationContext.getMessage(NAME + ".blocage.msg", null, getLocale()));
-				refusLayout.addComponent(msg);
-				refusLayout.setComponentAlignment(msg,Alignment.MIDDLE_LEFT);
-				layout.addComponent(refusLayout);
-
+				layout.add(new Span(getTranslation(NAME + ".blocage.msg")));
 			}
-			setContent(layout);
+			add(layout);
 		}
 	}
 
 	private void ajouterPanelVoirCommeUnEtudiant(VerticalLayout layout) {
 		//Test si user enseignant
-		if(userController.isEnseignant()){
-			panelVue= new Panel();
-
+		if (userController.isEnseignant()) {
 			HorizontalLayout vueLayout = new HorizontalLayout();
-			vueLayout.setMargin(true);
+			vueLayout.setWidthFull();
 			vueLayout.setSpacing(true);
-			vueLayout.setSizeFull();
+			vueLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-			Button changerVueButton = new Button(applicationContext.getMessage(NAME+".button.vueEnseignant", null, getLocale()));
-			changerVueButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			if(voirCommeEnseignant()){
-				changerVueButton.setStyleName(ValoTheme.BUTTON_FRIENDLY);
-				changerVueButton.setCaption(applicationContext.getMessage(NAME+".button.vueEtudiant", null, getLocale()));
+			Button changerVueButton = new Button(getTranslation(NAME + ".button.vueEnseignant"));
+			changerVueButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			if (voirCommeEnseignant()) {
+				changerVueButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+				changerVueButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+				changerVueButton.setText(getTranslation(NAME + ".button.vueEtudiant"));
 			}
 			//On change la variable vueEnseignantNotesEtResultats et on recréé la vue en cours
-			changerVueButton.addClickListener(e -> {resultatController.changerVueNotesEtResultats();init(etape);});
+			changerVueButton.addClickListener(e -> {
+				resultatController.changerVueNotesEtResultats();
+				buildContent();
+			});
 
-			Label vueLabel=new Label(applicationContext.getMessage(NAME+".label.vueEtudiant", null, getLocale()));
-			if(voirCommeEnseignant()){
-				vueLabel.setValue(applicationContext.getMessage(NAME+".label.vueEnseignant", null, getLocale()));
-			}
-			vueLabel.setContentMode(ContentMode.HTML);
-			vueLabel.setStyleName(ValoTheme.LABEL_SMALL);
+			Html vueLabel = new Html("<div>"
+				+ getTranslation(voirCommeEnseignant() ? NAME + ".label.vueEnseignant" : NAME + ".label.vueEtudiant")
+				+ "</div>");
+			Div vueLabelWrapper = new Div(vueLabel);
+			vueLabelWrapper.addClassName(LumoUtility.FontSize.SMALL);
 
-			vueLayout.addComponent(changerVueButton);
-			vueLayout.setComponentAlignment(changerVueButton, Alignment.MIDDLE_CENTER);
-			vueLayout.addComponent(vueLabel);
-			vueLayout.setExpandRatio(vueLabel, 1);
+			vueLayout.add(changerVueButton);
+			vueLayout.add(vueLabelWrapper);
+			vueLayout.expand(vueLabelWrapper);
 
-			panelVue.setContent(vueLayout);
-			layout.addComponent(panelVue);
+			panelVue = createPanel(null, vueLayout);
+			layout.add(panelVue);
 			panelVue.setVisible(false);
 		}
 	}
 
 	private boolean voirCommeEnseignant() {
-		return MainUI.getCurrent().isVueEnseignantNotesEtResultats();
+		return sessionController.isVueEnseignantNotesEtResultats();
 	}
 
 	private void ajouterVoirCommeUnEtudiant(HorizontalLayout titleLayout) {
 		//Test si user enseignant
-		if(userController.isEnseignant()){
+		if (userController.isEnseignant()) {
 			//Bouton pour afficher les filtres
-			btnDisplayFiltres=new Button();
-			btnDisplayFiltres.setWidth("52px");
-			btnDisplayFiltres.setHeight("32px");
-			btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			if(voirCommeEnseignant()){
-				btnDisplayFiltres.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+			btnDisplayFiltres = new Button(VaadinIcon.FILTER.create());
+			btnDisplayFiltres.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			if (voirCommeEnseignant()) {
+				btnDisplayFiltres.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+				btnDisplayFiltres.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 			}
-			btnDisplayFiltres.setIcon(FontAwesome.FILTER);
-			btnDisplayFiltres.setDescription(applicationContext.getMessage(NAME+".btn.displayFilters", null, getLocale()));
-			btnDisplayFiltres.addClickListener(e->{
+			btnDisplayFiltres.setTooltipText(getTranslation(NAME + ".btn.displayFilters"));
+			btnDisplayFiltres.addClickListener(e -> {
 				btnDisplayFiltres.setVisible(false);
 				panelVue.setVisible(true);
 			});
-			titleLayout.addComponent(btnDisplayFiltres);
-			titleLayout.setComponentAlignment(btnDisplayFiltres, Alignment.MIDDLE_RIGHT);
-			//titleLayout.setExpandRatio(btnDisplayFiltres, 1);
+			titleLayout.add(btnDisplayFiltres);
 			btnDisplayFiltres.setVisible(true);
 		}
 	}
@@ -346,326 +330,158 @@ public class DetailNotesWindow extends Window {
 	}
 
 	private boolean contientElpObtenusPrecedemment(List<ElementPedagogique> lelp) {
-		for(ElementPedagogique el : lelp){
-			if(el.getLevel()>1 && !el.isEpreuve() && StringUtils.hasText(el.getAnnee())){
+		for (ElementPedagogique el : lelp) {
+			if (el.getLevel() > 1 && !el.isEpreuve() && StringUtils.hasText(el.getAnnee())) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	/** Formats the position in a column containing Date objects. */
-	class AnneeColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
+	/**
+	 * Colonne année (ancienne AnneeColumnGenerator).
+	 */
+	private Component buildAnneeColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if ((el.getLevel() == 1 || !el.isEpreuve()) && StringUtils.hasText(el.getAnnee())) {
+			libLabel.setText(Utils.convertAnneeUnivToDisplay(el.getAnnee()));
+			applyElpStyle(libLabel, el);
+		}
+		return libLabel;
+	}
 
-			Item item = source.getItem(itemId);
+	/**
+	 * Colonne code de l'élément pédagogique (ancienne CodeElpColumnGenerator).
+	 */
+	private Component buildCodeElpColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getLibelle())) {
+			libLabel.setText(el.getCode());
+			applyElpStyle(libLabel, el);
+		}
+		return libLabel;
+	}
 
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if((el.getLevel()==1 || !el.isEpreuve()) && StringUtils.hasText(el.getAnnee())){
-
-				
-				//indentation des libelles dans la liste:
-				String annee = Utils.convertAnneeUnivToDisplay(el.getAnnee());
-
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					annee="<b>"+annee+"</b>";
-				}
-				if(el.isEpreuve()){
-					annee="<i>"+annee+"</i>";
-				}
-				libLabel.setValue(annee);
+	/**
+	 * Colonne libellé de l'élément pédagogique, indenté selon le niveau
+	 * (ancienne LibelleElpColumnGenerator).
+	 */
+	private Component buildLibelleElpColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getLibelle())) {
+			libLabel.setText(el.getLibelle());
+			applyElpStyle(libLabel, el);
+			//indentation des libelles dans la liste
+			if (el.getLevel() > 1) {
+				libLabel.getStyle().set("padding-inline-start", ((el.getLevel() - 1) * 1.5) + "em");
 			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Colonne note de session avec barème éventuel
+	 * (anciennes Session1ColumnGenerator/Session2ColumnGenerator).
+	 */
+	private Component buildNoteColumn(ElementPedagogique el, String note, int bareme) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getLibelle())) {
+			String value = note;
+			if (bareme != 0 && (configController.isToujoursAfficherBareme() || bareme != 20)) {
+				value += "/" + bareme;
+			}
+			libLabel.setText(value != null ? value : "");
+			applyElpStyle(libLabel, el);
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Colonne résultat de session
+	 * (anciennes ResultatSession1ColumnGenerator/ResultatSession2ColumnGenerator).
+	 */
+	private Component buildResultatColumn(ElementPedagogique el, String res) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getLibelle()) && res != null) {
+			libLabel.setText(res);
+			applyElpStyle(libLabel, el);
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Colonne du rang (ancienne RangColumnGenerator).
+	 */
+	private Component buildRangColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getRang())) {
+			libLabel.setText(el.getRang());
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Colonne ECTS (ancienne ECTSColumnGenerator).
+	 */
+	private Component buildEctsColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getEcts())) {
+			libLabel.setText(el.getEcts());
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Colonne mention (ancienne MentionColumnGenerator).
+	 */
+	private Component buildMentionColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getCodMention())) {
+			libLabel.setText(el.getCodMention());
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Style du contenu d'une cellule : gras pour les éléments de niveau 1, italique pour les épreuves.
+	 */
+	private void applyElpStyle(Span span, ElementPedagogique el) {
+		if (el.getLevel() == 1 && !el.isEpreuve()) {
+			span.addClassName(LumoUtility.FontWeight.BOLD);
+		}
+		if (el.isEpreuve()) {
+			span.getStyle().set("font-style", "italic");
 		}
 	}
 
-	/** Formats the position in a column containing Date objects. */
-	class CodeElpColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle())){
-
-				//indentation des libelles dans la liste:
-				String code = el.getCode();
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					code="<b>"+code+"</b>";
-				}
-				if(el.isEpreuve()){
-					code="<i>"+code+"</i>";
-				}
-				libLabel.setValue(code);
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
+	/**
+	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
+	 */
+	private Div createPanel(String titre, Component content) {
+		Div panel = new Div();
+		panel.setWidthFull();
+		panel.getStyle()
+			.set("border", "1px solid var(--lumo-contrast-20pct)")
+			.set("border-radius", "var(--lumo-border-radius-m)")
+			.set("overflow", "hidden")
+			.set("display", "flex")
+			.set("flex-direction", "column");
+		if (StringUtils.hasText(titre)) {
+			Div header = new Div(new Span(titre));
+			header.getStyle()
+				.set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+				.set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+				.set("background-color", "var(--lumo-contrast-5pct)")
+				.set("font-weight", "600");
+			panel.add(header);
 		}
+		Div body = new Div(content);
+		body.getStyle()
+			.set("padding", "var(--lumo-space-s)")
+			.set("flex", "1 1 auto")
+			.set("overflow", "auto");
+		panel.add(body);
+		return panel;
 	}
 
-	/** Formats the position in a column containing Date objects. */
-	class LibelleElpColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle())){
-
-				//indentation des libelles dans la liste:
-				int rg = Integer.valueOf(el.getLevel());
-				String libelp = el.getLibelle();
-				String lib = "";
-				for (int j = 2; j <= rg; j++) {
-					lib= lib + "&#160;&#160;&#160;&#160;&#160;";
-				}
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					libelp="<b>"+libelp+"</b>";
-				}
-				if(el.isEpreuve()){
-					libelp="<i>"+libelp+"</i>";
-				}
-				libLabel.setValue(lib+libelp);
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
-		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class Session1ColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle())){
-
-				//indentation des libelles dans la liste:
-				String note = el.getNote1();
-				if(el.getBareme1()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme1()!=20)){
-					note += "/"+el.getBareme1();
-				}
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					note="<b>"+note+"</b>";
-				}
-				if(el.isEpreuve()){
-					note="<i>"+note+"</i>";
-				}
-				libLabel.setValue(note);
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
-		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class Session2ColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle())){
-
-				//indentation des libelles dans la liste:
-				String note = el.getNote2();
-				if(el.getBareme2()!=0 && (configController.isToujoursAfficherBareme() || el.getBareme2()!=20)){
-					note += "/"+el.getBareme2();
-				}
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					note="<b>"+note+"</b>";
-				}
-				if(el.isEpreuve()){
-					note="<i>"+note+"</i>";
-				}
-				libLabel.setValue(note);
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
-		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class ResultatSession1ColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle()) && el.getRes1()!=null){
-
-				//indentation des libelles dans la liste:
-				String res = el.getRes1();
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					res="<b>"+res+"</b>";
-				}
-				if(el.isEpreuve()){
-					res="<i>"+res+"</i>";
-				}
-				libLabel.setValue(res);
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
-		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class ResultatSession2ColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle()) && el.getRes2()!=null){
-
-				//indentation des libelles dans la liste:
-				String res = el.getRes2();
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					res="<b>"+res+"</b>";
-				}
-				if(el.isEpreuve()){
-					res="<i>"+res+"</i>";
-				}
-				libLabel.setValue(res);
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
-		}
-	}
-
-
-	/** Formats the position in a column containing Date objects. */
-	class RangColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getRang())){
-				libLabel.setValue(el.getRang());
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
-		}
-	}
-
-	/** Formats the position in a column containing Date objects. */
-	class ECTSColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getEcts())){
-				libLabel.setValue(el.getEcts());
-			}
-			return libLabel;
-		}
-	}
-	
-	/** Formats the position in a column containing Date objects. */
-	class MentionColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-								   Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getCodMention())){
-				libLabel.setValue(el.getCodMention());
-			}
-			return libLabel;
-		}
-	}															 
 }

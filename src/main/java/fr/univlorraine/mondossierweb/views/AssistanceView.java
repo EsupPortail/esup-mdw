@@ -18,41 +18,34 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.BrowserWindowOpener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Page d'accueil
+ * Page d'assistance
  */
-@Component @Scope("prototype")
-@SpringView(name = AssistanceView.NAME)
-public class AssistanceView extends VerticalLayout implements View {
+@SuppressWarnings("serial")
+@Route(value = AssistanceView.NAME, layout = MainLayout.class)
+public class AssistanceView extends VerticalLayout {
 
 	public static final String NAME = "assistanceView";
+	public static final String ROUTE = NAME;
 
 	/* Injections */
 	@Resource
-	private transient ApplicationContext applicationContext;
-	@Resource
 	private transient ConfigController configController;
-	
+
 	@Resource
 	private transient UserController userController;
 
@@ -63,81 +56,67 @@ public class AssistanceView extends VerticalLayout implements View {
 	public void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if(configController.isApplicationActive() && userController.isEnseignant()){
-			// Style 
-			setMargin(true);
+		if (configController.isApplicationActive() && userController.isEnseignant()) {
+			/* Style */
+			setPadding(true);
 			setSpacing(true);
 
 			// Récupération de la configuration pour cette vue
-			String docUrl= configController.getAssistanceDocUrl();
-			String helpdeskUrl= configController.getAssistanceHelpdeskUrl();
+			String docUrl = configController.getAssistanceDocUrl();
+			String helpdeskUrl = configController.getAssistanceHelpdeskUrl();
 			String mailContact = configController.getAssistanceContactMail();
 
+			/* Titre */
+			add(new H1(getTranslation(NAME + ".title")));
 
-			// Titre 
-			Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-			title.addStyleName(ValoTheme.LABEL_H1);
-			addComponent(title);
-
-
-			// Texte
-			if(StringUtils.hasText(applicationContext.getMessage(NAME + ".text", null, getLocale()))){
-				addComponent(new Label(applicationContext.getMessage(NAME + ".text", null, getLocale()), ContentMode.HTML));
-			}
-			
-			// Afficher la pop-up de démarrage 
-			Button popupBtn = new Button(applicationContext.getMessage(NAME + ".btnPopUp", null, getLocale()), FontAwesome.INFO);
-			popupBtn.addStyleName(ValoTheme.BUTTON_LINK);
-			popupBtn.addClickListener(e-> MainUI.getCurrent().afficherMessageIntroEnseignants(true, false));
-			addComponent(popupBtn);
-
-
-			// Accès à la documentation 
-			if(StringUtils.hasText(docUrl)){
-				Button docBtn = new Button(applicationContext.getMessage(NAME + ".btnDoc", null, getLocale()), FontAwesome.FILE_TEXT);
-				docBtn.addStyleName(ValoTheme.BUTTON_LINK);
-				BrowserWindowOpener docBwo = new BrowserWindowOpener(docUrl);
-				docBwo.extend(docBtn);
-				addComponent(docBtn);
+			/* Texte */
+			if (StringUtils.hasText(getTranslation(NAME + ".text"))) {
+				add(new Html("<div>" + getTranslation(NAME + ".text") + "</div>"));
 			}
 
-			// Envoyer un ticket 
-			if(StringUtils.hasText(helpdeskUrl)){
-				Button helpDeskBtn = new Button(applicationContext.getMessage(NAME + ".btnHelpdesk", null, getLocale()), FontAwesome.AMBULANCE);
-				helpDeskBtn.addStyleName(ValoTheme.BUTTON_LINK);
-				BrowserWindowOpener helpDeskBwo = new BrowserWindowOpener(helpdeskUrl);
-				helpDeskBwo.extend(helpDeskBtn);
-				addComponent(helpDeskBtn);
+			// Afficher la pop-up de démarrage
+			Button popupBtn = new Button(getTranslation(NAME + ".btnPopUp"), VaadinIcon.INFO_CIRCLE.create());
+			popupBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			popupBtn.addClickListener(e -> MainLayout.getCurrent()
+				.ifPresent(layout -> layout.afficherMessageIntroEnseignants(true, false)));
+			add(popupBtn);
+
+			// Accès à la documentation
+			if (StringUtils.hasText(docUrl)) {
+				add(createLinkButton(getTranslation(NAME + ".btnDoc"), VaadinIcon.FILE_TEXT_O.create(), docUrl));
 			}
 
-			// Envoyer un mail 
-			if(StringUtils.hasText(mailContact)){
-				Button contactBtn = new Button(applicationContext.getMessage(NAME + ".btnContact", new Object[] {mailContact}, getLocale()), FontAwesome.ENVELOPE);
-				contactBtn.addStyleName(ValoTheme.BUTTON_LINK);
-				BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto:" + mailContact);
-				contactBwo.extend(contactBtn);
-				addComponent(contactBtn);
+			// Envoyer un ticket
+			if (StringUtils.hasText(helpdeskUrl)) {
+				add(createLinkButton(getTranslation(NAME + ".btnHelpdesk"), VaadinIcon.AMBULANCE.create(), helpdeskUrl));
 			}
-			
+
+			// Envoyer un mail
+			if (StringUtils.hasText(mailContact)) {
+				Button contactBtn = new Button(getTranslation(NAME + ".btnContact", mailContact), VaadinIcon.ENVELOPE_O.create());
+				contactBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				Anchor contactAnchor = new Anchor("mailto:" + mailContact, contactBtn);
+				add(contactAnchor);
+			}
+
 			// Deconnexion
-			//Voir si on peut accéder à l'appli hors ENT, le détecter, et afficher le bouton déconnexion
-			if(configController.isLogoutCasPropose()){
-				Button decoBtn = new Button("Déconnexion", FontAwesome.SIGN_OUT);
-				decoBtn.addStyleName(ValoTheme.BUTTON_LINK);
+			if (configController.isLogoutCasPropose()) {
+				Button decoBtn = new Button(getTranslation("buttonDeconnexion.label"), VaadinIcon.SIGN_OUT.create());
+				decoBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 				decoBtn.addClickListener(e -> {
 					userController.disconnectUser();
-					getUI().getPage().setLocation("logout");
+					getUI().ifPresent(ui -> ui.getPage().setLocation("logout"));
 				});
-				addComponent(decoBtn);
+				add(decoBtn);
 			}
 		}
 	}
 
-	/**
-	 * @see com.vaadin.navigator.View${symbol_pound}enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
+	private Anchor createLinkButton(final String label, final com.vaadin.flow.component.icon.Icon icon, final String url) {
+		Button btn = new Button(label, icon);
+		btn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		Anchor anchor = new Anchor(url, btn);
+		anchor.setTarget("_blank");
+		return anchor;
 	}
-
 }

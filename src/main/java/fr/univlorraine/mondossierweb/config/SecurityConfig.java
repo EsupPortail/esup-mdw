@@ -19,120 +19,113 @@
 package fr.univlorraine.mondossierweb.config;
 
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
-import fr.univlorraine.mondossierweb.security.VaadinInternalRequestMatcher;
-import fr.univlorraine.mondossierweb.security.VaadinSecurityContextHolderStrategy;
+import fr.univlorraine.mondossierweb.security.SecurityUtil;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
-import net.sf.ehcache.CacheManager;
 import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
-import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
+import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
+import java.util.List;
 import java.util.UUID;
 
-
 /**
- * Configuration Spring Security
- * 
- * @author Adrien Colson
+ * Configuration Spring Security (CAS).
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled=true, jsr250Enabled=true, prePostEnabled=true)
-public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+public class SecurityConfig {
+
+	public static final String LOGOUT_URL = "/logout";
 
 	@Resource
 	private Environment environment;
 
 	@Resource
 	private MdwUserDetailsService mdwUserDetailsService;
-	
-	/* Passe le SecurityContext aux threads créées et à la session Vaadin. */
-	static {
-		SecurityContextHolder.setStrategyName(VaadinSecurityContextHolderStrategy.class.getName());
-	}
 
-	
-	/*@Bean(name="authenticationManager")
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}*/
-	@Autowired
-	private AuthenticationConfiguration configuration;
-	@Bean
-	AuthenticationManager authenticationManager() throws Exception {
-		return configuration.getAuthenticationManager();
-	}
-
-	/*@Override
-	protected void configure(HttpSecurity http) throws Exception {*/
 	@Bean
 	public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
-		http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(casEntryPoint()));
-		http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
+		final PathPatternRequestMatcher.Builder requestMatcher = PathPatternRequestMatcher.withDefaults();
+		http.authorizeHttpRequests(authz -> authz
+			/* Requêtes internes Vaadin */
+			.requestMatchers(SecurityUtil::isFrameworkInternalRequest).permitAll()
+			.requestMatchers(requestMatcher.matcher("/VAADIN/**")).permitAll()
+			/* Ressources statiques (CSS/JS/images servis en HTTP, plus bundlés) */
+			.requestMatchers(requestMatcher.matcher("/css/**"), requestMatcher.matcher("/js/**"),
+				requestMatcher.matcher("/images/**"), requestMatcher.matcher("/favicon.ico")).permitAll()
+			/* Gestionnaire d'erreurs Spring */
+			.requestMatchers(requestMatcher.matcher("/error")).permitAll()
+			/* Les autres requêtes doivent être authentifiées */
+			.anyRequest().authenticated());
 
-		// Si on doit activer le rate-limiter sur /login/cas
+		http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(casEntryPoint()));
+
+		/* Si on doit activer le rate-limiter sur /login/cas */
 		if (PropertyUtils.getRateLimiterMaxRequest() > 0) {
 			http.addFilterBefore(new RateLimitFilter(PropertyUtils.getRateLimiterMaxRequest()), CasAuthenticationFilter.class);
 		}
 		http.addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class);
-		http.addFilter(new LogoutFilter(environment.getRequiredProperty("cas.url") + "/logout", new SecurityContextLogoutHandler()));
 		http.addFilter(casAuthenticationFilter());
 
-		// Désactive CSRF uniquement pour les requêtes Vaadin (qui a son propre mécanisme)
-		//http.csrf(csrf -> csrf.disable());
-		http.csrf(csrf -> csrf.ignoringRequestMatchers(new VaadinInternalRequestMatcher()));
-		//http.csrf(c -> c.ignoringRequestMatchers("/HEARTBEAT/**", "/PUSH/**", "/UIDL/**","/vaadin/**", "/VAADIN/**"));
+		/* Supprime le "continue" de l'url */
+		http.requestCache(rq -> rq.requestCache(requestCache()));
 
-		// Autorise l'affichage en iFrame et Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
+		/* Désactive CSRF uniquement pour les requêtes Vaadin (qui a son propre mécanisme) */
+		http.csrf(csrf -> csrf
+			.ignoringRequestMatchers(SecurityUtil::isFrameworkInternalRequest)
+			.ignoringRequestMatchers(requestMatcher.matcher("/VAADIN/dynamic/resource/**")));
+
+		/* Interdit l'affichage en iFrame */
 		http.headers(h -> h
-					.frameOptions(o -> o.deny())
-					.cacheControl(c -> c.disable()));
+			.frameOptions(o -> o.deny())
+			.cacheControl(c -> c.disable()));
+
+		/* Gestion de la déconnexion : invalide la session puis redirige vers le logout CAS */
+		http.logout(logout -> {
+			logout.logoutRequestMatcher(requestMatcher.matcher(LOGOUT_URL));
+			logout.logoutSuccessHandler((request, response, authentication) -> {
+				final SimpleUrlLogoutSuccessHandler handler = new SimpleUrlLogoutSuccessHandler();
+				if (authentication instanceof CasAuthenticationToken) {
+					handler.setDefaultTargetUrl(environment.getRequiredProperty("cas.url") + LOGOUT_URL);
+				}
+				handler.onLogoutSuccess(request, response, authentication);
+			});
+		});
 
 		return http.build();
 	}
 
-	@Autowired
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(casAuthenticationProvider());
-	}
-
-	
-	/* Uportal service */
+	/**
+	 * N'enregistre pas les requêtes internes Vaadin.
+	 */
 	@Bean
-	public CachingUportalServiceImpl cachingUportalServiceImpl(){
-		CachingUportalServiceImpl cachingUportalService= new CachingUportalServiceImpl();
-		cachingUportalService.setUrl(environment.getRequiredProperty("uportal.ws"));
-		cachingUportalService.setCacheManager(new CacheManager());
-		return cachingUportalService;
-		
-	}
-
-	@Bean
-	public SecurityContextLogoutHandler securityContextLogoutHandler() {
-		return new SecurityContextLogoutHandler();
+	public RequestCache requestCache() {
+		final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+		requestCache.setRequestMatcher(request -> !SecurityUtil.isFrameworkInternalRequest(request));
+		requestCache.setMatchingRequestParameterName(null);
+		return requestCache;
 	}
 
 	/* Configuration CAS */
@@ -145,7 +138,7 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public ServiceProperties casServiceProperties() {
-		ServiceProperties casServiceProperties = new ServiceProperties();
+		final ServiceProperties casServiceProperties = new ServiceProperties();
 		casServiceProperties.setService(environment.getRequiredProperty("app.url") + Utils.CAS_RETURN_URL);
 		casServiceProperties.setSendRenew(false);
 		return casServiceProperties;
@@ -153,35 +146,32 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
-		CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
+		final CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
+		casAuthenticationFilter.setServiceProperties(casServiceProperties());
 		casAuthenticationFilter.setAuthenticationManager(authenticationManager());
 		return casAuthenticationFilter;
 	}
 
 	@Bean
 	public CasAuthenticationEntryPoint casEntryPoint() {
-		CasAuthenticationEntryPoint casEntryPoint = new CasAuthenticationEntryPoint();
+		final CasAuthenticationEntryPoint casEntryPoint = new CasAuthenticationEntryPoint();
 		casEntryPoint.setLoginUrl(environment.getRequiredProperty("cas.url") + Utils.CAS_LOGIN_URL);
 		casEntryPoint.setServiceProperties(casServiceProperties());
 		return casEntryPoint;
 	}
 
-
 	@Bean
-	public CasAuthenticationProvider casAuthenticationProvider() throws Exception {
-		CasAuthenticationProvider casAuthenticationProvider = new CasAuthenticationProvider();
+	public CasAuthenticationProvider casAuthenticationProvider() {
+		final CasAuthenticationProvider casAuthenticationProvider = new CasAuthenticationProvider();
 		casAuthenticationProvider.setKey(UUID.randomUUID().toString());
-		casAuthenticationProvider.setAuthenticationUserDetailsService(new UserDetailsByNameServiceWrapper<CasAssertionAuthenticationToken>(userDetailsServiceBean()));
+		casAuthenticationProvider.setAuthenticationUserDetailsService(new UserDetailsByNameServiceWrapper<CasAssertionAuthenticationToken>(mdwUserDetailsService));
 		casAuthenticationProvider.setServiceProperties(casServiceProperties());
 		casAuthenticationProvider.setTicketValidator(new Cas20ServiceTicketValidator(environment.getRequiredProperty("cas.url")));
 		return casAuthenticationProvider;
 	}
 
-	
-	@Bean(name="userDetailsService")
-	public UserDetailsService userDetailsServiceBean() throws Exception {
-		return mdwUserDetailsService;
+	@Bean
+	public AuthenticationManager authenticationManager() {
+		return new ProviderManager(List.of(casAuthenticationProvider()));
 	}
-	
-
 }

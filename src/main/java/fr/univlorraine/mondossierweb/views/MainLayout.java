@@ -1,0 +1,578 @@
+/**
+ *
+ *  ESUP-Portail MONDOSSIERWEB - Copyright (c) 2016 ESUP-Portail consortium
+ *
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package fr.univlorraine.mondossierweb.views;
+
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabsVariant;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
+import fr.univlorraine.mondossierweb.controllers.ConfigController;
+import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
+import fr.univlorraine.mondossierweb.controllers.UiController;
+import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.utils.Utils;
+import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
+import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
+import fr.univlorraine.mondossierweb.views.windows.LoadingIndicatorWindow;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+/**
+ * Layout principal de l'application (remplace l'ancienne MainUI Vaadin 7) :
+ * AppLayout avec navbar (logo, titre, utilisateur connecté, déconnexion)
+ * et drawer contenant le menu construit selon le profil de l'utilisateur.
+ */
+@SuppressWarnings("serial")
+@Slf4j
+public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterNavigationObserver {
+
+	/* Routes des vues (mêmes noms que les anciennes @SpringView, cf. guide de migration) */
+	public static final String ROUTE_ETAT_CIVIL = "etatCivilView";
+	public static final String ROUTE_INFORMATIONS_ANNUELLES = "informationsAnnuellesView";
+	public static final String ROUTE_ADRESSES = "adressesView";
+	public static final String ROUTE_INSCRIPTIONS = "inscriptionsView";
+	public static final String ROUTE_CALENDRIER = "calendrierView";
+	public static final String ROUTE_NOTES = "notesView";
+	public static final String ROUTE_ASSISTANCE = "assistanceView";
+	public static final String ROUTE_RECHERCHE_RAPIDE = "rechercheRapideView";
+	public static final String ROUTE_RECHERCHE_ARBORESCENTE = "rechercheArborescenteView";
+	public static final String ROUTE_FAVORIS = "favorisView";
+	public static final String ROUTE_ADMIN = "adminView";
+
+	/* Injections */
+	@Resource
+	private transient UserController userController;
+	@Resource
+	private transient SessionController sessionController;
+	@Resource
+	private transient ConfigController configController;
+	@Resource
+	private transient EtudiantController etudiantController;
+	@Resource
+	private transient UiController uiController;
+
+	/* Navbar */
+	private final DrawerToggle drawerToggle = new DrawerToggle();
+	private final H1 appTitle = new H1();
+	private final Span usernameSpan = new Span();
+	private final Button logoutBtn = new Button();
+
+	/* Drawer */
+	private final VerticalLayout drawerContent = new VerticalLayout();
+	private final Tabs menuPrincipal = new Tabs();
+	private final Tabs menuDossier = new Tabs();
+	private final Div dossierSection = new Div();
+	private final Div dossierHeader = new Div();
+	private final Button aideBtn = new Button();
+
+	/* Fenêtre d'attente (équivalent startBusyIndicator/stopBusyIndicator de l'ancienne MainUI) */
+	private final LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
+
+	/** cod_etu du dossier actuellement représenté dans le menu (null si aucun) */
+	private String codEtuMenu;
+
+	/**
+	 * @return le MainLayout de l'UI courante, s'il est présent
+	 */
+	public static Optional<MainLayout> getCurrent() {
+		return Optional.ofNullable(UI.getCurrent())
+			.flatMap(ui -> ui.getChildren()
+				.filter(MainLayout.class::isInstance)
+				.map(MainLayout.class::cast)
+				.findFirst());
+	}
+
+	public MainLayout() {
+		setPrimarySection(Section.DRAWER);
+		configureMenus();
+	}
+
+	@PostConstruct
+	public void init() {
+		addToNavbar(true, buildHeader());
+		addToDrawer(new Scroller(drawerContent));
+	}
+
+	/* ====================== Navbar ====================== */
+
+	private HorizontalLayout buildHeader() {
+		final HorizontalLayout header = new HorizontalLayout();
+		header.setId("header");
+		header.setWidthFull();
+		header.setPadding(false);
+		header.setSpacing(false);
+		header.setAlignItems(FlexComponent.Alignment.CENTER);
+
+		drawerToggle.getElement().setAttribute("title", getTranslation("mainLayout.drawerToggle.title"));
+		drawerToggle.getElement().setAttribute("aria-label", getTranslation("mainLayout.drawerToggle.title"));
+		header.add(drawerToggle);
+
+		/* Logo de l'université */
+		String logoPath = safeIsEtudiant() ? configController.getLogoUniversiteEtu() : configController.getLogoUniversiteEns();
+		if (!StringUtils.hasText(logoPath)) {
+			logoPath = "images/logo-ul-blanc.png";
+		}
+		final Image logo = new Image(logoPath, getTranslation("mainUI.app.title"));
+		logo.setHeight("2.5rem");
+		logo.getStyle().set("margin-inline-start", "var(--lumo-space-s)");
+		header.add(logo);
+
+		/* Titre de l'application */
+		appTitle.setText(getTranslation("mainUI.app.title"));
+		appTitle.getStyle()
+			.set("font-size", "var(--lumo-font-size-l)")
+			.set("margin", "0 var(--lumo-space-m)")
+			.set("white-space", "nowrap");
+		header.add(appTitle);
+
+		/* Espace extensible */
+		final Div spacer = new Div();
+		header.add(spacer);
+		header.expand(spacer);
+
+		/* Utilisateur connecté */
+		if (userController.getCurrentAuthentication() != null) {
+			usernameSpan.setText(userController.getCurrentAuthentication().getName());
+		}
+		usernameSpan.getStyle().set("margin-inline-end", "var(--lumo-space-m)");
+		header.add(usernameSpan);
+
+		/* Déconnexion */
+		logoutBtn.setText(getTranslation("buttonDeconnexion.label"));
+		logoutBtn.setIcon(VaadinIcon.SIGN_OUT.create());
+		logoutBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+		logoutBtn.getStyle().set("color", "inherit").set("margin-inline-end", "var(--lumo-space-m)");
+		logoutBtn.addClickListener(e -> {
+			userController.disconnectUser();
+			UI.getCurrent().getPage().setLocation("logout");
+		});
+		logoutBtn.setVisible(configController.isLogoutCasPropose());
+		header.add(logoutBtn);
+
+		return header;
+	}
+
+	/* ====================== Drawer / menu ====================== */
+
+	private void configureMenus() {
+		drawerContent.setPadding(false);
+		drawerContent.setSpacing(false);
+		drawerContent.setSizeFull();
+
+		menuPrincipal.setId("menu-tabs");
+		configureMenu(menuPrincipal);
+		configureMenu(menuDossier);
+
+		menuPrincipal.addSelectedChangeListener(e -> {
+			if (e.isFromClient() && e.getSelectedTab() instanceof MenuTab tab) {
+				menuDossier.setSelectedTab(null);
+				UI.getCurrent().navigate(tab.getRoute());
+			}
+		});
+		menuDossier.addSelectedChangeListener(e -> {
+			if (e.isFromClient() && e.getSelectedTab() instanceof MenuTab tab) {
+				menuPrincipal.setSelectedTab(null);
+				UI.getCurrent().navigate(tab.getRoute());
+			}
+		});
+
+		dossierHeader.getStyle()
+			.set("padding", "var(--lumo-space-m)")
+			.set("text-align", "center");
+		dossierSection.setWidthFull();
+		dossierSection.add(dossierHeader, menuDossier);
+
+		/* Bouton d'aide (ancien bouton "Aide" du menu étudiant) */
+		aideBtn.setIcon(VaadinIcon.QUESTION_CIRCLE_O.create());
+		aideBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		aideBtn.getStyle().set("margin", "var(--lumo-space-s)");
+		aideBtn.addClickListener(e -> afficherAide());
+	}
+
+	private void configureMenu(final Tabs tabs) {
+		tabs.setOrientation(Tabs.Orientation.VERTICAL);
+		tabs.setAutoselect(false);
+		tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		tabs.setWidthFull();
+		tabs.addClassName("menu-tabs");
+	}
+
+	/**
+	 * (Re)construit le menu du drawer en fonction du profil de l'utilisateur
+	 * et du dossier étudiant éventuellement consulté.
+	 */
+	public void updateMenu() {
+		final Etudiant etudiant = sessionController.getEtudiant();
+		final boolean etudiantConnecte = safeIsEtudiant();
+		final boolean enseignant = safeIsEnseignant();
+
+		menuPrincipal.removeAll();
+		menuDossier.removeAll();
+		dossierHeader.removeAll();
+		drawerContent.removeAll();
+
+		/* Entrées enseignant/gestionnaire (ancienne barre d'onglets Recherche) */
+		if (enseignant) {
+			menuPrincipal.add(new MenuTab(VaadinIcon.SEARCH, getTranslation("mainUI.rechercherapide.title"), ROUTE_RECHERCHE_RAPIDE));
+			menuPrincipal.add(new MenuTab(VaadinIcon.SITEMAP, getTranslation("mainUI.recherchearbo.title"), ROUTE_RECHERCHE_ARBORESCENTE));
+			menuPrincipal.add(new MenuTab(VaadinIcon.STAR_O, getTranslation("mainLayout.menu.favoris"), ROUTE_FAVORIS));
+		}
+
+		/* Assistance : accessible à tous les profils autorisés */
+		menuPrincipal.add(new MenuTab(VaadinIcon.LIFEBUOY, getTranslation("assistanceView.title"), ROUTE_ASSISTANCE));
+
+		/* Administration */
+		if (userController.userCanAccessAdminView()) {
+			menuPrincipal.add(new MenuTab(VaadinIcon.COG, getTranslation("adminView.title"), ROUTE_ADMIN));
+		}
+
+		/* Dossier étudiant : pour l'étudiant connecté ou pour l'enseignant qui consulte un dossier
+		 * (équivalent de l'ancien layoutDossierEtudiant) */
+		final boolean dossierVisible = etudiant != null && (etudiantConnecte || enseignant);
+		if (dossierVisible) {
+			buildDossierHeader(etudiant, !etudiantConnecte);
+			buildMenuDossier(etudiant, etudiantConnecte);
+		}
+
+		/* Ordre d'affichage : le dossier en premier pour un étudiant, en dernier pour un enseignant */
+		if (etudiantConnecte) {
+			if (dossierVisible) {
+				drawerContent.add(dossierSection);
+			}
+			drawerContent.add(menuPrincipal);
+		} else {
+			drawerContent.add(menuPrincipal);
+			if (dossierVisible) {
+				drawerContent.add(dossierSection);
+			}
+		}
+
+		aideBtn.setText(getTranslation("helpWindow.defaultTitle"));
+		drawerContent.add(aideBtn);
+
+		codEtuMenu = dossierVisible ? etudiant.getCod_etu() : null;
+	}
+
+	/**
+	 * En-tête du dossier étudiant dans le drawer : photo, statut d'inscription, nom et n° étudiant.
+	 */
+	private void buildDossierHeader(final Etudiant etudiant, final boolean afficherTitreDossier) {
+		if (afficherTitreDossier) {
+			final Span titreDossier = new Span(getTranslation("mainUI.dossier.title"));
+			titreDossier.addClassName("text-secondary");
+			titreDossier.getStyle()
+				.set("display", "block")
+				.set("text-transform", "uppercase")
+				.set("font-size", "var(--lumo-font-size-s)");
+			dossierHeader.add(titreDossier);
+		}
+
+		/* Photo de l'étudiant + indicateur d'inscription pour l'année en cours */
+		if (StringUtils.hasText(etudiant.getPhoto())) {
+			final Image photo = new Image(etudiant.getPhoto(), etudiant.getNom());
+			photo.setWidth("120px");
+			photo.addClassName("photo-mdw");
+			dossierHeader.add(photo);
+
+			String annee = "";
+			try {
+				annee = Utils.getAnneeUniversitaireEnCours(etudiantController.getAnneeUnivEnCours());
+			} catch (final Exception e) {
+				log.debug("Impossible de récupérer l'année universitaire en cours", e);
+			}
+			final Icon inscritIcon = (etudiant.isInscritPourAnneeEnCours()
+				? VaadinIcon.CHECK_CIRCLE
+				: VaadinIcon.EXCLAMATION_CIRCLE).create();
+			inscritIcon.setSize("var(--lumo-icon-size-s)");
+			final String description = getTranslation(etudiant.isInscritPourAnneeEnCours()
+				? "mainLayout.etudiant.inscrit"
+				: "mainLayout.etudiant.noninscrit", annee);
+			inscritIcon.getElement().setAttribute("title", description);
+			inscritIcon.getElement().setAttribute("aria-label", description);
+			dossierHeader.add(inscritIcon);
+		}
+
+		final Span nom = new Span(etudiant.getNom());
+		nom.addClassName("font-bold");
+		nom.getStyle().set("display", "block");
+		final Span codetu = new Span(etudiant.getCod_etu());
+		codetu.addClassName("text-secondary");
+		codetu.getStyle().set("display", "block");
+		dossierHeader.add(nom, codetu);
+	}
+
+	/**
+	 * Entrées du dossier étudiant (ancien buildMainMenuEtudiant).
+	 */
+	private void buildMenuDossier(final Etudiant etudiant, final boolean etudiantConnecte) {
+		final boolean gestionnaire = userController.isGestionnaire();
+
+		/* Etat-civil */
+		menuDossier.add(new MenuTab(VaadinIcon.USER, getTranslation("etatCivilView.title"), ROUTE_ETAT_CIVIL));
+
+		/* Informations annuelles : visibles seulement si l'étudiant en a */
+		final boolean affInfosAnnuelles = etudiantConnecte
+			|| (gestionnaire ? configController.isAffInfosAnnuellesGestionnaire() : configController.isAffInfosAnnuellesEnseignant());
+		if (affInfosAnnuelles && etudiant.getInfosAnnuelles() != null && !etudiant.getInfosAnnuelles().isEmpty()) {
+			menuDossier.add(new MenuTab(VaadinIcon.INFO_CIRCLE, getTranslation("informationsAnnuellesView.title"), ROUTE_INFORMATIONS_ANNUELLES));
+		}
+
+		/* Adresses */
+		final boolean affAdresses = etudiantConnecte
+			|| (gestionnaire ? configController.isAffAdressesGestionnaire() : configController.isAffAdressesEnseignant());
+		if (affAdresses) {
+			menuDossier.add(new MenuTab(VaadinIcon.HOME, getTranslation("adressesView.title"), ROUTE_ADRESSES));
+		}
+
+		/* Inscriptions */
+		menuDossier.add(new MenuTab(VaadinIcon.FILE_TEXT, getTranslation("inscriptionsView.title"), ROUTE_INSCRIPTIONS));
+
+		/* Calendrier des épreuves */
+		final boolean affCalendrier = etudiantConnecte
+			? configController.isAffCalendrierEpreuvesEtudiant()
+			: (gestionnaire ? configController.isAffCalendrierEpreuvesGestionnaire() : configController.isAffCalendrierEpreuvesEnseignant());
+		if (affCalendrier) {
+			menuDossier.add(new MenuTab(VaadinIcon.CALENDAR, getTranslation("calendrierView.title"), ROUTE_CALENDRIER));
+		}
+
+		/* Notes et résultats */
+		final boolean affNotes = etudiantConnecte
+			? configController.isAffNotesEtudiant()
+			: (gestionnaire ? configController.isAffNotesGestionnaire() : configController.isAffNotesEnseignant());
+		if (affNotes) {
+			menuDossier.add(new MenuTab(VaadinIcon.LIST, getTranslation("notesView.title"), ROUTE_NOTES));
+		}
+	}
+
+	/* ====================== Cycle de vie / navigation ====================== */
+
+	@Override
+	protected void onAttach(final AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+
+		/* Enregistre l'UI pour la réception de notifications */
+		uiController.registerUI(attachEvent.getUI());
+
+		updateMenu();
+
+		/* Affichage du message d'intro si besoin (préférence utilisateur) */
+		if (safeIsEnseignant()) {
+			afficherMessageIntroEnseignants(false, true);
+		} else if (safeIsEtudiant()) {
+			afficherMessageIntro(false, true);
+		}
+	}
+
+	@Override
+	protected void onDetach(final DetachEvent detachEvent) {
+		/* Se désinscrit de la réception de notifications */
+		uiController.unregisterUI(detachEvent.getUI());
+		super.onDetach(detachEvent);
+	}
+
+	/**
+	 * Avant chaque navigation : initialise le dossier de l'étudiant connecté
+	 * et bloque l'accès si l'application est en maintenance.
+	 */
+	@Override
+	public void beforeEnter(final BeforeEnterEvent event) {
+		/* On renseigne l'étudiant dont on consulte le dossier (profil étudiant) */
+		if (safeIsEtudiant() && sessionController.getEtudiant() == null) {
+			sessionController.setEtudiant(new Etudiant(userController.getCodetu()));
+			etudiantController.recupererEtatCivil();
+		}
+
+		/* Si l'application est en maintenance, on bloque l'accès
+		 * (sauf vue admin pour les administrateurs) */
+		final String route = event.getLocation().getFirstSegment();
+		if (!applicationActive()
+			&& !AccesBloqueView.NAME.equals(route)
+			&& !(ROUTE_ADMIN.equals(route) && userController.userCanAccessAdminView())) {
+			event.forwardTo(AccesBloqueView.NAME);
+		}
+	}
+
+	/**
+	 * Après chaque navigation : met à jour le menu si le dossier consulté a changé
+	 * et surligne l'entrée de menu correspondant à la vue affichée.
+	 */
+	@Override
+	public void afterNavigation(final AfterNavigationEvent event) {
+		final String codEtuCourant = sessionController.getEtudiant() != null
+			? sessionController.getEtudiant().getCod_etu()
+			: null;
+		if (!Objects.equals(codEtuCourant, codEtuMenu)) {
+			updateMenu();
+		}
+
+		final String route = event.getLocation().getFirstSegment();
+		selectTab(menuPrincipal, route);
+		selectTab(menuDossier, route);
+	}
+
+	private void selectTab(final Tabs tabs, final String route) {
+		final Optional<MenuTab> tab = tabsStream(tabs)
+			.filter(t -> t.getRoute().equals(route))
+			.findFirst();
+		tabs.setSelectedTab(tab.orElse(null));
+	}
+
+	private Stream<MenuTab> tabsStream(final Tabs tabs) {
+		return tabs.getChildren()
+			.filter(MenuTab.class::isInstance)
+			.map(MenuTab.class::cast);
+	}
+
+	/* ====================== Services aux vues ====================== */
+
+	/**
+	 * Affiche la fenêtre d'attente (ancien MainUI.startBusyIndicator).
+	 */
+	public void startBusyIndicator() {
+		loadingIndicatorWindow.open();
+	}
+
+	/**
+	 * Ferme la fenêtre d'attente (ancien MainUI.stopBusyIndicator).
+	 */
+	public void stopBusyIndicator() {
+		loadingIndicatorWindow.close();
+	}
+
+	/**
+	 * Affichage du message d'intro aux enseignants (utilisé par AssistanceView).
+	 * @param displayForced affiche le message même si l'utilisateur a demandé à ne plus le voir
+	 * @param displayCheckBox propose la case "Ne plus afficher ce message"
+	 */
+	public void afficherMessageIntroEnseignants(final boolean displayForced, final boolean displayCheckBox) {
+		afficherMessageIntro(getTranslation("helpWindow.text.enseignant"), displayForced, displayCheckBox);
+	}
+
+	/**
+	 * Affichage du message d'intro adapté au profil de l'utilisateur courant.
+	 */
+	public void afficherMessageIntro(final boolean displayForced, final boolean displayCheckBox) {
+		afficherMessageIntro(getTranslation(safeIsEtudiant() ? "helpWindow.text.etudiant" : "helpWindow.text.enseignant"),
+			displayForced, displayCheckBox);
+	}
+
+	private void afficherMessageIntro(final String text, final boolean displayForced, final boolean displayCheckBox) {
+		/* Préférence utilisateur pour l'affichage du message d'introduction */
+		final String val = userController.getPreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE);
+		final boolean afficherMessage = !StringUtils.hasText(val) || Boolean.parseBoolean(val);
+
+		if (displayForced || afficherMessage) {
+			final HelpWindow hw = new HelpWindow(text, getTranslation("helpWindow.defaultTitle"), displayCheckBox);
+			hw.addOpenedChangeListener(e -> {
+				/* À la fermeture : mémorise le choix de ne plus afficher le message */
+				if (!e.isOpened() && displayCheckBox && Boolean.TRUE.equals(hw.getCheckBox().getValue())) {
+					userController.updatePreference(Utils.SHOW_MESSAGE_INTRO_PREFERENCE, "false");
+				}
+			});
+			hw.open();
+		}
+	}
+
+	/**
+	 * Affiche la fenêtre d'aide (ancien bouton "Aide" du menu étudiant).
+	 */
+	private void afficherAide() {
+		final String text = getTranslation(safeIsEtudiant() ? "helpWindow.text.etudiant" : "helpWindow.text.enseignant");
+		new HelpBasicWindow(text, getTranslation("helpWindow.defaultTitle"), true).open();
+	}
+
+	/* ====================== Helpers ====================== */
+
+	private boolean safeIsEtudiant() {
+		try {
+			return userController.getCurrentUser() != null && userController.isEtudiant();
+		} catch (final Exception e) {
+			return false;
+		}
+	}
+
+	private boolean safeIsEnseignant() {
+		try {
+			return userController.getCurrentUser() != null && userController.isEnseignant();
+		} catch (final Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Vérifie que l'application n'est pas en maintenance pour le profil courant
+	 * (reprise de l'ancien MainUI.applicationActive()).
+	 */
+	private boolean applicationActive() {
+		final boolean etudiant = safeIsEtudiant();
+		final boolean enseignant = safeIsEnseignant();
+		final boolean gestionnaire = userController.getCurrentUser() != null && userController.isGestionnaire();
+		return configController.isApplicationActive()
+			&& ((etudiant && configController.isPartieEtudiantActive())
+				|| (!enseignant && !etudiant && !gestionnaire)
+				|| (enseignant && configController.isPartieEnseignantActive())
+				|| (gestionnaire && configController.isProfilGestionnaireActif()));
+	}
+
+	/**
+	 * Entrée du menu : un onglet portant la route de la vue cible.
+	 */
+	private static class MenuTab extends Tab {
+
+		@Getter
+		private final String route;
+
+		MenuTab(final VaadinIcon icon, final String label, final String route) {
+			this.route = route;
+			final Icon i = icon.create();
+			i.setSize("var(--lumo-icon-size-s)");
+			i.getStyle().set("margin-inline-end", "var(--lumo-space-s)");
+			add(i, new Span(label));
+		}
+	}
+}

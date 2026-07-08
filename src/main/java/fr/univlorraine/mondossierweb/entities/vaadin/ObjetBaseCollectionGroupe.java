@@ -19,8 +19,11 @@
 package fr.univlorraine.mondossierweb.entities.vaadin;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+/* equals/hashCode sur l'id seul : les instances servent de clés dans le TreeData du TreeGrid */
 @Data
+@EqualsAndHashCode(of = "id")
 public class ObjetBaseCollectionGroupe {
 	
 	private String id;

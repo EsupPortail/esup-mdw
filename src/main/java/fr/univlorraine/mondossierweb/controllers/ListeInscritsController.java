@@ -18,27 +18,24 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.vaadin.v7.ui.ComboBox;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEventHelper;
+import com.lowagie.text.pdf.PdfWriter;
 import fr.univlorraine.apowsutils.ServiceProvider;
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
@@ -74,17 +71,21 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -131,8 +132,10 @@ public class ListeInscritsController {
 	private transient ApplicationContext applicationContext;
 	@Resource
 	private transient Environment environment;
-	@Resource
-	private transient UiController uiController;
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
 	@Resource
@@ -158,7 +161,7 @@ public class ListeInscritsController {
 	 * @param parameterMap
 	 * @param annee
 	 */
-	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee, GenericUI ui){
+	public void recupererLaListeDesInscrits(Map<String, String> parameterMap, String annee){
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
 		String anneeParam = parameterMap.get("annee");
@@ -166,8 +169,8 @@ public class ListeInscritsController {
 		//Si on cherche des inscrits à une VET
 		if (type.equals(Utils.VET)) {
 
-			//init des attributs de la mainUI
-			initMainUIAttributesValues(code, type,annee, ui);
+			//init des attributs de session
+			initSessionAttributesValues(code, type,annee);
 
 			//init d'une liste d'inscrit vide
 			List<Inscrit> listeInscrits = null;
@@ -189,11 +192,11 @@ public class ListeInscritsController {
 
 				//Si on a récupéré aucune année, on ajoute l'année en cours par défaut.
 				if(annees.isEmpty()){
-					annees.add(etudiantController.getAnneeUnivEnCours(ui));
+					annees.add(etudiantController.getAnneeUnivEnCours());
 				}
 
 				//On stocke laliste des année dans l'ui
-				ui.setListeAnneeInscrits(annees);
+				sessionController.setListeAnneeInscrits(annees);
 
 				//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
 				if(anneeParam!=null){
@@ -201,35 +204,35 @@ public class ListeInscritsController {
 					e.setAnnee(anneeParam);
 				}else{
 					//Si l'année universitaire est dans la liste des années retournées
-					if(annees.contains(etudiantController.getAnneeUnivEnCours(ui))){
+					if(annees.contains(etudiantController.getAnneeUnivEnCours())){
 						//On prend l'année universitaire en cours
-						e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
+						e.setAnnee(etudiantController.getAnneeUnivEnCours());
 					}else{
 						//Sinon on sélectionne la première année de la liste
 						e.setAnnee(annees.get(0));
 					}
 				}
 				//On garde l'année positionnée au niveau de l'ui
-				ui.setAnneeInscrits(e.getAnnee());
+				sessionController.setAnneeInscrits(e.getAnnee());
 
 				//On renseigne le libellé de l'étape
 				e.setLibelle(multipleApogeeService.getLibelleEtape(e));
 
 				//On garde l'étape au niveau de l'ui
-				ui.setEtapeListeInscrits(e);
+				sessionController.setEtapeListeInscrits(e);
 
 			}else{
 				//Récupération de l'étape
-				e = ui.getEtapeListeInscrits();
+				e = sessionController.getEtapeListeInscrits();
 
 				//On modifie l'année de l'étape
 				e.setAnnee(annee);
 
 				//On met à jour l'étape au niveau de l'ui
-				ui.setEtapeListeInscrits(e);
+				sessionController.setEtapeListeInscrits(e);
 
 				//On met à jour l'année au niveau de l'ui
-				ui.setAnneeInscrits(e.getAnnee());
+				sessionController.setAnneeInscrits(e.getAnnee());
 			}
 
 			//Récupération de la liste des inscrits
@@ -238,11 +241,11 @@ public class ListeInscritsController {
 			listeInscrits = aggregateVET(listeInscrits);
 
 			//Maj des mails/photo et des groupes en fonction de la liste d'inscrits en paramètre
-			finaliserListeInscrits(listeInscrits, null,annee, ui);
+			finaliserListeInscrits(listeInscrits, null,annee);
 
 		} else {
 			//On cherche les inscrits à un ELP.
-			recupererLaListeDesInscritsELP(parameterMap, annee,ui);
+			recupererLaListeDesInscritsELP(parameterMap, annee);
 
 		}
 
@@ -254,16 +257,15 @@ public class ListeInscritsController {
 	 * Récupération des inscrits à un ELP
 	 * @param parameterMap
 	 * @param annee
-	 * @param ui
 	 */
-	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee, GenericUI ui) {
+	public void recupererLaListeDesInscritsELP(Map<String, String> parameterMap, String annee) {
 
 		String code = parameterMap.get("code");
 		String type = parameterMap.get("type");
 		String anneeParam = parameterMap.get("annee");
 
-		//init des attributs de la mainUI
-		initMainUIAttributesValues(code, type,annee, ui);
+		//init des attributs de session
+		initSessionAttributesValues(code, type,annee);
 
 		//init d'une liste d'inscrit vide
 		List<Inscrit> listeInscrits = null;
@@ -280,7 +282,7 @@ public class ListeInscritsController {
 			List<String> annees = multipleApogeeService.getDernieresAnneesUniversitaires();
 
 			//On stocke laliste des année dans l'ui
-			ui.setListeAnneeInscrits(annees);
+			sessionController.setListeAnneeInscrits(annees);
 
 			//Si on vient de la recherche arborescente et qu'on a une année présélectionnée
 			if(anneeParam!=null){
@@ -288,9 +290,9 @@ public class ListeInscritsController {
 				e.setAnnee(anneeParam);
 			}else{
 				//Si l'année universitaire est dans la liste des années retournées
-				if(annees.contains(etudiantController.getAnneeUnivEnCours(ui))){
+				if(annees.contains(etudiantController.getAnneeUnivEnCours())){
 					//On prend l'année universitaire en cours
-					e.setAnnee(etudiantController.getAnneeUnivEnCours(ui));
+					e.setAnnee(etudiantController.getAnneeUnivEnCours());
 				}else{
 					//Sinon on sélectionne la première année de la liste
 					e.setAnnee(annees.get(0));
@@ -298,26 +300,26 @@ public class ListeInscritsController {
 			}
 
 			//On garde l'année positionnée au niveau de l'ui
-			ui.setAnneeInscrits(e.getAnnee());
+			sessionController.setAnneeInscrits(e.getAnnee());
 
 			//On renseigne le libellé de l'ELP
 			e.setLibelle(elementPedagogiqueService.getLibelleElp(code));
 
 			//On stocke l'ELP au niveau de l'ui
-			ui.setElpListeInscrits(e);
+			sessionController.setElpListeInscrits(e);
 
 		}else{
 			//Récupération de l'ELP
-			e = ui.getElpListeInscrits();
+			e = sessionController.getElpListeInscrits();
 
 			//Modification de l'année de l'ELP
 			e.setAnnee(annee);
 
 			//On met à jour l'ELP au niveau de l'ui
-			ui.setElpListeInscrits(e);
+			sessionController.setElpListeInscrits(e);
 
 			//On garde l'année positionnée au niveau de l'ui
-			ui.setAnneeInscrits(e.getAnnee());
+			sessionController.setAnneeInscrits(e.getAnnee());
 		}
 
 		//Récupération de tous les inscrit à l'ELP quelque soit l'étape d'appartenance choisie dans la vue ListeInscritView
@@ -351,10 +353,10 @@ public class ListeInscritsController {
 			}
 		}
 		//On stocket la liste des étapes d'appartenance au niveau de l'ui
-		ui.setListeEtapesInscrits(letape);
+		sessionController.setListeEtapesInscrits(letape);
 
 		//Aucune étape n'est présélectionnée par défaut.
-		ui.setEtapeInscrits(null);
+		sessionController.setEtapeInscrits(null);
 
 
 		//Récupération des groupes de l'ELP
@@ -362,11 +364,11 @@ public class ListeInscritsController {
 		//Si on a récupérer des groupes
 		if(listeGroupes!=null && !listeGroupes.isEmpty()){
 			//On stocke la liste des groupes au niveau de l'ui
-			ui.setListeGroupesInscrits(listeGroupes);
+			sessionController.setListeGroupesInscrits(listeGroupes);
 		}
 
 		//Maj des mails/photo et des groupes en fonction de la liste d'inscrits en paramètre
-		finaliserListeInscrits(listeInscrits,listeGroupes,e.getAnnee(),ui);
+		finaliserListeInscrits(listeInscrits,listeGroupes,e.getAnnee());
 
 	}
 
@@ -419,29 +421,29 @@ public class ListeInscritsController {
 
 
 	/**
-	 * initialise les attributs de MainUI utilisés dans a vue listeInscritsView
+	 * initialise les attributs de session utilisés dans la vue listeInscritsView
 	 * @param code
 	 * @param type
 	 * @param annee
 	 */
-	private void initMainUIAttributesValues(String code, String type, String annee, GenericUI ui) {
-		if(ui.getListeInscrits()!=null){
-			ui.getListeInscrits().clear();
+	private void initSessionAttributesValues(String code, String type, String annee) {
+		if(sessionController.getListeInscrits()!=null){
+			sessionController.getListeInscrits().clear();
 		}
 
 		if(annee==null){
-			ui.setAnneeInscrits(null);
-			ui.setListeAnneeInscrits(null);
-			ui.setEtapeListeInscrits(null);
+			sessionController.setAnneeInscrits(null);
+			sessionController.setListeAnneeInscrits(null);
+			sessionController.setEtapeListeInscrits(null);
 		}
 
-		ui.setEtapeInscrits(null);
-		ui.setGroupeInscrits(null);
-		ui.setListeEtapesInscrits(null);
-		ui.setListeGroupesInscrits(null);
+		sessionController.setEtapeInscrits(null);
+		sessionController.setGroupeInscrits(null);
+		sessionController.setListeEtapesInscrits(null);
+		sessionController.setListeGroupesInscrits(null);
 
-		ui.setCodeObjListInscrits(code);
-		ui.setTypeObjListInscrits(type);
+		sessionController.setCodeObjListInscrits(code);
+		sessionController.setTypeObjListInscrits(type);
 
 	}
 
@@ -449,7 +451,7 @@ public class ListeInscritsController {
 	 * Finalise une liste d'inscrits pour affichage dans la vue listeInscritsView
 	 * @param listeInscrits
 	 */
-	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee, GenericUI ui) {
+	private void finaliserListeInscrits(List<Inscrit> listeInscrits,List<ElpDeCollection> listeGroupes, String annee) {
 
 		if(listeInscrits!=null && !listeInscrits.isEmpty()){
 			//setLoginInscrits(listeInscrits);
@@ -467,7 +469,7 @@ public class ListeInscritsController {
 				for(CollectionDeGroupes cdg : edc.getListeCollection()){
 					for(Groupe groupe : cdg.getListeGroupes()){
 
-						List<BigDecimal> lcodindinscrits = elementPedagogiqueService.getCodIndInscritsFromGroupe(groupe.getCleGroupe(), annee);
+						List<?> lcodindinscrits = elementPedagogiqueService.getCodIndInscritsFromGroupe(groupe.getCleGroupe(), annee);
 
 						int nbins=0;
 						for (Inscrit i : listeInscrits) {
@@ -488,15 +490,16 @@ public class ListeInscritsController {
 			}
 		}
 
-		ui.setListeInscrits(listeInscrits);
+		sessionController.setListeInscrits(listeInscrits);
 
 	}
 
 
-	private boolean listeContient(List<BigDecimal> lcodindinscrits, String cod_ind) {
+	/* Hibernate retourne Integer ou BigDecimal selon le NUMBER Oracle (EclipseLink retournait toujours BigDecimal) */
+	private boolean listeContient(List<?> lcodindinscrits, String cod_ind) {
 		if(!lcodindinscrits.isEmpty() && cod_ind!=null){
-			for(BigDecimal s: lcodindinscrits){
-				if(s.toString().equals(cod_ind)){
+			for(Object s: lcodindinscrits){
+				if(s!=null && String.valueOf(s).equals(cod_ind)){
 					return true;
 				}
 			}
@@ -556,7 +559,7 @@ public class ListeInscritsController {
 			return inscrit.getUrlphoto();
 		}
 		
-		return GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
+		return sessionController.getPhotoProvider().getUrlPhoto(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 	}
 
 
@@ -647,12 +650,12 @@ public class ListeInscritsController {
 	 * @param listecodind
 	 * @return
 	 */
-	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, ComboBox listeGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
+	public ByteArrayInputStream getXlsStream(List<Inscrit> linscrits, List<String> listecodind, Map<String, String> libellesGroupes, String libObj, String annee, String typeFavori, boolean etp, boolean s1, boolean s2, boolean grp, boolean avecInfoNaissance) {
 
 		log.debug("generation xls : "+libObj+ " "+annee+" "+linscrits.size()+ " "+listecodind.size()+ " Etape : "+etp + " S1 : "+s1+" S2 : "+s2);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-			XSSFWorkbook wb = creerExcel(linscrits, listecodind, listeGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp, avecInfoNaissance);
+			XSSFWorkbook wb = creerExcel(linscrits, listecodind, libellesGroupes,(typeFavori!=null && typeFavori.equals(Utils.VET)), etp, s1, s2, grp, avecInfoNaissance);
 			wb.write(baos);
 			byte[] bytes = baos.toByteArray();
 			return new ByteArrayInputStream(bytes);
@@ -670,7 +673,7 @@ public class ListeInscritsController {
 	 * @return le fichier excel de la liste des inscrits.
 	 */
 	@SuppressWarnings("deprecation")
-	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd,ComboBox listeGroupes, boolean isTraiteEtape, boolean withEtape, boolean withSession1, boolean withSession2, boolean withGroupe, boolean withInfoNaissance) {
+	public XSSFWorkbook creerExcel(List<Inscrit> listeInscrits, List<String> listeCodInd, Map<String, String> libellesGroupes, boolean isTraiteEtape, boolean withEtape, boolean withSession1, boolean withSession2, boolean withGroupe, boolean withInfoNaissance) {
 		//	creation du fichier excel
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet("page1");
@@ -942,7 +945,7 @@ public class ListeInscritsController {
 				//ajout info sur les groupes si il y a lieu
 				if (withGroupe) {
 					XSSFCell cellLibGroupes = rowInscrit.createCell((short) rang_cellule_inscrit);
-					String grpXls = Utils.getLibelleFromComboBox(inscrit.getCodes_groupes(), listeGroupes);
+					String grpXls = Utils.getLibellesFromCodes(inscrit.getCodes_groupes(), libellesGroupes);
 					cellLibGroupes.setCellValue(grpXls);
 					cellLibGroupes.setCellStyle(alignTopStyle);
 					rang_cellule_inscrit++;
@@ -972,7 +975,7 @@ public class ListeInscritsController {
 			docWriter = PdfWriter.getInstance(document, baosPDF);
 			// Test si on doit activer l'encryption
 			if(PropertyUtils.isEnablePdfSecurity()){
-				docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
+				docWriter.setEncryption(null, null, PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
 			}
 			docWriter.setStrictImageSequence(true);
 			docWriter.setPageEvent(new TrombinoscopeFooter(libObj, annee));
@@ -1073,10 +1076,10 @@ public class ListeInscritsController {
 
 			int compteur = 0;
 			Rectangle border = new Rectangle(0f, 0f);
-			border.setBorderColorLeft(BaseColor.WHITE);
-			border.setBorderColorBottom(BaseColor.WHITE);
-			border.setBorderColorRight(BaseColor.WHITE);
-			border.setBorderColorTop(BaseColor.WHITE);
+			border.setBorderColorLeft(Color.WHITE);
+			border.setBorderColorBottom(Color.WHITE);
+			border.setBorderColorRight(Color.WHITE);
+			border.setBorderColorTop(Color.WHITE);
 
 			String tabNom[] = new String[NB_INSCRITS_LIGNE_TROMBI_PDF];
 			String tabNum[] = new String[NB_INSCRITS_LIGNE_TROMBI_PDF];
@@ -1106,13 +1109,13 @@ public class ListeInscritsController {
 
 					compteur++;
 
-					String foto = GenericUI.getCurrent().getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
+					String foto = sessionController.getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 					Image photo = null;
 					if(foto == null || !foto.startsWith(Utils.DATA_IMAGE)) {
 						photo = Image.getInstance(foto);
 					} else {
 						String base64Image = foto.split(",")[1];
-						byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+						byte[] imageBytes = Base64.getMimeDecoder().decode(base64Image);
 						photo = Image.getInstance(imageBytes);
 					}
 					photo.scaleAbsolute(85, 107);
@@ -1237,6 +1240,6 @@ public class ListeInscritsController {
 	 * @return true si on a un serveur de photo opérationnel
 	 */
 	public boolean isPhotoProviderOperationnel() {
-		return GenericUI.getCurrent().getPhotoProvider().isOperationnel();
+		return sessionController.getPhotoProvider().isOperationnel();
 	}
 }

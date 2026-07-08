@@ -34,7 +34,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Repository
 @Slf4j
 public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
@@ -77,6 +77,7 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 				" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj, "+
 				" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_elp),null,rs.not_sub_elp,to_char(rs.not_elp)),' ')) notes,  "+
 				" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress, "+
+				" to_char(null) iae, to_char(null) ipe, "+
 				" ice.cod_etp cod_etp,ice.cod_vrs_vet cod_vrs_vet,ve.lib_web_vet lib_etp"+
 				" from apogee.individu i, apogee.ind_contrat_elp ice "+
 				" left outer join apogee.resultat_elp rs on ( rs.cod_ind = ice.cod_ind "+
@@ -116,7 +117,7 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 
 
 	@Override
-	public List<BigDecimal> getCodIndInscritsFromGroupe(String codGpe, String codAnnu) {
+	public List<?> getCodIndInscritsFromGroupe(String codGpe, String codAnnu) {
 		@SuppressWarnings("unchecked")
 
 		String requeteSQL="";
@@ -134,7 +135,7 @@ public class ElementPedagogiqueServiceImpl implements ElementPedagogiqueService{
 				"and g.COD_GPE = "+codGpe+ " "+
 				"and ind.COD_ANU= "+codAnnu+ " ";
 		}
-		List<BigDecimal> lCodindInscrits = (List<BigDecimal>)entityManagerApogee.createNativeQuery(requeteSQL).getResultList();
+		List<?> lCodindInscrits = entityManagerApogee.createNativeQuery(requeteSQL).getResultList();
 
 		return lCodindInscrits;
 	}

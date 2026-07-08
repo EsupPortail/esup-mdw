@@ -18,58 +18,35 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-
 
 /**
- * Page access refuse
+ * Page accès refusé
  */
-@Component @Scope("prototype")
-@SpringView(name = AccesRefuseView.NAME)
-public class AccesRefuseView extends VerticalLayout implements View {
+@SuppressWarnings("serial")
+@Route(value = AccesRefuseView.NAME, layout = MainLayout.class)
+public class AccesRefuseView extends VerticalLayout {
 
 	public static final String NAME = "accesRefuseView";
+	public static final String ROUTE = NAME;
 
-	
-	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
-	
 	/**
 	 * Initialise la vue
 	 */
 	@PostConstruct
 	public void init() {
 		/* Style */
-		setMargin(true);
+		setPadding(true);
 		setSpacing(true);
 
 		/* Titre */
-		Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
+		add(new H1(getTranslation(NAME + ".title")));
 
 		/* Texte */
-		addComponent(new Label(applicationContext.getMessage(NAME + ".message", null, getLocale()), ContentMode.HTML));
+		add(new Html("<div>" + getTranslation(NAME + ".message") + "</div>"));
 	}
-
-	/**
-	 * @see com.vaadin.navigator.View${symbol_pound}enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-	}
-
 }

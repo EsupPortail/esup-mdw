@@ -18,40 +18,9 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
-import com.vaadin.server.FileResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.HorizontalLayout;
-import fr.univlorraine.mondossierweb.views.AccesBloqueView;
-import fr.univlorraine.mondossierweb.views.AccesRefuseView;
-import fr.univlorraine.mondossierweb.views.AdminView;
-import fr.univlorraine.mondossierweb.views.AdressesView;
-import fr.univlorraine.mondossierweb.views.AssistanceView;
-import fr.univlorraine.mondossierweb.views.CalendrierMobileView;
-import fr.univlorraine.mondossierweb.views.CalendrierView;
-import fr.univlorraine.mondossierweb.views.ErreurView;
-import fr.univlorraine.mondossierweb.views.EtatCivilView;
-import fr.univlorraine.mondossierweb.views.FavorisMobileView;
-import fr.univlorraine.mondossierweb.views.FavorisView;
-import fr.univlorraine.mondossierweb.views.InformationsAnnuellesMobileView;
-import fr.univlorraine.mondossierweb.views.InformationsAnnuellesView;
-import fr.univlorraine.mondossierweb.views.InscriptionsView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsMobileView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsView;
-import fr.univlorraine.mondossierweb.views.NotesDetailMobileView;
-import fr.univlorraine.mondossierweb.views.NotesMobileView;
-import fr.univlorraine.mondossierweb.views.NotesView;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
-import fr.univlorraine.mondossierweb.views.RechercheMobileView;
-import fr.univlorraine.mondossierweb.views.RechercheRapideView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -195,47 +164,6 @@ public class Utils {
 	
 	public static final String APOGEE = "Apogee";
 
-	//liste des vues desktop
-	private static final String[] LISTE_VIEWS_DESKTOP = {
-		AccesBloqueView.NAME,
-		AccesRefuseView.NAME,
-		AdminView.NAME,
-		AdressesView.NAME,
-		AssistanceView.NAME,
-		CalendrierView.NAME,
-		ErreurView.NAME,
-		EtatCivilView.NAME,
-		FavorisView.NAME,
-		InformationsAnnuellesView.NAME, 
-		InscriptionsView.NAME,
-		ListeInscritsView.NAME,
-		NotesView.NAME,
-		RechercheArborescenteView.NAME,
-		RechercheRapideView.NAME
-	};
-
-	//liste des vues mobiles
-	private static final String[] LISTE_VIEWS_MOBILE = {
-		AccesBloqueView.NAME,
-		AccesRefuseView.NAME,
-		CalendrierMobileView.NAME,
-		ErreurView.NAME,
-		FavorisMobileView.NAME,
-		InformationsAnnuellesMobileView.NAME, 
-		ListeInscritsMobileView.NAME,
-		NotesDetailMobileView.NAME,
-		NotesMobileView.NAME,
-		RechercheMobileView.NAME};
-
-	//liste des vues enseignants dont l'accès est à protéger
-	private static final String[] LISTE_VIEWS_ENSEIGNANT = {RechercheRapideView.NAME,RechercheArborescenteView.NAME, FavorisView.NAME,ListeInscritsView.NAME, AssistanceView.NAME,
-		FavorisMobileView.NAME, ListeInscritsMobileView.NAME,RechercheMobileView.NAME};
-
-
-
-	
-
-	
 	/** formatage d'une Localdate pour ne garder que jour, mois , annee*/
 	public static String formatLocalDateTimeToString(LocalDateTime d){
 		if(d!=null){
@@ -301,53 +229,11 @@ public class Utils {
 	}
 
 
-	public static boolean isViewEnseignant(String viewName) {
-		for(int i=0;i<LISTE_VIEWS_ENSEIGNANT.length;i++){
-			if(LISTE_VIEWS_ENSEIGNANT[i].equals(viewName)){
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-
-	public static boolean isViewDesktop(String viewName) {
-		if(viewName!=null && viewName.contains("!")){
-			viewName = viewName.replaceAll("!", "");
-		}
-		for(int i=0;i<LISTE_VIEWS_DESKTOP.length;i++){
-			if(LISTE_VIEWS_DESKTOP[i].equals(viewName)){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isViewMobile(String viewName) {
-		if(viewName!=null && viewName.contains("!")){
-			viewName = viewName.replaceAll("!", "");
-		}
-		for(int i=0;i<LISTE_VIEWS_MOBILE.length;i++){
-			if(LISTE_VIEWS_MOBILE[i].equals(viewName)){
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static boolean getBooleanFromString(String chaine) {
 		if(StringUtils.hasText(chaine) && chaine.equals("O")){
 			return true;
 		}
 		return false;
-	}
-
-	//Formate bouton/lien pour appli mobile
-	public static void setButtonStyle(Component b){
-		b.setStyleName("v-nav-button");
-		b.addStyleName("link"); 
-		b.addStyleName("v-link");
 	}
 
 	//retourne vrai si les listes ont une valeur en commun
@@ -394,14 +280,19 @@ public class Utils {
 		}
 	}
 
-	public static String getLibelleFromComboBox(String codes, ComboBox combobox) {
+	/**
+	 * @param codes codes concaténés séparés par des points-virgules
+	 * @param libelles map code → libellé
+	 * @return les libellés correspondant aux codes, séparés par des virgules
+	 */
+	public static String getLibellesFromCodes(String codes, java.util.Map<String, String> libelles) {
 		StringBuilder bld = new StringBuilder();
 		List<String> listeCodes = Utils.splitStringFromSemiColon(codes);
 		for(String code : listeCodes){
 			if(StringUtils.hasText(bld)){
 				bld.append(", ");
 			}
-			bld.append(combobox.getItemCaption(code));
+			bld.append(libelles != null && libelles.get(code) != null ? libelles.get(code) : code);
 		}
 		return bld.toString();
 	}
@@ -415,60 +306,6 @@ public class Utils {
 		Date d = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		return dateFormat.format(d);
-	}
-
-    public static void ajoutLogoBandeau(String pathLogo, HorizontalLayout navbar) {
-		if(StringUtils.hasText(pathLogo)) {
-			FileResource resource = new FileResource(new File(pathLogo));
-			Image logo = new Image(null, resource);
-			logo.setStyleName("logo-mobile");
-			navbar.addComponent(logo);
-			navbar.setComponentAlignment(logo, Alignment.MIDDLE_LEFT);
-		}
-    }
-	public static void ajoutLogoBandeauMenu(String pathLogo, CssLayout menu, String titre) {
-		if(StringUtils.hasText(pathLogo)) {
-			FileResource resource = new FileResource(new File(pathLogo));
-			Image logo = new Image(null, resource);
-			logo.setStyleName("logo-etu-menu");
-			logo.setWidthUndefined();
-			HorizontalLayout bandeau = new HorizontalLayout();
-			bandeau.setWidthFull();
-			HorizontalLayout contenu = new HorizontalLayout();
-			contenu.setWidthUndefined();
-			contenu.addComponent(logo);
-			Label appLabel = new Label(titre);
-			appLabel.setWidthFull();
-			contenu.addComponent(appLabel);
-			contenu.setExpandRatio(appLabel, 1);
-			contenu.addStyleName("bandeau-etu-contenu");
-			bandeau.addStyleName("bandeau-etu-menu");
-			bandeau.addComponent(contenu);
-			menu.addComponent(bandeau);
-		}
-	}
-
-	public static void ajoutLogoBandeauEnseignant(String pathLogo, HorizontalLayout vue, String titre) {
-		CssLayout bandeau = new CssLayout();
-		bandeau.addStyleName("bandeau-ens-menu");
-		CssLayout contenu = new CssLayout();
-		contenu.setWidthUndefined();
-		contenu.addStyleName("contenu-ens-menu");
-
-		if (StringUtils.hasText(pathLogo)) {
-			FileResource resource = new FileResource(new File(pathLogo));
-			Image logo = new Image(null, resource);
-			logo.setStyleName("logo-ens-menu");
-			logo.setWidthUndefined();
-			contenu.addComponent(logo);
-		}
-		Label appLabel = new Label(titre);
-		appLabel.setWidthFull();
-		appLabel.setStyleName("label-ens-menu");
-		contenu.addComponent(appLabel);
-
-		bandeau.addComponent(contenu);
-		vue.addComponent(bandeau);
 	}
 
     public static boolean isEquals(String s1, String s2) {

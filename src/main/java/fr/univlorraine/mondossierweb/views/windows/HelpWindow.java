@@ -18,111 +18,76 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.VerticalLayout;
-import jakarta.annotation.Resource;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * Fenêtre d'aide
  */
 @SuppressWarnings("serial")
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class HelpWindow extends Window {
+public class HelpWindow extends Dialog {
 
-	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
 	/* Composants */
-	private Button btnFermer = new Button();
+	private final Button btnFermer = new Button();
+
 	@Getter
-	private CheckBox checkBox=new CheckBox();
-
-	public void addBtnNonListener(Button.ClickListener clickListener) {
-		btnFermer.addClickListener(clickListener);
-	}
-
-	public void removeBtnNonListener(Button.ClickListener clickListener) {
-		btnFermer.removeClickListener(clickListener);
-	}
+	private final Checkbox checkBox = new Checkbox();
 
 	/**
-	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
+	 * Crée une fenêtre d'aide
+	 * @param message contenu HTML de l'aide
+	 * @param titre titre de la fenêtre (défaut si null)
+	 * @param displayCheckBox propose la case « ne plus afficher ce message »
 	 */
-	public void init() {
-		init(null, null,false);
-	}
-
-	/**
-	 * Crée une fenêtre de confirmation avec un titre par défaut
-	 * @param message
-	 */
-	public void init(String message) {
-		init(message, null,false);
-	}
-
-	/**
-	 * Crée une fenêtre de confirmation
-	 * @param message
-	 * @param titre
-	 */
-	public void init(String message, String titre,boolean displayCheckBox) {
+	public HelpWindow(final String message, final String titre, final boolean displayCheckBox) {
 		/* Style */
-		setWidth(900, Unit.PIXELS);
-		setModal(true);
+		setWidth("900px");
+		setMaxWidth("100%");
 		setResizable(false);
-		setClosable(false);
-
-		/* Layout */
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		layout.setSpacing(true);
-		setContent(layout);
+		setCloseOnEsc(false);
+		setCloseOnOutsideClick(false);
 
 		/* Titre */
-		if (titre == null) {
-			titre = applicationContext.getMessage("helpWindow.defaultTitle", null, getLocale());
-		}
-		setCaption(titre);
+		setHeaderTitle(titre != null ? titre : getTranslation("helpWindow.defaultTitle"));
+
+		/* Layout */
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setPadding(false);
+		layout.setSpacing(true);
+		add(layout);
 
 		/* Texte */
-		Label textLabel = new Label(message,ContentMode.HTML);
-		layout.addComponent(textLabel);
+		layout.add(new Html("<div>" + message + "</div>"));
 
 		/* Boutons */
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
-		buttonsLayout.setSpacing(true);
-		layout.addComponent(buttonsLayout);
+		final HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.setWidthFull();
+		buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+		buttonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+		layout.add(buttonsLayout);
 
-		if(displayCheckBox){
-			checkBox.setCaption(applicationContext.getMessage("helpWindow.checkBox.message", null, getLocale()));
-			buttonsLayout.addComponent(checkBox);
-			buttonsLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
+		if (displayCheckBox) {
+			checkBox.setLabel(getTranslation("helpWindow.checkBox.message"));
+			buttonsLayout.add(checkBox);
 		}
 
-		btnFermer.setCaption(applicationContext.getMessage("helpWindow.btnFermer", null, getLocale()));
-		btnFermer.setIcon(FontAwesome.TIMES);
+		btnFermer.setText(getTranslation("helpWindow.btnFermer"));
+		btnFermer.setIcon(VaadinIcon.CLOSE.create());
 		btnFermer.addClickListener(e -> close());
-		buttonsLayout.addComponent(btnFermer);
-		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);
-		if(displayCheckBox){
-			buttonsLayout.setExpandRatio(checkBox, 1);
-		}
+		buttonsLayout.add(btnFermer);
+	}
 
-		/* Centre la fenêtre */
-		center();
+	public Registration addBtnNonListener(final ComponentEventListener<ClickEvent<Button>> clickListener) {
+		return btnFermer.addClickListener(clickListener);
 	}
 }

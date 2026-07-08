@@ -26,6 +26,7 @@ import jakarta.annotation.Resource;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpEntity;
@@ -76,31 +77,49 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	 */
 	private Date pdfTokenJWTExpirationDate;
 
+	@Value("${param.photoserver.urlphoto:}")
 	private String photoUrl;
 
+	@Value("${param.photoserver.urltoken:}")
 	private String tokenUrl;
 
+	@Value("${param.photoserver.urlavatar:}")
 	private String avatarUrl;
 
+	@Value("${param.photoserver.clientidheader:}")
 	private String clientIdHeader;
 
+	@Value("${param.photoserver.tokendurationheader:}")
 	private String tokenDurationHeader;
+
+	@Value("${param.photoserver.urlphototokenduration:}")
+	private String urlPhotoTokenDurationParam;
 
 	private Integer urlPhotoTokenDuration;
 
+	@Value("${param.photoserver.apikeyheader:}")
 	private String  apiKeyHeader;
 
+	@Value("${param.photoserver.loginheader:}")
 	private String  loginHeader;
 
+	@Value("${param.photoserver.clientid:}")
 	private String clientId;
 
+	@Value("${param.photoserver.clientsecret:}")
 	private String clientSecret;
 
+	@Value("${param.photoserver.displaynameheader:}")
 	private String displayNameHeader;
 
+	@Value("${param.photoserver.cypheralgo:}")
 	private String cypherAlgo;
 
+	@Value("${param.photoserver.cypherkeyalgo:}")
 	private String keyAlgo;
+
+	@Value("${param.photoserver.cypherkey:}")
+	private String cypherKeyParam;
 
 	private byte[] cypherKey;
 
@@ -108,45 +127,29 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 
 
 	public String getPhotoUrl() {
-		if(photoUrl==null){
-			photoUrl=System.getProperty("context.param.photoserver.urlphoto");
-		}
 		return photoUrl;
 	}
 
 	public String getAvatarUrl() {
-		if(avatarUrl==null){
-			avatarUrl=System.getProperty("context.param.photoserver.urlavatar");
-		}
 		return avatarUrl;
 	}
 
 	public String getTokenUrl() {
-		if(tokenUrl==null){
-			tokenUrl=System.getProperty("context.param.photoserver.urltoken");
-		}
 		return tokenUrl;
 	}
 
 	public String getClientIdHeader() {
-		if(clientIdHeader==null){
-			clientIdHeader=System.getProperty("context.param.photoserver.clientidheader");
-		}
 		return clientIdHeader;
 	}
 
 	public String getTokenDurationHeader() {
-		if(tokenDurationHeader==null){
-			tokenDurationHeader=System.getProperty("context.param.photoserver.tokendurationheader");
-		}
 		return tokenDurationHeader;
 	}
 
 	private Integer getUrlPhotoTokenDuration() {
 		if(urlPhotoTokenDuration == null){
-			String duration = System.getProperty("context.param.photoserver.urlphototokenduration");
-			if(StringUtils.hasText(duration)) {
-				urlPhotoTokenDuration=Integer.parseInt(duration);
+			if(StringUtils.hasText(urlPhotoTokenDurationParam)) {
+				urlPhotoTokenDuration=Integer.parseInt(urlPhotoTokenDurationParam);
 			} else {
 				urlPhotoTokenDuration=0;
 			}
@@ -155,58 +158,36 @@ public class PhotoUnivLorraineImplV2 implements IPhoto {
 	}
 
 	public String getApiKeyHeader() {
-		if(apiKeyHeader==null){
-			apiKeyHeader=System.getProperty("context.param.photoserver.apikeyheader");
-		}
 		return apiKeyHeader;
 	}
 
 	public String getLoginHeader() {
-		if(loginHeader==null){
-			loginHeader=System.getProperty("context.param.photoserver.loginheader");
-		}
 		return loginHeader;
 	}
 
 	public String getDisplayNameHeader() {
-		if(displayNameHeader==null){
-			displayNameHeader=System.getProperty("context.param.photoserver.displaynameheader");
-		}
 		return displayNameHeader;
 	}
 
 	public String getClientId() {
-		if(clientId==null){
-			clientId=System.getProperty("context.param.photoserver.clientid");
-		}
 		return clientId;
 	}
 
 	public String getClientSecret() {
-		if(clientSecret==null){
-			clientSecret=System.getProperty("context.param.photoserver.clientsecret");
-		}
 		return clientSecret;
 	}
 
 	private String getCypherAlgo() {
-		if(cypherAlgo==null){
-			cypherAlgo=System.getProperty("context.param.photoserver.cypheralgo");
-		}
 		return cypherAlgo;
 	}
 
 	private String getKeyAlgo() {
-		if(keyAlgo==null){
-			keyAlgo=System.getProperty("context.param.photoserver.cypherkeyalgo");
-		}
 		return keyAlgo;
 	}
 
 	private byte[] getCypherKey() {
 		if(cypherKey==null){
-			String key=System.getProperty("context.param.photoserver.cypherkey");
-			cypherKey = key.getBytes();
+			cypherKey = cypherKeyParam.getBytes();
 		}
 		return cypherKey;
 	}

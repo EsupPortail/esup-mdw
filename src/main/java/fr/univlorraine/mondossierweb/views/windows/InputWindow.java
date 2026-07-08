@@ -18,22 +18,19 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
-import jakarta.annotation.Resource;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -43,119 +40,90 @@ import java.util.Set;
  * Fenêtre de saisie
  */
 @SuppressWarnings("serial")
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class InputWindow extends Window {
+public class InputWindow extends Dialog {
 
-	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
 	/* Composants */
-	private TextField inputTextField = new TextField();
-	private Button btnOk = new Button();
-	private Button btnCancel = new Button();
+	private final TextField inputTextField = new TextField();
+	private final Button btnOk = new Button();
+	private final Button btnCancel = new Button();
 
 	/** Listeners */
 	@Getter
-	private Set<BtnOkListener> btnOkListeners = new LinkedHashSet<>();
-
-	public void addBtnOkListener(BtnOkListener btnOkListener) {
-		btnOkListeners.add(btnOkListener);
-	}
-
-	public void removeBtnOkListener(BtnOkListener btnOkListener) {
-		btnOkListeners.remove(btnOkListener);
-	}
-
-	public void addBtnCancelListener(Button.ClickListener clickListener) {
-		btnCancel.addClickListener(clickListener);
-	}
-
-	public void removeBtnCancelListener(Button.ClickListener clickListener) {
-		btnCancel.removeClickListener(clickListener);
-	}
+	private final Set<BtnOkListener> btnOkListeners = new LinkedHashSet<>();
 
 	/**
 	 * Crée une fenêtre de saisie avec un message et un titre par défaut
 	 */
-	public void init() {
-		init(null, null);
+	public InputWindow() {
+		this(null, null);
 	}
 
 	/**
 	 * Crée une fenêtre de saisie avec un titre par défaut
-	 * @param message
 	 */
-	public void init(String message) {
-		init(message, null);
+	public InputWindow(final String message) {
+		this(message, null);
 	}
 
 	/**
 	 * Crée une fenêtre de saisie
-	 * @param message
-	 * @param titre
 	 */
-	public void init(String message, String titre) {
+	public InputWindow(final String message, final String titre) {
 		/* Style */
-		setWidth(400, Unit.PIXELS);
-		setModal(true);
+		setWidth("400px");
 		setResizable(false);
-		setClosable(false);
-
-		/* Layout */
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		layout.setSpacing(true);
-		setContent(layout);
+		setCloseOnEsc(false);
+		setCloseOnOutsideClick(false);
 
 		/* Titre */
-		if (titre == null) {
-			titre = applicationContext.getMessage("inputWindow.defaultTitle", null, getLocale());
-		}
-		setCaption(titre);
+		setHeaderTitle(titre != null ? titre : getTranslation("inputWindow.defaultTitle"));
+
+		/* Layout */
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setPadding(false);
+		layout.setSpacing(true);
+		add(layout);
 
 		/* Texte */
-		if (message == null) {
-			message = applicationContext.getMessage("inputWindow.defaultMessage", null, getLocale());
-		}
-		Label textLabel = new Label(message);
-		layout.addComponent(textLabel);
+		layout.add(new Paragraph(message != null ? message : getTranslation("inputWindow.defaultMessage")));
 
 		/* Champ de saisie */
-		inputTextField.setWidth(100, Unit.PERCENTAGE);
-		inputTextField.addShortcutListener(new ShortcutListener(null, ShortcutAction.KeyCode.ENTER, null) {
-
-			@Override
-			public void handleAction(Object sender, Object target) {
-				btnOk.click();
-			}
-		});
-		layout.addComponent(inputTextField);
+		inputTextField.setWidthFull();
+		layout.add(inputTextField);
 
 		/* Boutons */
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
-		buttonsLayout.setSpacing(true);
-		layout.addComponent(buttonsLayout);
+		final HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.setWidthFull();
+		buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+		layout.add(buttonsLayout);
 
-		btnCancel.setCaption(applicationContext.getMessage("inputWindow.btnCancel", null, getLocale()));
+		btnCancel.setText(getTranslation("inputWindow.btnCancel"));
 		btnCancel.addClickListener(e -> close());
-		buttonsLayout.addComponent(btnCancel);
-		buttonsLayout.setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT);
+		buttonsLayout.add(btnCancel);
 
-		btnOk.setCaption(applicationContext.getMessage("inputWindow.btnOk", null, getLocale()));
-		btnOk.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		btnOk.setText(getTranslation("inputWindow.btnOk"));
+		btnOk.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		btnOk.addClickShortcut(Key.ENTER);
 		btnOk.addClickListener(e -> {
 			btnOkListeners.forEach(l -> l.btnOkClick(inputTextField.getValue()));
 			close();
 		});
-		buttonsLayout.addComponent(btnOk);
-		buttonsLayout.setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT);
+		buttonsLayout.add(btnOk);
 
-		/* Centre la fenêtre */
-		center();
 		/* Place le focus sur le champ de saisie */
 		inputTextField.focus();
+	}
+
+	public void addBtnOkListener(final BtnOkListener btnOkListener) {
+		btnOkListeners.add(btnOkListener);
+	}
+
+	public void removeBtnOkListener(final BtnOkListener btnOkListener) {
+		btnOkListeners.remove(btnOkListener);
+	}
+
+	public Registration addBtnCancelListener(final ComponentEventListener<ClickEvent<Button>> clickListener) {
+		return btnCancel.addClickListener(clickListener);
 	}
 
 	/**
@@ -165,6 +133,6 @@ public class InputWindow extends Window {
 		/**
 		 * Appelé lorsque Ok est cliqué.
 		 */
-		public void btnOkClick(String text);
+		void btnOkClick(String text);
 	}
 }

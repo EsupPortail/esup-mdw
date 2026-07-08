@@ -34,8 +34,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.ResultType;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -47,7 +45,7 @@ import java.util.List;
 
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Data
 @Slf4j
 public class MultipleApogeeServiceImpl implements MultipleApogeeService {
@@ -224,7 +222,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 					" decode(avc.ETA_ANO_OBJ_AOA,'V',' ',nvl(rj.cod_tre,' ')) resj , "+
 					" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(decode(to_char(rs.not_vet),null,rs.not_sub_vet,to_char(rs.not_vet)),' ')) notes , "+
 					" decode(avc2.ETA_ANO_OBJ_AOA,'V',' ',nvl(rs.cod_tre,' ')) ress,  "+
-					" case rj.tem_ip_vet when 'S' then 'Non' when 'N' then 'Oui' when 'D' then 'Dette' when 'A' then 'Crédit' else ' ' end as ipe "+
+					" case rj.tem_ip_vet when 'S' then 'Non' when 'N' then 'Oui' when 'D' then 'Dette' when 'A' then 'Crédit' else ' ' end as ipe, "+
+					" to_char(null) cod_etp, to_char(null) cod_vrs_vet, to_char(null) lib_etp "+
 					" from apogee.individu i , apogee.resultat_vet rj  "+
 					" left outer join apogee.resultat_vet rs on ( rs.cod_ind = rj.cod_ind   "+
 					" and rs.tem_iae_ko_vet in ('0','2')  "+
@@ -370,9 +369,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			try{
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
-				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
-
-				@SuppressWarnings("unchecked")
 				String codPcsSalarie = (String) query.getSingleResult();
 
 				if(StringUtils.hasText(codPcsSalarie)){
@@ -403,9 +399,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			try{
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
-				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
-
-				@SuppressWarnings("unchecked")
 				String temBrsIaa = (String) query.getSingleResult();
 
 				if(StringUtils.hasText(temBrsIaa)){
@@ -421,8 +414,8 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	@Override
 	public int getNbPJnonValides(String cod_ind, String cod_anu) {
 		if(StringUtils.hasText(cod_ind) && StringUtils.hasText(cod_anu)){
-			@SuppressWarnings("unchecked")
-			BigDecimal nbPJnonValides = (BigDecimal)entityManagerApogee.createNativeQuery("select count(*) from TELEM_IAA_TPJ tit, INS_ADM_ANU iaa "+
+			/* Number : Hibernate retourne Integer/Long/BigDecimal selon le NUMBER Oracle */
+			Number nbPJnonValides = (Number)entityManagerApogee.createNativeQuery("select count(*) from TELEM_IAA_TPJ tit, INS_ADM_ANU iaa "+
 				"where iaa.COD_ANU = "+cod_anu+" "+
 				"and iaa.cod_ind = tit.cod_ind "+
 				"and iaa.ETA_IAA = 'E' "+
@@ -450,9 +443,9 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 
 	@Override
-	public List<BigDecimal> getCodRvn(String cod_ind, String cod_anu, String listeCodesElp) {
+	public List<?> getCodRvn(String cod_ind, String cod_anu, String listeCodesElp) {
 		@SuppressWarnings("unchecked")
-		List<BigDecimal> codRvn = (List<BigDecimal>)entityManagerApogee.createNativeQuery("select distinct cod_rvn "+
+		List<?> codRvn = entityManagerApogee.createNativeQuery("select distinct cod_rvn "+
 			" from trav_ext_rvm_res"+
 			" where cod_ind = "+cod_ind+
 			" and cod_obj_mnp in ("+listeCodesElp+") "+
@@ -461,7 +454,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	}
 
 	@Override
-	public String getCodSignataireRvn(BigDecimal cod_rvn) {
+	public String getCodSignataireRvn(Number cod_rvn) {
 		@SuppressWarnings("unchecked")
 		String codSig = (String)entityManagerApogee.createNativeQuery("select distinct s.cod_sig "+
 			" from trav_ext_rvm_res t, releve_note rn, signataire s"+
@@ -496,7 +489,6 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 			try{
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-				query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
 				String temSesUni = (String) query.getSingleResult();
 				log.debug("getTemSesUniVet "+codEtp + "/" + codVrsVet +" => " + temSesUni);
 				if(StringUtils.hasText(temSesUni) && temSesUni.equals(Utils.TEM_SES_UNI)) {

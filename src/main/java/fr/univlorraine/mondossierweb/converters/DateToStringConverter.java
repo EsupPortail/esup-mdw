@@ -18,47 +18,37 @@
  */
 package fr.univlorraine.mondossierweb.converters;
 
-import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
 import fr.univlorraine.mondossierweb.utils.Utils;
 
 import java.util.Date;
-import java.util.Locale;
 
+/**
+ * Convertisseur String (dd/MM/yyyy) ↔ {@link Date} pour les Binder Vaadin Flow.
+ */
 @SuppressWarnings("serial")
 public class DateToStringConverter implements Converter<String, Date> {
 
 	@Override
-	public Date convertToModel(String value, Class<? extends Date> targetType,
-			Locale locale)
-			throws ConversionException {
-
-
-		 if (value == null) {
-	            return null;
-	        }
-	       return Utils.formatDateFromString(value);
-	        
+	public Result<Date> convertToModel(String value, ValueContext context) {
+		if (value == null || value.isEmpty()) {
+			return Result.ok(null);
+		}
+		Date date = Utils.formatDateFromString(value);
+		if (date == null) {
+			return Result.error("Date invalide : " + value);
+		}
+		return Result.ok(date);
 	}
 
 	@Override
-	public String convertToPresentation(Date value,
-			Class<? extends String> targetType, Locale locale)
-			throws ConversionException {
+	public String convertToPresentation(Date value, ValueContext context) {
 		if (value == null) {
-            return null;
-        } else {
-            return Utils.formatDateToString(value);
-        }
-	}
-
-	@Override
-	public Class<Date> getModelType() {
-		return Date.class;
-	}
-
-	@Override
-	public Class<String> getPresentationType() {
-		return String.class;
+			return null;
+		}
+		return Utils.formatDateToString(value);
 	}
 
 }

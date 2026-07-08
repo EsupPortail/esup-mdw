@@ -19,7 +19,6 @@
 package fr.univlorraine.mondossierweb.controllers;
 
 import fr.univlorraine.apowsutils.ServiceProvider;
-import fr.univlorraine.mondossierweb.MainUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.AdministratifMetier.AdministratifMetierServiceInterface;
@@ -34,7 +33,9 @@ import gouv.education.apogee.commun.client.ws.GeographieMetier.GeographieMetierS
 import gouv.education.apogee.commun.client.ws.GeographieMetier.PaysDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -61,6 +62,10 @@ public class AdresseController {
 	private transient Environment environment;
 	@Resource
 	private transient EtudiantController etudiantController;
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 
 	/**
 	 * proxy pour faire appel aux infos concernant un étudiant.
@@ -231,10 +236,10 @@ public class AdresseController {
 				//on rapatrie le type d'hebergement dans adresse fixe
 				adresseFixe.setType(adresseAnnuelle.getType());	
 				//on fait la maj dans apogee en utilisant l'adresse fixe
-				succes = majAdressesApogee(adresseFixe,adresseFixe, MainUI.getCurrent().getEtudiant().getCod_etu());
+				succes = majAdressesApogee(adresseFixe,adresseFixe, sessionController.getEtudiant().getCod_etu());
 			}else{
 				//on fait la maj dans apogee en utilisant l'adresse fixe et l'adresse annuelle
-				succes = majAdressesApogee(adresseAnnuelle,adresseFixe, MainUI.getCurrent().getEtudiant().getCod_etu());
+				succes = majAdressesApogee(adresseAnnuelle,adresseFixe, sessionController.getEtudiant().getCod_etu());
 			}
 
 

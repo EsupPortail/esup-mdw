@@ -21,7 +21,6 @@ package fr.univlorraine.mondossierweb.controllers;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import fr.univlorraine.apowsutils.ServiceProvider;
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.Adresse;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
@@ -65,7 +64,9 @@ import gouv.education.apogee.commun.client.ws.ScolariteMetier.SpecialiteBacDTO2;
 import gouv.education.apogee.commun.client.ws.ScolariteMetier.WebBaseException_Exception;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -104,8 +105,6 @@ public class EtudiantController {
 	@Resource
 	private ElementPedagogiqueService elementPedagogiqueService;
 	@Resource
-	private transient UiController uiController;
-	@Resource
 	private transient UserController userController;
 	@Resource
 	private transient ConfigController configController;
@@ -139,11 +138,15 @@ public class EtudiantController {
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
 
+	/* Injection lazy : casse le cycle etudiantController <-> ssoController */
 	@Resource
+	@Lazy
 	private transient SsoController ssoController;
 
-	/*@Resource
-	private SessionController sessionController;*/
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 
 
 	public boolean isEtudiantExiste(String codetu){
@@ -168,120 +171,120 @@ public class EtudiantController {
 
 	public void recupererEtatCivil() {
 
-		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
+		if(sessionController.getEtudiant()!=null && StringUtils.hasText(sessionController.getEtudiant().getCod_etu())){
 			try {
 				//informations générales :
 				IdentifiantsEtudiantDTO2 idetu;
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
-					idetu = etudiantService.recupererIdentifiantsEtudiantV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "N");
+					idetu = etudiantService.recupererIdentifiantsEtudiantV2(sessionController.getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "N");
 				} else {
-					idetu = etudiantService.recupererIdentifiantsEtudiantV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "O");
+					idetu = etudiantService.recupererIdentifiantsEtudiantV2(sessionController.getEtudiant().getCod_etu(), null, null, null, null, null, null, null, "O");
 				}
 
 				String codInd = idetu.getCodInd().toString();
-				GenericUI.getCurrent().getEtudiant().setCod_ind(codInd);
+				sessionController.getEtudiant().setCod_ind(codInd);
 
 				//Gestion des codine null
 				//if(idetu.getNumeroINE() != null && idetu.getCleINE() != null ){
 				if(idetu.getNumeroINE() != null ){
-					//GenericUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE() + idetu.getCleINE());
-					GenericUI.getCurrent().getEtudiant().setCod_nne(idetu.getNumeroINE());
+					//sessionController.getEtudiant().setCod_nne(idetu.getNumeroINE() + idetu.getCleINE());
+					sessionController.getEtudiant().setCod_nne(idetu.getNumeroINE());
 				}else{
-					GenericUI.getCurrent().getEtudiant().setCod_nne("");
+					sessionController.getEtudiant().setCod_nne("");
 				}
 
 
-				GenericUI.getCurrent().getEtudiant().setPhoto(GenericUI.getCurrent().getPhotoProvider().getUrlPhoto(GenericUI.getCurrent().getEtudiant().getCod_ind(),GenericUI.getCurrent().getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
+				sessionController.getEtudiant().setPhoto(sessionController.getPhotoProvider().getUrlPhoto(sessionController.getEtudiant().getCod_ind(),sessionController.getEtudiant().getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName()));
 
 
 				if (!PropertyUtils.isRecupMailAnnuaireApogee()) {
 					// on passe par emailConverter pour récupérer l'e-mail.
-					GenericUI.getCurrent().getEtudiant().setEmail(emailConverter.getMail(GenericUI.getCurrent().getEtudiant().getCod_etu()));
+					sessionController.getEtudiant().setEmail(emailConverter.getMail(sessionController.getEtudiant().getCod_etu()));
 				} else {
 					//on récupérer l'e-mail grâce au WS.
-					GenericUI.getCurrent().getEtudiant().setEmail(idetu.getEmailAnnuaire());
+					sessionController.getEtudiant().setEmail(idetu.getEmailAnnuaire());
 				}
 
-				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
+				InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(sessionController.getEtudiant().getCod_etu());
 
 				InfoUsageEtatCivil iuec= multipleApogeeService.getInfoUsageEtatCivilFromCodInd(codInd);
 				log.debug("InfoUsageEtatCivil codCiv:"+iuec.getCodCiv()+" temPrUsage:"+ iuec.isTemPrUsage()+ " codSexEtaCiv:" +iuec.getCodSexEtatCiv()+" libPrEtaCiv:"+iuec.getLibPrEtaCiv());
-				GenericUI.getCurrent().getEtudiant().setCodCiv(iuec.getCodCiv());
-				GenericUI.getCurrent().getEtudiant().setSexEtatCiv(iuec.getCodSexEtatCiv());
-				GenericUI.getCurrent().getEtudiant().setPrenomEtatCiv(iuec.getLibPrEtaCiv());
-				GenericUI.getCurrent().getEtudiant().setTemPrUsage(iuec.isTemPrUsage());
+				sessionController.getEtudiant().setCodCiv(iuec.getCodCiv());
+				sessionController.getEtudiant().setSexEtatCiv(iuec.getCodSexEtatCiv());
+				sessionController.getEtudiant().setPrenomEtatCiv(iuec.getLibPrEtaCiv());
+				sessionController.getEtudiant().setTemPrUsage(iuec.isTemPrUsage());
 
 				//Utilisant du nom patronymique
-				GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomPatronymique());
+				sessionController.getEtudiant().setNomAffichage(iaetu.getNomPatronymique());
 
 				//Si afichage utilisant le nom usuel
 				if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_BASIQUE)
 					&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("")){
-					GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomUsuel());
+					sessionController.getEtudiant().setNomAffichage(iaetu.getNomUsuel());
 				}else if(PropertyUtils.getTypeAffichageNomEtatCivil().equals(PropertyUtils.AFFICHAGE_NOM_STANDARD)
 					&& iaetu.getNomUsuel() != null && !iaetu.getNomUsuel().equals("") && !iaetu.getNomUsuel().equals(iaetu.getNomPatronymique())){
 					//Si affichage avec nom patronymique ET usuel et si nom usuel non null et différent du nom patronymique
-					GenericUI.getCurrent().getEtudiant().setNomAffichage(iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
+					sessionController.getEtudiant().setNomAffichage(iaetu.getNomPatronymique()+ " ("+iaetu.getNomUsuel()+")");
 				}
 
-				GenericUI.getCurrent().getEtudiant().setNom(iaetu.getPrenom1()+ " "+GenericUI.getCurrent().getEtudiant().getNomAffichage());
+				sessionController.getEtudiant().setNom(iaetu.getPrenom1()+ " "+sessionController.getEtudiant().getNomAffichage());
 
 				//informations sur la naissance :
 				//la nationalité:
 				if (iaetu.getNationaliteDTO() != null) {
-					GenericUI.getCurrent().getEtudiant().setNationalite(iaetu.getNationaliteDTO().getLibNationalite());
+					sessionController.getEtudiant().setNationalite(iaetu.getNationaliteDTO().getLibNationalite());
 				} else {
-					GenericUI.getCurrent().getEtudiant().setNationalite("");
+					sessionController.getEtudiant().setNationalite("");
 				}
 				//la date de naissance:
 				if (iaetu.getDateNaissance() != null) {
-					GenericUI.getCurrent().getEtudiant().setDatenaissance(Utils.formatLocalDateTimeToString(iaetu.getDateNaissance()));
+					sessionController.getEtudiant().setDatenaissance(Utils.formatLocalDateTimeToString(iaetu.getDateNaissance()));
 				} else {
-					GenericUI.getCurrent().getEtudiant().setDatenaissance("");
+					sessionController.getEtudiant().setDatenaissance("");
 				}
 				//la ville de naissance:
-				GenericUI.getCurrent().getEtudiant().setLieunaissance(iaetu.getLibVilleNaissance());
+				sessionController.getEtudiant().setLieunaissance(iaetu.getLibVilleNaissance());
 
 				//récupération du département ou du pays de naissance:
 				if (iaetu.getDepartementNaissance() != null ) {
-					GenericUI.getCurrent().getEtudiant().setDepartementnaissance(iaetu.getDepartementNaissance().getLibDept());
+					sessionController.getEtudiant().setDepartementnaissance(iaetu.getDepartementNaissance().getLibDept());
 				} else {
 					if (iaetu.getPaysNaissance() != null) {
-						GenericUI.getCurrent().getEtudiant().setDepartementnaissance(iaetu.getPaysNaissance().getLibPay());
+						sessionController.getEtudiant().setDepartementnaissance(iaetu.getPaysNaissance().getLibPay());
 					} else {
-						GenericUI.getCurrent().getEtudiant().setDepartementnaissance("");
+						sessionController.getEtudiant().setDepartementnaissance("");
 					}
 				}
 
 				//informations sur l'inscription universitaire :
-				GenericUI.getCurrent().getEtudiant().setAnneeInscriptionUniversitaire(iaetu.getAnneePremiereInscEnsSup());
+				sessionController.getEtudiant().setAnneeInscriptionUniversitaire(iaetu.getAnneePremiereInscEnsSup());
 
 				if (iaetu.getEtbPremiereInscUniv() != null) {
-					GenericUI.getCurrent().getEtudiant().setEtablissement(iaetu.getEtbPremiereInscUniv().getLibEtb());
+					sessionController.getEtudiant().setEtablissement(iaetu.getEtbPremiereInscUniv().getLibEtb());
 				} else {
-					GenericUI.getCurrent().getEtudiant().setEtablissement("");
+					sessionController.getEtudiant().setEtablissement("");
 				}
 
 
 				//informations sur le(s) bac(s) :
-				if (GenericUI.getCurrent().getEtudiant().getListeBac() != null && !GenericUI.getCurrent().getEtudiant().getListeBac().isEmpty()) {
-					GenericUI.getCurrent().getEtudiant().getListeBac().clear();
+				if (sessionController.getEtudiant().getListeBac() != null && !sessionController.getEtudiant().getListeBac().isEmpty()) {
+					sessionController.getEtudiant().getListeBac().clear();
 				} else {
-					GenericUI.getCurrent().getEtudiant().setListeBac(new ArrayList<BacEtatCivil>());
+					sessionController.getEtudiant().setListeBac(new ArrayList<BacEtatCivil>());
 				}
 
-				GenericUI.getCurrent().setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
-				log.debug("anneeUnivEnCours : "+GenericUI.getCurrent().getAnneeUnivEnCours());
-				GenericUI.getCurrent().getEtudiant().setInfosAnnuelles(new LinkedList<InfosAnnuelles> ());
+				sessionController.setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
+				log.debug("anneeUnivEnCours : "+sessionController.getAnneeUnivEnCours());
+				sessionController.getEtudiant().setInfosAnnuelles(new LinkedList<InfosAnnuelles> ());
 				try{
 					// Initialisation des paramètres
-					int anneeApo = Integer.parseInt(GenericUI.getCurrent().getAnneeUnivEnCours());
+					int anneeApo = Integer.parseInt(sessionController.getAnneeUnivEnCours());
 					int anneeMin = anneeApo - configController.getNbAnneesInfosAnnuelles() + 1;
 					
 					//Appel du WebService
-					List<InsAdmAnuDTO2> iaad2 = administratifService.recupererIAAnnuellesV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), 
-						configController.getNbAnneesInfosAnnuelles() == 1 ? GenericUI.getCurrent().getAnneeUnivEnCours() : "toutes", "ARE");
+					List<InsAdmAnuDTO2> iaad2 = administratifService.recupererIAAnnuellesV2(sessionController.getEtudiant().getCod_etu(), 
+						configController.getNbAnneesInfosAnnuelles() == 1 ? sessionController.getAnneeUnivEnCours() : "toutes", "ARE");
 					
 					// Si on a récupéré des données
 					if(iaad2!=null){
@@ -312,23 +315,23 @@ public class EtudiantController {
 									// Si l'IA est sur l'année en cours dans Apogée
 									if(iaAnneeApoEnCours) {
 										// On met à jour le témoin étudiant inscrit pour l'année en cours
-										GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(true);
+										sessionController.getEtudiant().setInscritPourAnneeEnCours(true);
 
 										// Récuperation du statut
 										if(iaad.getStatut() != null && iaad.getStatut().getCode() != null){
-											GenericUI.getCurrent().getEtudiant().setStatut(iaad.getStatut().getCode());
+											sessionController.getEtudiant().setStatut(iaad.getStatut().getCode());
 										}
 
 										// Récuperation du témoin d'affiliation à la sécu
-										GenericUI.getCurrent().getEtudiant().setAffilieSso(iaad.getTemoinAffiliationSS() != null && iaad.getTemoinAffiliationSS().equals("O"));
+										sessionController.getEtudiant().setAffilieSso(iaad.getTemoinAffiliationSS() != null && iaad.getTemoinAffiliationSS().equals("O"));
 
 										// Récuperation du régime d'inscription
 										if(iaad.getRegimeIns() != null && StringUtils.hasText(iaad.getRegimeIns().getLibRgi())){
-											GenericUI.getCurrent().getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
+											sessionController.getEtudiant().setRegimeIns(iaad.getRegimeIns().getLibRgi());
 										}
 
 										// Récuperation du témoin dossier d'inscription validé
-										GenericUI.getCurrent().getEtudiant().setTemDossierInscriptionValide(iaad.getEtatIaa().getTemDosIAA() != null && iaad.getEtatIaa().getTemDosIAA().equals("O"));
+										sessionController.getEtudiant().setTemDossierInscriptionValide(iaad.getEtatIaa().getTemDosIAA() != null && iaad.getEtatIaa().getTemDosIAA().equals("O"));
 									}
 
 									// Récupération informations pour l'onglet "Informations annuelles"
@@ -338,34 +341,34 @@ public class EtudiantController {
 									infos.setLibelle(Utils.getAnneeUniversitaireEnCours(anneeIaa));
 
 									// Si boursier
-									infos.setBoursier(multipleApogeeService.isBoursier(GenericUI.getCurrent().getEtudiant().getCod_ind(), anneeIaa));
+									infos.setBoursier(multipleApogeeService.isBoursier(sessionController.getEtudiant().getCod_ind(), anneeIaa));
 
 									// Si témoin aménagement d'étude valué à O
 									infos.setTemAmenagementEtude(iaad.getTemRgmAmgEtuIAA()!=null && iaad.getTemRgmAmgEtuIAA().equals("O"));
 
 									// Si salarie
-									infos.setTemSalarie(multipleApogeeService.isSalarie(GenericUI.getCurrent().getEtudiant().getCod_ind(), anneeIaa));
+									infos.setTemSalarie(multipleApogeeService.isSalarie(sessionController.getEtudiant().getCod_ind(), anneeIaa));
 
 									if(configController.isAffNumerosAnonymat()) {
 										//On recupere les numeros d'anonymat
-										infos.setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(GenericUI.getCurrent().getEtudiant().getCod_etu(), anneeIaa));
+										infos.setNumerosAnonymat(multipleApogeeService.getNumeroAnonymat(sessionController.getEtudiant().getCod_etu(), anneeIaa));
 									}
 
 									// Ajout des informations dans la liste
-									GenericUI.getCurrent().getEtudiant().getInfosAnnuelles().add(0, infos);
+									sessionController.getEtudiant().getInfosAnnuelles().add(0, infos);
 								}
 							}
 						}
 						// Si aucune inscription valide pour l'année en cours dans Apogée n'a été trouvée
 						if(!insOkTrouvee.contains(anneeApo)){
-							GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
+							sessionController.getEtudiant().setInscritPourAnneeEnCours(false);
 						}
 					}else{
-						GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
+						sessionController.getEtudiant().setInscritPourAnneeEnCours(false);
 					}
 				} catch (Exception ex) {
-					GenericUI.getCurrent().getEtudiant().setInscritPourAnneeEnCours(false);
-					log.warn("Aucune IA remontée par le WS pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu()+" pour l'année "+GenericUI.getCurrent().getAnneeUnivEnCours());
+					sessionController.getEtudiant().setInscritPourAnneeEnCours(false);
+					log.warn("Aucune IA remontée par le WS pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu()+" pour l'année "+sessionController.getAnneeUnivEnCours());
 				} 
 
 				TableauIndBacDTO2 bacvo = iaetu.getListeBacs();
@@ -409,14 +412,14 @@ public class EtudiantController {
 							bec.setLicSpeBacPre(getSpecialiteBac(bac.getCodSpeBacPre()));
 							bec.setLicSpe1Bac(getSpecialiteBac(bac.getCodSpe1Bac()));
 							bec.setLicSpe2Bac(getSpecialiteBac(bac.getCodSpe2Bac()));
-							GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
+							sessionController.getEtudiant().getListeBac().add(bec);
 						}
 					}
 				} else {
-					log.warn("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme avec le WS: AUCUN BAC RETOURNE, lors de la recherche de l'état-civil pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu());
 					BacEtatCivil bec = new BacEtatCivil();
 					bec.setLib_bac("/");
-					GenericUI.getCurrent().getEtudiant().getListeBac().add(bec);
+					sessionController.getEtudiant().getListeBac().add(bec);
 				}
 
 				//On vérifie si l'étudiant est interdit de consultation de ses notes
@@ -424,7 +427,7 @@ public class EtudiantController {
 				//Si on a paramétré des codes bloquant
 				if(lcodesBloquant!=null && !lcodesBloquant.isEmpty()){
 					//Récupération des éventuels blocage pour l'étudiant
-					List<String> lblo = multipleApogeeService.getListeCodeBlocage(GenericUI.getCurrent().getEtudiant().getCod_etu());
+					List<String> lblo = multipleApogeeService.getListeCodeBlocage(sessionController.getEtudiant().getCod_etu());
 					// Si l'étudiant a des blocages
 					if(lblo!=null && !lblo.isEmpty()){
 						//Parcours des blocage
@@ -432,7 +435,7 @@ public class EtudiantController {
 							//Si le blocage est dans la liste des blocages configurés comme bloquant
 							if(codblo != null && lcodesBloquant.contains(codblo)){
 								//étudiant non autorise a consulter ses notes
-								GenericUI.getCurrent().getEtudiant().setNonAutoriseConsultationNotes(true);
+								sessionController.getEtudiant().setNonAutoriseConsultationNotes(true);
 							}
 						}
 					}
@@ -443,20 +446,20 @@ public class EtudiantController {
 
 			} catch (ServerSOAPFaultException ssx) {
 				//Erreur côté WebService (ex : data.nullretrieve)
-				log.warn("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ssx);
-				GenericUI.getCurrent().setEtudiant(null);
+				log.warn("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu(),ssx);
+				sessionController.setEtudiant(null);
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
-				log.warn("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),cte);
-				GenericUI.getCurrent().setEtudiant(null);
+				log.warn("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu(),cte);
+				sessionController.setEtudiant(null);
 			} catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					log.warn("Probleme " + ex.getMessage() + " lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu());
+					log.warn("Probleme " + ex.getMessage() + " lors de la recherche de l'état-civil pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu());
 				}else {
-					log.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+					log.error("Probleme lors de la recherche de l'état-civil pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu(),ex);
 				}
 				//On met l'étudiant à null pour remonter le problème
-				GenericUI.getCurrent().setEtudiant(null);
+				sessionController.setEtudiant(null);
 			}
 		}
 
@@ -530,10 +533,10 @@ public class EtudiantController {
 
 	public void recupererAdresses() {
 
-		if(GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_etu())){
+		if(sessionController.getEtudiant()!=null && StringUtils.hasText(sessionController.getEtudiant().getCod_etu())){
 
 			try{
-				List<String> annees =  administratifService.recupererAnneesIa(GenericUI.getCurrent().getEtudiant().getCod_etu(), null);
+				List<String> annees =  administratifService.recupererAnneesIa(sessionController.getEtudiant().getCod_etu(), null);
 
 				if(annees!=null && !annees.isEmpty()){
 					//récupération de l'année la plus récente
@@ -545,12 +548,12 @@ public class EtudiantController {
 					}
 
 					//récupération des coordonnées :
-					CoordonneesDTO2 cdto = etudiantService.recupererAdressesEtudiantV2(GenericUI.getCurrent().getEtudiant().getCod_etu(), annee, "N");
+					CoordonneesDTO2 cdto = etudiantService.recupererAdressesEtudiantV2(sessionController.getEtudiant().getCod_etu(), annee, "N");
 
 					//récupération des adresses, annuelle et fixe :
 					annee = cdto.getAnnee();
-					GenericUI.getCurrent().getEtudiant().setEmailPerso(cdto.getEmail());
-					GenericUI.getCurrent().getEtudiant().setTelPortable(cdto.getNumTelPortable());
+					sessionController.getEtudiant().setEmailPerso(cdto.getEmail());
+					sessionController.getEtudiant().setTelPortable(cdto.getNumTelPortable());
 
 
 					AdresseDTO2 ada = cdto.getAdresseAnnuelle();
@@ -596,7 +599,7 @@ public class EtudiantController {
 							adresseAnnuelle.setPays("");
 						}
 
-						GenericUI.getCurrent().getEtudiant().setAdresseAnnuelle(adresseAnnuelle);
+						sessionController.getEtudiant().setAdresseAnnuelle(adresseAnnuelle);
 					}
 					if (adf != null) {
 
@@ -629,22 +632,22 @@ public class EtudiantController {
 							adresseFixe.setPays("");
 						}
 
-						GenericUI.getCurrent().getEtudiant().setAdresseFixe(adresseFixe);
+						sessionController.getEtudiant().setAdresseFixe(adresseFixe);
 					}
 				}else{
-					log.warn("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()));
+					log.warn("Probleme lors de la recherche des annees d'IA pour etudiant dont codetu est : " + LogMaskingUtil.mask(sessionController.getEtudiant().getCod_etu()));
 				}
 			} catch (ServerSOAPFaultException ssx) {
 				//Erreur côté WebService (ex : data.nullretrieve)
-				log.warn("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),ssx);
+				log.warn("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(sessionController.getEtudiant().getCod_etu()),ssx);
 			} catch (ClientTransportException cte) {
 				//Erreur Bad Gateway
-				log.warn("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),cte);
+				log.warn("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(sessionController.getEtudiant().getCod_etu()),cte);
 			}  catch (Exception ex) {
 				if(ex != null && ex.getMessage() != null && ex.getMessage().contains("technical.data.nullretrieve")) {
-					log.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()));
+					log.warn("Probleme "+ex.getMessage()+" lors de la recherche de l'adresse pour etudiant dont codetu est : " + LogMaskingUtil.mask(sessionController.getEtudiant().getCod_etu()));
 				}else {
-					log.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+					log.error("Probleme lors de la recherche de l'adresse pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu(),ex);
 				}
 			}
 		}
@@ -657,24 +660,24 @@ public class EtudiantController {
 	 */
 	public void recupererInscriptions() {
 		try {
-			if(GenericUI.getCurrent().getEtudiant().getLinsciae()!=null){
-				GenericUI.getCurrent().getEtudiant().getLinsciae().clear();
+			if(sessionController.getEtudiant().getLinsciae()!=null){
+				sessionController.getEtudiant().getLinsciae().clear();
 			}else{
-				GenericUI.getCurrent().getEtudiant().setLinsciae(new LinkedList<Inscription>());
+				sessionController.getEtudiant().setLinsciae(new LinkedList<Inscription>());
 			}
 
-			if(GenericUI.getCurrent().getEtudiant().getLinscdac()!=null){
-				GenericUI.getCurrent().getEtudiant().getLinscdac().clear();
+			if(sessionController.getEtudiant().getLinscdac()!=null){
+				sessionController.getEtudiant().getLinscdac().clear();
 			}else{
-				GenericUI.getCurrent().getEtudiant().setLinscdac(new LinkedList<Inscription>());
+				sessionController.getEtudiant().setLinscdac(new LinkedList<Inscription>());
 			}
 
 
-			GenericUI.getCurrent().getEtudiant().setLibEtablissement(multipleApogeeService.getLibEtablissementDef());
+			sessionController.getEtudiant().setLibEtablissement(multipleApogeeService.getLibEtablissementDef());
 
 			//cursus au sein de l'université:
 
-			List<InsAdmEtpDTO3> insdtotab = administratifService.recupererIAEtapesV3(GenericUI.getCurrent().getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
+			List<InsAdmEtpDTO3> insdtotab = administratifService.recupererIAEtapesV3(sessionController.getEtudiant().getCod_etu(), "toutes", "ARE", "ARE");
 
 			if(insdtotab!=null && !insdtotab.isEmpty()){
 				for (InsAdmEtpDTO3 insdto : insdtotab) {
@@ -728,14 +731,14 @@ public class EtudiantController {
 						}
 
 						//ajout de l'inscription à la liste
-						GenericUI.getCurrent().getEtudiant().getLinsciae().add(0, insc);
+						sessionController.getEtudiant().getLinsciae().add(0, insc);
 					}
 				}
 			}
 
 			//Autres cursus : 
 
-			CursusExternesEtTransfertsDTO ctdto = administratifService.recupererCursusExterne(GenericUI.getCurrent().getEtudiant().getCod_etu());
+			CursusExternesEtTransfertsDTO ctdto = administratifService.recupererCursusExterne(sessionController.getEtudiant().getCod_etu());
 
 			if (ctdto != null) {
 				TableauCursusExterneDto listeCursusExt = ctdto.getListeCursusExternes();
@@ -778,7 +781,7 @@ public class EtudiantController {
 								}
 							} 
 
-							GenericUI.getCurrent().getEtudiant().getLinscdac().add(insc);
+							sessionController.getEtudiant().getLinscdac().add(insc);
 						}
 					}
 				}
@@ -786,39 +789,39 @@ public class EtudiantController {
 
 
 			//première inscription universitaire :
-			InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(GenericUI.getCurrent().getEtudiant().getCod_etu());
+			InfoAdmEtuDTO4 iaetu = etudiantService.recupererInfosAdmEtuV4(sessionController.getEtudiant().getCod_etu());
 			if (iaetu != null) {
-				GenericUI.getCurrent().getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
-				GenericUI.getCurrent().getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
+				sessionController.getEtudiant().setAnneePremiereInscrip(iaetu.getAnneePremiereInscUniv());
+				sessionController.getEtudiant().setEtbPremiereInscrip(iaetu.getEtbPremiereInscUniv().getLibEtb());
 			}
 
-			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(true);
+			sessionController.setRecuperationWsInscriptionsOk(true);
 
 			//Si l'étudiant est inscrit pour l'année en cours
-			if(GenericUI.getCurrent().getEtudiant().isInscritPourAnneeEnCours()){
+			if(sessionController.getEtudiant().isInscritPourAnneeEnCours()){
 				//Tentative de récupération des informations relatives à l'affiliation à la sécurité sociale
 				try{
-					GenericUI.getCurrent().getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
+					sessionController.getEtudiant().setRecuperationInfosAffiliationSsoOk(ssoController.recupererInfoAffiliationSso(getAnneeUnivEnCours(),sessionController.getEtudiant()));
 				} catch(Exception e){
-					log.warn("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),e);
+					log.warn("Probleme lors de la recuperer des Info AffiliationSso pour etudiant dont codetu est : " + LogMaskingUtil.mask(sessionController.getEtudiant().getCod_etu()),e);
 				}
 
 				//Tentative de récupération des informations relatives à la quittance des droits payés
 				try{
-					GenericUI.getCurrent().getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(GenericUI.getCurrent()),GenericUI.getCurrent().getEtudiant()));
+					sessionController.getEtudiant().setRecuperationInfosQuittanceOk(ssoController.recupererInfoQuittance(getAnneeUnivEnCours(),sessionController.getEtudiant()));
 				} catch(Exception e){
-					log.warn("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + LogMaskingUtil.mask(GenericUI.getCurrent().getEtudiant().getCod_etu()),e);
+					log.warn("Probleme lors de la recuperer des Info Quittance pour etudiant dont codetu est : " + LogMaskingUtil.mask(sessionController.getEtudiant().getCod_etu()),e);
 				}
 			}
 
 
 		} catch(Exception ex) {
-			if(GenericUI.getCurrent().getEtudiant()!=null){
-				log.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + GenericUI.getCurrent().getEtudiant().getCod_etu(),ex);
+			if(sessionController.getEtudiant()!=null){
+				log.error("Probleme lors de la recherche des inscriptions pour etudiant dont codetu est : " + sessionController.getEtudiant().getCod_etu(),ex);
 			}else{
 				log.error("Probleme lors de la recherche des inscriptions pour etudiant ",ex);
 			}
-			GenericUI.getCurrent().setRecuperationWsInscriptionsOk(false);
+			sessionController.setRecuperationWsInscriptionsOk(false);
 		}
 	}
 
@@ -830,34 +833,28 @@ public class EtudiantController {
 	 * va chercher et renseigne les informations concernant le calendrier des examens
 	 */
 	public void recupererCalendrierExamens() {
-		if(GenericUI.getCurrent()!=null && GenericUI.getCurrent().getEtudiant()!=null && StringUtils.hasText(GenericUI.getCurrent().getEtudiant().getCod_ind())){
-			GenericUI.getCurrent().getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(GenericUI.getCurrent().getEtudiant().getCod_ind(),configController.isAffDetailExamen()));
-			GenericUI.getCurrent().getEtudiant().setCalendrierRecupere(true);
+		if(sessionController!=null && sessionController.getEtudiant()!=null && StringUtils.hasText(sessionController.getEtudiant().getCod_ind())){
+			sessionController.getEtudiant().setCalendrier(multipleApogeeService.getCalendrierExamens(sessionController.getEtudiant().getCod_ind(),configController.isAffDetailExamen()));
+			sessionController.getEtudiant().setCalendrierRecupere(true);
 		}
 	}
 
-	public String getAnneeUnivRes(GenericUI ui) {
-		if(ui!=null){
-			if(ui.getAnneeUnivOuverteRes()==null){
-				ui.setAnneeUnivOuverteRes(multipleApogeeService.getDerniereAnneeOuverteResultats());
-			}
-			return ui.getAnneeUnivOuverteRes();
+	public String getAnneeUnivRes() {
+		if(sessionController.getAnneeUnivOuverteRes()==null){
+			sessionController.setAnneeUnivOuverteRes(multipleApogeeService.getDerniereAnneeOuverteResultats());
 		}
-		return multipleApogeeService.getDerniereAnneeOuverteResultats();
+		return sessionController.getAnneeUnivOuverteRes();
 	}
 
-	public String getAnneeUnivEnCours(GenericUI ui) {
-		if(ui!=null){
-			if(ui.getAnneeUnivEnCours()==null){
-				ui.setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
-			}
-			return ui.getAnneeUnivEnCours();
+	public String getAnneeUnivEnCours() {
+		if(sessionController.getAnneeUnivEnCours()==null){
+			sessionController.setAnneeUnivEnCours(multipleApogeeService.getAnneeEnCours());
 		}
-		return multipleApogeeService.getAnneeEnCours();
+		return sessionController.getAnneeUnivEnCours();
 	}
 
-	public String getAnneeUnivEnCoursToDisplay(GenericUI ui) {
-		int annee = Integer.parseInt(getAnneeUnivEnCours(ui));
+	public String getAnneeUnivEnCoursToDisplay() {
+		int annee = Integer.parseInt(getAnneeUnivEnCours());
 		return annee+"/"+(annee+1);
 
 	}
@@ -886,7 +883,7 @@ public class EtudiantController {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
-		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
+		if (!codAnuIns.equals(getAnneeUnivEnCours())) {
 			return false;
 		}
 		//si l'IAE n'est pas en règle
@@ -924,7 +921,7 @@ public class EtudiantController {
 			return false;
 		}
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
-		if (!codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
+		if (!codAnuIns.equals(getAnneeUnivEnCours())) {
 			return false;
 		}
 		//interdit l'édition de la quittance pour les étudiants dont le dossier n'est pas validé
@@ -970,7 +967,7 @@ public class EtudiantController {
 		String codAnuIns=ins.getCod_anu().substring(0, 4);
 
 		// si on autorise l'édition de certificat de scolarité uniquement pour l'année en cours.
-		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours(GenericUI.getCurrent()))) {
+		if (!configController.isCertificatScolariteTouteAnnee() && !codAnuIns.equals(getAnneeUnivEnCours())) {
 			return false;
 		}
 		List<String> listeCertScolTypDiplomeDesactive=configController.getListeCertScolTypDiplomeDesactive();

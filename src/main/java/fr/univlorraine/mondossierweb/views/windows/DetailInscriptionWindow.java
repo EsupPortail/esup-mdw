@@ -18,30 +18,25 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItem;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import fr.univlorraine.mondossierweb.controllers.EtudiantController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -50,22 +45,20 @@ import java.util.List;
  * Fenêtre du détail de l'inscription
  */
 @SuppressWarnings("serial")
-@Component
+@org.springframework.stereotype.Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class DetailInscriptionWindow extends Window {
+public class DetailInscriptionWindow extends Dialog {
 
 	public static final String NAME = "inscriptionWindow";
 
 	@Resource
-	private transient ApplicationContext applicationContext;
-	@Resource
 	private transient UserController userController;
-	@Resource
-	private transient EtudiantController etudiantController;
-	@Resource(name="${resultat.implementation}")
+	@Resource(name = "${resultat.implementation}")
 	private transient ResultatController resultatController;
 	@Resource
 	private transient ConfigController configController;
+	@Resource
+	private transient SessionController sessionController;
 
 	private Etape etape;
 
@@ -74,184 +67,164 @@ public class DetailInscriptionWindow extends Window {
 	 */
 	public void init(Etape et) {
 		etape = et;
-		init();
-	}
-
-	private void init() {
 
 		//On vérifie le droit d'accéder à la vue
-		if((userController.isEnseignant() || userController.isEtudiant()) && MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
+		if ((userController.isEnseignant() || userController.isEtudiant()) && sessionController.getEtudiant() != null) {
 
 			/* Style */
-			setWidth(80, Unit.PERCENTAGE);
-			setHeight(95, Unit.PERCENTAGE);
-			setModal(true);
+			setWidth("80%");
+			setHeight("95%");
 			setResizable(false);
 
 			//Test si user enseignant
-			if(userController.isEnseignant()){
+			if (userController.isEnseignant()) {
 				//On recupere le détail de l'IP pour un enseignant
 				resultatController.renseigneDetailInscription(etape, userController.isGestionnaire());
-			}else{
+			} else {
 				//On récupère le détail de l'IP pour un étudiant
 				resultatController.renseigneDetailInscriptionEtudiant(etape);
 			}
 
+			/* Titre */
+			setHeaderTitle(getTranslation(NAME + ".title"));
+
+			/* Bouton de fermeture */
+			Button btnFermer = new Button(VaadinIcon.CLOSE.create());
+			btnFermer.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			btnFermer.getElement().setAttribute("aria-label", getTranslation(NAME + ".btnFermer"));
+			btnFermer.addClickListener(e -> close());
+			getHeader().add(btnFermer);
+
 			/* Layout */
 			VerticalLayout layout = new VerticalLayout();
 			layout.setSizeFull();
-			layout.setMargin(true);
+			layout.setPadding(false);
 			layout.setSpacing(true);
 
-			/* Titre */
-			setCaption(applicationContext.getMessage(NAME+".title", null, getLocale()));
-
 			//Sous titre avec l'année
-			HorizontalLayout titleLayout = new HorizontalLayout();
-			titleLayout.setSizeFull();
-			titleLayout.setHeight("20px");
-			Label labelAnneeUniv = new Label(applicationContext.getMessage(NAME+".label.anneeuniv", null, getLocale())+" <b>"+ etape.getAnnee()+"</b>");
-			labelAnneeUniv.setContentMode(ContentMode.HTML);
-			titleLayout.addComponent(labelAnneeUniv);
-			titleLayout.setComponentAlignment(labelAnneeUniv, Alignment.MIDDLE_CENTER);
-			layout.addComponent(titleLayout);
+			Span labelAnneeUniv = new Span();
+			labelAnneeUniv.add(new Span(getTranslation(NAME + ".label.anneeuniv") + " "));
+			Span annee = new Span(etape.getAnnee());
+			annee.addClassName(LumoUtility.FontWeight.BOLD);
+			labelAnneeUniv.add(annee);
+			layout.add(labelAnneeUniv);
 
-			Panel panelDetailInscription= new Panel(etape.getLibelle());
+			Component detailContent;
+			List<ElementPedagogique> lelp = sessionController.getEtudiant().getElementsPedagogiques();
+			if (lelp != null && !lelp.isEmpty()) {
+				Grid<ElementPedagogique> detailInscriptionGrid = new Grid<>();
+				detailInscriptionGrid.setSizeFull();
+				detailInscriptionGrid.setSelectionMode(Grid.SelectionMode.NONE);
+				detailInscriptionGrid.addComponentColumn(this::buildCodeElpColumn)
+					.setHeader(getTranslation(NAME + ".table.elp.code"))
+					.setFlexGrow(1);
+				detailInscriptionGrid.addComponentColumn(this::buildLibelleElpColumn)
+					.setHeader(getTranslation(NAME + ".table.elp.libelle"))
+					.setFlexGrow(4);
+				if (configController.isAffECTSIPEtudiant()) {
+					detailInscriptionGrid.addComponentColumn(this::buildEctsColumn)
+						.setHeader(getTranslation(NAME + ".table.elp.ects"))
+						.setFlexGrow(1)
+						.setVisible(!configController.isMasqueECTSIPEtudiant());
+				}
+				detailInscriptionGrid.setItems(lelp);
+				detailContent = detailInscriptionGrid;
+			} else {
+				setHeight("30%");
+				Span labelAucuneIp = new Span(getTranslation(NAME + ".message.aucuneip"));
+				labelAucuneIp.addClassName(LumoUtility.FontWeight.BOLD);
+				detailContent = labelAucuneIp;
+			}
+			Div panelDetailInscription = createPanel(etape.getLibelle(), detailContent);
 			panelDetailInscription.setSizeFull();
-			panelDetailInscription.addStyleName("small-font-element");
-
-			List<ElementPedagogique> lelp = MainUI.getCurrent().getEtudiant().getElementsPedagogiques();
-			if(lelp!=null && !lelp.isEmpty()){
-				Table detailInscriptionTable = new Table(null, new BeanItemContainer<>(ElementPedagogique.class, lelp));
-				detailInscriptionTable.setSizeFull();
-				detailInscriptionTable.setVisibleColumns(new String[0]);
-				detailInscriptionTable.setColumnCollapsingAllowed(true);
-				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.code", null, getLocale()), new CodeElpColumnGenerator());
-				detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.libelle", null, getLocale()), new LibelleElpColumnGenerator());
-				if(configController.isAffECTSIPEtudiant()){
-					detailInscriptionTable.addGeneratedColumn(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), new ECTSColumnGenerator());
-					if(configController.isMasqueECTSIPEtudiant()){
-						detailInscriptionTable.setColumnCollapsed(applicationContext.getMessage(NAME+".table.elp.ects", null, getLocale()), true);
-					}
-				}
-				detailInscriptionTable.setColumnReorderingAllowed(false);
-				detailInscriptionTable.setSelectable(false);
-				detailInscriptionTable.setImmediate(true);
-				detailInscriptionTable.addStyleName("scrollabletable");
-				panelDetailInscription.setContent(detailInscriptionTable);
-			}else{
-				setHeight(30, Unit.PERCENTAGE);
-				HorizontalLayout messageLayout=new HorizontalLayout();
-				messageLayout.setSpacing(true);
-				messageLayout.setMargin(true);
-				Label labelAucuneIp=new Label(applicationContext.getMessage(NAME+".message.aucuneip", null, getLocale()));
-				labelAucuneIp.setStyleName(ValoTheme.LABEL_BOLD);
-				messageLayout.addComponent(labelAucuneIp);
-				panelDetailInscription.setContent(messageLayout);
-			}
-			layout.addComponent(panelDetailInscription);
-			layout.setExpandRatio(panelDetailInscription, 1);
-			setContent(layout);
-
-			/* Centre la fenêtre */
-			center();
+			layout.add(panelDetailInscription);
+			layout.setFlexGrow(1, panelDetailInscription);
+			add(layout);
 		}
 	}
 
+	/**
+	 * Colonne code de l'élément pédagogique (ancienne CodeElpColumnGenerator).
+	 */
+	private Component buildCodeElpColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getLibelle())) {
+			libLabel.setText(el.getCode());
+			applyElpStyle(libLabel, el);
+		}
+		return libLabel;
+	}
 
-	/** Formats the position in a column containing Date objects. */
-	class CodeElpColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle())){
-				//indentation des libelles dans la liste:
-				String code = el.getCode();
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					code="<b>"+code+"</b>";
-				}
-				if(el.isEpreuve()){
-					code="<i>"+code+"</i>";
-				}
-				libLabel.setValue(code);
+	/**
+	 * Colonne libellé de l'élément pédagogique, indenté selon le niveau
+	 * (ancienne LibelleElpColumnGenerator).
+	 */
+	private Component buildLibelleElpColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getLibelle())) {
+			libLabel.setText(el.getLibelle());
+			applyElpStyle(libLabel, el);
+			//indentation des libelles dans la liste
+			if (el.getLevel() > 1) {
+				libLabel.getStyle().set("padding-inline-start", ((el.getLevel() - 1) * 1.5) + "em");
 			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
+			if (StringUtils.hasText(el.getEcts())) {
+				libLabel.addClassName("ects-elp-label");
+			}
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Colonne ECTS de l'élément pédagogique (ancienne ECTSColumnGenerator).
+	 */
+	private Component buildEctsColumn(ElementPedagogique el) {
+		Span libLabel = new Span();
+		if (StringUtils.hasText(el.getEcts())) {
+			libLabel.setText(el.getEcts());
+			libLabel.addClassName("ects-value-label");
+		}
+		return libLabel;
+	}
+
+	/**
+	 * Style du contenu d'une cellule : gras pour les éléments de niveau 1, italique pour les épreuves.
+	 */
+	private void applyElpStyle(Span span, ElementPedagogique el) {
+		if (el.getLevel() == 1 && !el.isEpreuve()) {
+			span.addClassName(LumoUtility.FontWeight.BOLD);
+		}
+		if (el.isEpreuve()) {
+			span.getStyle().set("font-style", "italic");
 		}
 	}
 
-	/** Formats the position in a column containing Date objects. */
-	class LibelleElpColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getLibelle())){
-				//indentation des libelles dans la liste:
-				int rg = Integer.valueOf(el.getLevel());
-				String libelp = el.getLibelle();
-				String lib = "";
-				for (int j = 2; j <= rg; j++) {
-					lib= lib + "&#160;&#160;&#160;&#160;&#160;";
-				}
-				if(el.getLevel()==1 && !el.isEpreuve()){
-					libelp="<b>"+libelp+"</b>";
-				}
-				if(el.isEpreuve()){
-					libelp="<i>"+libelp+"</i>";
-				}
-				libLabel.setValue(lib+libelp);
-
-				if(StringUtils.hasText(el.getEcts())){
-					libLabel.addStyleName("ects-elp-label");
-				}
-			}
-			libLabel.setContentMode(ContentMode.HTML);
-			return libLabel;
+	/**
+	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
+	 */
+	private Div createPanel(String titre, Component content) {
+		Div panel = new Div();
+		panel.getStyle()
+			.set("border", "1px solid var(--lumo-contrast-20pct)")
+			.set("border-radius", "var(--lumo-border-radius-m)")
+			.set("overflow", "hidden")
+			.set("display", "flex")
+			.set("flex-direction", "column");
+		if (StringUtils.hasText(titre)) {
+			Div header = new Div(new Span(titre));
+			header.getStyle()
+				.set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+				.set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+				.set("background-color", "var(--lumo-contrast-5pct)")
+				.set("font-weight", "600");
+			panel.add(header);
 		}
-	}
-
-
-	/** Formats the position in a column containing Date objects. */
-	class ECTSColumnGenerator implements Table.ColumnGenerator {
-		/**
-		 * Generates the cell containing the value. The column is
-		 * irrelevant in this use case.
-		 */
-		public Object generateCell(Table source, Object itemId,
-				Object columnId) {
-
-			Item item = source.getItem(itemId);
-			// RECUPERATION DE LA VALEUR 
-			BeanItem<ElementPedagogique> bid = (BeanItem<ElementPedagogique>) item;
-			ElementPedagogique el = (ElementPedagogique) bid.getBean();
-			Label libLabel = new Label();
-
-			if(StringUtils.hasText(el.getEcts())){
-				libLabel.setValue(el.getEcts());
-				libLabel.addStyleName("ects-value-label");
-			}
-			return libLabel;
-		}
+		Div body = new Div(content);
+		body.getStyle()
+			.set("padding", "var(--lumo-space-s)")
+			.set("flex", "1 1 auto")
+			.set("overflow", "auto");
+		panel.add(body);
+		return panel;
 	}
 }

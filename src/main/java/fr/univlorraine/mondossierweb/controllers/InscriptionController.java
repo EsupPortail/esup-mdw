@@ -18,41 +18,38 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.vaadin.server.StreamResource;
-import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfWriter;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Inscription;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -89,71 +86,56 @@ public class InscriptionController {
 	private MultipleApogeeService multipleApogeeService;
 	@Resource
 	private transient ConfigController configController;
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 
 
 
 	/**
-	 * 
-	 * @return le fichier pdf.
+	 *
+	 * @return le fichier pdf du certificat de scolarité (null si non autorisé ou en cas d'erreur).
 	 */
-	public com.vaadin.server.Resource exportPdf(Inscription inscription) {
+	public DownloadFile exportPdf(Inscription inscription) {
 
 		// verifie les autorisations
-		if(GenericUI.getCurrent() instanceof MainUI){
-			if(!etudiantController.proposerCertificat(inscription, MainUI.getCurrent().getEtudiant())){
-				return null;
-			}
-		}
-		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
-			if(!etudiantController.proposerCertificat(inscription, MdwTouchkitUI.getCurrent().getEtudiant())){
-				return null;
-			}
+		if(!etudiantController.proposerCertificat(inscription, sessionController.getEtudiant())){
+			return null;
 		}
 
 
-		String nomFichier = applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault())+"_" + inscription.getCod_etp() + "_" + inscription.getCod_anu().replace('/', '-') + "_" + GenericUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
+		String nomFichier = applicationContext.getMessage("pdf.certificat.title", null, Locale.getDefault())+"_" + inscription.getCod_etp() + "_" + inscription.getCod_anu().replace('/', '-') + "_" + sessionController.getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
 
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-					PdfWriter docWriter = null;
-					Document document = configureDocument();
-					docWriter = PdfWriter.getInstance(document, baosPDF);
-					// Test si on doit activer l'encryption
-					byte[] ownerPwd = PdfUtils.generatePwd();
-					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
-					}
-					docWriter.setStrictImageSequence(true);
-					creerPdfCertificatScolarite(document,GenericUI.getCurrent().getEtudiant(), inscription);
-					docWriter.close();
-					baosPDF.close();
-					if(configController.isSignaturePdfCertificat()) {
-						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfCertificat(), configController.getSignatureAltPositionCertificat()).toByteArray());
-					} else {
-						//Creation de l'export
-						return new ByteArrayInputStream(baosPDF.toByteArray());
-					}
-				} catch (DocumentException e) {
-					log.error("Erreur à la génération du certificat : DocumentException ",e);
-					return null;
-				} catch (IOException e) {
-					log.error("Erreur à la génération du certificat : IOException ",e);
-					return null;
-				}
-
+		try {
+			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
+			PdfWriter docWriter = null;
+			Document document = configureDocument();
+			docWriter = PdfWriter.getInstance(document, baosPDF);
+			// Test si on doit activer l'encryption
+			byte[] ownerPwd = PdfUtils.generatePwd();
+			if(PropertyUtils.isEnablePdfSecurity()){
+				docWriter.setEncryption(null, ownerPwd, PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
 			}
-		};
-
-		// Création de la ressource 
-		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/force-download;charset=UTF-8");
-		resource.setCacheTime(0);
-		return resource;
+			docWriter.setStrictImageSequence(true);
+			creerPdfCertificatScolarite(document, sessionController.getEtudiant(), inscription);
+			docWriter.close();
+			baosPDF.close();
+			if(configController.isSignaturePdfCertificat()) {
+				//Creation de l'export après ajout de signature
+				return new DownloadFile(nomFichier, PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfCertificat(), configController.getSignatureAltPositionCertificat()).toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			} else {
+				//Creation de l'export
+				return new DownloadFile(nomFichier, baosPDF.toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			}
+		} catch (DocumentException e) {
+			log.error("Erreur à la génération du certificat : DocumentException ",e);
+			return null;
+		} catch (IOException e) {
+			log.error("Erreur à la génération du certificat : IOException ",e);
+			return null;
+		}
 	}
 
 	/**
@@ -301,7 +283,7 @@ public class InscriptionController {
 				document.add(pLieuNaissance);
 			}
 
-			String anneeEnCours = etudiantController.getAnneeUnivEnCoursToDisplay(GenericUI.getCurrent());
+			String anneeEnCours = etudiantController.getAnneeUnivEnCoursToDisplay();
 			String inscritCertif = "";
 			if (inscription.getCod_anu().equals(anneeEnCours)) {
 				inscritCertif = applicationContext.getMessage("pdf.certificat.inscrit", null, Locale.getDefault());

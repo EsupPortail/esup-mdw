@@ -26,13 +26,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import jakarta.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+
+import fr.univlorraine.mondossierweb.security.SecurityUtil;
 
 /**
  * Gestion des verrous
@@ -47,7 +49,7 @@ public class LockController {
 	private transient UiController uiController;
 
 	/** Liste des verrous */
-	private Map<Object, UI> locks = new ConcurrentHashMap<>();
+	private final Map<Object, UI> locks = new ConcurrentHashMap<>();
 
 	/**
 	 * @param ui
@@ -77,7 +79,7 @@ public class LockController {
 		}
 
 		locks.put(obj, UI.getCurrent());
-		
+
 		return true;
 	}
 
@@ -93,7 +95,8 @@ public class LockController {
 			if (!StringUtils.hasText(msgIfAlreadyLocked)) {
 				msgIfAlreadyLocked = applicationContext.getMessage("lock.alreadyLocked", new Object[] {obj.getClass().getSimpleName(), getUserNameFromLock(obj)}, UI.getCurrent().getLocale());
 			}
-			Notification.show(msgIfAlreadyLocked, Notification.Type.WARNING_MESSAGE);
+			Notification notification = Notification.show(msgIfAlreadyLocked);
+			notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 		}
 		return ret;
 	}
@@ -103,9 +106,7 @@ public class LockController {
 	 * @param obj
 	 */
 	public void removeLock(Object obj) {
-		UI ui = locks.get(obj);
 		locks.remove(obj);
-		
 	}
 
 	/**
@@ -126,8 +127,7 @@ public class LockController {
 	public String getUserNameFromLock(Object obj){
 		UI lockUi = locks.get(obj);
 		if (lockUi != null) {
-			SecurityContext securityContext = (SecurityContext) lockUi.getSession().getSession().getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-			return securityContext.getAuthentication().getName();
+			return SecurityUtil.getAuthentication(lockUi).map(Authentication::getName).orElse(null);
 		}
 		return null;
 	}

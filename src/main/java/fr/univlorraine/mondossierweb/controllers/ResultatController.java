@@ -19,7 +19,6 @@
 package fr.univlorraine.mondossierweb.controllers;
 
 import fr.univlorraine.apowsutils.ServiceProvider;
-import fr.univlorraine.mondossierweb.GenericUI;
 import fr.univlorraine.mondossierweb.beans.CacheIP;
 import fr.univlorraine.mondossierweb.beans.CacheResultatsElpEpr;
 import fr.univlorraine.mondossierweb.beans.CacheResultatsVdiVet;
@@ -51,7 +50,9 @@ import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatV
 import gouv.education.apogee.commun.client.ws.PedagogiqueMetier.TableauResultatVetDto;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -89,6 +90,10 @@ public class ResultatController {
      */
     @Resource
     private MultipleApogeeService multipleApogeeService;
+    /** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+    @Autowired
+    @Lazy
+    private transient SessionController sessionController;
 
     /**
      * va chercher et renseigne les notes de
@@ -1305,12 +1310,12 @@ public class ResultatController {
 
     public boolean utilisationExtractionApogee(String annee) {
 
-        int anneeEnCours = Integer.valueOf(etudiantController.getAnneeUnivEnCours(GenericUI.getCurrent()));
+        int anneeEnCours = Integer.valueOf(etudiantController.getAnneeUnivEnCours());
         int anneeDemandee = Integer.valueOf(annee);
 
         // Si l'application est paramétrée pour utiliser les extractions sur la dernière année ouverte au résultats
         if (configController.isNotesAnneeOuverteResExtractionApogee()) {
-            int anneeRes = Integer.valueOf(etudiantController.getAnneeUnivRes(GenericUI.getCurrent()));
+            int anneeRes = Integer.valueOf(etudiantController.getAnneeUnivRes());
             // Si l'année en question est la dernière ouverte aux résultats
             if (anneeDemandee == anneeRes) {
                 return true;
@@ -1381,15 +1386,15 @@ public class ResultatController {
         if (utilisationExtractionApogee(etape.getAnnee().substring(0, 4), sourceResultat)) {
             log.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
             //On regarde si on a pas déjà les infos dans le cache:
-            String rang = getRangDetailInscriptionEnCache(etape, GenericUI.getCurrent().getEtudiant());
+            String rang = getRangDetailInscriptionEnCache(etape, sessionController.getEtudiant());
 
             if (rang == null) {
-                recupererDetailNotesEtResultatsEtudiant(GenericUI.getCurrent().getEtudiant(), etape, true);
+                recupererDetailNotesEtResultatsEtudiant(sessionController.getEtudiant(), etape, true);
                 //AJOUT DES INFOS recupérées dans le cache.
-                ajouterCacheDetailInscription(etape, GenericUI.getCurrent().getEtudiant());
+                ajouterCacheDetailInscription(etape, sessionController.getEtudiant());
             } else {
                 //on récupére les infos du cache grace au rang :
-                recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
+                recupererCacheDetailInscription(Integer.valueOf(rang), sessionController.getEtudiant());
             }
 
         } else {
@@ -1410,15 +1415,15 @@ public class ResultatController {
         if (utilisationExtractionApogee(etape.getAnnee().substring(0, 4), sourceResultat)) {
             log.info("Méthode de récupération de l'IP basée sur Apogée au lieu de l'extraction");
             //On regarde si on a pas déjà les infos dans le cache:
-            String rang = getRangDetailInscriptionEnCache(etape, GenericUI.getCurrent().getEtudiant());
+            String rang = getRangDetailInscriptionEnCache(etape, sessionController.getEtudiant());
 
             if (rang == null) {
-                recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(), etape, true, isGestionnaire);
+                recupererDetailNotesEtResultats(sessionController.getEtudiant(), etape, true, isGestionnaire);
                 //AJOUT DES INFOS recupérées dans le cache.
-                ajouterCacheDetailInscription(etape, GenericUI.getCurrent().getEtudiant());
+                ajouterCacheDetailInscription(etape, sessionController.getEtudiant());
             } else {
                 //on récupére les infos du cache grace au rang :
-                recupererCacheDetailInscription(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
+                recupererCacheDetailInscription(Integer.valueOf(rang), sessionController.getEtudiant());
             }
         } else {
             log.info("Méthode de récupération de l'IP identique à la récupération des notes");
@@ -1431,29 +1436,29 @@ public class ResultatController {
     // Renseigne les résultats pour un utiliateur étudiant
     public void renseigneDetailNotesEtResultatsEtudiant(Etape etape) {
         //On regarde si on a pas déjà les infos dans le cache:
-        String rang = getRangDetailNotesEtResultatsEnCache(etape, true, GenericUI.getCurrent().getEtudiant());
+        String rang = getRangDetailNotesEtResultatsEnCache(etape, true, sessionController.getEtudiant());
 
         if (rang == null) {
-            recupererDetailNotesEtResultatsEtudiant(GenericUI.getCurrent().getEtudiant(), etape, false);
+            recupererDetailNotesEtResultatsEtudiant(sessionController.getEtudiant(), etape, false);
             //AJOUT DES INFOS recupérées dans le cache. true car on est en vue Etudiant
-            ajouterCacheDetailNotesEtResultats(etape, true, GenericUI.getCurrent().getEtudiant());
+            ajouterCacheDetailNotesEtResultats(etape, true, sessionController.getEtudiant());
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
+            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), sessionController.getEtudiant());
         }
     }
 
     // Renseigne les résultats pour un utilisateur enseignant ou un gestionnaire
     public void renseigneDetailNotesEtResultats(Etape etape, boolean isGestionnaire) {
         //On regarde si on a pas déjà les infos dans le cache:
-        String rang = getRangDetailNotesEtResultatsEnCache(etape, false, GenericUI.getCurrent().getEtudiant());
+        String rang = getRangDetailNotesEtResultatsEnCache(etape, false, sessionController.getEtudiant());
         if (rang == null) {
-            recupererDetailNotesEtResultats(GenericUI.getCurrent().getEtudiant(), etape, false, isGestionnaire);
+            recupererDetailNotesEtResultats(sessionController.getEtudiant(), etape, false, isGestionnaire);
             //AJOUT DES INFOS recupérées dans le cache. false car on est en vue Enseignant
-            ajouterCacheDetailNotesEtResultats(etape, false, GenericUI.getCurrent().getEtudiant());
+            ajouterCacheDetailNotesEtResultats(etape, false, sessionController.getEtudiant());
         } else {
             //on récupére les infos du cache grace au rang :
-            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), GenericUI.getCurrent().getEtudiant());
+            recupererCacheDetailNotesEtResultats(Integer.valueOf(rang), sessionController.getEtudiant());
         }
     }
 
@@ -1661,16 +1666,16 @@ public class ResultatController {
 
 
     public void changerVueNotesEtResultats() {
-        if (GenericUI.getCurrent().isVueEnseignantNotesEtResultats()) {
-            GenericUI.getCurrent().setVueEnseignantNotesEtResultats(false);
+        if (sessionController.isVueEnseignantNotesEtResultats()) {
+            sessionController.setVueEnseignantNotesEtResultats(false);
         } else {
-            GenericUI.getCurrent().setVueEnseignantNotesEtResultats(true);
+            sessionController.setVueEnseignantNotesEtResultats(true);
         }
     }
 
 
     public boolean isAfficherRangElpEpr() {
-        List<ElementPedagogique> lelp = GenericUI.getCurrent().getEtudiant().getElementsPedagogiques();
+        List<ElementPedagogique> lelp = sessionController.getEtudiant().getElementsPedagogiques();
         if (lelp != null && !lelp.isEmpty()) {
             List<String> codesAutorises = configController.getListeCodesEtapeAffichageRang();
             if (codesAutorises != null && codesAutorises.contains(lelp.get(0).getCode())) {

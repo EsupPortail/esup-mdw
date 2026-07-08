@@ -31,7 +31,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("serial")
-//@Configurable(preConstruction=true)
 @Data
 @Slf4j
 public class MdwUserDetails implements UserDetails {

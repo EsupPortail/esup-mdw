@@ -18,25 +18,22 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
- * Page d'accueil
+ * Page d'erreur
  */
-@Component @Scope("prototype")
-@SpringView(name = ErreurView.NAME)
-public class ErreurView extends VerticalLayout implements View {
+@SuppressWarnings("serial")
+@Route(value = ErreurView.NAME, layout = MainLayout.class)
+public class ErreurView extends VerticalLayout {
 
 	public static final String NAME = "erreurView";
+	public static final String ROUTE = NAME;
 
 	/* Injections */
 	@Resource
@@ -47,15 +44,6 @@ public class ErreurView extends VerticalLayout implements View {
 	 */
 	@PostConstruct
 	public void init() {
-		addComponent(new BasicErreurMessageLayout(applicationContext));
-
+		add(new BasicErreurMessageLayout(applicationContext));
 	}
-
-	/**
-	 * @see com.vaadin.navigator.View${symbol_pound}enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-	}
-
 }

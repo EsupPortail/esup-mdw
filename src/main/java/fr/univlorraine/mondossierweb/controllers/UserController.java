@@ -18,38 +18,25 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.vaadin.navigator.View;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.UI;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateur;
 import fr.univlorraine.mondossierweb.entities.mdw.PreferencesUtilisateurPK;
 import fr.univlorraine.mondossierweb.repositories.mdw.PreferencesUtilisateurRepository;
 import fr.univlorraine.mondossierweb.security.MdwUserDetails;
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.security.SecurityUtil;
 import jakarta.annotation.Resource;
-import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.util.MethodInvocationUtils;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
 
 /**
  * Gestion de l'utilisateur
  */
 @Component
 public class UserController {
-
-	@Resource
-	private transient MethodSecurityInterceptor methodSecurityInterceptor;
 
 	@Resource
 	private PreferencesUtilisateurRepository preferencesUtilisateurRepository;
@@ -60,12 +47,8 @@ public class UserController {
 	 * @return securityContext associé à la session
 	 */
 	public SecurityContext getSecurityContextFromSession() {
-		if (UI.getCurrent() != null && UI.getCurrent().getSession() != null
-				&& UI.getCurrent().getSession().getSession() != null) {
-			return (SecurityContext) UI.getCurrent().getSession().getSession().getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-		}
-		return null;
-}
+		return SecurityUtil.getSecurityContext(UI.getCurrent()).orElse(null);
+	}
 
 	/** @return l'authentification courante */
 	public Authentication getCurrentAuthentication() {
@@ -75,26 +58,6 @@ public class UserController {
 		} else {
 			return securityContext.getAuthentication();
 		}
-	}
-
-	/**
-	 * @param viewClass
-	 * @return true si l'utilisateur peut accéder à la vue
-	 */
-	public boolean canCurrentUserAccessView(Class<? extends View> viewClass) {
-		MethodInvocation methodInvocation = MethodInvocationUtils.createFromClass(viewClass, "enter");
-		Collection<ConfigAttribute> configAttributes = methodSecurityInterceptor.obtainSecurityMetadataSource().getAttributes(methodInvocation);
-		// Renvoie true si la vue n'est pas sécurisée 
-		if (configAttributes==null || configAttributes.isEmpty()) {
-			return true;
-		}
-		// Vérifie que l'utilisateur a les droits requis 
-		try {
-			methodSecurityInterceptor.getAccessDecisionManager().decide(getCurrentAuthentication(), methodInvocation, configAttributes);
-		} catch (InsufficientAuthenticationException | AccessDeniedException e) {
-			return false;
-		}
-		return true;
 	}
 
 	/**
@@ -113,11 +76,11 @@ public class UserController {
 	public String getCurrentUserName() {
 		return getCurrentUser().getUsername();
 	}
-	
+
 	public String getCodetu(){
 		return getCurrentUser().getCodetu();
 	}
-	
+
 	public boolean isAdmin() {
 		return getCurrentUser().isAdmin();
 	}
@@ -126,12 +89,12 @@ public class UserController {
 		// un gestionnaire est un enseignant ++, il a tous les droits des enseignants
 		return getCurrentUser().isEnseignant() || getCurrentUser().isGestionnaire() ;
 	}
-	
+
 	public boolean isGestionnaire() {
 		return getCurrentUser().isGestionnaire();
 	}
-	
-	public boolean isEtudiant() {		
+
+	public boolean isEtudiant() {
 		return getCurrentUser().isEtudiant();
 	}
 
@@ -153,7 +116,6 @@ public class UserController {
 	 * @param showMessageNotesPreference
 	 * @param valeur
 	 */
-	@Procedure
 	public void updatePreference(String showMessageNotesPreference, String valeur) {
 		PreferencesUtilisateur pu = new PreferencesUtilisateur();
 		PreferencesUtilisateurPK pupk = new PreferencesUtilisateurPK();
@@ -191,8 +153,13 @@ public class UserController {
 	public void disconnectUser() {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		SecurityContextHolder.setContext(context);
-		UI.getCurrent().getSession().getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-		UI.getCurrent().getSession().close();
+		UI ui = UI.getCurrent();
+		if (ui != null && ui.getSession() != null) {
+			if (ui.getSession().getSession() != null) {
+				ui.getSession().getSession().setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+			}
+			ui.getSession().close();
+		}
 	}
 
 

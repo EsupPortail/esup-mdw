@@ -31,6 +31,6 @@ public interface ElementPedagogiqueService {
 
 	public List<Inscrit> getInscritsFromElp(String code, String annee);
 	
-	public List<BigDecimal> getCodIndInscritsFromGroupe(String code, String annee);
+	public List<?> getCodIndInscritsFromGroupe(String code, String annee);
 	
 }

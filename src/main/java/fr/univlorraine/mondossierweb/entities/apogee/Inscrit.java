@@ -22,6 +22,7 @@ import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 import java.util.List;
@@ -75,6 +76,7 @@ public class Inscrit {
 	/**
 	 * le login.
 	 */
+	@Transient
 	private String login;
 	/**
 	 * la note de la session de juin.
@@ -117,22 +119,27 @@ public class Inscrit {
 	@Column(name="lib_etp")
 	private String lib_etp;
 	
+	@Transient
 	private List<Vet> liste_vet;
 	/**
 	 * code_etp + / + vers_vet
 	 */
+	@Transient
 	private String id_etp;
 	/**
 	 * l'e-mail.
 	 */
+	@Transient
 	private String email;
 	/**
 	 * l'url  de la photo.
 	 */
+	@Transient
 	private String urlphoto;
 	/**
 	 * la liste des codes des gourpes auxquels appartient l'étudiant séparés par des ;
 	 */
+	@Transient
 	private String codes_groupes;
 	
 	/**

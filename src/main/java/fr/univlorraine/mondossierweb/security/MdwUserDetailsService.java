@@ -470,9 +470,13 @@ public class MdwUserDetailsService implements UserDetailsService {
 		//return "toto54";
 
 		UtilisateurSwap us= utilisateurSwapRepository.findById(username).orElse(null);
-		if(us!=null && us.getLoginCible()!=null){
+		if(us!=null && us.getLoginCible()!=null && us.getDatCre()==null){
+			//swap sans date de création : invalide (un NPE ici bloquerait toute connexion du compte)
+			log.error("Swap utilisateur ignoré pour "+username+" : DAT_CRE null dans UTILISATEUR_SWAP");
+		}
+		if(us!=null && us.getLoginCible()!=null && us.getDatCre()!=null){
 			//test si la date de création du swap utilisateur n'est pas plus vieille que 1 heure
-			Calendar dateButoire = Calendar.getInstance(); 
+			Calendar dateButoire = Calendar.getInstance();
 			dateButoire.setTime(us.getDatCre());
 			dateButoire.add(Calendar.HOUR_OF_DAY, Utils.NB_HEURE_DUREE_SWAP_USER);
 			Date d = new Date();

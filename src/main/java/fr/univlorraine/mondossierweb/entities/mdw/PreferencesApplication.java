@@ -21,6 +21,7 @@ package fr.univlorraine.mondossierweb.entities.mdw;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -54,7 +55,8 @@ public class PreferencesApplication implements Serializable {
 	@Column(name="CAT_ID")
 	private Integer catId;
 	
-	@OneToMany(mappedBy="preferencesApplication", cascade = {CascadeType.ALL}, orphanRemoval = true)
+	/* Fetch EAGER : les valeurs sont lues hors transaction (ConfigController), comportement EclipseLink conservé */
+	@OneToMany(mappedBy="preferencesApplication", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<PreferencesApplicationValeurs> preferencesApplicationValeurs;
 
 	public PreferencesApplicationValeurs addPreferencesApplicationValeur(PreferencesApplicationValeurs preferencesApplicationValeur) {

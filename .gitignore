@@ -7,15 +7,36 @@
 # IntelliJ
 .idea/
 .smarttomcat/
+*.iml
 
 /target/
 /**/favicon.ico
 
 #IA
 AGENTS.md
+.claude-migration-guide.md
+.claude-geco-report.md
+
+# Configuration locale
+/application.yml
+/application-*.yml
+
+# Vaadin / frontend (artefacts générés)
+node/
+node_modules/
+package.json
+package-lock.json
+pnpm-lock.yaml
+tsconfig.json
+types.d.ts
+vite.config.ts
+vite.generated.ts
+src/main/frontend/generated/
+src/main/bundles/
+src/main/dev-bundle/
+.vaadin/
 
 # Resources
-/src/main/webapp/META-INF/context.xml
 /src/main/resources/apogeeRequest.xml
 /src/main/resources/configUrlServices.properties
 /src/main/resources/configUrlServicesdev*.properties
@@ -25,4 +46,3 @@ AGENTS.md
 /src/main/resources/repository/gouv/education/apogee/apo-webservices-client/**/apo-webservices-client-*.jar
 /src/main/resources/i18n/messages.properties
 /src/main/resources/i18n/vaadin-messages.properties
-/mdw-vaadin.iml

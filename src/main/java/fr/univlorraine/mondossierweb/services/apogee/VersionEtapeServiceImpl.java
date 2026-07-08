@@ -28,7 +28,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.repositories.apogee.VersionEtapeApogeeRepository;
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Repository
 public class VersionEtapeServiceImpl implements VersionEtapeService{
 

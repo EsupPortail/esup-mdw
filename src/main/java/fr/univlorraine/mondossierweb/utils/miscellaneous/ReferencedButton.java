@@ -18,7 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.utils.miscellaneous;
 
-import com.vaadin.ui.Button;
+import com.vaadin.flow.component.button.Button;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

@@ -32,7 +32,7 @@ import jakarta.annotation.Resource;
 
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Data
 public class AnnuMelLoginApogeeServiceImpl implements AnnuMelLoginApogeeService {
 

@@ -18,34 +18,33 @@
  */
 package fr.univlorraine.mondossierweb.uicomponents;
 
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.springframework.context.ApplicationContext;
 
 
-public class BasicErreurMessageLayout extends VerticalLayout{
+@SuppressWarnings("serial")
+public class BasicErreurMessageLayout extends VerticalLayout {
 
 
 	private static final String ERREURVIEW_NAME = "erreurView";
-	
-	private ApplicationContext applicationContext;
-	
+
+	private transient ApplicationContext applicationContext;
+
 	public BasicErreurMessageLayout(ApplicationContext context){
 		super();
-		applicationContext=context;
+		applicationContext = context;
 		/* Style */
 		setMargin(true);
 		setSpacing(true);
 
 		/* Titre */
-		Label title = new Label(applicationContext.getMessage(ERREURVIEW_NAME + ".title", null, null));
-		title.addStyleName(ValoTheme.LABEL_H1);
-		addComponent(title);
+		H1 title = new H1(applicationContext.getMessage(ERREURVIEW_NAME + ".title", null, null));
+		add(title);
 
 		/* Texte */
-		addComponent(new Label(applicationContext.getMessage(ERREURVIEW_NAME + ".text", null, null), ContentMode.HTML));
+		add(new Html("<div>" + applicationContext.getMessage(ERREURVIEW_NAME + ".text", null, null) + "</div>"));
 	}
-	
+
 }

@@ -1,0 +1,161 @@
+# =====================================================================
+# MonDossierWeb - exemple de configuration d'environnement
+# =====================================================================
+# Ce fichier remplace l'ancien context.xml (paramètres JNDI Tomcat).
+# À copier en "application.yml" :
+#  - à la racine du projet pour le développement (mvn spring-boot:run)
+#  - dans un répertoire de config du serveur (ex: $CATALINA_BASE/lib ou
+#    répertoire courant du process, ou via spring.config.location)
+# Les valeurs par défaut sont définies dans application-defaults.yml (embarqué).
+# =====================================================================
+
+# URL de l'application
+app.url: http://mdw.univ.fr:8080
+
+# URL du CAS
+cas.url: https://auth.univ.fr
+
+spring:
+    datasource:
+        # Base MySQL/MariaDB propre à l'application
+        # (utiliser jdbc:mariadb://... pour un serveur MariaDB, jdbc:mysql://... pour MySQL)
+        mdw:
+            url: jdbc:mariadb://localhost:3306/mdw
+            username: usermdw
+            password: xxxxx
+        # Connexion sur Apogée (lecture seule)
+        apogee:
+            url: jdbc:oracle:thin:@apogee.univ.fr:1521:APOGEE
+            username: usermdw
+            password: xxxxx
+    # Serveur SMTP (alertes applicatives)
+    mail:
+        host: smtp.univ.fr
+        port: 25
+
+# Envoi des mails d'erreur
+mail.from: mdw@univ.fr
+mail.to: error@univ.fr
+# Plage horaire quotidienne pendant laquelle l'envoi de mails d'erreur est suspendu
+mail.startDisabling: "00:15"
+mail.stopDisabling: "00:45"
+
+# Clé apogée pour décrypter les Blob de la base Apogée (ex : signature certificat de scolarité)
+clefApogeeDecryptBlob: cleapogee
+
+# Nombre max de requêtes par minute pour une même IP sur l'url /login/cas (0 = désactivé)
+ratelimiter.maxrequest: 0
+
+# Durée max des sessions inactives
+server.servlet.session.timeout: 3600s
+
+# --- Configuration du LDAP ---
+# Url du ldap. Si plusieurs urls, les séparer par des points virgule
+ldap.url: ldap://ldap.univ.fr:389/dc=univ,dc=fr
+# Identifiants (facultatif)
+ldap.userDn: userDn
+ldap.password: xxxxx
+ldap.uid.attribute: uid
+ldap.ou.people: ou=people
+ldap.ou.student: ou=people
+
+# --- WS uPortal ---
+uportal.ws: http://ent.univ.fr/services/UportalService
+# Liste des groupes uportal autorisés, séparés par un point virgule
+uportal.groupes.autorises: Utilisateurs MDW
+
+# --- Gestion des accès ---
+# true : on vérifie l'accès dans la table utilisateur d'Apogée
+loginApogee: true
+# true : on teste le témoin EN SERVICE de la table utilisateur d'Apogée
+checkTesUtilisateurApogee: false
+# Profil attribué aux utilisateurs Apogée (ENS ou GEST)
+profilUtilisateurApogee: ENS
+attributGroupeLdap: ""
+listeGroupesLdap: ""
+listeGroupesLdapAdmin: ""
+attributLdapEtudiant: edupersonprimaryaffiliation
+typeEtudiantLdap: student
+attributLdapCodEtu: supannEtuId
+attributLdapDoctorant: ""
+valeursAttributLdapDoctorant: ""
+attributLdapGestionnaire: ""
+valeursAttributLdapGestionnaire: ""
+
+# --- WebServices Apogée (AMUE) ---
+apoWsUsername: ""
+apoWsPassword: ""
+apoShowSql: false
+sourceResultats: Apogee
+
+# --- Génération PDF ---
+EnablePdfSecurity: true
+pdf.sign.keystore.path: C://monkeystore.keystore
+pdf.sign.password: ""
+pdf.sign.creator: ""
+pdf.sign.reason: ""
+pdf.sign.location: ""
+pdf.sign.contact: ""
+pdf.sign.alt.tsa.url: http://timestamp.digicert.com
+pdf.sign.alt.tsa.username: toto
+pdf.sign.alt.tsa.password: pwd
+pdf.sign.alt.tsa.tokensize: 8192
+
+# --- ElasticSearch (recherche rapide) ---
+param.elasticsearch.url: localhost
+param.elasticsearch.port: 9300
+param.elasticsearch.cluster: dev-1.3.4
+param.elasticsearch.index: apogee
+param.elasticsearch.index.champrecherche: lib_desc_obj
+param.elasticsearch.index.champcodeobjet: cod_obj
+param.elasticsearch.index.champversionobjet: cod_vrs_obj
+param.elasticsearch.index.champlibelleobjet: lib_obj
+# Autocomplétion sur les ELP
+recherche.autocompletion.elp: false
+
+# true si les mails de l'état-civil doivent être récupérés dans l'annuaire
+param.apogee.mail.annuaire: false
+
+# --- Implémentations des services ---
+# emailConverterBasicImpl | emailConverterLdapImpl | emailConverterUnivLorraineImpl
+emailConverter.implementation: emailConverterLdapImpl
+codetuFromLogin.implementation: codetuFromLoginLdapImpl
+# loginFromCodetuLdapImpl | loginFromCodetuUnivLorraineImpl
+loginFromCodetu.implementation: loginFromCodetuLdapImpl
+# Façon d'afficher le nom des étudiants : basique | standard
+etatcivil.nom.affichage: standard
+resultat.implementation: resultatController
+
+# --- Serveur photo ---
+# photoEmptyImpl | photoUnivLorraineImpl | photoUnivLorraineImplV2 | photoEsupSgc
+serveurphoto.implementation: photoEmptyImpl
+#param.photoserver.urlphoto: https://api.univ.fr/photoserver/v1/photos
+#param.photoserver.urltoken: https://api.univ.fr/photoserver/v1/token
+#param.photoserver.urlavatar: https://api.univ.fr/photoserver/v1/avatar
+#param.photoserver.clientidheader: client-id
+#param.photoserver.clientid: mdw
+#param.photoserver.apikeyheader: X-Gravitee-Api-Key
+#param.photoserver.clientsecret: xxxxx
+#param.photoserver.loginheader: uid
+#param.photoserver.displaynameheader: display-name
+#param.photoserver.tokendurationheader: token-duration
+#param.photoserver.urlphototokenduration: 300
+#param.photoserver.cypheralgo: AES/ECB/PKCS5Padding
+#param.photoserver.cypherkeyalgo: AES
+#param.photoserver.cypherkey: xxxxx
+# Ancien photoserver (v1)
+#param.photoserver.ressourceurl: http://photoserver.univ.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&chksum=%chksum%
+#param.photoserver.ticketurl: http://photoserver.univ.fr/PhotoServer/getTicket?ip=%ip%&mode=%mode%&typ_lim=%typLim%&val_lim=%valLim%&client=%client%
+#param.photoserver.codeapp: 0
+# Photo ESUP-SGC
+#param.esupsgc.urlphoto: https://esup-sgc.univ.fr/wsrest/api/photo/{eppn}
+
+# --- Statistiques (Matomo/Piwik) ---
+#piwik.tracker.url: piwik.univ.fr
+#piwik.site.id: 1
+
+# Liste des erreurs à ne pas envoyer par mail, séparées par un point virgule
+liste.erreur.a.ignorer: ClientAbortException;IllegalStateException;SocketTimeoutException;RpcInvocationException
+
+# Répertoire des logs
+logging.file.path: logs

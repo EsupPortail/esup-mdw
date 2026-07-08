@@ -18,24 +18,19 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.MdwTouchkitUI;
-import fr.univlorraine.mondossierweb.beans.Etape;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.router.QueryParameters;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import fr.univlorraine.mondossierweb.views.FavorisMobileView;
-import fr.univlorraine.mondossierweb.views.ListeInscritsView;
-import fr.univlorraine.mondossierweb.views.RechercheArborescenteView;
-import fr.univlorraine.mondossierweb.views.windows.HelpMobileWindow;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +42,11 @@ import java.util.Map;
 @Slf4j
 public class RechercheController {
 
-
+	/** Routes des vues Flow (mêmes noms que les anciennes @SpringView) */
+	public static final String ROUTE_RECHERCHE_ARBORESCENTE = "rechercheArborescenteView";
+	public static final String ROUTE_LISTE_INSCRITS = "listeInscritsView";
+	public static final String ROUTE_ETAT_CIVIL = "etatCivilView";
+	public static final String ROUTE_ERREUR = "erreurView";
 
 	/* Injections */
 	@Resource
@@ -56,14 +55,12 @@ public class RechercheController {
 	private transient Environment environment;
 	@Resource
 	private transient EtudiantController etudiantController;
-	@Resource(name="${resultat.implementation}")
-	private transient ResultatController resultatController;
 	@Resource
 	private transient UserController userController;
-	@Resource
-	private transient ConfigController configController;
-	@Resource
-	private transient ObjectFactory<HelpMobileWindow> helpMobileWindowFactory;
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 
 
 	public void accessToRechercheArborescente(String code, String type) {
@@ -71,20 +68,18 @@ public class RechercheController {
 		parameterMap.put("code",code);
 		parameterMap.put("type",type);
 		if(type.equals(Utils.TYPE_CMP))
-			parameterMap.replace("type",Utils.CMP);	
+			parameterMap.replace("type",Utils.CMP);
 		if(type.equals(Utils.TYPE_VET))
 			parameterMap.replace("type",Utils.VET);
 		if(type.equals(Utils.TYPE_ELP))
 			parameterMap.replace("type",Utils.ELP);
-		//MainUI.getCurrent().navigateToRechercheArborescente(parameterMap);
-		MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
+		navigate(ROUTE_RECHERCHE_ARBORESCENTE, parameterMap);
 	}
 
 
 	/**
-	 * 
+	 * Accès à un dossier étudiant par deep linking
 	 * @param fragment
-	 * @param type
 	 */
 	public void accessToDossierEtudiantDeepLinking(String fragment) {
 
@@ -104,7 +99,8 @@ public class RechercheController {
 			//On accède au dossier
 			accessToDetail(code,Utils.ETU, null);
 		}else{
-			Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()), Notification.Type.WARNING_MESSAGE);
+			Notification notification = Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()));
+			notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 		}
 
 	}
@@ -114,11 +110,13 @@ public class RechercheController {
 		Map<String, String> parameterMap = new HashMap<>();
 		parameterMap.put("code", code);
 		parameterMap.put("type", type);
-		parameterMap.put("annee", annee);
+		if (annee != null) {
+			parameterMap.put("annee", annee);
+		}
 		if(type.equals(Utils.TYPE_CMP) || type.equals(Utils.CMP)){
 			if(userController.isEnseignant()){
 				parameterMap.replace("type",Utils.CMP);
-				MainUI.getCurrent().goTo(RechercheArborescenteView.NAME, parameterMap);
+				navigate(ROUTE_RECHERCHE_ARBORESCENTE, parameterMap);
 			}
 		}
 
@@ -128,115 +126,35 @@ public class RechercheController {
 					parameterMap.replace("type",Utils.VET);
 				if(type.equals(Utils.TYPE_ELP))
 					parameterMap.replace("type",Utils.ELP);
-				MainUI.getCurrent().goTo(ListeInscritsView.NAME, parameterMap);
+				navigate(ROUTE_LISTE_INSCRITS, parameterMap);
 			}
 		}
 
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 			parameterMap.replace("type",Utils.ETU);
-			MainUI.getCurrent().setEtudiant(new Etudiant(code));
+			sessionController.setEtudiant(new Etudiant(code));
 			etudiantController.recupererEtatCivil();
 			//Si l'étudiant n'existe pas
-			if(MainUI.getCurrent().getEtudiant()==null){
-				MainUI.getCurrent().afficherErreurView();
+			if(sessionController.getEtudiant()==null){
+				UI.getCurrent().navigate(ROUTE_ERREUR);
 			}else{
-				MainUI.getCurrent().navigateToDossierEtudiant(parameterMap);
+				//par défaut on affiche la vue état-civil du dossier
+				navigate(ROUTE_ETAT_CIVIL, parameterMap);
 			}
 		}
 	}
 
-	public void accessToMobileDetail(String code, String type, boolean fromSearch) {
-
-		Map<String, String> parameterMap = new HashMap<>();
-		parameterMap.put("code",code);
-		parameterMap.put("type",type);
-
-		//Si on vient de la recherche rapide, il faut que le bouton 'retour' de la recherche rapide arrive sur les favoris
-		//Sinon boucle possible dans la navigation
-		if(fromSearch){
-			MdwTouchkitUI.getCurrent().setRechercheFromView(FavorisMobileView.NAME);
-		}
-
-		if(type.equals(Utils.TYPE_VET) || type.equals(Utils.VET) || type.equals(Utils.ELP) ||  type.equals(Utils.TYPE_ELP) ){
-			if(type.equals(Utils.TYPE_VET))
-				parameterMap.replace("type",Utils.VET);
-			if(type.equals(Utils.TYPE_ELP))
-				parameterMap.replace("type",Utils.ELP);
-			if(fromSearch){
-				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromSearch(parameterMap);	
-			}else{
-				MdwTouchkitUI.getCurrent().navigateToListeInscritsFromFavoris(parameterMap);	
+	/**
+	 * Navigation vers une route Flow en transmettant les paramètres en query parameters.
+	 */
+	private void navigate(String route, Map<String, String> parameterMap) {
+		Map<String, String> params = new HashMap<>();
+		parameterMap.forEach((k, v) -> {
+			if (v != null) {
+				params.put(k, v);
 			}
-		}
-
-		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
-				parameterMap.replace("type",Utils.ETU);
-
-					MdwTouchkitUI.getCurrent().setEtudiant(new Etudiant(code));
-					etudiantController.recupererEtatCivil();
-					// S'il n'y a pas eu d'anomalie pendant la récupération de l'état civil
-					if (MdwTouchkitUI.getCurrent().getEtudiant() != null) {
-						if ((userController.isEtudiant() && configController.isAffCalendrierEpreuvesEtudiant()) ||
-								(userController.isEnseignant() && configController.isAffCalendrierEpreuvesEnseignant()) ||
-								(userController.isGestionnaire() && configController.isAffCalendrierEpreuvesGestionnaire())) {
-							etudiantController.recupererCalendrierExamens();
-						}
-						if ((userController.isEtudiant() && configController.isAffNotesEtudiant()) ||
-								(userController.isEnseignant() && configController.isAffNotesEnseignant()) ||
-								(userController.isGestionnaire() && configController.isAffNotesGestionnaire())) {
-							resultatController.recupererNotesEtResultats(MdwTouchkitUI.getCurrent().getEtudiant(), userController.isGestionnaire());
-						}
-						if (fromSearch) {
-							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromSearch();
-						} else {
-							MdwTouchkitUI.getCurrent().navigateToDossierEtudiantFromListeInscrits();
-						}
-					}
-		}
+		});
+		UI.getCurrent().navigate(route, QueryParameters.simple(params));
 	}
-
-
-	public void accessToMobileNotesDetail(Etape etape) {
-
-
-		MdwTouchkitUI.getCurrent().navigateToDetailNotes(etape);
-
-
-		//Recuperer dans la base si l'utilisateur a demandé à ne plus afficher le message
-		boolean afficherMessage = true;
-		//Si on a paramétré l'application pour ne pas affiche le message
-		if(!configController.isAffMessageNotesInformatives()){
-			//On bloque l'affichage
-			afficherMessage = false;
-		}else{
-			//Si l'utilisateur n'est pas un étudiant
-			if(!userController.isEtudiant()){
-				//On vérifie s'il a demandé à ne plus afficher le message
-				String val  = userController.getPreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE);
-				if(StringUtils.hasText(val)){
-					afficherMessage = Boolean.valueOf(val);
-				}
-			}
-		}
-
-		if(afficherMessage){
-			String message =applicationContext.getMessage("notesDetailMobileView.window.message.info", null, null);
-			HelpMobileWindow hbw = helpMobileWindowFactory.getObject();
-			hbw.init(message,applicationContext.getMessage("helpWindow.defaultTitle", null, null),!userController.isEtudiant());
-			hbw.addCloseListener(g->{
-				if(!userController.isEtudiant()){
-					boolean choix = hbw.getCheckBox().getValue();
-					//Test si l'utilisateur a coché la case pour ne plus afficher le message
-					if(choix){
-						//mettre a jour dans la base de données
-						userController.updatePreference(Utils.SHOW_MESSAGE_NOTES_MOBILE_PREFERENCE, "false");
-					}
-				}
-			});
-			UI.getCurrent().addWindow(hbw);
-		}
-
-	}
-
 
 }

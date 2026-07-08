@@ -1,0 +1,56 @@
+# Propriétés par défaut de l'application (profil "defaults", chargé par Application).
+# Les propriétés d'environnement se définissent dans le fichier application.yml externe
+# (voir application.example.yml).
+app:
+    name: "@project.name@"
+    version: "@project.version@"
+
+spring:
+    jpa:
+        open-in-view: false
+    # Fichiers de messages i18n : les fichiers "messages" et "vaadin-messages" (optionnels)
+    # surchargent les fichiers "-default"
+    messages:
+        basename: i18n/messages,i18n/messages-default,i18n/vaadin-messages,i18n/vaadin-messages-default
+    # Migration du schéma de la base mdw
+    flyway:
+        baseline-on-migrate: true
+        # Version de baseline pour les bases existantes (l'installation doit être à jour
+        # en 2.0.x avant migration ; l'ancienne table Flyway 3 "schema_version" est abandonnée)
+        baseline-version: "8.3"
+
+server:
+    servlet:
+        session:
+            # Durée max des sessions inactives
+            timeout: 3600s
+
+vaadin:
+    heartbeatInterval: 15
+    allowed-packages: fr/univlorraine,com/vaadin
+    launch-browser: false
+
+logging:
+    level:
+        org.springframework.boot.web.servlet.support.ErrorPageFilter: OFF
+        org.apache.catalina.session.StandardManager: OFF
+        com.vaadin.flow.server.DefaultErrorHandler: ERROR
+
+# Rate limiting sur /login/cas désactivé par défaut
+ratelimiter.maxrequest: 0
+
+apoShowSql: false
+loginApogee: true
+checkTesUtilisateurApogee: false
+recherche.autocompletion.elp: false
+param.apogee.mail.annuaire: false
+EnablePdfSecurity: false
+showLoadingIndicator: true
+etatcivil.nom.affichage: standard
+sourceResultats: Apogee
+resultat.implementation: resultatController
+emailConverter.implementation: emailConverterBasicImpl
+codetuFromLogin.implementation: codetuFromLoginLdapImpl
+loginFromCodetu.implementation: loginFromCodetuLdapImpl
+serveurphoto.implementation: photoEmptyImpl
+liste.erreur.a.ignorer: ClientAbortException;IllegalStateException;SocketTimeoutException;RpcInvocationException

@@ -28,7 +28,7 @@ import org.springframework.stereotype.Repository;
 import jakarta.annotation.Resource;
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Repository
 public class UtilisateurServiceImpl implements UtilisateurService{
 

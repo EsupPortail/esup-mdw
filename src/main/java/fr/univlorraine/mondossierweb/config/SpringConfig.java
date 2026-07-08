@@ -18,94 +18,40 @@
  */
 package fr.univlorraine.mondossierweb.config;
 
-import com.vaadin.spring.annotation.EnableVaadin;
-import fr.univlorraine.mondossierweb.Initializer;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeServiceImpl;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import org.flywaydb.core.internal.util.StringUtils;
+import jakarta.annotation.Resource;
+import net.sf.ehcache.CacheManager;
+import org.esupportail.portal.ws.client.support.uportal.CachingUportalServiceImpl;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.util.StringUtils;
 
-import jakarta.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Configuration Spring
- * 
- * @author Adrien Colson
  */
 @Configuration
-@EnableSpringConfigured
-@ComponentScan(basePackageClasses=Initializer.class)
-@EnableAspectJAutoProxy(proxyTargetClass=true)
-@EnableVaadin
-@PropertySource("classpath:/app.properties")
 public class SpringConfig {
-	
+
 	@Resource
 	private Environment environment;
 
-	/**
-	 * Ajoute les paramètres de contexte aux propriétés Spring
-	 * @return
-	 */
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
-
-	/**
-	 * Messages de l'application
-	 * @return
-	 */
-	@Bean
-	public ResourceBundleMessageSource messageSource() {
-		ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-		
-		List<String> filesToLoad=new LinkedList<String>();
-		
-		
-		//Ajout du fichier de conf optionnel
-		ClassPathResource res = new ClassPathResource("i18n/messages.properties");
-		if(res.exists()){
-			filesToLoad.add("i18n/messages");
-		}
-		//Ajout du fichier de conf par défaut
-		filesToLoad.add("i18n/messages-default");
-		
-		//Ajout du fichier de conf optionnel
-		ClassPathResource resv = new ClassPathResource("i18n/vaadin-messages.properties");
-		if(resv.exists()){
-			filesToLoad.add("i18n/vaadin-messages");
-		}
-		//Ajout du fichier de conf par défaut
-		filesToLoad.add("i18n/vaadin-messages-default");
-		
-		resourceBundleMessageSource.setBasenames(filesToLoad.toArray(new String[filesToLoad.size()]));
-		return resourceBundleMessageSource;
-	}
-	
 	@Bean
 	public LdapContextSource ldapServer() {
 		LdapContextSource ldapContextSource = new LdapContextSource();
-		String urls= environment.getRequiredProperty("ldap.url");
-		if(urls!=null && urls.contains(";")){
+		String urls = environment.getRequiredProperty("ldap.url");
+		if (urls != null && urls.contains(";")) {
 			ldapContextSource.setUrls(urls.split(";"));
-		}else{
+		} else {
 			ldapContextSource.setUrl(urls);
 		}
 
@@ -121,48 +67,57 @@ public class SpringConfig {
 
 		return ldapContextSource;
 	}
-	
+
 	@Bean
 	public LdapUserSearch ldapUserSearch() {
-		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch(environment.getProperty("ldap.ou.people"), environment.getProperty("ldap.uid.attribute")+"={0}", ldapServer());
-		fbus.setReturningAttributes(getLdapAttributes());
-		return fbus;
-	}
-	
-	@Bean
-	public LdapUserSearch ldapEtudiantSearch() {
-		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch(environment.getProperty("ldap.ou.student"), environment.getProperty("attributLdapCodEtu")+"={0}", ldapServer());
+		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch(environment.getProperty("ldap.ou.people"), environment.getProperty("ldap.uid.attribute") + "={0}", ldapServer());
 		fbus.setReturningAttributes(getLdapAttributes());
 		return fbus;
 	}
 
-	private String[] getLdapAttributes(){
+	@Bean
+	public LdapUserSearch ldapEtudiantSearch() {
+		FilterBasedLdapUserSearch fbus = new FilterBasedLdapUserSearch(environment.getProperty("ldap.ou.student"), environment.getProperty("attributLdapCodEtu") + "={0}", ldapServer());
+		fbus.setReturningAttributes(getLdapAttributes());
+		return fbus;
+	}
+
+	private String[] getLdapAttributes() {
 		List<String> lattributes = new LinkedList<>();
 		lattributes.add("uid");
-		if(!environment.getProperty("ldap.uid.attribute").equals("uid")){
+		if (!environment.getProperty("ldap.uid.attribute").equals("uid")) {
 			lattributes.add(environment.getProperty("ldap.uid.attribute"));
 		}
 		lattributes.add("mail");
-		if(environment.getProperty("param.esupsgc.urlphoto")!=null) {
+		if (environment.getProperty("param.esupsgc.urlphoto") != null) {
 			lattributes.add("eduPersonPrincipalName");
 		}
 		lattributes.add(PropertyUtils.getAttributLdapEtudiant());
 		lattributes.add(PropertyUtils.getAttributLdapCodEtu());
-		if(StringUtils.hasText(PropertyUtils.getAttributGroupeLdap())){
+		if (StringUtils.hasText(PropertyUtils.getAttributGroupeLdap())) {
 			lattributes.add(PropertyUtils.getAttributGroupeLdap());
 		}
-		if(StringUtils.hasText(PropertyUtils.getAttributLdapDoctorant())){
+		if (StringUtils.hasText(PropertyUtils.getAttributLdapDoctorant())) {
 			lattributes.add(PropertyUtils.getAttributLdapDoctorant());
 		}
-		String[] tat =new String[lattributes.size()];
+		String[] tat = new String[lattributes.size()];
 		lattributes.toArray(tat);
 		return tat;
 	}
-	
+
+	/* Uportal service */
 	@Bean
-	public ElasticSearchApogeeService ElasticSearchApogeeService(){
+	public CachingUportalServiceImpl cachingUportalServiceImpl() {
+		final CachingUportalServiceImpl cachingUportalService = new CachingUportalServiceImpl();
+		cachingUportalService.setUrl(environment.getRequiredProperty("uportal.ws"));
+		cachingUportalService.setCacheManager(new CacheManager());
+		return cachingUportalService;
+	}
+
+	@Bean
+	public ElasticSearchApogeeService ElasticSearchApogeeService() {
 		ElasticSearchApogeeServiceImpl esas = new ElasticSearchApogeeServiceImpl();
-		
+
 		esas.setTypCmp(Utils.CMP);
 		esas.setTypVet(Utils.VET);
 		esas.setTypElp(Utils.ELP);
@@ -175,8 +130,7 @@ public class SpringConfig {
 		esas.setElasticSearchChampCodeObjet(PropertyUtils.getElasticSearchChampCodeObjet());
 		esas.setElasticSearchChampRecherche(PropertyUtils.getElasticSearchChampRecherche());
 		esas.setElasticSearchChampVersionObjet(PropertyUtils.getElasticSearchChampVersionObjet());
-		
+
 		return esas;
-		
 	}
 }

@@ -79,9 +79,9 @@ public interface MultipleApogeeService {
 	
 	public abstract boolean isBoursier(String cod_ind, String cod_anu);
 	
-	public abstract List<BigDecimal> getCodRvn(String cod_ind, String cod_anu, String listeCodesElp);
+	public abstract List<?> getCodRvn(String cod_ind, String cod_anu, String listeCodesElp);
 	
-	public abstract String getCodSignataireRvn(BigDecimal cod_rvn);
+	public abstract String getCodSignataireRvn(Number cod_rvn);
 	
 	public abstract List<String> getListeCodeBlocage(String cod_etu);
 	

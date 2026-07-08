@@ -18,24 +18,22 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.vaadin.server.StreamResource;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfWriter;
 import fr.univlorraine.mondossierweb.beans.AffiliationSSO;
 import fr.univlorraine.mondossierweb.beans.DroitUniversitaire;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
@@ -47,18 +45,19 @@ import fr.univlorraine.mondossierweb.services.apogee.InscriptionService;
 import fr.univlorraine.mondossierweb.services.apogee.InscriptionServiceImpl;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
 import fr.univlorraine.mondossierweb.services.apogee.SsoApogeeService;
+import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -101,6 +100,10 @@ public class SsoController {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private MultipleApogeeService multipleApogeeService;
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 
 
 
@@ -254,107 +257,82 @@ public class SsoController {
 	}
 
 
-	public com.vaadin.server.Resource exportQuittancePdf(Etudiant e, Inscription inscription) {
+	public DownloadFile exportQuittancePdf(Etudiant e, Inscription inscription) {
 		log.debug("-generation pdf Quittance pour "+e.getCod_etu());
 
 		// verifie les autorisations
-		if(!etudiantController.proposerQuittanceDroitsPayes(inscription, MainUI.getCurrent().getEtudiant())){
+		if(!etudiantController.proposerQuittanceDroitsPayes(inscription, sessionController.getEtudiant())){
 			return null;
 		}
 
-		String nomFichier = applicationContext.getMessage("pdf.quittance.title", null, Locale.getDefault())+"_" + inscription.getCod_anu().replace('/', '-') + "_" + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
+		String nomFichier = applicationContext.getMessage("pdf.quittance.title", null, Locale.getDefault())+"_" + inscription.getCod_anu().replace('/', '-') + "_" + sessionController.getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
 
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-					PdfWriter docWriter = null;
-					Document document = configureDocument();
-					docWriter = PdfWriter.getInstance(document, baosPDF);
-					// Test si on doit activer l'encryption
-					byte[] ownerPwd = PdfUtils.generatePwd();
-					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
-					}
-					docWriter.setStrictImageSequence(true);
-					creerPdfQuittance(document,MainUI.getCurrent().getEtudiant(), inscription);
-					docWriter.close();
-					baosPDF.close();
-					if(configController.isSignaturePdfQuittance()) {
-						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfQuittance(), configController.getSignatureAltPositionQuittance()).toByteArray());
-					} else {
-						//Creation de l'export
-						return new ByteArrayInputStream(baosPDF.toByteArray());
-					}
-				} catch (DocumentException e) {
-					log.error("Erreur à la génération de l'attestation : DocumentException ",e);
-					return null;
-				} catch (IOException e) {
-					log.error("Erreur à la génération de l'attestation : IOException ",e);
-					return null;
-				}
-
+		try {
+			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
+			PdfWriter docWriter = null;
+			Document document = configureDocument();
+			docWriter = PdfWriter.getInstance(document, baosPDF);
+			// Test si on doit activer l'encryption
+			byte[] ownerPwd = PdfUtils.generatePwd();
+			if(PropertyUtils.isEnablePdfSecurity()){
+				docWriter.setEncryption(null, ownerPwd, PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
 			}
-		};
-
-		// Création de la ressource 
-		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/force-download;charset=UTF-8");
-		resource.setCacheTime(0);
-		return resource;
+			docWriter.setStrictImageSequence(true);
+			creerPdfQuittance(document, sessionController.getEtudiant(), inscription);
+			docWriter.close();
+			baosPDF.close();
+			if(configController.isSignaturePdfQuittance()) {
+				//Creation de l'export après ajout de signature
+				return new DownloadFile(nomFichier, PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfQuittance(), configController.getSignatureAltPositionQuittance()).toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			} else {
+				//Creation de l'export
+				return new DownloadFile(nomFichier, baosPDF.toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			}
+		} catch (DocumentException ex) {
+			log.error("Erreur à la génération de l'attestation : DocumentException ",ex);
+			return null;
+		} catch (IOException ex) {
+			log.error("Erreur à la génération de l'attestation : IOException ",ex);
+			return null;
+		}
 	}
 
-	public com.vaadin.server.Resource exportAffiliationSsoPdf(Etudiant e, Inscription inscription) {
+	public DownloadFile exportAffiliationSsoPdf(Etudiant e, Inscription inscription) {
 		log.debug("-generation pdf AffiliationSso pour "+e.getCod_etu());
 
 
 		// verifie les autorisations
-		if(!etudiantController.proposerAttestationAffiliationSSO(inscription, MainUI.getCurrent().getEtudiant())){
+		if(!etudiantController.proposerAttestationAffiliationSSO(inscription, sessionController.getEtudiant())){
 			return null;
 		}
 
 
-		String nomFichier = applicationContext.getMessage("pdf.affiliationsso.title", null, Locale.getDefault())+"_" + inscription.getCod_anu().replace('/', '-') + "_" + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
+		String nomFichier = applicationContext.getMessage("pdf.affiliationsso.title", null, Locale.getDefault())+"_" + inscription.getCod_anu().replace('/', '-') + "_" + sessionController.getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
 
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-					PdfWriter docWriter = null;
-					Document document = configureDocument();
-					docWriter = PdfWriter.getInstance(document, baosPDF);
-					// Test si on doit activer l'encryption
-					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, null, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
-					}
-					docWriter.setStrictImageSequence(true);
-					creerPdfAffiliationSso(document,MainUI.getCurrent().getEtudiant(), inscription);
-					docWriter.close();
-					baosPDF.close();
-					//Creation de l'export
-					byte[] bytes = baosPDF.toByteArray();
-					return new ByteArrayInputStream(bytes);
-				} catch (DocumentException e) {
-					log.error("Erreur à la génération de l'attestation : DocumentException ",e);
-					return null;
-				} catch (IOException e) {
-					log.error("Erreur à la génération de l'attestation : IOException ",e);
-					return null;
-				}
-
+		try {
+			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
+			PdfWriter docWriter = null;
+			Document document = configureDocument();
+			docWriter = PdfWriter.getInstance(document, baosPDF);
+			// Test si on doit activer l'encryption
+			if(PropertyUtils.isEnablePdfSecurity()){
+				docWriter.setEncryption(null, null, PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
 			}
-		};
-
-		// Création de la ressource 
-		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/force-download;charset=UTF-8");
-		resource.setCacheTime(0);
-		return resource;
+			docWriter.setStrictImageSequence(true);
+			creerPdfAffiliationSso(document, sessionController.getEtudiant(), inscription);
+			docWriter.close();
+			baosPDF.close();
+			//Creation de l'export
+			return new DownloadFile(nomFichier, baosPDF.toByteArray(), DownloadFile.MIME_TYPE_PDF);
+		} catch (DocumentException ex) {
+			log.error("Erreur à la génération de l'attestation : DocumentException ",ex);
+			return null;
+		} catch (IOException ex) {
+			log.error("Erreur à la génération de l'attestation : IOException ",ex);
+			return null;
+		}
 	}
 
 	/**

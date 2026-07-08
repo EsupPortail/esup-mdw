@@ -18,50 +18,48 @@
  */
 package fr.univlorraine.mondossierweb.controllers;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.GrayColor;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.vaadin.server.StreamResource;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.GrayColor;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEventHelper;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfWriter;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
 import fr.univlorraine.mondossierweb.beans.Etape;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.beans.Resultat;
 import fr.univlorraine.mondossierweb.entities.apogee.Signataire;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.ByteArrayInputStream;
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
@@ -104,139 +102,117 @@ public class NoteController {
 	private MultipleApogeeService multipleApogeeService;
 	@Resource
 	private transient ConfigController configController;
+	/** État de la session utilisateur (injection lazy : bean de portée vaadin-session) */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
 
 
 
 	/**
-	 * 
-	 * @return le fichier pdf du résumé des notes.
+	 *
+	 * @return le fichier pdf du résumé des notes (null en cas d'erreur).
 	 */
-	public com.vaadin.server.Resource exportPdfResume() {
+	public DownloadFile exportPdfResume() {
 
 
 
-		String nomFichier = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
+		String nomFichier = applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault())+" " + sessionController.getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
 
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-					PdfWriter docWriter = null;
-					boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
-					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
-					docWriter = PdfWriter.getInstance(document, baosPDF);
-					// Test si on doit activer l'encryption
-					byte[] ownerPwd = PdfUtils.generatePwd();
-					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
-					}
-					docWriter.setStrictImageSequence(true);
-					String libEtb = multipleApogeeService.getLibEtablissementDef();
-					docWriter.setPageEvent(new ResumeHeaderFooter(libEtb, notesPDFFormatPortrait));
-					if(configController.isInsertionFiligranePdfNotes()){
-						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
-					}
-					creerPdfResume(document,MainUI.getCurrent().getEtudiant(),notesPDFFormatPortrait, libEtb);
-					docWriter.close();
-					baosPDF.close();
-					if(configController.isSignaturePdfResumeNote()) {
-						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(),ownerPwd), configController.isSignatureAltPdfResumeNote(), configController.getSignatureAltPositionResumeNote()).toByteArray());
-					} else {
-						//Creation de l'export
-						return new ByteArrayInputStream(baosPDF.toByteArray());
-					}
-				} catch (DocumentException e) {
-					log.error("Erreur à la génération du résumé des notes : DocumentException ",e);
-					return null;
-				} catch (IOException e) {
-					log.error("Erreur à la génération du résumé des notes : IOException ",e);
-					return null;
-				}
-
+		try {
+			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
+			PdfWriter docWriter = null;
+			boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
+			Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
+			docWriter = PdfWriter.getInstance(document, baosPDF);
+			// Test si on doit activer l'encryption
+			byte[] ownerPwd = PdfUtils.generatePwd();
+			if(PropertyUtils.isEnablePdfSecurity()){
+				docWriter.setEncryption(null, ownerPwd, PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
 			}
-		};
-
-		// Création de la ressource 
-		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.setMIMEType("application/force-download;charset=UTF-8");
-		resource.setCacheTime(0);
-		return resource;
+			docWriter.setStrictImageSequence(true);
+			String libEtb = multipleApogeeService.getLibEtablissementDef();
+			docWriter.setPageEvent(new ResumeHeaderFooter(libEtb, notesPDFFormatPortrait));
+			if(configController.isInsertionFiligranePdfNotes()){
+				docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
+			}
+			creerPdfResume(document, sessionController.getEtudiant(),notesPDFFormatPortrait, libEtb);
+			docWriter.close();
+			baosPDF.close();
+			if(configController.isSignaturePdfResumeNote()) {
+				//Creation de l'export après ajout de signature
+				return new DownloadFile(nomFichier, PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(),ownerPwd), configController.isSignatureAltPdfResumeNote(), configController.getSignatureAltPositionResumeNote()).toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			} else {
+				//Creation de l'export
+				return new DownloadFile(nomFichier, baosPDF.toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			}
+		} catch (DocumentException e) {
+			log.error("Erreur à la génération du résumé des notes : DocumentException ",e);
+			return null;
+		} catch (IOException e) {
+			log.error("Erreur à la génération du résumé des notes : IOException ",e);
+			return null;
+		}
 	}
 
 	/**
-	 * 
-	 * @return le fichier pdf du detail des notes.
+	 *
+	 * @return le fichier pdf du detail des notes (null en cas d'erreur).
 	 */
-	public com.vaadin.server.Resource exportPdfDetail(Etape etape) {
+	public DownloadFile exportPdfDetail(Etape etape) {
 
 
 
-		String nomFichier = applicationContext.getMessage("pdf.detail.title", null, Locale.getDefault())+" " + MainUI.getCurrent().getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
+		String nomFichier = applicationContext.getMessage("pdf.detail.title", null, Locale.getDefault())+" " + sessionController.getEtudiant().getNom().replace('.', ' ').replace(' ', '_') + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ","_");
 
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
-					PdfWriter docWriter = null;
-					boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
-					Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
-					docWriter = PdfWriter.getInstance(document, baosPDF);
-					// Test si on doit activer l'encryption
-					byte[] ownerPwd = PdfUtils.generatePwd();
-					if(PropertyUtils.isEnablePdfSecurity()){
-						docWriter.setEncryption(null, ownerPwd, PdfWriter.AllowPrinting, PdfWriter.ENCRYPTION_AES_128);
-					}
-					docWriter.setStrictImageSequence(true);
-					String libEtb = multipleApogeeService.getLibEtablissementDef();
-					//récupération d'une eventuelle signature
-					String codSign=getCodeSignataire(etape,MainUI.getCurrent().getEtudiant());
-					Signataire signataire = null;
-					Image imageSignature = null;
-					if (configController.isNotesPDFsignature() && StringUtils.hasText(codSign)) {
-						signataire = multipleApogeeService.getSignataireRvn(codSign,PropertyUtils.getClefApogeeDecryptBlob());
-						if (signataire.getImg_sig_std() != null){
-							imageSignature = Image.getInstance(signataire.getImg_sig_std());
-						}
-					}
-					docWriter.setPageEvent(new DetailHeaderFooter(libEtb, etape.getAnnee(), notesPDFFormatPortrait, configController.isNotesPDFsignature(), signataire, imageSignature));
-					//Si on doit mettre le filigramme et qu'on n'a pas de signature à apposer au document
-					if(configController.isInsertionFiligranePdfNotes() && !StringUtils.hasText(codSign)){
-						//On ajoute le filigramme
-						docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
-					}
-					creerPdfDetail(document,MainUI.getCurrent().getEtudiant(), etape,notesPDFFormatPortrait, libEtb);
-					docWriter.close();
-					baosPDF.close();
-					if(configController.isSignaturePdfDetailNote()) {
-						//Creation de l'export après ajout de signature
-						return new ByteArrayInputStream(PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfDetailNote(), configController.getSignatureAltPositionDetailNote()).toByteArray());
-					} else {
-						//Creation de l'export
-						return new ByteArrayInputStream(baosPDF.toByteArray());
-					}
-				} catch (DocumentException e) {
-					log.error("Erreur à la génération du détail des notes : DocumentException ",e);
-					return null;
-				} catch (IOException e) {
-					log.error("Erreur à la génération du détail des notes : IOException ",e);
-					return null;
-				}
-
+		try {
+			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream(OUTPUTSTREAM_SIZE);
+			PdfWriter docWriter = null;
+			boolean notesPDFFormatPortrait=configController.isAffichagePdfNotesFormatPortrait();
+			Document document = configureDocument(MARGE_PDF,notesPDFFormatPortrait);
+			docWriter = PdfWriter.getInstance(document, baosPDF);
+			// Test si on doit activer l'encryption
+			byte[] ownerPwd = PdfUtils.generatePwd();
+			if(PropertyUtils.isEnablePdfSecurity()){
+				docWriter.setEncryption(null, ownerPwd, PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
 			}
-
-		};
-
-		// Création de la ressource 
-		StreamResource resource = new StreamResource(source, nomFichier);
-		resource.getStream().setParameter("Content-Disposition", "attachment; filename="+nomFichier);
-		resource.setMIMEType("application/force-download;charset=UTF-8");
-		resource.setCacheTime(0);
-		return resource;
+			docWriter.setStrictImageSequence(true);
+			String libEtb = multipleApogeeService.getLibEtablissementDef();
+			//récupération d'une eventuelle signature
+			String codSign=getCodeSignataire(etape, sessionController.getEtudiant());
+			Signataire signataire = null;
+			Image imageSignature = null;
+			if (configController.isNotesPDFsignature() && StringUtils.hasText(codSign)) {
+				signataire = multipleApogeeService.getSignataireRvn(codSign,PropertyUtils.getClefApogeeDecryptBlob());
+				if (signataire.getImg_sig_std() != null){
+					imageSignature = Image.getInstance(signataire.getImg_sig_std());
+				}
+			}
+			docWriter.setPageEvent(new DetailHeaderFooter(libEtb, etape.getAnnee(), notesPDFFormatPortrait, configController.isNotesPDFsignature(), signataire, imageSignature));
+			//Si on doit mettre le filigramme et qu'on n'a pas de signature à apposer au document
+			if(configController.isInsertionFiligranePdfNotes() && !StringUtils.hasText(codSign)){
+				//On ajoute le filigramme
+				docWriter.setPageEvent(new Watermark(notesPDFFormatPortrait));
+			}
+			creerPdfDetail(document, sessionController.getEtudiant(), etape,notesPDFFormatPortrait, libEtb);
+			docWriter.close();
+			baosPDF.close();
+			if(configController.isSignaturePdfDetailNote()) {
+				//Creation de l'export après ajout de signature
+				return new DownloadFile(nomFichier, PdfUtils.signPdf(new PdfReader(baosPDF.toByteArray(), ownerPwd), configController.isSignatureAltPdfDetailNote(), configController.getSignatureAltPositionDetailNote()).toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			} else {
+				//Creation de l'export
+				return new DownloadFile(nomFichier, baosPDF.toByteArray(), DownloadFile.MIME_TYPE_PDF);
+			}
+		} catch (DocumentException e) {
+			log.error("Erreur à la génération du détail des notes : DocumentException ",e);
+			return null;
+		} catch (IOException e) {
+			log.error("Erreur à la génération du détail des notes : IOException ",e);
+			return null;
+		}
 	}
 
 	/**
@@ -285,7 +261,7 @@ public class NoteController {
 		}
 
 		String[] color = configController.getHeaderColorPdf();
-		BaseColor headerColor = new BaseColor(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
+		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
 
 
 		//ouverte du document.
@@ -411,9 +387,9 @@ public class NoteController {
 			PdfPCell ct2 = new PdfPCell(p2);
 			PdfPCell ct3 = new PdfPCell(p3);
 
-			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(BaseColor.BLACK);
-			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
-			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(BaseColor.BLACK);
+			ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.BLACK);
+			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.BLACK);
+			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(Color.BLACK);
 
 
 
@@ -439,10 +415,10 @@ public class NoteController {
 
 
 
-			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(BaseColor.BLACK);
-			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(BaseColor.BLACK);
-			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(BaseColor.BLACK);
-			ctmention.setBorder(Rectangle.BOTTOM); ctmention.setBorderColorBottom(BaseColor.BLACK);
+			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(Color.BLACK);
+			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(Color.BLACK);
+			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(Color.BLACK);
+			ctmention.setBorder(Rectangle.BOTTOM); ctmention.setBorderColorBottom(Color.BLACK);
 
 
 
@@ -458,7 +434,7 @@ public class NoteController {
 			table2.addCell(ct7);
 
 			PdfPCell ctrang  = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.rank", null, Locale.getDefault()),normalbig));
-			ctrang.setBorder(Rectangle.BOTTOM); ctrang.setBorderColorBottom(BaseColor.BLACK);
+			ctrang.setBorder(Rectangle.BOTTOM); ctrang.setBorderColorBottom(Color.BLACK);
 
 			if(etudiant.isAfficherRang()){
 				table2.addCell(ctrang);
@@ -584,7 +560,7 @@ public class NoteController {
 
 
 			PdfPCell ct3etape = new PdfPCell(new Paragraph(applicationContext.getMessage("pdf.etape", null, Locale.getDefault()),normalbig));
-			ct3etape.setBorder(Rectangle.BOTTOM); ct3etape.setBorderColorBottom(BaseColor.BLACK);
+			ct3etape.setBorder(Rectangle.BOTTOM); ct3etape.setBorderColorBottom(Color.BLACK);
 
 			tabletape2.addCell(ct1);
 			tabletape2.addCell(ct2);
@@ -749,7 +725,7 @@ public class NoteController {
 		}
 
 		String[] color = configController.getHeaderColorPdf();
-		BaseColor headerColor = new BaseColor(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
+		Color headerColor = new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]));
 
 
 		//pieds de pages:
@@ -991,15 +967,15 @@ public class NoteController {
 			PdfPCell cellMention = new PdfPCell(parMention);									   
 
 			//ct1.setBorder(Rectangle.BOTTOM); ct1.setBorderColorBottom(Color.black);
-			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(BaseColor.BLACK);
-			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(BaseColor.BLACK);
-			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(BaseColor.BLACK);
-			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(BaseColor.BLACK);
-			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(BaseColor.BLACK);
-			ct7.setBorder(Rectangle.BOTTOM); ct7.setBorderColorBottom(BaseColor.BLACK);
-			cellRang.setBorder(Rectangle.BOTTOM); cellRang.setBorderColorBottom(BaseColor.BLACK);
-			cellEcts.setBorder(Rectangle.BOTTOM); cellEcts.setBorderColorBottom(BaseColor.BLACK);
-			cellMention.setBorder(Rectangle.BOTTOM); cellMention.setBorderColorBottom(BaseColor.BLACK);																				  
+			ct2.setBorder(Rectangle.BOTTOM); ct2.setBorderColorBottom(Color.BLACK);
+			ct3.setBorder(Rectangle.BOTTOM); ct3.setBorderColorBottom(Color.BLACK);
+			ct4.setBorder(Rectangle.BOTTOM); ct4.setBorderColorBottom(Color.BLACK);
+			ct5.setBorder(Rectangle.BOTTOM); ct5.setBorderColorBottom(Color.BLACK);
+			ct6.setBorder(Rectangle.BOTTOM); ct6.setBorderColorBottom(Color.BLACK);
+			ct7.setBorder(Rectangle.BOTTOM); ct7.setBorderColorBottom(Color.BLACK);
+			cellRang.setBorder(Rectangle.BOTTOM); cellRang.setBorderColorBottom(Color.BLACK);
+			cellEcts.setBorder(Rectangle.BOTTOM); cellEcts.setBorderColorBottom(Color.BLACK);
+			cellMention.setBorder(Rectangle.BOTTOM); cellMention.setBorderColorBottom(Color.BLACK);																				  
 
 			if (formatPortrait) {
 				table2.addCell(ct2);
@@ -1233,9 +1209,9 @@ public class NoteController {
 				// on teste s'il y a bien des elps presents
 				if (etudiant.getElementsPedagogiques().size()>1){
 					// PFE : on teste si on a un relevé de notes (extraction) associé à l'élément pédagogique
-					List<BigDecimal> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4), getListeCodElpForSQL(etudiant.getElementsPedagogiques()));
+					List<?> CodRvn = multipleApogeeService.getCodRvn(etudiant.getCod_ind(), etudiant.getElementsPedagogiques().get(0).getAnnee().substring(0, 4), getListeCodElpForSQL(etudiant.getElementsPedagogiques()));
 					if (!CodRvn.isEmpty()) {
-						codSign = multipleApogeeService.getCodSignataireRvn(CodRvn.get(0));
+						codSign = multipleApogeeService.getCodSignataireRvn((Number) CodRvn.get(0));
 					}
 				}
 			}
@@ -1266,7 +1242,7 @@ public class NoteController {
 	class Watermark extends PdfPageEventHelper {
 
 		/** Default watermark font */
-		Font FONT = new Font(FontFamily.HELVETICA, 52, Font.BOLD, new GrayColor(0.75f));
+		Font FONT = new Font(Font.HELVETICA, 52, Font.BOLD, new GrayColor(0.75f));
 		boolean formatPortrait;
 		float coordonneex;
 		float coordonneey;

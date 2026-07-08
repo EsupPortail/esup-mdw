@@ -18,117 +18,92 @@
  */
 package fr.univlorraine.mondossierweb.views.windows;
 
-import com.vaadin.server.BrowserWindowOpener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.shared.Registration;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
  * Fenêtre d'aide basique
  */
 @SuppressWarnings("serial")
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class HelpBasicWindow extends Window {
+public class HelpBasicWindow extends Dialog {
+
 	public static final String NAME = "helpBasicWindow";
 
-	/* Injections */
-	@Resource
-	private transient ApplicationContext applicationContext;
-	@Resource
-	private transient ConfigController configController;
-
 	/* Composants */
-	private Button btnFermer = new Button();
+	private final Button btnFermer = new Button();
 
-	public void addBtnNonListener(Button.ClickListener clickListener) {
-		btnFermer.addClickListener(clickListener);
-	}
-	public void removeBtnNonListener(Button.ClickListener clickListener) {
-		btnFermer.removeClickListener(clickListener);
-	}
 	/**
-	 * Crée une fenêtre de confirmation avec un message et un titre par défaut
+	 * Crée une fenêtre d'aide avec un titre
 	 */
-	public void init() {
-		init(null, null);
+	public HelpBasicWindow(final String message, final String titre) {
+		this(message, titre, false);
 	}
 
 	/**
-	 * Crée une fenêtre de confirmation avec un titre par défaut
-	 * @param message
+	 * Crée une fenêtre d'aide
+	 * @param message contenu HTML
+	 * @param titre titre de la fenêtre
+	 * @param displayLienContact affiche le lien mailto vers le contact assistance
 	 */
-	public void init(String message) {
-		init(message, null);
-	}
-
-	public void init(String message, String titre) {
-		init(message, titre, false);
-	}
-	/**
-	 * Crée une fenêtre de confirmation
-	 * @param message
-	 * @param titre
-	 */
-	public void init(String message, String titre,boolean displayLienContact) {
+	public HelpBasicWindow(final String message, final String titre, final boolean displayLienContact) {
 		/* Style */
-		setWidth(900, Unit.PIXELS);
-		setModal(true);
+		setWidth("900px");
+		setMaxWidth("100%");
 		setResizable(false);
-		setClosable(false);
-
-		/* Layout */
-		VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		layout.setSpacing(false);
-		setContent(layout);
+		setCloseOnEsc(false);
+		setCloseOnOutsideClick(false);
 
 		/* Titre */
-		setCaption(titre);
+		setHeaderTitle(titre);
 
-		// Lien de contact
-		if(displayLienContact){
-			String mailContact = configController.getAssistanceContactMail();
-			if(StringUtils.hasText(mailContact)){
-				Button contactBtn = new Button(applicationContext.getMessage(NAME + ".btnContact", null, getLocale()), FontAwesome.ENVELOPE);
-				contactBtn.addStyleName(ValoTheme.BUTTON_LINK);
-				BrowserWindowOpener contactBwo = new BrowserWindowOpener("mailto:" + mailContact);
-				contactBwo.extend(contactBtn);
-				layout.addComponent(contactBtn);
-				layout.setComponentAlignment(contactBtn, Alignment.TOP_RIGHT);
+		/* Layout */
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setPadding(false);
+		layout.setSpacing(false);
+		add(layout);
+
+		/* Lien de contact */
+		if (displayLienContact) {
+			final ConfigController configController = VaadinService.getCurrent().getInstantiator().getOrCreate(ConfigController.class);
+			final String mailContact = configController.getAssistanceContactMail();
+			if (StringUtils.hasText(mailContact)) {
+				final Button contactBtn = new Button(getTranslation(NAME + ".btnContact"), VaadinIcon.ENVELOPE.create());
+				contactBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				final Anchor contactAnchor = new Anchor("mailto:" + mailContact, contactBtn);
+				layout.add(contactAnchor);
+				layout.setAlignSelf(FlexComponent.Alignment.END, contactAnchor);
 			}
 		}
 
 		/* Texte */
-		Label textLabel = new Label(message,ContentMode.HTML);
-		layout.addComponent(textLabel);
+		layout.add(new Html("<div>" + message + "</div>"));
 
 		/* Boutons */
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
-		buttonsLayout.setSpacing(true);
-		layout.addComponent(buttonsLayout);
+		final HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.setWidthFull();
+		buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+		layout.add(buttonsLayout);
 
-		btnFermer.setCaption(applicationContext.getMessage("helpWindow.btnFermer", null, getLocale()));
-		btnFermer.setIcon(FontAwesome.TIMES);
+		btnFermer.setText(getTranslation("helpWindow.btnFermer"));
+		btnFermer.setIcon(VaadinIcon.CLOSE.create());
 		btnFermer.addClickListener(e -> close());
-		buttonsLayout.addComponent(btnFermer);
-		buttonsLayout.setComponentAlignment(btnFermer, Alignment.MIDDLE_RIGHT);
+		buttonsLayout.add(btnFermer);
+	}
 
-		/* Centre la fenêtre */
-		center();
+	public Registration addBtnNonListener(final ComponentEventListener<ClickEvent<Button>> clickListener) {
+		return btnFermer.addClickListener(clickListener);
 	}
 }

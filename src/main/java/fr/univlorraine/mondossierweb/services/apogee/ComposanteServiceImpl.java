@@ -32,7 +32,7 @@ import jakarta.annotation.Resource;
 import java.util.List;
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Repository
 public class ComposanteServiceImpl implements ComposanteService{
 

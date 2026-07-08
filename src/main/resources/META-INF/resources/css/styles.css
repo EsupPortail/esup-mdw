@@ -1,0 +1,79 @@
+/*
+ * Thème de l'application (remplace l'ancien thème SCSS valo-ul).
+ * Les variables Lumo sont surchargées ici ; la couleur principale
+ * peut être adaptée en fonction du domaine métier.
+ */
+html, [theme~="dark"] {
+	/* Couleur principale (ancien $v-focus-color : #343a40) */
+	--app-primary-color-rgb: 52, 58, 64;
+	--lumo-primary-color: rgb(var(--app-primary-color-rgb));
+	--lumo-primary-color-50pct: rgba(var(--app-primary-color-rgb), 0.5);
+	--lumo-primary-color-10pct: rgba(var(--app-primary-color-rgb), 0.1);
+	--lumo-primary-text-color: var(--lumo-body-text-color);
+	--lumo-border-radius-m: 2px;
+	--lumo-clickable-cursor: pointer;
+}
+
+/* Réduction de l'espace entre titres */
+h1 {
+	margin-top: .6em;
+	margin-bottom: .2em;
+}
+
+h2 {
+	margin-top: .3em;
+	margin-bottom: .1em;
+}
+
+h3 {
+	margin-top: .2em;
+	margin-bottom: 0;
+}
+
+h4 {
+	margin-top: .1em;
+	margin-bottom: 0;
+}
+
+/* Navbar de l'AppLayout */
+vaadin-app-layout::part(navbar) {
+	background: var(--lumo-primary-color);
+	color: var(--lumo-primary-contrast-color, #fff);
+}
+
+vaadin-app-layout > [slot='navbar'] {
+	color: #fff;
+}
+
+vaadin-app-layout > [slot='navbar'] vaadin-drawer-toggle {
+	color: #fff;
+}
+
+/* Menu du drawer */
+#menu-tabs vaadin-tab:hover {
+	background-color: var(--lumo-contrast-5pct);
+}
+
+#menu-tabs vaadin-tab[selected] {
+	background-color: var(--lumo-contrast-20pct);
+	font-weight: 700;
+}
+
+/* Mise en évidence de lignes de Grid (part names posés par setPartNameGenerator) */
+vaadin-grid::part(admis) {
+	font-weight: bold;
+}
+
+/* Lignes en favori dans la recherche arborescente */
+vaadin-grid::part(marked) {
+	background-color: var(--lumo-primary-color-10pct);
+}
+
+/* Utilitaires */
+.text-secondary {
+	color: var(--lumo-secondary-text-color);
+}
+
+.font-bold {
+	font-weight: bold;
+}

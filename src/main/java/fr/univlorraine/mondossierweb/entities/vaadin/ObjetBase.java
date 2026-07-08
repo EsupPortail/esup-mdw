@@ -19,8 +19,12 @@
 package fr.univlorraine.mondossierweb.entities.vaadin;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+/* equals/hashCode sur l'id seul : les instances servent de clés dans le TreeData
+   du TreeGrid et le champ "deplie" est muté après insertion */
 @Data
+@EqualsAndHashCode(of = "id")
 public class ObjetBase {
 	
 	private String id;

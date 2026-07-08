@@ -24,19 +24,21 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.ResultType;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @Component
-@org.springframework.transaction.annotation.Transactional("transactionManagerApogee")
+@org.springframework.transaction.annotation.Transactional(transactionManager = "transactionManagerApogee", readOnly = true)
 @Repository
 @Slf4j
 public class SsoApogeeServiceImpl implements SsoApogeeService{
@@ -46,6 +48,20 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 
 	@Resource
 	private RequestUtils requestUtils;
+
+	/**
+	 * Convertit un Tuple issu d'une requête native en Map dont les clés sont les alias
+	 * de colonnes en MAJUSCULES (comportement identique à l'ancien ResultType.Map
+	 * d'EclipseLink avec Oracle).
+	 */
+	private Map<String, String> tupleToMap(Tuple tuple) {
+		Map<String, String> map = new LinkedHashMap<>();
+		for (TupleElement<?> element : tuple.getElements()) {
+			Object valeur = tuple.get(element);
+			map.put(element.getAlias().toUpperCase(), valeur == null ? null : String.valueOf(valeur));
+		}
+		return map;
+	}
 
 	@Override
 	public String getMutuelle(String codAnu, String codInd) {
@@ -112,12 +128,14 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 				"AND cge.cod_cge = sqr.cod_cge "+
 				"ORDER BY sqr.num_occ_qut DESC";
 		}
-		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-
-		query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
 
 		@SuppressWarnings("unchecked")
-		List<Map<String,String>> r = (List<Map<String,String>>) query.getResultList();
+		List<Tuple> tuples = entityManagerApogee.createNativeQuery(requeteSQL, Tuple.class).getResultList();
+
+		List<Map<String,String>> r = new LinkedList<>();
+		for (Tuple tuple : tuples) {
+			r.add(tupleToMap(tuple));
+		}
 
 		return r;
 	}
@@ -187,18 +205,9 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 
 		}
 
-		//String[] r = (String[]) entityManagerApogee.createNativeQuery(requeteSQL).getSingleResult();
+		Tuple tuple = (Tuple) entityManagerApogee.createNativeQuery(requeteSQL, Tuple.class).getSingleResult();
 
-		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-
-		query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
-
-		@SuppressWarnings("unchecked")
-		Map<String,String> r = (Map<String,String>) query.getSingleResult();
-
-
-
-		//centre_payeur = (String) query.getSingleResult();
+		Map<String,String> r = tupleToMap(tuple);
 
 		if(!StringUtils.hasText(r.get("LIC_CTP"))){
 			r.put("LIC_CTP", "***");
@@ -511,12 +520,13 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 				"GROUP BY nrg.lic_nrg ";
 		}
 
-		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-
-		query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
-
 		@SuppressWarnings("unchecked")
-		List<Map<String,String>> r = (List<Map<String,String>>) query.getResultList();
+		List<Tuple> tuples = entityManagerApogee.createNativeQuery(requeteSQL, Tuple.class).getResultList();
+
+		List<Map<String,String>> r = new LinkedList<>();
+		for (Tuple tuple : tuples) {
+			r.add(tupleToMap(tuple));
+		}
 
 		return r;
 	}

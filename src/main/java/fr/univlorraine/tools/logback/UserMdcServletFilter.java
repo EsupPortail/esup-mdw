@@ -18,15 +18,15 @@
  */
 package fr.univlorraine.tools.logback;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
@@ -34,7 +34,8 @@ import java.io.IOException;
  * Filtre permettant de passer l'utilisateur Spring Security à Logback.
  * @author Adrien Colson
  */
-public class UserMdcServletFilter implements Filter {
+@Component
+public class UserMdcServletFilter extends OncePerRequestFilter {
 
 	/**
 	 * Nom de la variable utilisateur dans le MDC.
@@ -42,16 +43,12 @@ public class UserMdcServletFilter implements Filter {
 	public static final String USER_KEY = "username";
 
 	@Override
-	public void destroy() {
-	}
-
-	@Override
-	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws IOException, ServletException {
 		boolean successfulRegistration = false;
 
 		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		if (auth instanceof Authentication) {
+		if (auth != null) {
 			final String username = auth.getName();
 			successfulRegistration = registerUsername(username);
 		}
@@ -65,10 +62,6 @@ public class UserMdcServletFilter implements Filter {
 		}
 	}
 
-	@Override
-	public void init(final FilterConfig config) throws ServletException {
-	}
-
 	/**
 	 * Register the user in the MDC under USER_KEY.
 	 *
@@ -76,7 +69,7 @@ public class UserMdcServletFilter implements Filter {
 	 * @return true id the user can be successfully registered
 	 */
 	private boolean registerUsername(final String username) {
-		if (username instanceof String && !username.isEmpty()) {
+		if (username != null && !username.isEmpty()) {
 			MDC.put(USER_KEY, username);
 			return true;
 		}

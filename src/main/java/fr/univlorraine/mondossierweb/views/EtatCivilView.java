@@ -18,52 +18,53 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
-
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
-import fr.univlorraine.mondossierweb.MainUI;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabSheet;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import fr.univlorraine.mondossierweb.beans.BacEtatCivil;
+import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 /**
- * Page d'accueil
+ * Page de l'état-civil
  */
-@Component @Scope("prototype")
-@SpringView(name = EtatCivilView.NAME)
+@SuppressWarnings("serial")
+@Route(value = EtatCivilView.NAME, layout = MainLayout.class)
+@Secured(MdwUserDetailsService.CONSULT_DOSSIER_AUTORISE)
 @Slf4j
-@PreAuthorize("@userController.hasRoleInProperty('consultation_dossier')")
-public class EtatCivilView extends VerticalLayout implements View {
+public class EtatCivilView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
+
 	public static final String NAME = "etatCivilView";
+	public static final String ROUTE = NAME;
 
 	/* Injections */
 	@Resource
@@ -74,402 +75,312 @@ public class EtatCivilView extends VerticalLayout implements View {
 	private transient EtudiantController etudiantController;
 	@Resource
 	private transient ConfigController configController;
-
+	@Resource
+	private transient SessionController sessionController;
 
 	private TextField fieldTelPortable;
 	private TextField fieldMailPerso;
 	private Button btnAnnulerModifCoordonneesPerso;
 	private Button btnValidModifCoordonneesPerso;
 	private Button btnModifCoordonneesPerso;
-	private Panel panelContact;
+	private Div panelContactContent;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
-	 * Initialise la vue
+	 * Initialise la vue à chaque navigation (l'étudiant courant est renseigné par MainLayout).
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void beforeEnter(final BeforeEnterEvent event) {
+		removeAll();
 
-		log.debug(userController.getCurrentUserName()+" EtatCivilView");
+		log.debug(userController.getCurrentUserName() + " EtatCivilView");
 
 		//On vérifie le droit d'accéder à la vue
-		if(UI.getCurrent() instanceof MainUI && (userController.isEnseignant() || userController.isEtudiant())){
-			if( MainUI.getCurrent()!=null && MainUI.getCurrent().getEtudiant()!=null){
-					log.debug(userController.getCurrentUserName()+" init EtatCivilView "+SecurityContextHolder.getContext().getAuthentication().getName());
-
-					/* Style */
-					setMargin(true);
-					setSpacing(true);
-
-					/* Titre */
-					Label title = new Label(applicationContext.getMessage(NAME + ".title", null, getLocale()));
-					title.addStyleName(ValoTheme.LABEL_H1);
-					addComponent(title);
-
-
-					VerticalLayout globalLayout = new VerticalLayout();
-					globalLayout.setSizeFull();
-					globalLayout.setSpacing(true);
-
-					//Layout avec les infos etatcivil et contact
-					CssLayout idLayout = new CssLayout();
-					idLayout.setSizeFull();
-					idLayout.setStyleName("flexwrap");
-
-					globalLayout.addComponent(idLayout);
-					// Enable Responsive CSS selectors for the layout
-					Responsive.makeResponsive(idLayout);
-
-
-					/* Generalites */
-					FormLayout formGeneralitesLayout = new FormLayout();
-					formGeneralitesLayout.setSpacing(true);
-					formGeneralitesLayout.setMargin(true);
-
-					Panel panelGeneralites= new Panel(applicationContext.getMessage(NAME+".generalites.title", null, getLocale()));
-
-					String captionNumDossier = applicationContext.getMessage(NAME+".numdossier.title", null, getLocale());
-					Label fieldNumDossier = new Label();
-					formatLabel(fieldNumDossier, captionNumDossier, MainUI.getCurrent().getEtudiant().getCod_etu());
-					formGeneralitesLayout.addComponent(fieldNumDossier);
-
-					String captionNNE = applicationContext.getMessage(NAME+".nne.title", null, getLocale());
-					Label fieldNNE = new Label();
-					formatLabel(fieldNNE, captionNNE, MainUI.getCurrent().getEtudiant().getCod_nne());
-					formGeneralitesLayout.addComponent(fieldNNE);
-
-					String captionNom = applicationContext.getMessage(NAME+".nom.title", null, getLocale());
-					Label fieldNom = new Label();
-					formatLabel(fieldNom, captionNom, MainUI.getCurrent().getEtudiant().getNom());
-					formGeneralitesLayout.addComponent(fieldNom);
-
-					String captionMail = applicationContext.getMessage(NAME+".mail.title", null, getLocale());
-					Label mailLabel = new Label();
-					mailLabel.setCaption(captionMail);
-					String mail = MainUI.getCurrent().getEtudiant().getEmail();
-					if(StringUtils.hasText(mail)){
-						mail = "<a href=\"mailto:"+mail+"\">"+mail+"</a>";
-						mailLabel.setValue(mail);
-						mailLabel.setContentMode(ContentMode.HTML);
-					}
-					mailLabel.setSizeFull();
-					formGeneralitesLayout.addComponent(mailLabel);
-
-					// Si on doit afficher les infos de naissance
-					if(userController.isEtudiant()
-							|| (userController.isEnseignant() && configController.isAffInfoNaissanceEnseignant())
-							|| (userController.isGestionnaire() && configController.isAffInfoNaissanceGestionnaire())) {
-						String captionNationalite = applicationContext.getMessage(NAME + ".nationalite.title", null, getLocale());
-						Label fieldNationalite = new Label();
-						formatLabel(fieldNationalite, captionNationalite, MainUI.getCurrent().getEtudiant().getNationalite());
-						formGeneralitesLayout.addComponent(fieldNationalite);
-
-						String captionDateNaissance = applicationContext.getMessage(NAME + ".naissance.title", null, getLocale());
-						Label fieldDateNaissance = new Label();
-						formatLabel(fieldDateNaissance, captionDateNaissance, MainUI.getCurrent().getEtudiant().getDatenaissance());
-						formGeneralitesLayout.addComponent(fieldDateNaissance);
-
-						String captionLieuNaissance = applicationContext.getMessage(NAME + ".lieunaissance.title", null, getLocale());
-						Label fieldLieuNaissance = new Label();
-						formatLabel(fieldLieuNaissance, captionLieuNaissance, MainUI.getCurrent().getEtudiant().getLieunaissance());
-						formGeneralitesLayout.addComponent(fieldLieuNaissance);
-
-						String captionDepNaissance = applicationContext.getMessage(NAME + ".depnaissance.title", null, getLocale());
-						Label fieldDepNaissance = new Label();
-						formatLabel(fieldDepNaissance, captionDepNaissance, MainUI.getCurrent().getEtudiant().getDepartementnaissance());
-						formGeneralitesLayout.addComponent(fieldDepNaissance);
-					}
-
-					panelGeneralites.setContent(formGeneralitesLayout);
-
-
-					HorizontalLayout generalitesGlobalLayout = new HorizontalLayout();
-					generalitesGlobalLayout.setSizeUndefined();
-					generalitesGlobalLayout.setStyleName("firstitembox");
-					generalitesGlobalLayout.addComponent(panelGeneralites);
-					generalitesGlobalLayout.setExpandRatio(panelGeneralites, 1);
-					idLayout.addComponent(generalitesGlobalLayout);
-
-
-					/* Bac */
-					Panel panelBac= new Panel(applicationContext.getMessage(NAME+".bac.title", null, getLocale()));
-
-					//Si plusieurs bac
-					if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()>1){
-						panelBac.setCaption(applicationContext.getMessage(NAME+".bacs.title", null, getLocale()));
-						TabSheet bacTabSheet = new TabSheet();
-						VerticalLayout vBacLayout = new VerticalLayout();
-						vBacLayout.setSizeFull();
-						bacTabSheet.setSizeFull();
-						bacTabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
-						for(BacEtatCivil bec : MainUI.getCurrent().getEtudiant().getListeBac()){
-
-							FormLayout tabBacLayout = new FormLayout();
-							tabBacLayout.setSizeFull();
-							tabBacLayout.setMargin(false);
-							ajouterBacToView(tabBacLayout,bec);
-							bacTabSheet.addTab(tabBacLayout, bec.getCod_bac(), FontAwesome.GRADUATION_CAP);
-
-						}
-						vBacLayout.addComponent(bacTabSheet);
-						panelBac.setContent(vBacLayout);
-					}else{
-						//Un seul bac
-						FormLayout formBacLayout = new FormLayout();
-						formBacLayout.setSizeFull();
-						if(MainUI.getCurrent().getEtudiant().getListeBac()!=null && MainUI.getCurrent().getEtudiant().getListeBac().size()==1){
-							formBacLayout.setSpacing(true);
-							formBacLayout.setMargin(true);
-							ajouterBacToView(formBacLayout,MainUI.getCurrent().getEtudiant().getListeBac().get(0));
-						}
-						panelBac.setContent(formBacLayout);
-					}
-
-
-					HorizontalLayout bacGlobalLayout = new HorizontalLayout();
-					bacGlobalLayout.setSizeUndefined();
-					bacGlobalLayout.setStyleName("itembox");
-					bacGlobalLayout.addComponent(panelBac);
-					bacGlobalLayout.setExpandRatio(panelBac, 1);
-					idLayout.addComponent(bacGlobalLayout);
-
-
-					/* Infos de contact */
-					if(userController.isEtudiant() || 
-						(userController.isEnseignant() && (configController.isAffContactTelEnseignant() || configController.isAffContactMailEnseignant())) ||
-						(userController.isGestionnaire() && (configController.isAffContactTelGestionnaire() || configController.isAffContactMailGestionnaire()))){
-						panelContact= new Panel(applicationContext.getMessage(NAME+".contact.title", null, getLocale()));
-						renseignerPanelContact();
-						globalLayout.addComponent(panelContact);
-					}
-					addComponent(globalLayout);
-
-			}else{
+		if (userController.isEnseignant() || userController.isEtudiant()) {
+			if (sessionController.getEtudiant() != null) {
+				log.debug(userController.getCurrentUserName() + " init EtatCivilView " + SecurityContextHolder.getContext().getAuthentication().getName());
+				buildView(sessionController.getEtudiant());
+			} else {
 				/* Erreur */
-				addComponent(new BasicErreurMessageLayout(applicationContext));
+				add(new BasicErreurMessageLayout(applicationContext));
 			}
 		}
 	}
 
+	private void buildView(final Etudiant etudiant) {
+		/* Style */
+		setPadding(true);
+		setSpacing(true);
+
+		/* Titre */
+		add(new H1(getTranslation(NAME + ".title")));
+
+		VerticalLayout globalLayout = new VerticalLayout();
+		globalLayout.setWidthFull();
+		globalLayout.setPadding(false);
+		globalLayout.setSpacing(true);
+
+		//Layout avec les infos etatcivil et bac (responsive : les blocs passent à la ligne)
+		Div idLayout = new Div();
+		idLayout.setWidthFull();
+		idLayout.getStyle()
+			.set("display", "flex")
+			.set("flex-wrap", "wrap")
+			.set("gap", "var(--lumo-space-m)");
+		globalLayout.add(idLayout);
+
+		/* Generalites */
+		FormLayout formGeneralitesLayout = createFormLayout();
+
+		addFormValue(formGeneralitesLayout, getTranslation(NAME + ".numdossier.title"), etudiant.getCod_etu());
+		addFormValue(formGeneralitesLayout, getTranslation(NAME + ".nne.title"), etudiant.getCod_nne());
+		addFormValue(formGeneralitesLayout, getTranslation(NAME + ".nom.title"), etudiant.getNom());
+
+		/* Mail : lien mailto */
+		String mail = etudiant.getEmail();
+		if (StringUtils.hasText(mail)) {
+			formGeneralitesLayout.addFormItem(new Anchor("mailto:" + mail, mail), getTranslation(NAME + ".mail.title"));
+		} else {
+			addFormValue(formGeneralitesLayout, getTranslation(NAME + ".mail.title"), null);
+		}
+
+		// Si on doit afficher les infos de naissance
+		if (userController.isEtudiant()
+				|| (userController.isEnseignant() && configController.isAffInfoNaissanceEnseignant())
+				|| (userController.isGestionnaire() && configController.isAffInfoNaissanceGestionnaire())) {
+			addFormValue(formGeneralitesLayout, getTranslation(NAME + ".nationalite.title"), etudiant.getNationalite());
+			addFormValue(formGeneralitesLayout, getTranslation(NAME + ".naissance.title"), etudiant.getDatenaissance());
+			addFormValue(formGeneralitesLayout, getTranslation(NAME + ".lieunaissance.title"), etudiant.getLieunaissance());
+			addFormValue(formGeneralitesLayout, getTranslation(NAME + ".depnaissance.title"), etudiant.getDepartementnaissance());
+		}
+
+		idLayout.add(createPanel(getTranslation(NAME + ".generalites.title"), formGeneralitesLayout));
+
+		/* Bac */
+		String titreBac = getTranslation(NAME + ".bac.title");
+		Component bacContent;
+		List<BacEtatCivil> listeBac = etudiant.getListeBac();
+		//Si plusieurs bac
+		if (listeBac != null && listeBac.size() > 1) {
+			titreBac = getTranslation(NAME + ".bacs.title");
+			TabSheet bacTabSheet = new TabSheet();
+			bacTabSheet.setWidthFull();
+			for (BacEtatCivil bec : listeBac) {
+				FormLayout tabBacLayout = createFormLayout();
+				ajouterBacToView(tabBacLayout, bec);
+				bacTabSheet.add(new Tab(VaadinIcon.ACADEMY_CAP.create(), new Span(bec.getCod_bac())), tabBacLayout);
+			}
+			bacContent = bacTabSheet;
+		} else {
+			//Un seul bac
+			FormLayout formBacLayout = createFormLayout();
+			if (listeBac != null && listeBac.size() == 1) {
+				ajouterBacToView(formBacLayout, listeBac.get(0));
+			}
+			bacContent = formBacLayout;
+		}
+		idLayout.add(createPanel(titreBac, bacContent));
+
+		/* Infos de contact */
+		if (userController.isEtudiant()
+				|| (userController.isEnseignant() && (configController.isAffContactTelEnseignant() || configController.isAffContactMailEnseignant()))
+				|| (userController.isGestionnaire() && (configController.isAffContactTelGestionnaire() || configController.isAffContactMailGestionnaire()))) {
+			panelContactContent = new Div();
+			panelContactContent.setWidthFull();
+			renseignerPanelContact();
+			globalLayout.add(createPanel(getTranslation(NAME + ".contact.title"), panelContactContent));
+		}
+		add(globalLayout);
+	}
+
 	private void renseignerPanelContact() {
+		final Etudiant etudiant = sessionController.getEtudiant();
+
+		panelContactContent.removeAll();
 
 		VerticalLayout contactLayout = new VerticalLayout();
+		contactLayout.setPadding(false);
+		contactLayout.setSpacing(true);
 
 		/* Layout pour afficher les erreurs */
 		VerticalLayout erreursLayout = new VerticalLayout();
-		contactLayout.addComponent(erreursLayout);
+		erreursLayout.setPadding(false);
+		contactLayout.add(erreursLayout);
 		erreursLayout.setVisible(false);
 
-		/* Layout avec les champ 'Portable' et 'Email personnel' */
-		FormLayout formContactLayout = new FormLayout();
-		formContactLayout.setSpacing(true);
-		formContactLayout.setMargin(true);
+		/* Layout avec les champs 'Portable' et 'Email personnel' */
+		FormLayout formContactLayout = createFormLayout();
 
-		if(userController.isEtudiant()
+		if (userController.isEtudiant()
 				|| (userController.isGestionnaire() && configController.isAffContactTelGestionnaire())
 				|| (userController.isEnseignant() && configController.isAffContactTelEnseignant())) {
-			String captionTelPortable = applicationContext.getMessage(NAME + ".portable.title", null, getLocale());
-			fieldTelPortable = new TextField(captionTelPortable, MainUI.getCurrent().getEtudiant().getTelPortable());
+			fieldTelPortable = new TextField();
+			fieldTelPortable.setValue(etudiant.getTelPortable() != null ? etudiant.getTelPortable() : "");
 			formatTextField(fieldTelPortable);
 			fieldTelPortable.setMaxLength(15);
-			formContactLayout.addComponent(fieldTelPortable);
+			formContactLayout.addFormItem(fieldTelPortable, getTranslation(NAME + ".portable.title"));
 		}
 
-		if(userController.isEtudiant()
+		if (userController.isEtudiant()
 				|| (userController.isGestionnaire() && configController.isAffContactMailGestionnaire())
 				|| (userController.isEnseignant() && configController.isAffContactMailEnseignant())) {
-			String captionMailPerso = applicationContext.getMessage(NAME+".mailperso.title", null, getLocale());
-			fieldMailPerso = new TextField(captionMailPerso, MainUI.getCurrent().getEtudiant().getEmailPerso());
+			fieldMailPerso = new TextField();
+			fieldMailPerso.setValue(etudiant.getEmailPerso() != null ? etudiant.getEmailPerso() : "");
 			formatTextField(fieldMailPerso);
 			fieldMailPerso.setMaxLength(200);
-			formContactLayout.addComponent(fieldMailPerso);
+			formContactLayout.addFormItem(fieldMailPerso, getTranslation(NAME + ".mailperso.title"));
 		}
 
-		contactLayout.addComponent(formContactLayout);
+		contactLayout.add(formContactLayout);
 
-		/* Si user étudiant , modifications autorisée des coordonnées de contact
-		 * et si l'étudiant possède une addresse annuelle, on affiche les boutons de modification */
-		if(userController.isEtudiant() && configController.isModificationCoordonneesPersoAutorisee()
-				&& MainUI.getCurrent().getEtudiant().getAdresseAnnuelle()!=null){
+		/* Si user étudiant, modifications autorisées des coordonnées de contact
+		 * et si l'étudiant possède une adresse annuelle, on affiche les boutons de modification */
+		if (userController.isEtudiant() && configController.isModificationCoordonneesPersoAutorisee()
+				&& etudiant.getAdresseAnnuelle() != null) {
 			//Layout pour les boutons de modification
 			HorizontalLayout btnLayout = new HorizontalLayout();
-			btnLayout.setSizeFull();
+			btnLayout.setWidthFull();
 			btnLayout.setSpacing(true);
-			btnLayout.setMargin(true);
 
 			//Bouton pour valider la modification
-			btnValidModifCoordonneesPerso = new Button(applicationContext.getMessage(NAME+".bouton.validercoordonnees", null, getLocale()));
-			btnValidModifCoordonneesPerso.setStyleName(ValoTheme.BUTTON_FRIENDLY);
-			btnValidModifCoordonneesPerso.setIcon(FontAwesome.CHECK);
+			btnValidModifCoordonneesPerso = new Button(getTranslation(NAME + ".bouton.validercoordonnees"), VaadinIcon.CHECK.create());
+			btnValidModifCoordonneesPerso.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 			btnValidModifCoordonneesPerso.addClickListener(e -> {
-				erreursLayout.removeAllComponents();
-				List<String> retour = etudiantController.updateContact(fieldTelPortable.getValue(),fieldMailPerso.getValue(),MainUI.getCurrent().getEtudiant().getCod_etu());
+				erreursLayout.removeAll();
+				List<String> retour = etudiantController.updateContact(fieldTelPortable.getValue(), fieldMailPerso.getValue(), etudiant.getCod_etu());
 				// si modif ok
-				if(retour!=null && retour.size()==1 && retour.get(0).equals("OK")){
+				if (retour != null && retour.size() == 1 && retour.get(0).equals("OK")) {
 					etudiantController.recupererEtatCivil();
 					renseignerPanelContact();
-				}else{
+				} else {
 					//affichage erreurs
 					if (retour != null && !retour.isEmpty()) {
-						String errorMsg="";
-						for(String erreur : retour){
-							if(!errorMsg.equals(""))
-								errorMsg = errorMsg + "<br />";
-							errorMsg= errorMsg + erreur;
+						for (String erreur : retour) {
+							Span labelErreur = new Span(erreur);
+							labelErreur.addClassName(LumoUtility.TextColor.ERROR);
+							erreursLayout.add(labelErreur);
 						}
-						Label labelErreur = new Label(errorMsg);
-						labelErreur.setContentMode(ContentMode.HTML);
-						labelErreur.setStyleName(ValoTheme.LABEL_FAILURE);
-						erreursLayout.addComponent(labelErreur);
 					}
 					erreursLayout.setVisible(true);
 				}
 			});
 			btnValidModifCoordonneesPerso.setVisible(false);
-			btnLayout.addComponent(btnValidModifCoordonneesPerso);
-			btnLayout.setComponentAlignment(btnValidModifCoordonneesPerso, Alignment.MIDDLE_CENTER);
+			btnLayout.add(btnValidModifCoordonneesPerso);
 
 			//Bouton pour annuler la modification
-			btnAnnulerModifCoordonneesPerso = new Button(applicationContext.getMessage(NAME+".bouton.annulercoordonnees", null, getLocale()));
-			btnAnnulerModifCoordonneesPerso.setStyleName(ValoTheme.BUTTON_DANGER);
-			btnAnnulerModifCoordonneesPerso.setIcon(FontAwesome.TIMES);
+			btnAnnulerModifCoordonneesPerso = new Button(getTranslation(NAME + ".bouton.annulercoordonnees"), VaadinIcon.CLOSE.create());
+			btnAnnulerModifCoordonneesPerso.addThemeVariants(ButtonVariant.LUMO_ERROR);
 			btnAnnulerModifCoordonneesPerso.addClickListener(e -> {
-				erreursLayout.removeAllComponents();
-				fieldMailPerso.setValue(MainUI.getCurrent().getEtudiant().getEmailPerso());
-				fieldMailPerso.setEnabled(false);
-				fieldMailPerso.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
-				fieldTelPortable.setValue(MainUI.getCurrent().getEtudiant().getTelPortable());
-				fieldTelPortable.setEnabled(false);
-				fieldTelPortable.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+				erreursLayout.removeAll();
+				erreursLayout.setVisible(false);
+				fieldMailPerso.setValue(etudiant.getEmailPerso() != null ? etudiant.getEmailPerso() : "");
+				fieldMailPerso.setReadOnly(true);
+				fieldTelPortable.setValue(etudiant.getTelPortable() != null ? etudiant.getTelPortable() : "");
+				fieldTelPortable.setReadOnly(true);
 				btnValidModifCoordonneesPerso.setVisible(false);
 				btnAnnulerModifCoordonneesPerso.setVisible(false);
 				btnModifCoordonneesPerso.setVisible(true);
-
 			});
 			btnAnnulerModifCoordonneesPerso.setVisible(false);
-			btnLayout.addComponent(btnAnnulerModifCoordonneesPerso);
-			btnLayout.setComponentAlignment(btnAnnulerModifCoordonneesPerso, Alignment.MIDDLE_CENTER);
+			btnLayout.add(btnAnnulerModifCoordonneesPerso);
 
 			//Bouton pour activer la modification des données
-			btnModifCoordonneesPerso = new Button (applicationContext.getMessage(NAME+".bouton.modifiercoordonnees", null, getLocale()));
-			btnModifCoordonneesPerso.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			btnModifCoordonneesPerso.setIcon(FontAwesome.EDIT);
-			btnModifCoordonneesPerso.addClickListener(e->{
-				fieldMailPerso.setEnabled(true);
-				fieldMailPerso.removeStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
-				fieldTelPortable.setEnabled(true);
-				fieldTelPortable.removeStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+			btnModifCoordonneesPerso = new Button(getTranslation(NAME + ".bouton.modifiercoordonnees"), VaadinIcon.EDIT.create());
+			btnModifCoordonneesPerso.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			btnModifCoordonneesPerso.addClickListener(e -> {
+				fieldMailPerso.setReadOnly(false);
+				fieldTelPortable.setReadOnly(false);
 				btnValidModifCoordonneesPerso.setVisible(true);
 				btnAnnulerModifCoordonneesPerso.setVisible(true);
 				btnModifCoordonneesPerso.setVisible(false);
 			});
-			btnLayout.addComponent(btnModifCoordonneesPerso);
-			btnLayout.setComponentAlignment(btnModifCoordonneesPerso, Alignment.MIDDLE_CENTER);
-			contactLayout.addComponent(btnLayout);
+			btnLayout.add(btnModifCoordonneesPerso);
+			contactLayout.add(btnLayout);
 		}
 
-		panelContact.setContent(contactLayout);
-
+		panelContactContent.add(contactLayout);
 	}
 
-	private void formatTextField(TextField tf){
-		tf.setEnabled(false);
-		tf.setSizeFull();
-		tf.setNullRepresentation("");
-		tf.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
+	private FormLayout createFormLayout() {
+		FormLayout formLayout = new FormLayout();
+		formLayout.setWidthFull();
+		formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+		return formLayout;
 	}
 
-	private void formatLabel(Label label, String caption, String value){
-		if(StringUtils.hasText(caption)){
-			label.setCaption(caption);
-		}
-		if(StringUtils.hasText(value)){
-			label.setValue("<b>"+ value +"</b");
-			label.setContentMode(ContentMode.HTML);
-		}
-		label.setSizeFull();
+	private void formatTextField(TextField tf) {
+		tf.setReadOnly(true);
+		tf.setWidthFull();
 	}
 
-	private void ajouterBacToView(FormLayout formBacLayout,BacEtatCivil bec){
-		String captionBac = applicationContext.getMessage(NAME+".codebac.title", null, getLocale());
-		Label fieldBac = new Label();
-		formatLabel(fieldBac, captionBac, bec.getLib_bac());
-		formBacLayout.addComponent(fieldBac);
-		
-		if(bec.getLicSpeBacPre()!=null) {
-			String captionSpePreBac = applicationContext.getMessage(NAME+".speprebac.title", null, getLocale());
-			Label fieldSpePreBac = new Label();
-			formatLabel(fieldSpePreBac, captionSpePreBac, bec.getLicSpeBacPre());
-			formBacLayout.addComponent(fieldSpePreBac);
-		}
-		if(bec.getLicSpe1Bac()!=null) {
-			String captionSpe1Bac = applicationContext.getMessage(NAME+".spe1bac.title", null, getLocale());
-			Label fieldSpe1Bac = new Label();
-			formatLabel(fieldSpe1Bac, captionSpe1Bac, bec.getLicSpe1Bac());
-			formBacLayout.addComponent(fieldSpe1Bac);
-		}
-		if(bec.getLicSpe2Bac()!=null) {
-			String captionSpe2Bac = applicationContext.getMessage(NAME+".spe2bac.title", null, getLocale());
-			Label fieldSpe2Bac = new Label();
-			formatLabel(fieldSpe2Bac, captionSpe2Bac, bec.getLicSpe2Bac());
-			formBacLayout.addComponent(fieldSpe2Bac);
-		}
-		if(bec.getLicOpt1Bac()!=null) {
-			String captionOpt1Bac = applicationContext.getMessage(NAME+".opt1bac.title", null, getLocale());
-			Label fieldOpt1Bac = new Label();
-			formatLabel(fieldOpt1Bac, captionOpt1Bac, bec.getLicOpt1Bac());
-			formBacLayout.addComponent(fieldOpt1Bac);
-		}
-		if(bec.getLicOpt2Bac()!=null) {
-			String captionOpt2Bac = applicationContext.getMessage(NAME+".opt2bac.title", null, getLocale());
-			Label fieldOpt2Bac = new Label();
-			formatLabel(fieldOpt2Bac, captionOpt2Bac, bec.getLicOpt2Bac());
-			formBacLayout.addComponent(fieldOpt2Bac);
-		}
-		if(bec.getLicOpt3Bac()!=null) {
-			String captionOpt3Bac = applicationContext.getMessage(NAME+".opt3bac.title", null, getLocale());
-			Label fieldOpt3Bac = new Label();
-			formatLabel(fieldOpt3Bac, captionOpt3Bac, bec.getLicOpt3Bac());
-			formBacLayout.addComponent(fieldOpt3Bac);
-		}
-		if(bec.getLicOpt4Bac()!=null) {
-			String captionOpt4Bac = applicationContext.getMessage(NAME+".opt4bac.title", null, getLocale());
-			Label fieldOpt4Bac = new Label();
-			formatLabel(fieldOpt4Bac, captionOpt4Bac, bec.getLicOpt4Bac());
-			formBacLayout.addComponent(fieldOpt4Bac);
-		}
-
-		String captionAnneeBac = applicationContext.getMessage(NAME+".anneebac.title", null, getLocale());
-		Label fieldAnneeBac = new Label();
-		formatLabel(fieldAnneeBac, captionAnneeBac, bec.getDaa_obt_bac_iba());
-		formBacLayout.addComponent(fieldAnneeBac);
-
-		String captionMentionBac = applicationContext.getMessage(NAME+".mentionbac.title", null, getLocale());
-		Label fieldMentionBac = new Label();
-		formatLabel(fieldMentionBac, captionMentionBac, bec.getCod_mnb());
-		formBacLayout.addComponent(fieldMentionBac);
-
-
-		String captionTypeEtbBac = applicationContext.getMessage(NAME+".typeetbbac.title", null, getLocale());
-		Label fieldTypeEtbBac = new Label();
-		formatLabel(fieldTypeEtbBac, captionTypeEtbBac, bec.getCod_tpe());
-		formBacLayout.addComponent(fieldTypeEtbBac);
-		
-
-		String captionEtbBac = applicationContext.getMessage(NAME+".etbbac.title", null, getLocale());
-		Label fieldEtbBac = new Label();
-		formatLabel(fieldEtbBac, captionEtbBac, bec.getCod_etb());
-		formBacLayout.addComponent(fieldEtbBac);
-
-		String captionDepBac = applicationContext.getMessage(NAME+".depbac.title", null, getLocale());
-		Label fieldDepBac = new Label();
-		formatLabel(fieldDepBac, captionDepBac, bec.getCod_dep());
-		formBacLayout.addComponent(fieldDepBac);
-	}
 	/**
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+	 * Ajoute un couple libellé/valeur (valeur en gras) au formulaire.
 	 */
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
+	private void addFormValue(FormLayout formLayout, String caption, String value) {
+		Span valueSpan = new Span(StringUtils.hasText(value) ? value : "");
+		valueSpan.addClassName(LumoUtility.FontWeight.BOLD);
+		formLayout.addFormItem(valueSpan, caption != null ? caption : "");
+	}
+
+	private void ajouterBacToView(FormLayout formBacLayout, BacEtatCivil bec) {
+		addFormValue(formBacLayout, getTranslation(NAME + ".codebac.title"), bec.getLib_bac());
+
+		if (bec.getLicSpeBacPre() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".speprebac.title"), bec.getLicSpeBacPre());
+		}
+		if (bec.getLicSpe1Bac() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".spe1bac.title"), bec.getLicSpe1Bac());
+		}
+		if (bec.getLicSpe2Bac() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".spe2bac.title"), bec.getLicSpe2Bac());
+		}
+		if (bec.getLicOpt1Bac() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".opt1bac.title"), bec.getLicOpt1Bac());
+		}
+		if (bec.getLicOpt2Bac() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".opt2bac.title"), bec.getLicOpt2Bac());
+		}
+		if (bec.getLicOpt3Bac() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".opt3bac.title"), bec.getLicOpt3Bac());
+		}
+		if (bec.getLicOpt4Bac() != null) {
+			addFormValue(formBacLayout, getTranslation(NAME + ".opt4bac.title"), bec.getLicOpt4Bac());
+		}
+
+		addFormValue(formBacLayout, getTranslation(NAME + ".anneebac.title"), bec.getDaa_obt_bac_iba());
+		addFormValue(formBacLayout, getTranslation(NAME + ".mentionbac.title"), bec.getCod_mnb());
+		addFormValue(formBacLayout, getTranslation(NAME + ".typeetbbac.title"), bec.getCod_tpe());
+		addFormValue(formBacLayout, getTranslation(NAME + ".etbbac.title"), bec.getCod_etb());
+		addFormValue(formBacLayout, getTranslation(NAME + ".depbac.title"), bec.getCod_dep());
+	}
+
+	/**
+	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
+	 */
+	private Div createPanel(String titre, Component content) {
+		Div panel = new Div();
+		panel.getStyle()
+			.set("border", "1px solid var(--lumo-contrast-20pct)")
+			.set("border-radius", "var(--lumo-border-radius-m)")
+			.set("overflow", "hidden")
+			.set("flex", "1 1 20rem");
+		if (StringUtils.hasText(titre)) {
+			Div header = new Div(new Span(titre));
+			header.getStyle()
+				.set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+				.set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+				.set("background-color", "var(--lumo-contrast-5pct)")
+				.set("font-weight", "600");
+			panel.add(header);
+		}
+		Div body = new Div(content);
+		body.getStyle().set("padding", "var(--lumo-space-m)");
+		panel.add(body);
+		return panel;
 	}
 
 }

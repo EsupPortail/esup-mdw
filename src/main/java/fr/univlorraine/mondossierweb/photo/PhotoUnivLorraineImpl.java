@@ -18,25 +18,22 @@
  */
 package fr.univlorraine.mondossierweb.photo;
 
-import com.vaadin.server.WebBrowser;
-import fr.univlorraine.mondossierweb.GenericUI;
-import fr.univlorraine.mondossierweb.MainUI;
-import fr.univlorraine.mondossierweb.MdwTouchkitUI;
+import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univnancy2.PhotoClient.beans.Category;
 import fr.univnancy2.PhotoClient.beans.PhotoClient;
 import fr.univnancy2.PhotoClient.beans.TicketClient;
 import fr.univnancy2.PhotoClient.exception.PhotoClientException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-
-
 
 
 /**
@@ -47,14 +44,6 @@ import java.net.UnknownHostException;
 @Scope(value="session", proxyMode=ScopedProxyMode.DEFAULT)
 @Component(value="photoUnivLorraineImpl")
 public class PhotoUnivLorraineImpl implements IPhoto {
-	/*@Resource
-	private transient UserController userController;
-	 */
-
-	/**
-	 * vrai si l'utilisateur est un enseignant.
-	 */
-	//private boolean utilisateurEnseignant;
 
 	/**
 	 * d�lai avant expiration du ticket.
@@ -64,10 +53,12 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	/**
 	 * url du serveur de photo.
 	 */
+	@Value("${param.photoserver.ressourceurl:}")
 	private String ressourceurl;
 	/**
 	 * url du serveur de photo pour le ticket.
 	 */
+	@Value("${param.photoserver.ticketurl:}")
 	private String ticketurl;
 	/**
 	 * vrai si le ticket en cours est pour le serveur.
@@ -76,6 +67,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	/**
 	 * le code de l'application pour le serveur de photos.
 	 */
+	@Value("${param.photoserver.codeapp:}")
 	private String codeapp;
 	/**
 	 *  ticket pour le serveur de photos.
@@ -87,14 +79,17 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	 */
 	private PhotoClient photoClient;
 
+	/** État de session (adresse IP du client). Injection lazy : bean de portée vaadin-session. */
+	@Autowired
+	@Lazy
+	private transient SessionController sessionController;
+
 	/**
 	 * constructeur vide.
 	 */
 	public PhotoUnivLorraineImpl() {
 		super();
 		forserver = false;
-
-
 	}
 
 	public String toString(){
@@ -131,8 +126,6 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 		if(cod_etu==null)
 			cod_etu="00000000";
 		//on refait le ticket pour le serveur qui genere le pdf:
-		/*utilisateurEnseignant = userController.isEnseignant();
-		String loginUser = userController.getCurrentUserName();*/
 
 		if (!forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 			initForServer(loginUser);
@@ -158,9 +151,6 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	public void checkTicket(final String cod_etu, boolean isUtilisateurEnseignant,String loginUser) {
 
 		if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
-
-			/*	utilisateurEnseignant = userController.isEnseignant();
-			String loginUser = userController.getCurrentUserName();*/
 
 			if (!isUtilisateurEnseignant) {
 				init(cod_etu, loginUser);
@@ -216,7 +206,6 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 		}
 		// Demande d'un ticket au serveur de photos
-		//if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 		try {
 			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
 				remoteadress, "ID", cod_etu, loginUser);
@@ -227,7 +216,6 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 			tc = null;
 
 		}
-		//}
 		forserver = false;
 
 	}
@@ -248,7 +236,6 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 			photoClient.setApplicationCode(getCodeapp());
 		}
 		// Demande d'un ticket au serveur de photos
-		//if (forserver || tc == null || (tc != null && !tc.isValid(DELAI_TICKET_SEC))) {
 		try {
 
 			tc = photoClient.getTicket(PhotoClient.MODE_NORMAL,
@@ -260,7 +247,6 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 			tc = null;
 
 		}
-		//}
 		forserver = false;
 
 	}
@@ -275,25 +261,8 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 			return  getLocalHostAdress();
 		}
 
-		WebBrowser browser;
-
-		String ip =  GenericUI.getCurrent().getIpClient();
+		String ip = sessionController.getIpClient();
 		log.debug("IP client via VaadinService Headers : "+ip);
-
-
-		//Recuperation de l'IP pour info
-		if(GenericUI.getCurrent() instanceof MainUI){
-			MainUI mainUI = MainUI.getCurrent();
-			browser = mainUI.getPage().getWebBrowser();
-			log.debug("browser IP client MainUI : "+browser.getAddress());
-
-		}
-		if(GenericUI.getCurrent() instanceof MdwTouchkitUI){
-			MdwTouchkitUI mdwTouchkitUI = MdwTouchkitUI.getCurrent();
-			browser = mdwTouchkitUI.getPage().getWebBrowser();
-			log.debug("browser IP client MdwTouchkitUI : "+browser.getAddress());
-
-		}
 
 		if(ip!=null){
 			ip = ip.trim();
@@ -305,18 +274,15 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 
 
 	/**
-	 * getter pour l'url de la ressource renseign� dans domain.xml.
+	 * getter pour l'url de la ressource.
 	 * @return l'url de la ressource.
 	 */
 	public String getRessourceurl() {
-		if(ressourceurl==null){
-			ressourceurl = System.getProperty("context.param.photoserver.ressourceurl");
-		}
 		return ressourceurl;
 	}
 
 	/**
-	 * setter pour l'url de la ressource renseign� dans domain.xml.
+	 * setter pour l'url de la ressource.
 	 * @param ressourceurl
 	 */
 	public void setRessourceurl(final String ressourceurl) {
@@ -324,18 +290,15 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 	}
 
 	/**
-	 * getter pour l'url de demande de ticket renseign� dans domain.xml.
+	 * getter pour l'url de demande de ticket.
 	 * @return l'url pour r�cup�rer le ticket.
 	 */
 	public String getTicketurl() {
-		if(ticketurl==null){
-			ticketurl=System.getProperty("context.param.photoserver.ticketurl");
-		}
 		return ticketurl;
 	}
 
 	/**
-	 * setter pour l'url de demande de ticket renseign� dans domain.xml.
+	 * setter pour l'url de demande de ticket.
 	 * @param ticketurl
 	 */
 	public void setTicketurl(final String ticketurl) {
@@ -356,20 +319,7 @@ public class PhotoUnivLorraineImpl implements IPhoto {
 		this.photoClient = photoClient;
 	}
 
-	/*public boolean isUtilisateurEnseignant() {
-		return utilisateurEnseignant;
-	}
-
-	public void setUtilisateurEnseignant(boolean utilisateurEnseignant) {
-		this.utilisateurEnseignant = utilisateurEnseignant;
-	}*/
-
 	public String getCodeapp() {
-
-		if(codeapp==null){
-			codeapp=System.getProperty("context.param.photoserver.codeapp");
-		}
-
 		return codeapp;
 	}
 
