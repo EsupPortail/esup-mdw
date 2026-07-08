@@ -78,12 +78,12 @@
 		<repository>
 			<id>ul-releases</id>
 			<name>Université de Lorraine Releases</name>
-			<url>http://nexus.univ-lorraine.fr/content/repositories/maven-releases</url>
+			<url>https://nexus.univ-lorraine.fr/repository/maven-releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>ul-snapshots</id>
 			<name>Université de Lorraine Snapshots</name>
-			<url>http://nexus.univ-lorraine.fr/content/repositories/maven-snapshots</url>
+			<url>https://nexus.univ-lorraine.fr/repository/maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -98,7 +98,7 @@
 		<!-- Univ Lorraine repositories -->
 		<repository>
 			<id>ul-public-releases</id>
-			<url>https://nexus.univ-lorraine.fr/content/repositories/maven-public-releases</url>
+			<url>https://nexus.univ-lorraine.fr/repository/maven-public-releases</url>
 		</repository>
 		
 		<repository>
