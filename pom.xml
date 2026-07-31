@@ -43,7 +43,7 @@
 		<vaadin.spring.version>4.0.0</vaadin.spring.version>
 		<!-- SPRING -->
 		<!-- <spring.version>6.2.2</spring.version> -->
-		<spring.version>6.2.18</spring.version>
+		<spring.version>6.2.19</spring.version>
 		<!--<spring.data.jpa.version>3.4.2</spring.data.jpa.version>-->
 		<spring.data.jpa.version>3.4.13</spring.data.jpa.version>
 		<!--<spring.security.version>6.3.6</spring.security.version>-->
