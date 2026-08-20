@@ -77,8 +77,8 @@
 	<repositories>
 		<!-- Univ Lorraine repositories -->
 		<repository>
-			<id>ul-all</id>
-			<url>https://nexus.univ-lorraine.fr/repository/maven-ul-all</url>
+			<id>ul-public-releases</id>
+			<url>https://nexus.univ-lorraine.fr/repository/maven-public-releases</url>
 		</repository>
 
 		<repository>
