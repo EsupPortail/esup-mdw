@@ -405,13 +405,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	 */
 	private void buildDossierHeader(final Etudiant etudiant, final boolean afficherTitreDossier) {
 		if (afficherTitreDossier) {
-			final Span titreDossier = new Span(getTranslation("mainUI.dossier.title"));
-			titreDossier.addClassName("text-secondary");
-			titreDossier.getStyle()
-				.set("display", "block")
-				.set("text-transform", "uppercase")
-				.set("font-size", "var(--lumo-font-size-s)");
-			dossierHeader.add(titreDossier);
+			// TODO Ajouter séparateur et croix pour clore le dossier.
 		}
 
 		/* Photo de l'étudiant + indicateur d'inscription pour l'année en cours */
