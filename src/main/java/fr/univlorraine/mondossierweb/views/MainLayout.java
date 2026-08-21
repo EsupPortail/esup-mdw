@@ -71,8 +71,9 @@ import java.util.stream.Stream;
 
 /**
  * Layout principal de l'application (remplace l'ancienne MainUI Vaadin 7) :
- * AppLayout avec navbar (logo, titre, utilisateur connecté, déconnexion)
- * et drawer contenant le menu construit selon le profil de l'utilisateur.
+ * AppLayout avec navbar (utilisateur connecté, déconnexion) et drawer
+ * contenant en tête le logo et le nom de l'application, puis le menu
+ * construit selon le profil de l'utilisateur.
  */
 @SuppressWarnings("serial")
 @Slf4j
@@ -105,11 +106,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	/* Navbar */
 	private final DrawerToggle drawerToggle = new DrawerToggle();
-	private final H1 appTitle = new H1();
 	private final Span usernameSpan = new Span();
 	private final Button logoutBtn = new Button();
 
 	/* Drawer */
+	private final HorizontalLayout drawerHeader = new HorizontalLayout();
 	private final VerticalLayout drawerContent = new VerticalLayout();
 	private final Tabs menuPrincipal = new Tabs();
 	private final Tabs menuDossier = new Tabs();
@@ -141,6 +142,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	@PostConstruct
 	public void init() {
+		buildDrawerHeader();
 		addToNavbar(true, buildHeader());
 		addToDrawer(new Scroller(drawerContent));
 	}
@@ -159,20 +161,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		drawerToggle.getElement().setAttribute("aria-label", getTranslation("mainLayout.drawerToggle.title"));
 		header.add(drawerToggle);
 
-		/* Logo de l'université */
-		final Image logo = buildLogoImage(getTranslation("mainUI.app.title"));
-		logo.setHeight("2.5rem");
-		logo.getStyle().set("margin-inline-start", "var(--lumo-space-s)");
-		header.add(logo);
-
-		/* Titre de l'application */
-		appTitle.setText(getTranslation("mainUI.app.title"));
-		appTitle.getStyle()
-			.set("font-size", "var(--lumo-font-size-l)")
-			.set("margin", "0 var(--lumo-space-m)")
-			.set("white-space", "nowrap");
-		header.add(appTitle);
-
 		/* Espace extensible */
 		final Div spacer = new Div();
 		header.add(spacer);
@@ -183,7 +171,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			usernameSpan.setText(userController.getCurrentAuthentication().getName());
 		}
 		usernameSpan.getStyle().set("margin-inline-end", "var(--lumo-space-m)");
-		header.add(usernameSpan);
+		//header.add(usernameSpan);
 
 		/* Déconnexion */
 		logoutBtn.setText(getTranslation("buttonDeconnexion.label"));
@@ -195,18 +183,45 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			UI.getCurrent().getPage().setLocation("logout");
 		});
 		logoutBtn.setVisible(configController.isLogoutCasPropose());
-		header.add(logoutBtn);
+		//header.add(logoutBtn);
 
 		return header;
 	}
 
-	/* ====================== Logo du bandeau ====================== */
+	/* ====================== En-tête du drawer ====================== */
+
+	/**
+	 * Construit l'en-tête affiché tout en haut du drawer :
+	 * logo de l'université et nom de l'application.
+	 */
+	private void buildDrawerHeader() {
+		drawerHeader.setId("drawer-header");
+		drawerHeader.setWidthFull();
+		drawerHeader.setPadding(true);
+		drawerHeader.setSpacing(true);
+		drawerHeader.setAlignItems(FlexComponent.Alignment.CENTER);
+
+		/* Logo de l'université */
+		final Image logo = buildLogoImage(getTranslation("mainUI.app.title"));
+		logo.setHeight("2.1rem");
+		drawerHeader.add(logo);
+
+		/* Titre de l'application */
+		final H1 appTitle = new H1(getTranslation("mainUI.app.title"));
+		appTitle.getStyle()
+			.set("font-size", "var(--lumo-font-size-l)")
+			.set("margin", "0")
+			.set("white-space", "nowrap");
+		drawerHeader.add(appTitle);
+	}
+
+	/* ====================== Logo ====================== */
 
 	/** Logo par défaut servi depuis {@code META-INF/resources/images/}. */
 	private static final String DEFAULT_LOGO_SRC = "/images/logo-ul-blanc.png";
 
 	/**
-	 * Construit l'image du logo du bandeau à partir du chemin/URL configuré en base
+	 * Construit l'image du logo à partir du chemin/URL configuré en base
 	 * (paramètre {@code logoUniversiteEns}/{@code logoUniversiteEtu}).
 	 * <p>
 	 * Reste compatible avec les valeurs héritées de l'ancienne application Vaadin 7,
@@ -349,6 +364,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		menuDossier.removeAll();
 		dossierHeader.removeAll();
 		drawerContent.removeAll();
+
+		/* Logo et nom de l'application tout en haut du drawer */
+		drawerContent.add(drawerHeader);
 
 		/* Entrées enseignant/gestionnaire (ancienne barre d'onglets Recherche) */
 		if (enseignant) {

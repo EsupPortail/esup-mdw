@@ -49,6 +49,14 @@ vaadin-app-layout > [slot='navbar'] vaadin-drawer-toggle {
 	color: #fff;
 }
 
+/* En-tête du drawer : logo + nom de l'application (même fond que l'ancien bandeau) */
+#drawer-header {
+	/* background: var(--lumo-primary-color); */
+	color: var(--lumo-primary-color);
+	height: var(--lumo-size-xl);
+	padding: var(--lumo-space-wide-m);
+}
+
 /* Menu du drawer */
 #menu-tabs vaadin-tab:hover {
 	background-color: var(--lumo-contrast-5pct);
