@@ -29,6 +29,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -58,6 +59,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -153,11 +160,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		header.add(drawerToggle);
 
 		/* Logo de l'université */
-		String logoPath = safeIsEtudiant() ? configController.getLogoUniversiteEtu() : configController.getLogoUniversiteEns();
-		if (!StringUtils.hasText(logoPath)) {
-			logoPath = "images/logo-ul-blanc.png";
-		}
-		final Image logo = new Image(logoPath, getTranslation("mainUI.app.title"));
+		final Image logo = buildLogoImage(getTranslation("mainUI.app.title"));
 		logo.setHeight("2.5rem");
 		logo.getStyle().set("margin-inline-start", "var(--lumo-space-s)");
 		header.add(logo);
@@ -195,6 +198,97 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		header.add(logoutBtn);
 
 		return header;
+	}
+
+	/* ====================== Logo du bandeau ====================== */
+
+	/** Logo par défaut servi depuis {@code META-INF/resources/images/}. */
+	private static final String DEFAULT_LOGO_SRC = "/images/logo-ul-blanc.png";
+
+	/**
+	 * Construit l'image du logo du bandeau à partir du chemin/URL configuré en base
+	 * (paramètre {@code logoUniversiteEns}/{@code logoUniversiteEtu}).
+	 * <p>
+	 * Reste compatible avec les valeurs héritées de l'ancienne application Vaadin 7,
+	 * qui chargeait un {@code FileResource} depuis un chemin filesystem :
+	 * <ul>
+	 *   <li>URL http(s) ou protocole-relatif ({@code //...}) → utilisée telle quelle ;</li>
+	 *   <li>chemin web absolu ({@code /images/...}) → servi depuis {@code META-INF/resources} ;</li>
+	 *   <li>chemin filesystem → servi via un {@link StreamResource} ;</li>
+	 *   <li>chemin classpath (ex: {@code images/logo-ul-blanc.png}) → servi via un {@link StreamResource} ;</li>
+	 *   <li>vide ou introuvable → logo par défaut {@link #DEFAULT_LOGO_SRC}.</li>
+	 * </ul>
+	 */
+	private Image buildLogoImage(final String alt) {
+		final String configured = safeIsEtudiant()
+			? configController.getLogoUniversiteEtu()
+			: configController.getLogoUniversiteEns();
+
+		if (StringUtils.hasText(configured)) {
+			final String trimmed = configured.trim();
+			final String lower = trimmed.toLowerCase();
+
+			// 1. URL externe ou chemin web absolu : utilisable tel quel par le navigateur
+			if (lower.startsWith("http://") || lower.startsWith("https://")
+				|| lower.startsWith("//") || trimmed.startsWith("/")) {
+				return new Image(trimmed, alt);
+			}
+
+			// 2. Chemin filesystem : on sert le fichier via un StreamResource
+			final Image fileImage = tryFileImage(trimmed, alt);
+			if (fileImage != null) {
+				return fileImage;
+			}
+
+			// 3. Chemin classpath : servi via un StreamResource
+			final Image cpImage = tryClasspathImage(trimmed, alt);
+			if (cpImage != null) {
+				return cpImage;
+			}
+
+			log.warn("Logo configuré '{}' introuvable (ni URL, ni fichier, ni ressource classpath) ; utilisation du logo par défaut.", trimmed);
+		}
+
+		// 4. Fallback : logo par défaut servi depuis META-INF/resources
+		return new Image(DEFAULT_LOGO_SRC, alt);
+	}
+
+	/** Tente de servir le logo depuis un fichier filesystem. */
+	private Image tryFileImage(final String path, final String alt) {
+		try {
+			final File file = new File(path);
+			if (file.isFile()) {
+				final String name = file.getName();
+				final StreamResource res = new StreamResource(name, () -> {
+					try {
+						return new FileInputStream(file);
+					} catch (FileNotFoundException e) {
+						throw new UncheckedIOException(e);
+					}
+				});
+				return new Image(res, alt);
+			}
+		} catch (Exception e) {
+			log.debug("Impossible de charger le logo depuis le fichier {}", path, e);
+		}
+		return null;
+	}
+
+	/** Tente de servir le logo depuis le classpath. */
+	private Image tryClasspathImage(final String path, final String alt) {
+		final String cp = path.startsWith("/") ? path.substring(1) : path;
+		try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(cp)) {
+			if (in == null) {
+				return null;
+			}
+			final byte[] bytes = in.readAllBytes();
+			final String name = path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
+			final StreamResource res = new StreamResource(name, () -> new ByteArrayInputStream(bytes));
+			return new Image(res, alt);
+		} catch (Exception e) {
+			log.debug("Impossible de charger le logo depuis le classpath {}", path, e);
+		}
+		return null;
 	}
 
 	/* ====================== Drawer / menu ====================== */
