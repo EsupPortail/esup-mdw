@@ -116,7 +116,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	private final Tabs menuDossier = new Tabs();
 	private final Div dossierSection = new Div();
 	private final Div dossierHeader = new Div();
-	private final Button aideBtn = new Button();
 
 	/* Fenêtre d'attente (équivalent startBusyIndicator/stopBusyIndicator de l'ancienne MainUI) */
 	private final LoadingIndicatorWindow loadingIndicatorWindow = new LoadingIndicatorWindow();
@@ -335,12 +334,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			.set("text-align", "center");
 		dossierSection.setWidthFull();
 		dossierSection.add(dossierHeader, menuDossier);
-
-		/* Bouton d'aide (ancien bouton "Aide" du menu étudiant) */
-		aideBtn.setIcon(VaadinIcon.QUESTION_CIRCLE_O.create());
-		aideBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		aideBtn.getStyle().set("margin", "var(--lumo-space-s)");
-		aideBtn.addClickListener(e -> afficherAide());
 	}
 
 	private void configureMenu(final Tabs tabs) {
@@ -403,9 +396,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 				drawerContent.add(dossierSection);
 			}
 		}
-
-		aideBtn.setText(getTranslation("helpWindow.defaultTitle"));
-		drawerContent.add(aideBtn);
 
 		codEtuMenu = dossierVisible ? etudiant.getCod_etu() : null;
 	}
