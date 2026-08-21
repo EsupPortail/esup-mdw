@@ -111,9 +111,6 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			setPadding(true);
 			setSpacing(true);
 
-			/* Titre */
-			add(new H1(getTranslation(NAME + ".title")));
-
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setWidthFull();
 			globalLayout.setPadding(false);

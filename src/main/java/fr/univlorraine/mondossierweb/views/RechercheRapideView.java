@@ -33,6 +33,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.router.HasDynamicTitle;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -59,7 +60,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 @Route(value = RechercheRapideView.NAME, layout = MainLayout.class)
 @Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
-public class RechercheRapideView extends VerticalLayout {
+public class RechercheRapideView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "rechercheRapideView";
 	public static final String ROUTE = NAME;
@@ -87,6 +88,11 @@ public class RechercheRapideView extends VerticalLayout {
 	private Checkbox casesAcocherEtudiant;
 	private final List<ResultatDeRecherche> resultats = new ArrayList<>();
 	private String derniereSaisie = "";
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
 	 * Initialise la vue

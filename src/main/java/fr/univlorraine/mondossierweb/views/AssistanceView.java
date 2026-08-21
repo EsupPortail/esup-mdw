@@ -25,6 +25,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
@@ -37,7 +38,7 @@ import org.springframework.util.StringUtils;
  */
 @SuppressWarnings("serial")
 @Route(value = AssistanceView.NAME, layout = MainLayout.class)
-public class AssistanceView extends VerticalLayout {
+public class AssistanceView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "assistanceView";
 	public static final String ROUTE = NAME;
@@ -48,6 +49,11 @@ public class AssistanceView extends VerticalLayout {
 
 	@Resource
 	private transient UserController userController;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
 	 * Initialise la vue
@@ -65,9 +71,6 @@ public class AssistanceView extends VerticalLayout {
 			String docUrl = configController.getAssistanceDocUrl();
 			String helpdeskUrl = configController.getAssistanceHelpdeskUrl();
 			String mailContact = configController.getAssistanceContactMail();
-
-			/* Titre */
-			add(new H1(getTranslation(NAME + ".title")));
 
 			/* Texte */
 			if (StringUtils.hasText(getTranslation(NAME + ".text"))) {
@@ -119,4 +122,5 @@ public class AssistanceView extends VerticalLayout {
 		anchor.setTarget("_blank");
 		return anchor;
 	}
+
 }

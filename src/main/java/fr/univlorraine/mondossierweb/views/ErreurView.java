@@ -19,6 +19,7 @@
 package fr.univlorraine.mondossierweb.views;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.uicomponents.BasicErreurMessageLayout;
 import jakarta.annotation.PostConstruct;
@@ -30,7 +31,7 @@ import org.springframework.context.ApplicationContext;
  */
 @SuppressWarnings("serial")
 @Route(value = ErreurView.NAME, layout = MainLayout.class)
-public class ErreurView extends VerticalLayout {
+public class ErreurView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "erreurView";
 	public static final String ROUTE = NAME;
@@ -38,6 +39,11 @@ public class ErreurView extends VerticalLayout {
 	/* Injections */
 	@Resource
 	private transient ApplicationContext applicationContext;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
 	 * Initialise la vue

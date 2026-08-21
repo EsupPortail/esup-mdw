@@ -33,6 +33,7 @@ import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
@@ -70,7 +71,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 @Route(value = RechercheArborescenteView.NAME, layout = MainLayout.class)
 @Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
-public class RechercheArborescenteView extends VerticalLayout implements BeforeEnterObserver {
+public class RechercheArborescenteView extends VerticalLayout implements HasDynamicTitle, BeforeEnterObserver {
 
 	public static final String NAME = "rechercheArborescenteView";
 	public static final String ROUTE = NAME;
@@ -117,6 +118,11 @@ public class RechercheArborescenteView extends VerticalLayout implements BeforeE
 	private List<Composante> lcomp;
 
 	private boolean initEffectue;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	@Override
 	public void beforeEnter(final BeforeEnterEvent event) {

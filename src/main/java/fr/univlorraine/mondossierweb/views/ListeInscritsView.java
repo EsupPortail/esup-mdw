@@ -38,6 +38,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.streams.DownloadHandler;
@@ -79,7 +80,7 @@ import java.util.Map;
 @Route(value = ListeInscritsView.NAME, layout = MainLayout.class)
 @Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
 @Slf4j
-public class ListeInscritsView extends VerticalLayout implements BeforeEnterObserver {
+public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle, BeforeEnterObserver {
 
 	public static final String NAME = "listeInscritsView";
 	public static final String ROUTE = NAME;
@@ -141,6 +142,11 @@ public class ListeInscritsView extends VerticalLayout implements BeforeEnterObse
 	private Checkbox collapseResultatsS1;
 	private Checkbox collapseResultatsS2;
 	private Checkbox collapseGrp;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	@Override
 	public void beforeEnter(final BeforeEnterEvent event) {

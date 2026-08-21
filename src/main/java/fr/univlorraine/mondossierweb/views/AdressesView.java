@@ -96,9 +96,6 @@ public class AdressesView extends VerticalLayout implements BeforeEnterObserver,
 			setPadding(true);
 			setSpacing(true);
 
-			/* Titre */
-			add(new H1(getTranslation(NAME + ".title")));
-
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setWidthFull();
 			globalLayout.setPadding(false);

@@ -117,9 +117,6 @@ public class CalendrierView extends VerticalLayout implements BeforeEnterObserve
 			HorizontalLayout titleLayout = new HorizontalLayout();
 			titleLayout.setWidthFull();
 			titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-			H1 title = new H1(getTranslation(NAME + ".title"));
-			titleLayout.add(title);
-			titleLayout.expand(title);
 			//Test si on a des épreuves
 			if (etudiant.getCalendrier() != null && !etudiant.getCalendrier().isEmpty()) {
 				DownloadFile df = calendrierController.exportPdf();

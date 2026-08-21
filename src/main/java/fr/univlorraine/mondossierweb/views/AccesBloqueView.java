@@ -21,6 +21,7 @@ package fr.univlorraine.mondossierweb.views;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 
@@ -29,10 +30,15 @@ import jakarta.annotation.PostConstruct;
  */
 @SuppressWarnings("serial")
 @Route(value = AccesBloqueView.NAME, layout = MainLayout.class)
-public class AccesBloqueView extends VerticalLayout {
+public class AccesBloqueView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "accesBloqueView";
 	public static final String ROUTE = NAME;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
 	 * Initialise la vue

@@ -43,6 +43,7 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -71,9 +72,9 @@ import java.util.stream.Stream;
 
 /**
  * Layout principal de l'application (remplace l'ancienne MainUI Vaadin 7) :
- * AppLayout avec navbar (utilisateur connecté, déconnexion) et drawer
- * contenant en tête le logo et le nom de l'application, puis le menu
- * construit selon le profil de l'utilisateur.
+ * AppLayout avec navbar (titre de la vue affichée, utilisateur connecté,
+ * déconnexion) et drawer contenant en tête le logo et le nom de
+ * l'application, puis le menu construit selon le profil de l'utilisateur.
  */
 @SuppressWarnings("serial")
 @Slf4j
@@ -106,6 +107,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	/* Navbar */
 	private final DrawerToggle drawerToggle = new DrawerToggle();
+	private final H1 viewTitle = new H1();
 	private final Span usernameSpan = new Span();
 	private final Button logoutBtn = new Button();
 
@@ -159,6 +161,16 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		drawerToggle.getElement().setAttribute("title", getTranslation("mainLayout.drawerToggle.title"));
 		drawerToggle.getElement().setAttribute("aria-label", getTranslation("mainLayout.drawerToggle.title"));
 		header.add(drawerToggle);
+
+		/* Titre de la vue affichée (mis à jour à chaque navigation) */
+		viewTitle.getStyle()
+			.set("font-size", "var(--lumo-font-size-l)")
+			.set("margin", "0 var(--lumo-space-m)")
+			.set("white-space", "nowrap")
+			.set("overflow", "hidden")
+			.set("color", "#fff")
+			.set("text-overflow", "ellipsis");
+		header.add(viewTitle);
 
 		/* Espace extensible */
 		final Div spacer = new Div();
@@ -534,8 +546,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	}
 
 	/**
-	 * Après chaque navigation : met à jour le menu si le dossier consulté a changé
-	 * et surligne l'entrée de menu correspondant à la vue affichée.
+	 * Après chaque navigation : met à jour le menu si le dossier consulté a changé,
+	 * affiche le titre de la vue dans la navbar et surligne l'entrée de menu
+	 * correspondant à la vue affichée.
 	 */
 	@Override
 	public void afterNavigation(final AfterNavigationEvent event) {
@@ -546,9 +559,29 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			updateMenu();
 		}
 
+		/* Titre de la vue affichée */
+		viewTitle.setText(resolveViewTitle(event));
+
 		final String route = event.getLocation().getFirstSegment();
 		selectTab(menuPrincipal, route);
 		selectTab(menuDossier, route);
+	}
+
+	/**
+	 * Titre de la vue affichée : le {@code getPageTitle()} de la vue si elle
+	 * implémente {@link HasDynamicTitle}, le libellé d'un MenuTab pointant sur
+	 * la route courante sinon, la clé {@code <route>.title} en dernier recours.
+	 */
+	private String resolveViewTitle(final AfterNavigationEvent event) {
+		/* Cas nominal : la vue expose son titre (getPageTitle) */
+		if (event.getActiveChain().size() > 1
+			&& event.getActiveChain().get(1) instanceof HasDynamicTitle view) {
+			return view.getPageTitle();
+		}
+		final String route = event.getLocation().getFirstSegment();
+		/* Dernier recours : clé <route>.title (vues d'erreur/d'accès, HomeView) */
+		final String title = getTranslation(route + ".title");
+		return title.startsWith(route) ? "" : title;
 	}
 
 	private void selectTab(final Tabs tabs, final String route) {
@@ -665,6 +698,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 		MenuTab(final VaadinIcon icon, final String label, final String route) {
 			this.route = route;
+			//setLabel(label);
 			final Icon i = icon.create();
 			i.setSize("var(--lumo-icon-size-s)");
 			i.getStyle().set("margin-inline-end", "var(--lumo-space-s)");

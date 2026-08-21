@@ -28,6 +28,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.FavorisController;
@@ -53,7 +54,7 @@ import java.util.List;
 @Route(value = FavorisView.NAME, layout = MainLayout.class)
 @Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
 @Slf4j
-public class FavorisView extends VerticalLayout implements BeforeEnterObserver {
+public class FavorisView extends VerticalLayout implements HasDynamicTitle, BeforeEnterObserver {
 
 	public static final String NAME = "favorisView";
 	public static final String ROUTE = NAME;
@@ -79,6 +80,11 @@ public class FavorisView extends VerticalLayout implements BeforeEnterObserver {
 	private List<Favoris> lfav;
 
 	private HorizontalLayout labelAucunFavoriLayout;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
 	 * Initialise la vue
@@ -208,4 +214,5 @@ public class FavorisView extends VerticalLayout implements BeforeEnterObserver {
 		}
 		return boutonActionLayout;
 	}
+
 }

@@ -114,9 +114,6 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		HorizontalLayout titleLayout = new HorizontalLayout();
 		titleLayout.setWidthFull();
 		titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-		H1 title = new H1(getTranslation(NAME + ".title"));
-		titleLayout.add(title);
-		titleLayout.expand(title);
 
 		//On vérifie le droit d'accéder à la vue
 		if (etudiant != null

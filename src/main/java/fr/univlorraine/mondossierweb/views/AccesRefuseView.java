@@ -21,6 +21,7 @@ package fr.univlorraine.mondossierweb.views;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 
@@ -29,10 +30,15 @@ import jakarta.annotation.PostConstruct;
  */
 @SuppressWarnings("serial")
 @Route(value = AccesRefuseView.NAME, layout = MainLayout.class)
-public class AccesRefuseView extends VerticalLayout {
+public class AccesRefuseView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "accesRefuseView";
 	public static final String ROUTE = NAME;
+
+	@Override
+	public String getPageTitle() {
+		return getTranslation(NAME + ".title");
+	}
 
 	/**
 	 * Initialise la vue
