@@ -85,3 +85,7 @@ vaadin-grid::part(marked) {
 .font-bold {
 	font-weight: bold;
 }
+
+.photo-mdw {
+	border-radius: 15px;
+}
