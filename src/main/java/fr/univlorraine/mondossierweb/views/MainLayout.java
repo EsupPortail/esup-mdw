@@ -27,6 +27,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.server.StreamResource;
@@ -44,6 +45,7 @@ import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Location;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -68,6 +70,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -92,6 +95,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	public static final String ROUTE_RECHERCHE_ARBORESCENTE = "rechercheArborescenteView";
 	public static final String ROUTE_FAVORIS = "favorisView";
 	public static final String ROUTE_ADMIN = "adminView";
+
+	/** Routes des vues du dossier étudiant */
+	private static final Set<String> ROUTES_DOSSIER = Set.of(ROUTE_ETAT_CIVIL, ROUTE_INFORMATIONS_ANNUELLES,
+		ROUTE_ADRESSES, ROUTE_INSCRIPTIONS, ROUTE_CALENDRIER, ROUTE_NOTES);
 
 	/* Injections */
 	@Resource
@@ -124,6 +131,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	/** cod_etu du dossier actuellement représenté dans le menu (null si aucun) */
 	private String codEtuMenu;
+
+	/** Dernière vue consultée hors du dossier étudiant (cible du retour à la fermeture du dossier) */
+	private Location derniereLocationHorsDossier;
 
 	/**
 	 * @return le MainLayout de l'UI courante, s'il est présent
@@ -417,7 +427,25 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	 */
 	private void buildDossierHeader(final Etudiant etudiant, final boolean afficherTitreDossier) {
 		if (afficherTitreDossier) {
-			// TODO Ajouter séparateur et croix pour clore le dossier.
+			/* Séparateur visuel pour démarquer le menu du dossier du menu principal
+			 * (marges négatives pour s'étendre sur toute la largeur malgré le padding du conteneur) */
+			final Hr separateur = new Hr();
+			separateur.getStyle().set("margin", "0 calc(-1 * var(--lumo-space-m)) var(--lumo-space-s)");
+			dossierHeader.add(separateur);
+
+			/* Croix de fermeture du dossier, alignée à droite sous le séparateur */
+			final Button fermerBtn = new Button(VaadinIcon.CLOSE.create());
+			fermerBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			final String fermerLabel = getTranslation("mainLayout.dossier.fermer");
+			fermerBtn.getElement().setAttribute("title", fermerLabel);
+			fermerBtn.getElement().setAttribute("aria-label", fermerLabel);
+			fermerBtn.addClickListener(e -> fermerDossier());
+			final HorizontalLayout fermerBar = new HorizontalLayout(fermerBtn);
+			fermerBar.setWidthFull();
+			fermerBar.setPadding(false);
+			fermerBar.setSpacing(false);
+			fermerBar.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+			dossierHeader.add(fermerBar);
 		}
 
 		/* Photo de l'étudiant + indicateur d'inscription pour l'année en cours */
@@ -568,8 +596,30 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		viewTitle.setText(resolveViewTitle(event));
 
 		final String route = event.getLocation().getFirstSegment();
+
+		/* Mémorise la dernière vue consultée hors du dossier étudiant, pour y
+		 * rediriger l'utilisateur à la fermeture du dossier (croix du drawer) */
+		if (!ROUTES_DOSSIER.contains(route)) {
+			derniereLocationHorsDossier = event.getLocation();
+		}
+
 		selectTab(menuPrincipal, route);
 		selectTab(menuDossier, route);
+	}
+
+	/**
+	 * Ferme le dossier étudiant consulté : vide la session et redirige vers la
+	 * dernière vue consultée avant l'ouverture du dossier (à défaut l'accueil).
+	 * La navigation déclenche {@link #afterNavigation} qui reconstruit le menu
+	 * sans la section dossier.
+	 */
+	private void fermerDossier() {
+		sessionController.setEtudiant(null);
+		if (derniereLocationHorsDossier != null) {
+			UI.getCurrent().navigate(derniereLocationHorsDossier.getPath(), derniereLocationHorsDossier.getQueryParameters());
+		} else {
+			UI.getCurrent().navigate("");
+		}
 	}
 
 	/**
@@ -591,7 +641,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	private void selectTab(final Tabs tabs, final String route) {
 		final Optional<MenuTab> tab = tabsStream(tabs)
-			.filter(t -> t.getRoute().equals(route))
+			.filter(t -> Objects.equals(t.getRoute(), route))
 			.findFirst();
 		tabs.setSelectedTab(tab.orElse(null));
 	}
