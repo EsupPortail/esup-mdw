@@ -46,6 +46,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Location;
+import com.vaadin.flow.shared.Registration;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -404,6 +405,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		if (dossierVisible) {
 			buildDossierHeader(etudiant, !etudiantConnecte);
 			buildMenuDossier(etudiant, etudiantConnecte);
+			/* Animation d'entrée depuis la gauche (rejouée à chaque insertion dans le DOM) */
+			dossierSection.removeClassName("dossier-anim-out");
+			dossierSection.addClassName("dossier-anim-in");
 		}
 
 		/* Ordre d'affichage : le dossier en premier pour un étudiant, en dernier pour un enseignant */
@@ -439,7 +443,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			final String fermerLabel = getTranslation("mainLayout.dossier.fermer");
 			fermerBtn.getElement().setAttribute("title", fermerLabel);
 			fermerBtn.getElement().setAttribute("aria-label", fermerLabel);
-			fermerBtn.addClickListener(e -> fermerDossier());
+			fermerBtn.addClickListener(e -> {
+				/* Evite un double déclenchement pendant l'animation de sortie */
+				fermerBtn.setEnabled(false);
+				fermerDossier();
+			});
 			final HorizontalLayout fermerBar = new HorizontalLayout(fermerBtn);
 			fermerBar.setWidthFull();
 			fermerBar.setPadding(false);
@@ -608,18 +616,28 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	}
 
 	/**
-	 * Ferme le dossier étudiant consulté : vide la session et redirige vers la
+	 * Ferme le dossier étudiant consulté : joue l'animation de sortie vers la
+	 * gauche puis, à la fin de l'animation, vide la session et redirige vers la
 	 * dernière vue consultée avant l'ouverture du dossier (à défaut l'accueil).
 	 * La navigation déclenche {@link #afterNavigation} qui reconstruit le menu
 	 * sans la section dossier.
 	 */
 	private void fermerDossier() {
-		sessionController.setEtudiant(null);
-		if (derniereLocationHorsDossier != null) {
-			UI.getCurrent().navigate(derniereLocationHorsDossier.getPath(), derniereLocationHorsDossier.getQueryParameters());
-		} else {
-			UI.getCurrent().navigate("");
-		}
+		dossierSection.removeClassName("dossier-anim-in");
+		dossierSection.addClassName("dossier-anim-out");
+
+		/* La fermeture effective attend la fin de l'animation CSS */
+		final Registration[] holder = new Registration[1];
+		holder[0] = dossierSection.getElement().addEventListener("animationend", e -> {
+			holder[0].remove();
+			dossierSection.removeClassName("dossier-anim-out");
+			sessionController.setEtudiant(null);
+			if (derniereLocationHorsDossier != null) {
+				UI.getCurrent().navigate(derniereLocationHorsDossier.getPath(), derniereLocationHorsDossier.getQueryParameters());
+			} else {
+				UI.getCurrent().navigate("");
+			}
+		});
 	}
 
 	/**

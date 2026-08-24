@@ -89,3 +89,34 @@ vaadin-grid::part(marked) {
 .photo-mdw {
 	border-radius: 15px;
 }
+
+/* Animations de la section dossier étudiant dans le drawer (entrée/sortie par la gauche) */
+@keyframes mdw-dossier-slide-in {
+	from {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes mdw-dossier-slide-out {
+	from {
+		transform: translateX(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+}
+
+.dossier-anim-in {
+	animation: mdw-dossier-slide-in 300ms ease-out;
+}
+
+.dossier-anim-out {
+	animation: mdw-dossier-slide-out 300ms ease-in forwards;
+}
