@@ -495,6 +495,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		if (affNotes) {
 			menuDossier.add(new MenuTab(VaadinIcon.LIST, getTranslation("notesView.title"), ROUTE_NOTES));
 		}
+
+		MenuTab menuAide = new MenuTab(VaadinIcon.QUESTION_CIRCLE_O, getTranslation("helpWindow.defaultTitle"), ROUTE_CALENDRIER);
+		menuDossier.add(menuAide);
+		//menuAide.addClickListener(e -> afficherAide());
+
 	}
 
 	/* ====================== Cycle de vie / navigation ====================== */
