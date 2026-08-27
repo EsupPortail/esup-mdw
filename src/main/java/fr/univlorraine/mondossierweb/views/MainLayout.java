@@ -605,8 +605,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		/* Entrée "Liste des inscrits" : visible uniquement sur la vue correspondante,
 		 * entre Recherche Arborescence et Favoris */
 		final boolean listeInscritsVisible = ROUTE_LISTE_INSCRITS.equals(route);
-		final boolean listeInscritsChanged = listeInscritsVisible != listeInscritsMenuVisible;
-		listeInscritsMenuVisible = listeInscritsVisible;
+		boolean listeInscritsChanged = false;
+		if(!listeInscritsMenuVisible && listeInscritsVisible) {
+			listeInscritsMenuVisible = true;
+			listeInscritsChanged = true;
+		}
 
 		final String codEtuCourant = sessionController.getEtudiant() != null
 			? sessionController.getEtudiant().getCod_etu()
