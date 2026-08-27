@@ -94,6 +94,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	public static final String ROUTE_ASSISTANCE = "assistanceView";
 	public static final String ROUTE_RECHERCHE_RAPIDE = "rechercheRapideView";
 	public static final String ROUTE_RECHERCHE_ARBORESCENTE = "rechercheArborescenteView";
+	public static final String ROUTE_LISTE_INSCRITS = "listeInscritsView";
 	public static final String ROUTE_FAVORIS = "favorisView";
 	public static final String ROUTE_ADMIN = "adminView";
 
@@ -135,6 +136,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	/** Dernière vue consultée hors du dossier étudiant (cible du retour à la fermeture du dossier) */
 	private Location derniereLocationHorsDossier;
+
+	/** Indique si l'entrée "Liste des inscrits" est actuellement affichée dans le menu */
+	private boolean listeInscritsMenuVisible;
 
 	/**
 	 * @return le MainLayout de l'UI courante, s'il est présent
@@ -388,6 +392,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		if (enseignant) {
 			menuPrincipal.add(new MenuTab(VaadinIcon.SEARCH, getTranslation("mainUI.rechercherapide.title"), ROUTE_RECHERCHE_RAPIDE));
 			menuPrincipal.add(new MenuTab(VaadinIcon.SITEMAP, getTranslation("mainUI.recherchearbo.title"), ROUTE_RECHERCHE_ARBORESCENTE));
+			if (listeInscritsMenuVisible) {
+				menuPrincipal.add(new MenuTab(VaadinIcon.USERS, getTranslation("listeInscritsView.title"), ROUTE_LISTE_INSCRITS));
+			}
 			menuPrincipal.add(new MenuTab(VaadinIcon.STAR_O, getTranslation("mainLayout.menu.favoris"), ROUTE_FAVORIS));
 		}
 
@@ -593,17 +600,25 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	 */
 	@Override
 	public void afterNavigation(final AfterNavigationEvent event) {
+		final String route = event.getLocation().getFirstSegment();
+
+		/* Entrée "Liste des inscrits" : visible uniquement sur la vue correspondante,
+		 * entre Recherche Arborescence et Favoris */
+		final boolean listeInscritsVisible = ROUTE_LISTE_INSCRITS.equals(route);
+		final boolean listeInscritsChanged = listeInscritsVisible != listeInscritsMenuVisible;
+		listeInscritsMenuVisible = listeInscritsVisible;
+
 		final String codEtuCourant = sessionController.getEtudiant() != null
 			? sessionController.getEtudiant().getCod_etu()
 			: null;
 		if (!Objects.equals(codEtuCourant, codEtuMenu)) {
 			updateMenu();
+		} else if (listeInscritsChanged) {
+			updateMenu();
 		}
 
 		/* Titre de la vue affichée */
 		viewTitle.setText(resolveViewTitle(event));
-
-		final String route = event.getLocation().getFirstSegment();
 
 		/* Mémorise la dernière vue consultée hors du dossier étudiant, pour y
 		 * rediriger l'utilisateur à la fermeture du dossier (croix du drawer) */
