@@ -35,6 +35,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.UIScope;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
@@ -58,6 +59,7 @@ import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -71,6 +73,8 @@ import java.util.Map;
 @SuppressWarnings("serial")
 @Route(value = RechercheArborescenteView.NAME, layout = MainLayout.class)
 @Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
+@Component
+@UIScope
 public class RechercheArborescenteView extends VerticalLayout implements HasDynamicTitle, BeforeEnterObserver {
 
 	public static final String NAME = "rechercheArborescenteView";

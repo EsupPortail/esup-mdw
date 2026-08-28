@@ -34,6 +34,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.UIScope;
 import fr.univlorraine.mondossierweb.beans.ResultatDeRecherche;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.EtudiantController;
@@ -43,10 +45,11 @@ import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
-import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -60,6 +63,9 @@ import java.util.Map;
 @SuppressWarnings("serial")
 @Route(value = RechercheRapideView.NAME, layout = MainLayout.class)
 @Secured({Utils.TEACHER_USER, Utils.GEST_USER, Utils.ADMIN_USER})
+@Component
+@UIScope
+@Slf4j
 public class RechercheRapideView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "rechercheRapideView";

@@ -150,6 +150,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 
 	@Override
 	public void beforeEnter(final BeforeEnterEvent event) {
+		log.info(NAME + ".beforeEnter");
 		if (!configController.isApplicationActive() || !configController.isPartieEnseignantActive()) {
 			event.forwardTo(AccesBloqueView.class);
 			return;
@@ -178,6 +179,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	}
 
 	public void initListe() {
+		log.info(NAME + ".initListe");
 		//On vérifie le droit d'accéder à la vue
 		if (!userController.isEnseignant()) {
 			return;
