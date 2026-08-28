@@ -392,10 +392,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		if (enseignant) {
 			menuPrincipal.add(new MenuTab(VaadinIcon.SEARCH, getTranslation("mainUI.rechercherapide.title"), ROUTE_RECHERCHE_RAPIDE));
 			menuPrincipal.add(new MenuTab(VaadinIcon.SITEMAP, getTranslation("mainUI.recherchearbo.title"), ROUTE_RECHERCHE_ARBORESCENTE));
+			menuPrincipal.add(new MenuTab(VaadinIcon.STAR_O, getTranslation("mainLayout.menu.favoris"), ROUTE_FAVORIS));
 			if (listeInscritsMenuVisible) {
 				menuPrincipal.add(new MenuTab(VaadinIcon.USERS, getTranslation("listeInscritsView.title"), ROUTE_LISTE_INSCRITS));
 			}
-			menuPrincipal.add(new MenuTab(VaadinIcon.STAR_O, getTranslation("mainLayout.menu.favoris"), ROUTE_FAVORIS));
 		}
 
 		/* Assistance : accessible à tous les profils autorisés */
