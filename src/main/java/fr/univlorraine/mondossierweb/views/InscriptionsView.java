@@ -136,14 +136,17 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 				for (String fieldName : colonnes) {
 					inscriptionsGrid.addColumn(inscription -> getInscriptionFieldValue(inscription, fieldName))
 						.setHeader(getTranslation(NAME + ".table." + fieldName))
-						.setFlexGrow(1);
+						.setResizable(true)
+						.setFlexGrow(fieldName.equals("cod_anu") || fieldName.equals("cod_comp")? 1 : 0);
 				}
 				inscriptionsGrid.addComponentColumn(this::buildLibelleInscriptionColumn)
 					.setHeader(getTranslation(NAME + ".table.lib_etp"))
-					.setFlexGrow(3);
+					.setResizable(true)
+					.setFlexGrow(5);
 				inscriptionsGrid.addComponentColumn(this::buildActionsColumn)
 					.setHeader(getTranslation(NAME + ".table.documents"))
-					.setFlexGrow(0);
+					.setResizable(true)
+					.setFlexGrow(3);
 				inscriptionsGrid.setItems(etudiant.getLinsciae() != null ? etudiant.getLinsciae() : Collections.emptyList());
 
 				globalLayout.add(createPanel(etudiant.getLibEtablissement(), inscriptionsGrid));
@@ -159,7 +162,8 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 						for (String fieldName : DAC_FIELDS_ORDER) {
 							inscriptionsDAC.addColumn(inscription -> getInscriptionFieldValue(inscription, fieldName))
 								.setHeader(getTranslation(NAME + ".tabledac." + fieldName))
-								.setFlexGrow(1);
+								.setResizable(true)
+								.setFlexGrow(fieldName.equals(DAC_FIELDS_ORDER[2]) || fieldName.equals(DAC_FIELDS_ORDER[3])? 3 : (fieldName.equals(DAC_FIELDS_ORDER[1])? 2 : 1));
 						}
 						inscriptionsDAC.setItems(etudiant.getLinscdac());
 						dacContent = inscriptionsDAC;
@@ -362,7 +366,9 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			panel.add(header);
 		}
 		Div body = new Div(content);
-		body.getStyle().set("padding", "var(--lumo-space-s)");
+		if (!(content instanceof Grid)) {
+			body.getStyle().set("padding", "var(--lumo-space-s)");
+		}
 		panel.add(body);
 		return panel;
 	}
