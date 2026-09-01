@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -146,6 +147,28 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 				initComposantes();
 				reinitButton.setVisible(true);
 			}
+		}
+	}
+
+	/**
+	 * Sur chaque (ré-)attachement de la vue (navigation depuis une autre vue),
+	 * ré-enregistre le listener de scroll côté client (l'élément DOM est recréé)
+	 * et restaure la position de scroll sauvegardée dans {@code window.__mdw_arbo_scroll}.
+	 * <p>La variable {@code window} persiste tant que l'onglet reste ouvert :
+	 * même portée qu'{@code @UIScope} (une UI = un onglet).
+	 */
+	@Override
+	protected void onAttach(final AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		if (table != null) {
+			table.getElement().executeJs(
+				"requestAnimationFrame(() => {"
+					+ "  var t = this.shadowRoot && this.shadowRoot.querySelector('table');"
+					+ "  if (t) {"
+					+ "    t.addEventListener('scroll', function(e) { window.__mdw_arbo_scroll = e.target.scrollTop; });"
+					+ "    if (window.__mdw_arbo_scroll !== undefined) t.scrollTop = window.__mdw_arbo_scroll;"
+					+ "  }"
+					+ "});");
 		}
 	}
 
