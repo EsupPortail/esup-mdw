@@ -155,7 +155,7 @@ public class EtatCivilView extends VerticalLayout implements BeforeEnterObserver
 			addFormValue(formGeneralitesLayout, getTranslation(NAME + ".depnaissance.title"), etudiant.getDepartementnaissance());
 		}
 
-		idLayout.add(createPanel(getTranslation(NAME + ".generalites.title"), formGeneralitesLayout));
+		idLayout.add(createPanel(getTranslation(NAME + ".generalites.title"), formGeneralitesLayout, true));
 
 		/* Bac */
 		String titreBac = getTranslation(NAME + ".bac.title");
@@ -180,7 +180,7 @@ public class EtatCivilView extends VerticalLayout implements BeforeEnterObserver
 			}
 			bacContent = formBacLayout;
 		}
-		idLayout.add(createPanel(titreBac, bacContent));
+		idLayout.add(createPanel(titreBac, bacContent, true));
 
 		/* Infos de contact */
 		if (userController.isEtudiant()
@@ -189,7 +189,7 @@ public class EtatCivilView extends VerticalLayout implements BeforeEnterObserver
 			panelContactContent = new Div();
 			panelContactContent.setWidthFull();
 			renseignerPanelContact();
-			globalLayout.add(createPanel(getTranslation(NAME + ".contact.title"), panelContactContent));
+			globalLayout.add(createPanel(getTranslation(NAME + ".contact.title"), panelContactContent, false));
 		}
 		add(globalLayout);
 	}
@@ -358,13 +358,15 @@ public class EtatCivilView extends VerticalLayout implements BeforeEnterObserver
 	/**
 	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
 	 */
-	private Div createPanel(String titre, Component content) {
+	private Div createPanel(String titre, Component content, boolean flex) {
 		Div panel = new Div();
 		panel.getStyle()
 			.set("border", "1px solid var(--lumo-contrast-20pct)")
 			.set("border-radius", "var(--lumo-border-radius-m)")
-			.set("overflow", "hidden")
-			.set("flex", "1 1 20rem");
+			.set("overflow", "hidden");
+		if (flex) {
+			panel.getStyle().set("flex", "1 1 20rem");
+		}
 		if (StringUtils.hasText(titre)) {
 			Div header = new Div(new Span(titre));
 			header.getStyle()
