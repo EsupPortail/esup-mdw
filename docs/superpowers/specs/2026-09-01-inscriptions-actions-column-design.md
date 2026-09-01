@@ -18,18 +18,17 @@ quittance). On souhaite sortir ces 4 boutons dans une colonne dédiée « Action
 
 ### 1. Colonne libellé (InscriptionsView.java)
 
-`buildLibelleInscriptionColumn(incription)` est simplifié : elle retourne uniquement le `Span` du
-libellé. Suppression de `secondLineLayout`, `twoLinesLayout` et de toute la logique de boutons.
+`buildLibelleInscriptionColumn(incription)` retourne le `Span` du libellé ainsi que le bouton
+« détail » (`SEARCH`, si année en cours).
 
-### 2. Nouvelle colonne « Actions »
+### 2. Nouvelle colonne « Documents »
 
 Nouvelle méthode `buildActionsColumn(Inscription)` ajoutée à la grille via `addComponentColumn`,
 insérée juste après la colonne libellé, avec :
 
-- En-tête : traduction `inscriptionsView.table.actions`.
+- En-tête : traduction `inscriptionsView.table.documents`.
 - `setFlexGrow(0)` pour garder la colonne étroite.
 - Contenu : `HorizontalLayout` regroupant :
-  - **Détail** (`SEARCH`) : icône, si année en cours (inchangé).
   - **Certificat** : selon `isAffBtnCertifNouvelleLigne()` — icône `LUMO_TERTIARY_INLINE` sinon
     bouton `LUMO_SMALL` libellé ; classe `red-button-icon` si `isAffBtnCertificatCouleur()`.
   - **Attestation affiliation** : selon `isAffBtnAttestSsoNouvelleLigne()` ; classe
@@ -41,11 +40,14 @@ insérée juste après la colonne libellé, avec :
 
 ### 3. Traductions
 
-Ajout dans `messages-default.properties` et `messages.sample.properties` :
+Ajout dans `messages-default.properties` :
 
 ```
-inscriptionsView.table.actions = Actions
+inscriptionsView.table.documents = Documents
 ```
+
+(`messages.sample.properties` est un template de surcharge vide, sans clés réelles : rien à y
+ajouter.)
 
 ## Non changé
 

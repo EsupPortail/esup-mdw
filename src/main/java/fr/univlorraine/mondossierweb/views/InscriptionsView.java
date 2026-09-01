@@ -141,6 +141,9 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 				inscriptionsGrid.addComponentColumn(this::buildLibelleInscriptionColumn)
 					.setHeader(getTranslation(NAME + ".table.lib_etp"))
 					.setFlexGrow(3);
+				inscriptionsGrid.addComponentColumn(this::buildActionsColumn)
+					.setHeader(getTranslation(NAME + ".table.documents"))
+					.setFlexGrow(0);
 				inscriptionsGrid.setItems(etudiant.getLinsciae() != null ? etudiant.getLinsciae() : Collections.emptyList());
 
 				globalLayout.add(createPanel(etudiant.getLibEtablissement(), inscriptionsGrid));
@@ -209,27 +212,15 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 	}
 
 	/**
-	 * Colonne libellé de l'inscription : libellé de l'étape + boutons (détail, certificat,
-	 * attestation d'affiliation, quittance) — ancienne LibelleInscriptionColumnGenerator.
+	 * Colonne libellé de l'inscription : libellé de l'étape + bouton de détail.
 	 */
 	private Component buildLibelleInscriptionColumn(Inscription inscription) {
-		final Etudiant etudiant = sessionController.getEtudiant();
-
 		HorizontalLayout libelleLayout = new HorizontalLayout();
 		libelleLayout.setSpacing(true);
 		libelleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-		HorizontalLayout secondLineLayout = new HorizontalLayout();
-		secondLineLayout.setSpacing(true);
-		secondLineLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-		boolean secondLineEmpty = true;
 
 		//ajout du libellé de l'étape concernée par l'inscription
 		libelleLayout.add(new Span(inscription.getLib_etp()));
-
-		VerticalLayout twoLinesLayout = new VerticalLayout();
-		twoLinesLayout.setPadding(false);
-		twoLinesLayout.setSpacing(false);
-		twoLinesLayout.add(libelleLayout);
 
 		//Si c'est une inscription sur l'année en cours
 		if (inscription.getCod_anu() != null && inscription.getCod_anu().length() >= 4
@@ -253,30 +244,38 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			libelleLayout.add(bDetailInscription);
 		}
 
+		return libelleLayout;
+	}
+
+	/**
+	 * Colonne documents de l'inscription : boutons (certificat,
+	 * attestation d'affiliation, quittance).
+	 */
+	private Component buildActionsColumn(Inscription inscription) {
+		final Etudiant etudiant = sessionController.getEtudiant();
+
+		HorizontalLayout actionsLayout = new HorizontalLayout();
+		actionsLayout.setSpacing(true);
+		actionsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
 		//Si on peut proposer le certificat de scolarité
 		if (etudiantController.proposerCertificat(inscription, etudiant)) {
 			DownloadFile df = inscriptionController.exportPdf(inscription);
 			if (df != null) {
 				//On affiche le bouton pour éditer le certificat de scolarité
 				Button bCertificatInscription = new Button(VaadinIcon.FILE_TEXT_O.create());
-				bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-				bCertificatInscription.setTooltipText(getTranslation(NAME + ".certificatScolarite.link"));
-				if (configController.isAffBtnCertificatCouleur()) {
-					bCertificatInscription.addClassName("red-button-icon");
-				}
-				//Si on n'affiche pas le bouton sur une nouvelle ligne
+				//Si on n'affiche pas le bouton sous forme de libellé
 				if (!configController.isAffBtnCertifNouvelleLigne()) {
-					//ajout du bouton au layout du libellé
-					libelleLayout.add(createDownloadAnchor(df, bCertificatInscription));
+					bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+					bCertificatInscription.setTooltipText(getTranslation(NAME + ".certificatScolarite.link"));
+					if (configController.isAffBtnCertificatCouleur()) {
+						bCertificatInscription.addClassName("red-button-icon");
+					}
 				} else {
-					//on adapte le style du bouton
-					bCertificatInscription.removeThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 					bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_SMALL);
 					bCertificatInscription.setText(getTranslation(NAME + ".certificatScolarite.btn.link"));
-					//ajout du bouton au layout secondLine
-					secondLineLayout.add(createDownloadAnchor(df, bCertificatInscription));
-					secondLineEmpty = false;
 				}
+				actionsLayout.add(createDownloadAnchor(df, bCertificatInscription));
 			}
 		}
 
@@ -286,22 +285,16 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			if (df != null) {
 				//On affiche le bouton pour éditer l'attestation d'affiliation
 				Button bAttestationAffiliationSso = new Button(VaadinIcon.FILE_TEXT_O.create());
-				bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-				bAttestationAffiliationSso.addClassName("blue-button-icon");
-				bAttestationAffiliationSso.setTooltipText(getTranslation(NAME + ".affiliationSso.link"));
-				//Si on n'affiche pas le bouton sur une nouvelle ligne
+				//Si on n'affiche pas le bouton sous forme de libellé
 				if (!configController.isAffBtnAttestSsoNouvelleLigne()) {
-					//ajout du bouton au layout du libellé
-					libelleLayout.add(createDownloadAnchor(df, bAttestationAffiliationSso));
+					bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+					bAttestationAffiliationSso.setTooltipText(getTranslation(NAME + ".affiliationSso.link"));
+					bAttestationAffiliationSso.addClassName("blue-button-icon");
 				} else {
-					//on adapte le style du bouton
-					bAttestationAffiliationSso.removeThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 					bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
 					bAttestationAffiliationSso.setText(getTranslation(NAME + ".affiliationSso.btn.link"));
-					//ajout du bouton au layout secondLine
-					secondLineLayout.add(createDownloadAnchor(df, bAttestationAffiliationSso));
-					secondLineEmpty = false;
 				}
+				actionsLayout.add(createDownloadAnchor(df, bAttestationAffiliationSso));
 			}
 		}
 
@@ -311,34 +304,22 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			if (df != null) {
 				//On affiche le bouton pour éditer la quittance
 				Button bQuittanceSso = new Button(VaadinIcon.FILE_TEXT_O.create());
-				bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-				bQuittanceSso.setTooltipText(getTranslation(NAME + ".quittance.link"));
-				if (configController.isAffBtnQuittanceCouleur()) {
-					bQuittanceSso.addClassName("green-button-icon");
-				}
-				//Si on n'affiche pas le bouton sur une nouvelle ligne
+				//Si on n'affiche pas le bouton sous forme de libellé
 				if (!configController.isAffBtnQuittanceDroitsPayesNouvelleLigne()) {
-					//ajout du bouton au layout du libellé
-					libelleLayout.add(createDownloadAnchor(df, bQuittanceSso));
+					bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+					bQuittanceSso.setTooltipText(getTranslation(NAME + ".quittance.link"));
+					if (configController.isAffBtnQuittanceCouleur()) {
+						bQuittanceSso.addClassName("green-button-icon");
+					}
 				} else {
-					//on adapte le style du bouton
-					bQuittanceSso.removeThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 					bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
 					bQuittanceSso.setText(getTranslation(NAME + ".quittance.btn.link"));
-					//ajout du bouton au layout secondLine
-					secondLineLayout.add(createDownloadAnchor(df, bQuittanceSso));
-					secondLineEmpty = false;
 				}
+				actionsLayout.add(createDownloadAnchor(df, bQuittanceSso));
 			}
 		}
 
-		//Si le secondLineLayout contient des éléments
-		if (!secondLineEmpty) {
-			//ajout du secondLineLayout au layout retourné
-			twoLinesLayout.add(secondLineLayout);
-		}
-
-		return twoLinesLayout;
+		return actionsLayout;
 	}
 
 	/**
