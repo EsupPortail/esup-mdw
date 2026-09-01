@@ -170,39 +170,40 @@ public class DetailNotesWindow extends Dialog {
 				detailNotesGrid.setSelectionMode(Grid.SelectionMode.NONE);
 				if (contientElpObtenusPrecedemment(lelp)) {
 					detailNotesGrid.addComponentColumn(this::buildAnneeColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.annee")).setFlexGrow(1);
+						.setHeader(getTranslation(NAME + ".table.elp.annee")).setFlexGrow(1).setResizable(true);
 				}
 				detailNotesGrid.addComponentColumn(this::buildCodeElpColumn)
-					.setHeader(getTranslation(NAME + ".table.elp.code")).setFlexGrow(1);
+					.setHeader(getTranslation(NAME + ".table.elp.code")).setFlexGrow(1).setResizable(true);
 				detailNotesGrid.addComponentColumn(this::buildLibelleElpColumn)
-					.setHeader(getTranslation(NAME + ".table.elp.libelle")).setFlexGrow(4);
+					.setHeader(getTranslation(NAME + ".table.elp.libelle")).setFlexGrow(4).setResizable(true);
 				detailNotesGrid.addComponentColumn(el -> buildNoteColumn(el, el.getNote1(), el.getBareme1()))
 					.setHeader(noteController.renommerSession1(lelp)
 						? getTranslation(NAME + ".table.elp.notesession1bis")
 						: getTranslation(NAME + ".table.elp.notesession1"))
-					.setFlexGrow(1);
+					.setFlexGrow(1).setResizable(true);
 				detailNotesGrid.addComponentColumn(el -> buildResultatColumn(el, el.getRes1()))
-					.setHeader(getTranslation(NAME + ".table.elp.resultatsession1")).setFlexGrow(1);
+					.setHeader(getTranslation(NAME + ".table.elp.resultatsession1")).setFlexGrow(1).setResizable(true);
 
 				if (noteController.afficherSession2(lelp)) {
 					detailNotesGrid.addComponentColumn(el -> buildNoteColumn(el, el.getNote2(), el.getBareme2()))
-						.setHeader(getTranslation(NAME + ".table.elp.notesession2")).setFlexGrow(1);
+						.setHeader(getTranslation(NAME + ".table.elp.notesession2")).setFlexGrow(1).setResizable(true);
 					detailNotesGrid.addComponentColumn(el -> buildResultatColumn(el, el.getRes2()))
-						.setHeader(getTranslation(NAME + ".table.elp.resultatsession2")).setFlexGrow(1);
+						.setHeader(getTranslation(NAME + ".table.elp.resultatsession2")).setFlexGrow(1).setResizable(true);
 				}
 				if (configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) {
 					detailNotesGrid.addComponentColumn(this::buildRangColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.rang")).setFlexGrow(1);
+						.setHeader(getTranslation(NAME + ".table.elp.rang")).setFlexGrow(1).setResizable(true);
 				}
 				if (configController.isAffECTSEtudiant()) {
 					detailNotesGrid.addComponentColumn(this::buildEctsColumn)
 						.setHeader(getTranslation(NAME + ".table.elp.ects"))
 						.setFlexGrow(1)
+						.setResizable(true)
 						.setVisible(!configController.isMasqueECTSEtudiant());
 				}
 				if (configController.isAffMentionElpEtudiant()) {
 					detailNotesGrid.addComponentColumn(this::buildMentionColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.mention")).setFlexGrow(1);
+						.setHeader(getTranslation(NAME + ".table.elp.mention")).setFlexGrow(1).setResizable(true);
 				}
 				detailNotesGrid.setItems(lelp);
 				detailContent = detailNotesGrid;
@@ -477,9 +478,11 @@ public class DetailNotesWindow extends Dialog {
 		}
 		Div body = new Div(content);
 		body.getStyle()
-			.set("padding", "var(--lumo-space-s)")
 			.set("flex", "1 1 auto")
 			.set("overflow", "auto");
+		if (!(content instanceof Grid)) {
+			body.getStyle().set("padding", "var(--lumo-space-s)");
+		}
 		panel.add(body);
 		return panel;
 	}
