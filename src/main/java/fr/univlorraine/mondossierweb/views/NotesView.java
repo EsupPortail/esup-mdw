@@ -170,24 +170,24 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			notesDiplomesGrid.setAllRowsVisible(true);
 			notesDiplomesGrid.setSelectionMode(Grid.SelectionMode.NONE);
 			notesDiplomesGrid.addColumn(Diplome::getAnnee)
-				.setHeader(getTranslation(NAME + ".table.diplomes.annee")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.diplomes.annee")).setFlexGrow(1).setResizable(true);
 			notesDiplomesGrid.addColumn(Diplome::getCod_dip)
-				.setHeader(getTranslation(NAME + ".table.diplomes.cod_dip")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.diplomes.cod_dip")).setFlexGrow(1).setResizable(true);
 			notesDiplomesGrid.addColumn(Diplome::getLib_web_vdi)
-				.setHeader(getTranslation(NAME + ".table.diplomes.lib_web_vdi")).setFlexGrow(3);
+				.setHeader(getTranslation(NAME + ".table.diplomes.lib_web_vdi")).setFlexGrow(3).setResizable(true);
 			notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getSession))
-				.setHeader(getTranslation(NAME + ".table.diplomes.session")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.diplomes.session")).setFlexGrow(1).setResizable(true);
 			notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), this::formatNote))
-				.setHeader(getTranslation(NAME + ".table.diplomes.note")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.diplomes.note")).setFlexGrow(1).setResizable(true);
 			notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getAdmission))
-				.setHeader(getTranslation(NAME + ".table.diplomes.resultat")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.diplomes.resultat")).setFlexGrow(1).setResizable(true);
 			if (configController.isAffMentionEtudiant()) {
 				notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getCodMention))
-					.setHeader(getTranslation(NAME + ".table.diplomes.mention")).setFlexGrow(1);
+					.setHeader(getTranslation(NAME + ".table.diplomes.mention")).setFlexGrow(1).setResizable(true);
 			}
 			if (etudiant.isAfficherRang()) {
 				notesDiplomesGrid.addComponentColumn(diplome -> buildRangColumn(diplome.getRang(), diplome.isAfficherRang()))
-					.setHeader(getTranslation(NAME + ".table.diplomes.rang")).setFlexGrow(1);
+					.setHeader(getTranslation(NAME + ".table.diplomes.rang")).setFlexGrow(1).setResizable(true);
 			}
 			notesDiplomesGrid.setItems(etudiant.getDiplomes() != null ? etudiant.getDiplomes() : Collections.emptyList());
 			globalLayout.add(createPanel(getTranslation(NAME + ".table.diplomes"), notesDiplomesGrid));
@@ -198,24 +198,24 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			notesEtapesGrid.setAllRowsVisible(true);
 			notesEtapesGrid.setSelectionMode(Grid.SelectionMode.NONE);
 			notesEtapesGrid.addColumn(Etape::getAnnee)
-				.setHeader(getTranslation(NAME + ".table.etapes.annee")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.etapes.annee")).setFlexGrow(1).setResizable(true);
 			notesEtapesGrid.addComponentColumn(this::buildCodeEtapeColumn)
-				.setHeader(getTranslation(NAME + ".table.etapes.codevers")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.etapes.codevers")).setFlexGrow(1).setResizable(true);
 			notesEtapesGrid.addComponentColumn(this::buildLibelleEtapeColumn)
-				.setHeader(getTranslation(NAME + ".table.etapes.libelle")).setFlexGrow(3);
+				.setHeader(getTranslation(NAME + ".table.etapes.libelle")).setFlexGrow(3).setResizable(true);
 			notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getSession))
-				.setHeader(getTranslation(NAME + ".table.etapes.session")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.etapes.session")).setFlexGrow(1).setResizable(true);
 			notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), this::formatNote))
-				.setHeader(getTranslation(NAME + ".table.etapes.note")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.etapes.note")).setFlexGrow(1).setResizable(true);
 			notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getAdmission))
-				.setHeader(getTranslation(NAME + ".table.etapes.resultat")).setFlexGrow(1);
+				.setHeader(getTranslation(NAME + ".table.etapes.resultat")).setFlexGrow(1).setResizable(true);
 			if (configController.isAffMentionEtudiant()) {
 				notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getCodMention))
-					.setHeader(getTranslation(NAME + ".table.etapes.mention")).setFlexGrow(1);
+					.setHeader(getTranslation(NAME + ".table.etapes.mention")).setFlexGrow(1).setResizable(true);
 			}
 			if (etudiant.isAfficherRang()) {
 				notesEtapesGrid.addComponentColumn(etape -> buildRangColumn(etape.getRang(), etape.isAfficherRang()))
-					.setHeader(getTranslation(NAME + ".table.etapes.rang")).setFlexGrow(1);
+					.setHeader(getTranslation(NAME + ".table.etapes.rang")).setFlexGrow(1).setResizable(true);
 			}
 			notesEtapesGrid.setItems(etudiant.getEtapes() != null ? etudiant.getEtapes() : Collections.emptyList());
 			globalLayout.add(createPanel(getTranslation(NAME + ".table.etapes"), notesEtapesGrid));
@@ -433,7 +433,9 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			panel.add(header);
 		}
 		Div body = new Div(content);
-		body.getStyle().set("padding", "var(--lumo-space-s)");
+		if (!(content instanceof Grid)) {
+			body.getStyle().set("padding", "var(--lumo-space-s)");
+		}
 		panel.add(body);
 		return panel;
 	}
