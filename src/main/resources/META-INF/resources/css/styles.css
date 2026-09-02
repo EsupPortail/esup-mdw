@@ -128,7 +128,7 @@ vaadin-grid::part(marked) {
 	min-height: 0;
 }
 
-.responsive-card-list > vaadin-grid {
+.responsive-card-list > .responsive-grid {
 	flex: 1 1 auto;
 }
 
@@ -163,7 +163,7 @@ vaadin-grid::part(marked) {
 }
 
 @media (max-width: 767px) {
-	.responsive-card-list > vaadin-grid {
+	.responsive-card-list > .responsive-grid {
 		display: none;
 	}
 

@@ -61,6 +61,8 @@ public class ResponsiveCardList<T> extends Div {
 
 	/**
 	 * Ajoute une colonne texte au Grid (grand écran) et au rendu auto des cartes.
+	 * Le provider est appelé séparément pour le Grid et pour les cartes : il doit
+	 * retourner un composant nouveau à chaque appel, jamais une instance partagée.
 	 */
 	public Grid.Column<T> addColumn(final ValueProvider<T, ?> provider, final String header) {
 		columnInfos.add(new ColumnInfo<>(header, provider));
@@ -69,6 +71,8 @@ public class ResponsiveCardList<T> extends Div {
 
 	/**
 	 * Ajoute une colonne de composants au Grid (grand écran) et au rendu auto des cartes.
+	 * Le provider est appelé séparément pour le Grid et pour les cartes : il doit
+	 * retourner un composant nouveau à chaque appel, jamais une instance partagée.
 	 */
 	public Grid.Column<T> addComponentColumn(final ValueProvider<T, ? extends Component> provider, final String header) {
 		columnInfos.add(new ColumnInfo<>(header, provider));
@@ -109,27 +113,30 @@ public class ResponsiveCardList<T> extends Div {
 	}
 
 	private Component buildCard(final T item) {
+		final Component card;
 		if (cardRenderer != null) {
-			return cardRenderer.apply(item);
-		}
-		/* Rendu auto : une ligne « En-tête : valeur » par colonne */
-		final Div card = new Div();
-		card.addClassName("card");
-		for (final ColumnInfo<T> col : columnInfos) {
-			final Object value = col.provider().apply(item);
-			if (value instanceof Component componentValue) {
-				componentValue.getElement().getClassList().add("card-line");
-				card.add(componentValue);
-			} else if (value != null) {
-				final HorizontalLayout line = new HorizontalLayout();
-				line.setSpacing(false);
-				line.addClassName("card-line");
-				final Span headerSpan = new Span(col.header() + " : ");
-				headerSpan.addClassName("font-bold");
-				line.add(headerSpan, new Span(String.valueOf(value)));
-				card.add(line);
+			card = cardRenderer.apply(item);
+		} else {
+			/* Rendu auto : une ligne « En-tête : valeur » par colonne */
+			final Div autoCard = new Div();
+			for (final ColumnInfo<T> col : columnInfos) {
+				final Object value = col.provider().apply(item);
+				if (value instanceof Component componentValue) {
+					componentValue.getElement().getClassList().add("card-line");
+					autoCard.add(componentValue);
+				} else if (value != null) {
+					final HorizontalLayout line = new HorizontalLayout();
+					line.setSpacing(false);
+					line.addClassName("card-line");
+					final Span headerSpan = new Span(col.header() + " : ");
+					headerSpan.addClassName("font-bold");
+					line.add(headerSpan, new Span(String.valueOf(value)));
+					autoCard.add(line);
+				}
 			}
+			card = autoCard;
 		}
+		card.addClassName("card");
 		return card;
 	}
 }
