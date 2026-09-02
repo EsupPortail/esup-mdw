@@ -147,19 +147,12 @@ vaadin-grid::part(marked) {
 }
 
 .responsive-card-list .card-badge {
-	background: var(--lumo-primary-color-10pct);
+	/*background: var(--lumo-primary-color-10pct);*/
+	background: var(--lumo-contrast-5pct);
 	color: var(--lumo-primary-text-color);
-	border-radius: 999px;
+	border-radius: var(--lumo-border-radius-m);
 	padding: 0 var(--lumo-space-s);
 	font-size: var(--lumo-font-size-s);
-}
-
-.responsive-card-list .card-badge-elp {
-	background: #0da50d73;
-}
-
-.responsive-card-list .card-badge-arbo {
-	background: #3057ed8a;
 }
 
 @media (max-width: 767px) {
