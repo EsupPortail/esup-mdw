@@ -24,7 +24,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -43,6 +43,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheArborescenteController
 import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.tools.elasticsearch.ElasticSearchApogeeService;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
@@ -87,7 +88,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 	private transient ElasticSearchApogeeService ElasticSearchService;
 
 	private ComboBox<ResultatDeRecherche> champRecherche;
-	private Grid<ResultatDeRecherche> tableResultats;
+	private ResponsiveCardList<ResultatDeRecherche> tableResultats;
 	private Checkbox casesAcocherComposantes;
 	private Checkbox casesAcocherVet;
 	private Checkbox casesAcocherElp;
@@ -198,14 +199,16 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				add(checkBoxLayout);
 
 				//TABLE DE RESULTATS
-				tableResultats = new Grid<>();
+				tableResultats = new ResponsiveCardList<>();
 				tableResultats.setSizeFull();
-				tableResultats.addComponentColumn(this::createLibelleColumn)
-					.setHeader(getTranslation("result.table.lib"))
+				tableResultats.addComponentColumn(this::createLibelleColumn,
+					getTranslation("result.table.lib"))
 					.setFlexGrow(3).setResizable(true);
-				tableResultats.addColumn(r -> rechercheArborescenteController.getTypeObj(r.type, r.getCode()))
-					.setHeader(getTranslation("result.table.type"))
+				tableResultats.addColumn(r -> rechercheArborescenteController.getTypeObj(r.type, r.getCode()),
+					getTranslation("result.table.type"))
 					.setFlexGrow(1).setResizable(true);
+				/* Cartes affichées sur petit écran */
+				tableResultats.setCardRenderer(this::createResultatCard);
 				tableResultats.setVisible(false);
 				add(tableResultats);
 				setFlexGrow(1, tableResultats);
@@ -238,6 +241,31 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 			}
 		}
 		return b;
+	}
+
+	/**
+	 * Construit la carte d'un résultat de recherche, affichée sur petit écran :
+	 * badge du type, libellé cliquable (+ formation en cours pour un étudiant).
+	 */
+	private Div createResultatCard(final ResultatDeRecherche r) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		/* Ligne 1 : badge du type */
+		final HorizontalLayout ligneEntete = new HorizontalLayout();
+		ligneEntete.setSpacing(true);
+		final Span badgeType = new Span(rechercheArborescenteController.getTypeObj(r.type, r.getCode()));
+		badgeType.addClassName("card-badge");
+		if (Utils.ELP.equals(r.type)) {
+			badgeType.addClassName("card-badge-elp");
+		} else if (Utils.CMP.equals(r.type) || Utils.VET.equals(r.type)) {
+			badgeType.addClassName("card-badge-arbo");
+		}
+		ligneEntete.add(badgeType);
+
+		/* Ligne 2 : libellé cliquable (+ formation en cours pour un étudiant) */
+		card.add(ligneEntete, createLibelleColumn(r));
+		return card;
 	}
 
 	private List<ResultatDeRecherche> quickSearch(final String valueString) {
