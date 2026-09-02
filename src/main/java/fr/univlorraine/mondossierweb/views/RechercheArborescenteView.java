@@ -116,6 +116,9 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	private Grid.Column<ObjetBase> colType;
 	/** Enregistrement du listener de redimensionnement de la fenêtre */
 	private Registration resizeRegistration;
+
+	/** Vrai quand l'écran est sous le seuil mobile (masque les éléments secondaires) */
+	private boolean affichageMobile;
 	private final Map<String, ObjetBase> itemsById = new HashMap<>();
 	private List<String> markedRows;
 	private List<String> liste_types_favoris;
@@ -205,8 +208,13 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	 */
 	private void majAffichageMobile(final int largeur) {
 		final boolean mobile = largeur < SEUIL_MOBILE_PX;
+		affichageMobile = mobile;
 		if (ligneLayout != null && mobile == ligneLayout.isVisible()) {
 			ligneLayout.setVisible(!mobile);
+		}
+		//Ce label est ré-affiché par selectionnerLigne : on le masque sans le ré-afficher au retour desktop
+		if (labelLigneSelectionneeLabel != null && mobile) {
+			labelLigneSelectionneeLabel.setVisible(false);
 		}
 		if (colCode != null && colType != null && mobile == colCode.isVisible()) {
 			colCode.setVisible(!mobile);
@@ -536,7 +544,8 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			vetElpSelectionneLabel.setVisible(false);
 		}
 		ligneSelectionneeLabel.setVisible(true);
-		labelLigneSelectionneeLabel.setVisible(true);
+		//Sur petit écran, le libellé "Ligne sélectionnée" reste masqué
+		labelLigneSelectionneeLabel.setVisible(!affichageMobile);
 	}
 
 	public void deplierTout(final ObjetBase item) {
