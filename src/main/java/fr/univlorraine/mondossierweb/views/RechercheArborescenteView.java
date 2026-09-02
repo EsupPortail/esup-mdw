@@ -87,8 +87,8 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	/** id des noeuds "placeholder" affichant la flèche de dépliage avant chargement des fils */
 	private static final String PLACEHOLDER_SUFFIX = "_placeholder__";
 
-	/** Seuil (exclu) sous lequel les colonnes code et type sont masquées, aligné sur le seuil CSS 767px */
-	private static final int SEUIL_COLONNES_MOBILE_PX = 768;
+	/** Seuil (exclu) sous lequel les éléments secondaires (colonnes code/type, rappel de sélection) sont masqués, aligné sur le seuil CSS 767px */
+	private static final int SEUIL_MOBILE_PX = 768;
 
 	/* Injections */
 	@Resource
@@ -121,6 +121,8 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	private List<String> liste_types_favoris;
 	private List<String> liste_types_inscrits;
 	private List<String> liste_types_deplier;
+	/** Rappel de la ligne sélectionnée, masqué sur petit écran */
+	private VerticalLayout ligneLayout;
 	private Span ligneSelectionneeLabel;
 	private Span vetElpSelectionneLabel;
 	private Span labelLigneSelectionneeLabel;
@@ -181,10 +183,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 					+ "  }"
 					+ "});");
 		}
-		//Colonnes masquées sur petit écran : applique la largeur connue puis suit les redimensionnements
+		//Éléments secondaires masqués sur petit écran : applique la largeur connue puis suit les redimensionnements
 		final UI ui = attachEvent.getUI();
-		ui.getPage().retrieveExtendedClientDetails(details -> majColonnesMobiles(details.getWindowInnerWidth()));
-		resizeRegistration = ui.getPage().addBrowserWindowResizeListener(e -> majColonnesMobiles(e.getWidth()));
+		ui.getPage().retrieveExtendedClientDetails(details -> majAffichageMobile(details.getWindowInnerWidth()));
+		resizeRegistration = ui.getPage().addBrowserWindowResizeListener(e -> majAffichageMobile(e.getWidth()));
 	}
 
 	@Override
@@ -197,16 +199,16 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	}
 
 	/**
-	 * Sur petit écran, masque les colonnes code et type pour laisser la place
-	 * à la colonne hiérarchique et aux actions. Un aller-retour serveur n'a
-	 * lieu que lorsque le seuil est franchi.
+	 * Sur petit écran, masque les colonnes code et type ainsi que le rappel de
+	 * sélection pour laisser la place à l'arborescence. Un aller-retour serveur
+	 * n'a lieu que lorsque le seuil est franchi.
 	 */
-	private void majColonnesMobiles(final int largeur) {
-		if (colCode == null || colType == null) {
-			return;
+	private void majAffichageMobile(final int largeur) {
+		final boolean mobile = largeur < SEUIL_MOBILE_PX;
+		if (ligneLayout != null && mobile == ligneLayout.isVisible()) {
+			ligneLayout.setVisible(!mobile);
 		}
-		final boolean mobile = largeur < SEUIL_COLONNES_MOBILE_PX;
-		if (mobile == colCode.isVisible()) {
+		if (colCode != null && colType != null && mobile == colCode.isVisible()) {
 			colCode.setVisible(!mobile);
 			colType.setVisible(!mobile);
 		}
@@ -276,7 +278,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			vetElpSelectionneLabel = new Span();
 			vetElpSelectionneLabel.setVisible(false);
 
-			final VerticalLayout ligneLayout = new VerticalLayout();
+			ligneLayout = new VerticalLayout();
 			ligneLayout.setPadding(false);
 			ligneLayout.setSpacing(false);
 			ligneLayout.add(ligneSelectionneeLabel, vetElpSelectionneLabel);
