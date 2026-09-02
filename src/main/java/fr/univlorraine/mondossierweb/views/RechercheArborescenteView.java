@@ -19,10 +19,12 @@
 package fr.univlorraine.mondossierweb.views;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -37,6 +39,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.shared.Registration;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
@@ -84,6 +87,9 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	/** id des noeuds "placeholder" affichant la flèche de dépliage avant chargement des fils */
 	private static final String PLACEHOLDER_SUFFIX = "_placeholder__";
 
+	/** Seuil (exclu) sous lequel les colonnes code et type sont masquées, aligné sur le seuil CSS 767px */
+	private static final int SEUIL_COLONNES_MOBILE_PX = 768;
+
 	/* Injections */
 	@Resource
 	private transient UserController userController;
@@ -105,6 +111,11 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	private TreeGrid<ObjetBase> table;
 	private TreeData<ObjetBase> treeData;
 	private TreeDataProvider<ObjetBase> treeDataProvider;
+	/** Colonnes masquées sur petit écran pour laisser la place à l'arborescence */
+	private Grid.Column<ObjetBase> colCode;
+	private Grid.Column<ObjetBase> colType;
+	/** Enregistrement du listener de redimensionnement de la fenêtre */
+	private Registration resizeRegistration;
 	private final Map<String, ObjetBase> itemsById = new HashMap<>();
 	private List<String> markedRows;
 	private List<String> liste_types_favoris;
@@ -169,6 +180,35 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 					+ "    if (window.__mdw_arbo_scroll !== undefined) t.scrollTop = window.__mdw_arbo_scroll;"
 					+ "  }"
 					+ "});");
+		}
+		//Colonnes masquées sur petit écran : applique la largeur connue puis suit les redimensionnements
+		final UI ui = attachEvent.getUI();
+		ui.getPage().retrieveExtendedClientDetails(details -> majColonnesMobiles(details.getWindowInnerWidth()));
+		resizeRegistration = ui.getPage().addBrowserWindowResizeListener(e -> majColonnesMobiles(e.getWidth()));
+	}
+
+	@Override
+	protected void onDetach(final DetachEvent detachEvent) {
+		if (resizeRegistration != null) {
+			resizeRegistration.remove();
+			resizeRegistration = null;
+		}
+		super.onDetach(detachEvent);
+	}
+
+	/**
+	 * Sur petit écran, masque les colonnes code et type pour laisser la place
+	 * à la colonne hiérarchique et aux actions. Un aller-retour serveur n'a
+	 * lieu que lorsque le seuil est franchi.
+	 */
+	private void majColonnesMobiles(final int largeur) {
+		if (colCode == null || colType == null) {
+			return;
+		}
+		final boolean mobile = largeur < SEUIL_COLONNES_MOBILE_PX;
+		if (mobile == colCode.isVisible()) {
+			colCode.setVisible(!mobile);
+			colType.setVisible(!mobile);
 		}
 	}
 
@@ -257,10 +297,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			table.addHierarchyColumn(obj -> obj.getLibelle() == null ? "" : obj.getLibelle())
 				.setHeader(getTranslation(NAME + ".table.libelle"))
 				.setFlexGrow(4).setResizable(true);
-			table.addColumn(ObjetBase::getTrueObjectId)
+			colCode = table.addColumn(ObjetBase::getTrueObjectId)
 				.setHeader(getTranslation(NAME + ".table.trueObjectId"))
 				.setFlexGrow(1).setResizable(true);
-			table.addColumn(obj -> isPlaceholder(obj) ? "" : rechercheArborescenteController.getTypeObj(obj.getType(), obj.getTrueObjectId()))
+			colType = table.addColumn(obj -> isPlaceholder(obj) ? "" : rechercheArborescenteController.getTypeObj(obj.getType(), obj.getTrueObjectId()))
 				.setHeader(getTranslation(NAME + ".table.type"))
 				.setFlexGrow(1).setResizable(true);
 			table.addComponentColumn(this::createActionsColumn)
