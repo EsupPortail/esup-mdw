@@ -174,15 +174,15 @@ public class CalendrierView extends VerticalLayout implements BeforeEnterObserve
 					if ("batiment".equals(fieldName)) {
 						calendrierGrid.addComponentColumn(this::buildBatimentColumn)
 							.setHeader(getTranslation(NAME + ".table.batiment"))
-							.setFlexGrow(1);
+							.setFlexGrow(1).setResizable(true);
 					} else if ("salle".equals(fieldName)) {
 						calendrierGrid.addComponentColumn(this::buildSalleColumn)
 							.setHeader(getTranslation(NAME + ".table.salle"))
-							.setFlexGrow(1);
+							.setFlexGrow(1).setResizable(true);
 					} else {
 						calendrierGrid.addColumn(examen -> getExamenFieldValue(examen, fieldName))
 							.setHeader(getTranslation(NAME + ".table." + fieldName))
-							.setFlexGrow("epreuve".equals(fieldName) ? 3 : 1);
+							.setFlexGrow("epreuve".equals(fieldName) ? 3 : 1).setResizable(true);
 					}
 				}
 				calendrierGrid.setItems(etudiant.getCalendrier());

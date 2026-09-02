@@ -600,13 +600,13 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			btnCodEtu.addClassName("v-link");
 			btnCodEtu.addClickListener(e -> rechercheController.accessToDetail(i.getCod_etu(), Utils.TYPE_ETU, null));
 			return btnCodEtu;
-		}).setHeader(getTranslation(NAME + ".table.cod_etu")).setFlexGrow(1);
+		}).setHeader(getTranslation(NAME + ".table.cod_etu")).setFlexGrow(1).setResizable(true);
 
-		inscritstable.addColumn(Inscrit::getNom).setHeader(getTranslation(NAME + ".table.nom")).setFlexGrow(2);
-		inscritstable.addColumn(Inscrit::getPrenom).setHeader(getTranslation(NAME + ".table.prenom")).setFlexGrow(2);
+		inscritstable.addColumn(Inscrit::getNom).setHeader(getTranslation(NAME + ".table.nom")).setFlexGrow(2).setResizable(true);
+		inscritstable.addColumn(Inscrit::getPrenom).setHeader(getTranslation(NAME + ".table.prenom")).setFlexGrow(2).setResizable(true);
 
 		if (afficherInfoNaissance()) {
-			inscritstable.addColumn(Inscrit::getDate_nai_ind).setHeader(getTranslation(NAME + ".table.date_nai_ind")).setFlexGrow(1);
+			inscritstable.addColumn(Inscrit::getDate_nai_ind).setHeader(getTranslation(NAME + ".table.date_nai_ind")).setFlexGrow(1).setResizable(true);
 		}
 
 		inscritstable.addComponentColumn(i -> {
@@ -614,11 +614,11 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 				return new Html("<a href=\"mailto:" + i.getEmail() + "\">" + i.getEmail() + "</a>");
 			}
 			return new Html("<span></span>");
-		}).setHeader(getTranslation(NAME + ".table.email")).setFlexGrow(2);
+		}).setHeader(getTranslation(NAME + ".table.email")).setFlexGrow(2).setResizable(true);
 
 		if (typeIsVet()) {
-			inscritstable.addColumn(Inscrit::getIae).setHeader(getTranslation(NAME + ".table.iae")).setFlexGrow(1);
-			inscritstable.addColumn(Inscrit::getIpe).setHeader(getTranslation(NAME + ".table.ipe")).setFlexGrow(1);
+			inscritstable.addColumn(Inscrit::getIae).setHeader(getTranslation(NAME + ".table.iae")).setFlexGrow(1).setResizable(true);
+			inscritstable.addColumn(Inscrit::getIpe).setHeader(getTranslation(NAME + ".table.ipe")).setFlexGrow(1).setResizable(true);
 		}
 
 		//Si on est sur un ELP, on affiche l'étape de rattachement
@@ -636,7 +636,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 					}
 				}
 				return vets;
-			}).setHeader(getTranslation(NAME + ".table.etape")).setFlexGrow(2);
+			}).setHeader(getTranslation(NAME + ".table.etape")).setFlexGrow(2).setResizable(true);
 		}
 
 		colNotes1 = inscritstable.addColumn(i -> {
@@ -648,7 +648,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 				sb.append(" ").append(i.getResj());
 			}
 			return sb.toString().trim();
-		}).setHeader(getTranslation(NAME + ".table.notes1")).setFlexGrow(1);
+		}).setHeader(getTranslation(NAME + ".table.notes1")).setFlexGrow(1).setResizable(true);
 
 		colNotes2 = inscritstable.addColumn(i -> {
 			final StringBuilder sb = new StringBuilder();
@@ -659,14 +659,14 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 				sb.append(" ").append(i.getRess());
 			}
 			return sb.toString().trim();
-		}).setHeader(getTranslation(NAME + ".table.notes2")).setFlexGrow(1);
+		}).setHeader(getTranslation(NAME + ".table.notes2")).setFlexGrow(1).setResizable(true);
 
 		colGroupe = inscritstable.addColumn(i -> {
 			if (StringUtils.hasText(i.getCodes_groupes())) {
 				return Utils.getLibellesFromCodes(i.getCodes_groupes(), libellesGroupes);
 			}
 			return "";
-		}).setHeader(getTranslation(NAME + ".table.groupe")).setFlexGrow(1);
+		}).setHeader(getTranslation(NAME + ".table.groupe")).setFlexGrow(1).setResizable(true);
 
 		//On masque les colonnes de notes et groupe par défaut
 		colNotes1.setVisible(false);

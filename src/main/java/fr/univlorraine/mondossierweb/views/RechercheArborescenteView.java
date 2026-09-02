@@ -256,16 +256,16 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 
 			table.addHierarchyColumn(obj -> obj.getLibelle() == null ? "" : obj.getLibelle())
 				.setHeader(getTranslation(NAME + ".table.libelle"))
-				.setFlexGrow(4);
+				.setFlexGrow(4).setResizable(true);
 			table.addColumn(ObjetBase::getTrueObjectId)
 				.setHeader(getTranslation(NAME + ".table.trueObjectId"))
-				.setFlexGrow(1);
+				.setFlexGrow(1).setResizable(true);
 			table.addColumn(obj -> isPlaceholder(obj) ? "" : rechercheArborescenteController.getTypeObj(obj.getType(), obj.getTrueObjectId()))
 				.setHeader(getTranslation(NAME + ".table.type"))
-				.setFlexGrow(1);
+				.setFlexGrow(1).setResizable(true);
 			table.addComponentColumn(this::createActionsColumn)
 				.setHeader(getTranslation(NAME + ".table.actions"))
-				.setFlexGrow(2);
+				.setFlexGrow(2).setResizable(true);
 
 			//gestion du style pour les lignes en favori
 			table.setPartNameGenerator(obj -> {

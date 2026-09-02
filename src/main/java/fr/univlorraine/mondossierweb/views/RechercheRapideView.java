@@ -202,10 +202,10 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				tableResultats.setSizeFull();
 				tableResultats.addComponentColumn(this::createLibelleColumn)
 					.setHeader(getTranslation("result.table.lib"))
-					.setFlexGrow(3);
+					.setFlexGrow(3).setResizable(true);
 				tableResultats.addColumn(r -> rechercheArborescenteController.getTypeObj(r.type, r.getCode()))
 					.setHeader(getTranslation("result.table.type"))
-					.setFlexGrow(1);
+					.setFlexGrow(1).setResizable(true);
 				tableResultats.setVisible(false);
 				add(tableResultats);
 				setFlexGrow(1, tableResultats);

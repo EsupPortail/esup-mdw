@@ -121,16 +121,16 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 
 				favorisGrid.addColumn(fav -> rechercheArborescenteController.getTypeObj(fav.getId().getTypfav(), fav.getId().getIdfav()))
 					.setHeader(getTranslation(NAME + ".table.id.typfav"))
-					.setFlexGrow(1);
+					.setFlexGrow(1).setResizable(true);
 				favorisGrid.addColumn(fav -> fav.getId().getIdfav())
 					.setHeader(getTranslation(NAME + ".table.id.idfav"))
-					.setFlexGrow(1);
+					.setFlexGrow(1).setResizable(true);
 				favorisGrid.addColumn(fav -> favorisController.getLibObjFavori(fav.getId().getTypfav(), fav.getId().getIdfav()))
 					.setHeader(getTranslation(NAME + ".table.id.libelle"))
-					.setFlexGrow(3);
+					.setFlexGrow(3).setResizable(true);
 				favorisGrid.addComponentColumn(this::createActionsColumn)
 					.setHeader(getTranslation(NAME + ".table.id.actions"))
-					.setFlexGrow(2);
+					.setFlexGrow(2).setResizable(true);
 
 				favorisGrid.setItems(lfav);
 				globalLayout.add(favorisGrid);
