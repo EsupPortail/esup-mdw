@@ -21,7 +21,7 @@ package fr.univlorraine.mondossierweb.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -37,6 +37,7 @@ import fr.univlorraine.mondossierweb.controllers.RechercheController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.mdw.Favoris;
 import fr.univlorraine.mondossierweb.entities.mdw.FavorisPK;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
@@ -75,7 +76,7 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 
 	private List<String> liste_type_arbo;
 
-	private Grid<Favoris> favorisGrid;
+	private ResponsiveCardList<Favoris> favorisList;
 
 	private List<Favoris> lfav;
 
@@ -115,26 +116,27 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 			globalLayout.setSizeFull();
 
 			if (lfav != null && !lfav.isEmpty()) {
-				favorisGrid = new Grid<>();
-				favorisGrid.setSizeFull();
-				favorisGrid.addClassName("scrollabletable");
+				favorisList = new ResponsiveCardList<>();
+				favorisList.setSizeFull();
 
-				favorisGrid.addColumn(fav -> rechercheArborescenteController.getTypeObj(fav.getId().getTypfav(), fav.getId().getIdfav()))
-					.setHeader(getTranslation(NAME + ".table.id.typfav"))
+				favorisList.addColumn(fav -> rechercheArborescenteController.getTypeObj(fav.getId().getTypfav(), fav.getId().getIdfav()),
+					getTranslation(NAME + ".table.id.typfav"))
 					.setFlexGrow(1).setResizable(true);
-				favorisGrid.addColumn(fav -> fav.getId().getIdfav())
-					.setHeader(getTranslation(NAME + ".table.id.idfav"))
+				favorisList.addColumn(fav -> fav.getId().getIdfav(),
+					getTranslation(NAME + ".table.id.idfav"))
 					.setFlexGrow(1).setResizable(true);
-				favorisGrid.addColumn(fav -> favorisController.getLibObjFavori(fav.getId().getTypfav(), fav.getId().getIdfav()))
-					.setHeader(getTranslation(NAME + ".table.id.libelle"))
+				favorisList.addColumn(fav -> favorisController.getLibObjFavori(fav.getId().getTypfav(), fav.getId().getIdfav()),
+					getTranslation(NAME + ".table.id.libelle"))
 					.setFlexGrow(3).setResizable(true);
-				favorisGrid.addComponentColumn(this::createActionsColumn)
-					.setHeader(getTranslation(NAME + ".table.id.actions"))
+				favorisList.addComponentColumn(this::createActionsColumn,
+					getTranslation(NAME + ".table.id.actions"))
 					.setFlexGrow(2).setResizable(true);
 
-				favorisGrid.setItems(lfav);
-				globalLayout.add(favorisGrid);
-				globalLayout.setFlexGrow(1, favorisGrid);
+				/* Cartes affichées sur petit écran */
+				favorisList.setCardRenderer(this::createFavoriCard);
+				favorisList.setItems(lfav);
+				globalLayout.add(favorisList);
+				globalLayout.setFlexGrow(1, favorisList);
 			}
 
 			labelAucunFavoriLayout = new HorizontalLayout();
@@ -176,9 +178,9 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 			fpk.setTypfav(typeObj);
 			favorisController.removeFavori(fpk);
 			lfav.remove(fav);
-			favorisGrid.setItems(lfav);
+			favorisList.setItems(lfav);
 			if (lfav.isEmpty()) {
-				favorisGrid.setVisible(false);
+				favorisList.setVisible(false);
 				labelAucunFavoriLayout.setVisible(true);
 			}
 		});
@@ -215,6 +217,40 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 			boutonActionLayout.add(btnListeInscrits);
 		}
 		return boutonActionLayout;
+	}
+
+	/**
+	 * Construit la carte d'un favori, affichée sur petit écran :
+	 * badge du type + code, libellé, boutons d'action.
+	 */
+	private Div createFavoriCard(final Favoris fav) {
+		final String typeObj = fav.getId().getTypfav();
+		final String idObj = fav.getId().getIdfav();
+
+		final Div card = new Div();
+		card.addClassName("card");
+
+		/* Ligne 1 : badge du type + code de l'objet */
+		final HorizontalLayout ligneEntete = new HorizontalLayout();
+		ligneEntete.setSpacing(true);
+		final Span badgeType = new Span(rechercheArborescenteController.getTypeObj(typeObj, idObj));
+		badgeType.addClassName("card-badge");
+		if (Utils.ELP.equals(typeObj)) {
+			badgeType.addClassName("card-badge-elp");
+		} else {
+			badgeType.addClassName("card-badge-arbo");
+		}
+		ligneEntete.add(badgeType, new Span(idObj));
+
+		/* Ligne 2 : libellé */
+		final Span libelle = new Span(favorisController.getLibObjFavori(typeObj, idObj));
+		libelle.addClassName("font-bold");
+
+		/* Ligne 3 : actions (méthode partagée avec le Grid) */
+		final HorizontalLayout actions = createActionsColumn(fav);
+
+		card.add(ligneEntete, libelle, actions);
+		return card;
 	}
 
 }
