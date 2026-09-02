@@ -87,9 +87,6 @@ public class InformationsAnnuellesView extends VerticalLayout implements BeforeE
 			setPadding(true);
 			setSpacing(true);
 
-			/* Titre */
-			add(new H1(getTranslation(NAME + ".title")));
-
 			//Layout avec les blocs d'informations annuelles (responsive : les blocs passent à la ligne)
 			Div globalLayout = new Div();
 			globalLayout.setWidthFull();
