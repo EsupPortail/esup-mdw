@@ -120,3 +120,57 @@ vaadin-grid::part(marked) {
 .dossier-anim-out {
 	animation: mdw-dossier-slide-out 300ms ease-in forwards;
 }
+
+/* ResponsiveCardList : Grid sur grand écran, liste de cartes sur petit écran */
+.responsive-card-list {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.responsive-card-list > vaadin-grid {
+	flex: 1 1 auto;
+}
+
+.responsive-card-list .card-list {
+	display: none;
+}
+
+.responsive-card-list .card {
+	border-bottom: 1px solid var(--lumo-contrast-20pct);
+	padding: var(--lumo-space-s) var(--lumo-space-xs);
+}
+
+.responsive-card-list .card-line {
+	align-items: baseline;
+	margin-bottom: var(--lumo-space-xs);
+}
+
+.responsive-card-list .card-badge {
+	background: var(--lumo-primary-color-10pct);
+	color: var(--lumo-primary-text-color);
+	border-radius: 999px;
+	padding: 0 var(--lumo-space-s);
+	font-size: var(--lumo-font-size-s);
+}
+
+.responsive-card-list .card-badge-elp {
+	background: #0da50d73;
+}
+
+.responsive-card-list .card-badge-arbo {
+	background: #3057ed8a;
+}
+
+@media (max-width: 767px) {
+	.responsive-card-list > vaadin-grid {
+		display: none;
+	}
+
+	.responsive-card-list .card-list {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		overflow-y: auto;
+	}
+}
