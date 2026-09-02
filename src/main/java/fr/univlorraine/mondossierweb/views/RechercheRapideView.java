@@ -234,6 +234,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				libhl.setWidthFull();
 				libhl.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 				libhl.setAlignItems(FlexComponent.Alignment.CENTER);
+				libhl.getStyle().set("flex-wrap", "wrap").set("row-gap", "0.25em");
 				final Span formation = new Span(formationEnCours);
 				formation.addClassName("text-secondary");
 				libhl.add(b, formation);
