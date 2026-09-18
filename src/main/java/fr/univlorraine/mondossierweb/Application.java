@@ -22,8 +22,11 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.AppShellSettings;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.shared.ui.Transport;
 import com.vaadin.flow.theme.lumo.Lumo;
+import com.vaadin.flow.component.UI;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -39,7 +42,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @StyleSheet(Lumo.STYLESHEET)
 @StyleSheet(Lumo.UTILITY_STYLESHEET)
 @StyleSheet("css/styles.css")
-public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
+public class Application extends SpringBootServletInitializer implements AppShellConfigurator, VaadinServiceInitListener {
 
 	/**
 	 * Configure le déploiement dans un container web. (WAR)
@@ -53,6 +56,18 @@ public class Application extends SpringBootServletInitializer implements AppShel
 	public void configurePage(final AppShellSettings settings) {
 		settings.addFavIcon("icon", "images/favicon.ico", "16x16");
 		settings.addLink("shortcut icon", "images/favicon.ico");
+	}
+
+	/**
+	 * Désactive le thème par défaut de l'indicateur de chargement pour le remplacer
+	 * par le style défini dans css/styles.css (barre visible en haut de page).
+	 */
+	@Override
+	public void serviceInit(final ServiceInitEvent serviceInitEvent) {
+		serviceInitEvent.getSource().addUIInitListener(uiInitEvent -> {
+			final UI ui = uiInitEvent.getUI();
+			ui.getLoadingIndicatorConfiguration().setApplyDefaultTheme(false);
+		});
 	}
 
 	/**
