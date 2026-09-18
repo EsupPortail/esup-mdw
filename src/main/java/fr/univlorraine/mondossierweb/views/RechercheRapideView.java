@@ -119,7 +119,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				//CHAMP DE RECHERCHE : suggestions ElasticSearch au fil de la saisie
 				champRecherche = new ComboBox<>();
 				champRecherche.setWidth("700px");
-				champRecherche.setMaxWidth("100%");
+				champRecherche.setMaxWidth("40em");
 				champRecherche.setAllowCustomValue(true);
 				champRecherche.setPlaceholder(getTranslation(NAME + ".champrecherche.placeholder"));
 				champRecherche.setItemLabelGenerator(r -> r.getLib());
