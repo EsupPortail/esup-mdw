@@ -116,6 +116,8 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	/** Colonnes masquées sur petit écran pour laisser la place à l'arborescence */
 	private Grid.Column<ObjetBase> colCode;
 	private Grid.Column<ObjetBase> colType;
+	/** Colonne des actions, réduite au minimum sur petit écran */
+	private Grid.Column<ObjetBase> colActions;
 	/** Enregistrement du listener de redimensionnement de la fenêtre */
 	private Registration resizeRegistration;
 
@@ -223,6 +225,14 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			colCode.setVisible(!mobile);
 			colType.setVisible(!mobile);
 		}
+		//Sur mobile, la colonne Actions est réduite au strict minimum (un seul bouton 3 points)
+		if (colActions != null && mobile != colActions.isResizable()) {
+			colActions.setResizable(!mobile);
+			colActions.setFlexGrow(mobile ? 0 : 2);
+			colActions.setAutoWidth(mobile);
+			//Le titre "Actions" n'a plus besoin d'être affiché : l'icône 3 points est explicite
+			colActions.setHeader(mobile ? "" : getTranslation(NAME + ".table.actions"));
+		}
 		//La colonne Actions change de rendu (menu 3 points sur mobile) : on reconstruit ses composants
 		if (seuilFranchi && treeDataProvider != null) {
 			treeDataProvider.refreshAll();
@@ -320,9 +330,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			colType = table.addColumn(obj -> isPlaceholder(obj) ? "" : rechercheArborescenteController.getTypeObj(obj.getType(), obj.getTrueObjectId()))
 				.setHeader(getTranslation(NAME + ".table.type"))
 				.setFlexGrow(1).setResizable(true);
-			table.addComponentColumn(this::createActionsColumn)
+			colActions = table.addComponentColumn(this::createActionsColumn)
 				.setHeader(getTranslation(NAME + ".table.actions"))
 				.setFlexGrow(2).setResizable(true);
+			colActions.setPartNameGenerator(obj -> "col-actions");
 
 			//gestion du style pour les lignes en favori
 			table.setPartNameGenerator(obj -> {
@@ -451,6 +462,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		if (affichageMobile) {
 			final Button btnMenu = new Button(VaadinIcon.ELLIPSIS_V.create());
 			btnMenu.setTooltipText(getTranslation(NAME + ".table.actions"));
+			btnMenu.addClassName("btn-actions-menu");
 			final ContextMenu menu = new ContextMenu(btnMenu);
 			menu.setOpenOnClick(true);
 

@@ -109,6 +109,21 @@ vaadin-grid::part(marked) {
 	background-color: var(--lumo-primary-color-10pct);
 }
 
+/* Sur petit écran, la colonne Actions est réduite au strict minimum :
+ * un unique bouton 3 points, sans padding superflu, pour laisser la place au libellé. */
+@media (max-width: 767px) {
+	vaadin-grid::part(col-actions) {
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	vaadin-grid .btn-actions-menu {
+		padding: 0;
+		min-width: var(--lumo-size-s);
+		width: var(--lumo-size-s);
+	}
+}
+
 /* Utilitaires */
 .text-secondary {
 	color: var(--lumo-secondary-text-color);
