@@ -176,13 +176,6 @@ vaadin-grid::part(marked) {
 	}
 }
 
-/* Filtres de la recherche rapide : les cases à cocher passent à la ligne
- * sur petit écran plutôt que d'être tronquées. */
-.checkbox-layout {
-	flex-wrap: wrap;
-	row-gap: var(--lumo-space-xs);
-}
-
 /* ResponsiveCardList : Grid sur grand écran, liste de cartes sur petit écran */
 .responsive-card-list {
 	display: flex;

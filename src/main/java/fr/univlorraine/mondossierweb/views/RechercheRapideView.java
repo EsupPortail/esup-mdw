@@ -22,8 +22,8 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -54,6 +54,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +90,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 
 	private ComboBox<ResultatDeRecherche> champRecherche;
 	private ResponsiveCardList<ResultatDeRecherche> tableResultats;
-	private Checkbox casesAcocherComposantes;
-	private Checkbox casesAcocherVet;
-	private Checkbox casesAcocherElp;
-	private Checkbox casesAcocherEtudiant;
+	private MultiSelectComboBox<String> filtreSelector;
 	private final List<ResultatDeRecherche> resultats = new ArrayList<>();
 	private String derniereSaisie = "";
 
@@ -176,26 +174,22 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				champRechercheLayout.setFlexGrow(1, champRecherche);
 				add(champRechercheLayout);
 
-				//CASES A COCHER : types d'objets recherchés
-				casesAcocherComposantes = new Checkbox(getTranslation(NAME + ".filtre.composantes"));
-				casesAcocherComposantes.setValue(true);
-				casesAcocherComposantes.addValueChangeListener(e -> tuneSearch());
-				casesAcocherVet = new Checkbox(getTranslation(NAME + ".filtre.etapes"));
-				casesAcocherVet.setValue(true);
-				casesAcocherVet.addValueChangeListener(e -> tuneSearch());
-				casesAcocherElp = new Checkbox(getTranslation(NAME + ".filtre.elp"));
-				casesAcocherElp.setValue(true);
-				casesAcocherElp.addValueChangeListener(e -> tuneSearch());
-				casesAcocherEtudiant = new Checkbox(getTranslation(NAME + ".filtre.etudiants"));
-				casesAcocherEtudiant.setValue(true);
-				casesAcocherEtudiant.addValueChangeListener(e -> tuneSearch());
-
-				final HorizontalLayout checkBoxLayout = new HorizontalLayout();
-				checkBoxLayout.addClassName("checkbox-layout");
-				checkBoxLayout.setSpacing(true);
-				checkBoxLayout.setWidthFull();
-				checkBoxLayout.add(casesAcocherComposantes, casesAcocherVet, casesAcocherElp, casesAcocherEtudiant);
-				add(checkBoxLayout);
+				//FILTRE : types d'objets recherchés (liste déroulante multi-sélection)
+				filtreSelector = new MultiSelectComboBox<>(getTranslation(NAME + ".filtre.label"));
+				filtreSelector.setItems(getTypesFiltrables());
+				filtreSelector.setItemLabelGenerator(this::getLibelleType);
+				filtreSelector.setValue(new LinkedHashSet<>(getTypesFiltrables()));
+				filtreSelector.setWidth("100%");
+				filtreSelector.setMaxWidth("40em");
+				//Au moins un type doit rester sélectionné
+				filtreSelector.addValueChangeListener(e -> {
+					if (e.getValue().isEmpty()) {
+						filtreSelector.setValue(new LinkedHashSet<>(List.of(getTypesFiltrables().get(0))));
+					} else {
+						tuneSearch();
+					}
+				});
+				add(filtreSelector);
 
 				//TABLE DE RESULTATS
 				tableResultats = new ResponsiveCardList<>();
@@ -299,21 +293,36 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		return listeReponses;
 	}
 
+	/**
+	 * Types d'objets proposés dans le filtre de recherche.
+	 * L'ELP n'est proposé que si la recherche automatique d'ELP est activée.
+	 */
+	private List<String> getTypesFiltrables() {
+		final List<String> types = new ArrayList<>();
+		types.add(Utils.CMP);
+		types.add(Utils.VET);
+		if (PropertyUtils.isEnableRechercheAutoElp()) {
+			types.add(Utils.ELP);
+		}
+		types.add(Utils.ETU);
+		return types;
+	}
+
+	private String getLibelleType(final String type) {
+		return switch (type) {
+			case Utils.CMP -> getTranslation(NAME + ".filtre.composantes");
+			case Utils.VET -> getTranslation(NAME + ".filtre.etapes");
+			case Utils.ELP -> getTranslation(NAME + ".filtre.elp");
+			case Utils.ETU -> getTranslation(NAME + ".filtre.etudiants");
+			default -> type;
+		};
+	}
+
 	private List<String> getListeTypesAutorises() {
-		final List<String> listeTypeAutorise = new LinkedList<>();
-		if (Boolean.TRUE.equals(casesAcocherComposantes.getValue())) {
-			listeTypeAutorise.add(Utils.CMP);
+		if (filtreSelector == null) {
+			return new LinkedList<>();
 		}
-		if (Boolean.TRUE.equals(casesAcocherVet.getValue())) {
-			listeTypeAutorise.add(Utils.VET);
-		}
-		if (PropertyUtils.isEnableRechercheAutoElp() && Boolean.TRUE.equals(casesAcocherElp.getValue())) {
-			listeTypeAutorise.add(Utils.ELP);
-		}
-		if (Boolean.TRUE.equals(casesAcocherEtudiant.getValue())) {
-			listeTypeAutorise.add(Utils.ETU);
-		}
-		return listeTypeAutorise;
+		return new LinkedList<>(filtreSelector.getValue());
 	}
 
 	private void search(final String value) {
@@ -352,19 +361,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 	 */
 	private void tuneSearch() {
 		if (tableResultats != null) {
-			final List<String> typesAutorises = new LinkedList<>();
-			if (Boolean.TRUE.equals(casesAcocherComposantes.getValue())) {
-				typesAutorises.add(Utils.CMP);
-			}
-			if (Boolean.TRUE.equals(casesAcocherVet.getValue())) {
-				typesAutorises.add(Utils.VET);
-			}
-			if (Boolean.TRUE.equals(casesAcocherElp.getValue())) {
-				typesAutorises.add(Utils.ELP);
-			}
-			if (Boolean.TRUE.equals(casesAcocherEtudiant.getValue())) {
-				typesAutorises.add(Utils.ETU);
-			}
+			final List<String> typesAutorises = getListeTypesAutorises();
 			tableResultats.setItems(resultats.stream()
 				.filter(r -> r.type != null && typesAutorises.stream().anyMatch(t -> r.type.toUpperCase().contains(t.toUpperCase())))
 				.toList());
