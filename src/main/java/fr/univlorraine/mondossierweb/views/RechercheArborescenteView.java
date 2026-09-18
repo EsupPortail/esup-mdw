@@ -116,8 +116,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	/** Colonnes masquées sur petit écran pour laisser la place à l'arborescence */
 	private Grid.Column<ObjetBase> colCode;
 	private Grid.Column<ObjetBase> colType;
-	/** Colonne des actions, réduite au minimum sur petit écran */
+	/** Colonne des actions, masquée sur petit écran */
 	private Grid.Column<ObjetBase> colActions;
+	/** Menu d'actions actuellement ouvert sur petit écran (un seul à la fois) */
+	private ContextMenu menuActionsOuvert;
 	/** Enregistrement du listener de redimensionnement de la fenêtre */
 	private Registration resizeRegistration;
 
@@ -189,24 +191,6 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 					+ "    if (window.__mdw_arbo_scroll !== undefined) t.scrollTop = window.__mdw_arbo_scroll;"
 					+ "  }"
 					+ "});");
-			//Le dépliage ne doit se faire que sur le clic de la flèche (part="toggle").
-			//Le vaadin-grid-tree-toggle déplie au clic sur tout son contenu (libellé inclus) :
-			//on intercepte donc en phase de capture les clics sur le libellé pour empêcher
-			//le dépliage, sans toucher au clic sur la flèche.
-			table.getElement().executeJs(
-				"var sr = this.shadowRoot;"
-					+ "if (sr && !sr.__mdwArboToggleGuard) {"
-					+ "  sr.__mdwArboToggleGuard = true;"
-					+ "  sr.addEventListener('click', function(e) {"
-					+ "    var path = e.composedPath();"
-					+ "    var hasToggle = path.some(function(n) { return n.localName === 'vaadin-grid-tree-toggle'; });"
-					+ "    if (!hasToggle) { return; }"
-					+ "    var onArrow = path.some(function(n) { return n.part && n.part.contains('toggle'); });"
-					+ "    if (onArrow) { return; }"
-					+ "    e.stopImmediatePropagation();"
-					+ "    e.preventDefault();"
-					+ "  }, true);"
-					+ "}");
 		}
 		//Éléments secondaires masqués sur petit écran : applique la largeur connue puis suit les redimensionnements
 		final UI ui = attachEvent.getUI();
@@ -243,15 +227,16 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			colCode.setVisible(!mobile);
 			colType.setVisible(!mobile);
 		}
-		//Sur mobile, la colonne Actions est réduite au strict minimum (un seul bouton 3 points)
-		if (colActions != null && mobile != colActions.isResizable()) {
-			colActions.setResizable(!mobile);
-			colActions.setFlexGrow(mobile ? 0 : 2);
-			colActions.setAutoWidth(mobile);
-			//Le titre "Actions" n'a plus besoin d'être affiché : l'icône 3 points est explicite
-			colActions.setHeader(mobile ? "" : getTranslation(NAME + ".table.actions"));
+		//Sur mobile, la colonne Actions est masquée : les actions sont proposées
+		//dans un ContextMenu ouvert au clic sur le libellé de la ligne
+		if (colActions != null && mobile == colActions.isVisible()) {
+			colActions.setVisible(!mobile);
 		}
-		//La colonne Actions change de rendu (menu 3 points sur mobile) : on reconstruit ses composants
+		if (menuActionsOuvert != null && !mobile) {
+			menuActionsOuvert.close();
+			menuActionsOuvert = null;
+		}
+		//Le rendu du libellé (menu d'actions mobile) change : on reconstruit ses composants
 		if (seuilFranchi && treeDataProvider != null) {
 			treeDataProvider.refreshAll();
 		}
@@ -339,7 +324,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			table.addClassName("scrollabletable");
 			table.setSelectionMode(com.vaadin.flow.component.grid.Grid.SelectionMode.SINGLE);
 
-			table.addHierarchyColumn(obj -> obj.getLibelle() == null ? "" : obj.getLibelle())
+			table.addComponentHierarchyColumn(this::createLibelleColumn)
 				.setHeader(getTranslation(NAME + ".table.libelle"))
 				.setFlexGrow(4).setResizable(true);
 			colCode = table.addColumn(ObjetBase::getTrueObjectId)
@@ -351,7 +336,6 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			colActions = table.addComponentColumn(this::createActionsColumn)
 				.setHeader(getTranslation(NAME + ".table.actions"))
 				.setFlexGrow(2).setResizable(true);
-			colActions.setPartNameGenerator(obj -> "col-actions");
 
 			//gestion du style pour les lignes en favori
 			table.setPartNameGenerator(obj -> {
@@ -458,6 +442,92 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		initComposantes();
 	}
 
+	/**
+	 * Rendu du libellé d'une ligne. Sur petit écran, un ContextMenu d'actions est
+	 * attaché au libellé et s'ouvre au clic (la colonne Actions étant masquée).
+	 * Le clic sélectionne également la ligne.
+	 */
+	private com.vaadin.flow.component.Component createLibelleColumn(final ObjetBase item) {
+		final Span libelle = new Span(item.getLibelle() == null ? "" : item.getLibelle());
+		if (isPlaceholder(item)) {
+			return libelle;
+		}
+		//Le vaadin-grid-tree-toggle déplie au clic sur tout son contenu (libellé inclus).
+		//On bloque la propagation au niveau du libellé pour que seul le clic sur la
+		//flèche déplie ; les listeners portés par le libellé lui-même (sélection, menu)
+		//restent exécutés car ils sont sur le même élément.
+		libelle.getElement().executeJs(
+			"if (!this.__mdwNoToggle) {"
+				+ "  this.__mdwNoToggle = true;"
+				+ "  this.addEventListener('click', e => e.stopPropagation());"
+				+ "}");
+		libelle.addClickListener(e -> selectionnerLigne(item));
+
+		//Sur petit écran, le clic sur le libellé ouvre le menu des actions de la ligne
+		if (affichageMobile && aDesActions(item)) {
+			libelle.addClassName("libelle-actions-menu");
+			final ContextMenu menu = new ContextMenu(libelle);
+			menu.setOpenOnClick(true);
+			remplirMenuActions(menu, item);
+			//Le clic sur le libellé n'atteint pas le document (stopPropagation pour bloquer
+			//le dépliage) : on gère nous-mêmes la fermeture du menu précédemment ouvert.
+			menu.addOpenedChangeListener(e -> {
+				if (e.isOpened()) {
+					if (menuActionsOuvert != null && menuActionsOuvert != menu) {
+						menuActionsOuvert.close();
+					}
+					menuActionsOuvert = menu;
+				} else if (menuActionsOuvert == menu) {
+					menuActionsOuvert = null;
+				}
+			});
+		}
+		return libelle;
+	}
+
+	/** Indique si au moins une action est disponible pour l'objet. */
+	private boolean aDesActions(final ObjetBase item) {
+		final String typeObj = item.getType();
+		return typeObj != null
+			&& (liste_types_favoris.contains(typeObj)
+				|| liste_types_deplier.contains(typeObj)
+				|| liste_types_inscrits.contains(typeObj));
+	}
+
+	/**
+	 * Remplit un menu avec les actions disponibles pour l'objet.
+	 */
+	private void remplirMenuActions(final ContextMenu menu, final ObjetBase item) {
+		final String typeObj = item.getType();
+		final String idObj = item.getTrueObjectId();
+		final String idFav = typeObj + ":" + idObj;
+
+		final boolean peutEtreFavori = typeObj != null && liste_types_favoris.contains(typeObj);
+		final boolean peutEtreDeplie = typeObj != null && liste_types_deplier.contains(typeObj);
+		final boolean peutVoirInscrits = typeObj != null && liste_types_inscrits.contains(typeObj);
+
+		if (peutEtreFavori) {
+			final boolean favori = markedRows.contains(idFav);
+			menu.addItem(
+				actionMenuItem(favori ? VaadinIcon.TRASH : VaadinIcon.STAR_O,
+					getTranslation(favori ? NAME + ".supprimerfavori" : NAME + ".ajouterfavori")),
+				e -> {
+					basculerFavori(typeObj, idObj, idFav);
+					treeDataProvider.refreshAll();
+				});
+		}
+		if (peutEtreDeplie) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".deplierarbo")),
+				e -> deplierToutAvecIndicateur(item));
+		}
+		if (peutVoirInscrits) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
+				e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
+		}
+	}
+
 	private com.vaadin.flow.component.Component createActionsColumn(final ObjetBase item) {
 		final HorizontalLayout boutonActionLayout = new HorizontalLayout();
 		boutonActionLayout.setSpacing(false);
@@ -473,35 +543,6 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		final boolean peutVoirInscrits = typeObj != null && liste_types_inscrits.contains(typeObj);
 
 		if (!peutEtreFavori && !peutEtreDeplie && !peutVoirInscrits) {
-			return boutonActionLayout;
-		}
-
-		//Sur petit écran, les actions sont regroupées dans un menu modal ouvert par un unique bouton 3 points
-		if (affichageMobile) {
-			final Button btnMenu = new Button(VaadinIcon.ELLIPSIS_V.create());
-			btnMenu.setTooltipText(getTranslation(NAME + ".table.actions"));
-			btnMenu.addClassName("btn-actions-menu");
-			final ContextMenu menu = new ContextMenu(btnMenu);
-			menu.setOpenOnClick(true);
-
-			if (peutEtreFavori) {
-				final boolean favori = markedRows.contains(idFav);
-				menu.addItem(
-					actionMenuItem(favori ? VaadinIcon.TRASH : VaadinIcon.STAR_O,
-						getTranslation(favori ? NAME + ".supprimerfavori" : NAME + ".ajouterfavori")),
-					e -> basculerFavori(typeObj, idObj, idFav));
-			}
-			if (peutEtreDeplie) {
-				menu.addItem(
-					actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".deplierarbo")),
-					e -> deplierToutAvecIndicateur(item));
-			}
-			if (peutVoirInscrits) {
-				menu.addItem(
-					actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
-					e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
-			}
-			boutonActionLayout.add(btnMenu);
 			return boutonActionLayout;
 		}
 
