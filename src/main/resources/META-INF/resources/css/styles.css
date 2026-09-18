@@ -56,11 +56,28 @@ vaadin-app-layout > [slot='navbar'] {
 	color: #fff;
 }
 
-vaadin-app-layout > [slot='navbar'] vaadin-drawer-toggle {
-	color: #fff;
-}
+vaadin-app-layout > [slot='navbar'] vaadin-drawer-toggle,
+vaadin-app-layout > [slot='navbar-bottom'] vaadin-drawer-toggle,
 vaadin-drawer-toggle {
 	color: #fff;
+}
+
+/*
+ * En mode touch-optimized (mobile), Vaadin déplace les éléments marqués
+ * "navbar touch-optimized" dans la barre du bas (part "navbar-bottom").
+ * On la repositionne en haut de l'écran, sur les mêmes critères que Vaadin.
+ */
+@media (pointer: coarse) and (max-width: 800px) and (min-height: 500px) {
+	vaadin-app-layout::part(navbar-bottom) {
+		top: 0;
+		bottom: auto;
+	}
+
+	/* Le contenu doit alors être décalé vers le bas, plus vers le haut */
+	vaadin-app-layout {
+		--vaadin-app-layout-navbar-offset-top: var(--_vaadin-app-layout-navbar-offset-size-bottom, 0px);
+		--vaadin-app-layout-navbar-offset-bottom: 0px;
+	}
 }
 
 
