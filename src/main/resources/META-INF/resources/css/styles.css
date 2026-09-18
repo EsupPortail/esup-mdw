@@ -59,6 +59,10 @@ vaadin-app-layout > [slot='navbar'] {
 vaadin-app-layout > [slot='navbar'] vaadin-drawer-toggle {
 	color: #fff;
 }
+vaadin-drawer-toggle {
+	color: #fff;
+}
+
 
 /* En-tête du drawer : logo + nom de l'application (même fond que l'ancien bandeau) */
 #drawer-header {
