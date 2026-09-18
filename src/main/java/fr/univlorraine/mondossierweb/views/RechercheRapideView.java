@@ -155,6 +155,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 
 				//BOUTON DE RECHERCHE
 				final Button btnRecherche = new Button(getTranslation("buttonChercher.label"), VaadinIcon.SEARCH.create());
+				btnRecherche.addClassName("btn-recherche");
 				btnRecherche.addClickShortcut(Key.ENTER);
 				btnRecherche.addClickListener(e -> {
 					final ResultatDeRecherche selection = champRecherche.getValue();
@@ -175,8 +176,11 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				});
 
 				final HorizontalLayout champRechercheLayout = new HorizontalLayout();
+				champRechercheLayout.addClassName("champ-recherche-layout");
+				champRechercheLayout.setWidthFull();
 				champRechercheLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
 				champRechercheLayout.add(champRecherche, resetButton, btnRecherche);
+				champRechercheLayout.setFlexGrow(1, champRecherche);
 				add(champRechercheLayout);
 
 				//CASES A COCHER : types d'objets recherchés

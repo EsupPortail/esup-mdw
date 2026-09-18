@@ -153,6 +153,29 @@ vaadin-grid::part(marked) {
 	animation: mdw-dossier-slide-out 300ms ease-in forwards;
 }
 
+/* Barre de recherche rapide : le champ de saisie s'adapte et partage la ligne
+ * avec le bouton reset et le bouton Chercher, y compris sur mobile. */
+.champ-recherche-layout {
+	flex-wrap: nowrap;
+	align-items: baseline;
+}
+
+.champ-recherche-layout > vaadin-combo-box {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Sur petit écran, le bouton Chercher ne conserve que son icône (assez explicite). */
+@media (max-width: 767px) {
+	.btn-recherche [slot='prefix'] {
+		margin: 0;
+	}
+
+	.btn-recherche::part(label) {
+		display: none;
+	}
+}
+
 /* ResponsiveCardList : Grid sur grand écran, liste de cartes sur petit écran */
 .responsive-card-list {
 	display: flex;
