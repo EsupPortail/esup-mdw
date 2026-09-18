@@ -189,6 +189,24 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 					+ "    if (window.__mdw_arbo_scroll !== undefined) t.scrollTop = window.__mdw_arbo_scroll;"
 					+ "  }"
 					+ "});");
+			//Le dépliage ne doit se faire que sur le clic de la flèche (part="toggle").
+			//Le vaadin-grid-tree-toggle déplie au clic sur tout son contenu (libellé inclus) :
+			//on intercepte donc en phase de capture les clics sur le libellé pour empêcher
+			//le dépliage, sans toucher au clic sur la flèche.
+			table.getElement().executeJs(
+				"var sr = this.shadowRoot;"
+					+ "if (sr && !sr.__mdwArboToggleGuard) {"
+					+ "  sr.__mdwArboToggleGuard = true;"
+					+ "  sr.addEventListener('click', function(e) {"
+					+ "    var path = e.composedPath();"
+					+ "    var hasToggle = path.some(function(n) { return n.localName === 'vaadin-grid-tree-toggle'; });"
+					+ "    if (!hasToggle) { return; }"
+					+ "    var onArrow = path.some(function(n) { return n.part && n.part.contains('toggle'); });"
+					+ "    if (onArrow) { return; }"
+					+ "    e.stopImmediatePropagation();"
+					+ "    e.preventDefault();"
+					+ "  }, true);"
+					+ "}");
 		}
 		//Éléments secondaires masqués sur petit écran : applique la largeur connue puis suit les redimensionnements
 		final UI ui = attachEvent.getUI();
@@ -321,15 +339,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			table.addClassName("scrollabletable");
 			table.setSelectionMode(com.vaadin.flow.component.grid.Grid.SelectionMode.SINGLE);
 
-			table.addComponentHierarchyColumn(obj -> {
-					final Span libelle = new Span(obj.getLibelle() == null ? "" : obj.getLibelle());
-					//tabindex rend le libellé "focusable" au sens de vaadin-grid-tree-toggle :
-					//le clic sur le libellé ne déplie donc plus l'arborescence, seul le clic
-					//sur la flèche (part="toggle") le fait. Le clic continue de remonter
-					//jusqu'à la grille, la sélection de ligne reste donc fonctionnelle.
-					libelle.getElement().setAttribute("tabindex", "-1");
-					return libelle;
-				})
+			table.addHierarchyColumn(obj -> obj.getLibelle() == null ? "" : obj.getLibelle())
 				.setHeader(getTranslation(NAME + ".table.libelle"))
 				.setFlexGrow(4).setResizable(true);
 			colCode = table.addColumn(ObjetBase::getTrueObjectId)
