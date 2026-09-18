@@ -176,6 +176,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 
 				//FILTRE : types d'objets recherchés (liste déroulante multi-sélection)
 				filtreSelector = new MultiSelectComboBox<>(getTranslation(NAME + ".filtre.label"));
+				filtreSelector.addClassName("filtre-selector");
 				filtreSelector.setItems(getTypesFiltrables());
 				filtreSelector.setItemLabelGenerator(this::getLibelleType);
 				filtreSelector.setValue(new LinkedHashSet<>(getTypesFiltrables()));

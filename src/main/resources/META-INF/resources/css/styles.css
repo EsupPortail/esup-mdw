@@ -176,6 +176,11 @@ vaadin-grid::part(marked) {
 	}
 }
 
+/* Filtre de la recherche rapide : pas de padding autour du champ. */
+.filtre-selector {
+	padding: 0;
+}
+
 /* ResponsiveCardList : Grid sur grand écran, liste de cartes sur petit écran */
 .responsive-card-list {
 	display: flex;
