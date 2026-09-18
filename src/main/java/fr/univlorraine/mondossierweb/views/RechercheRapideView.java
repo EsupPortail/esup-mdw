@@ -121,6 +121,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				champRecherche.setWidth("700px");
 				champRecherche.setMaxWidth("40em");
 				champRecherche.setAllowCustomValue(true);
+				champRecherche.setClearButtonVisible(true);
 				champRecherche.setPlaceholder(getTranslation(NAME + ".champrecherche.placeholder"));
 				champRecherche.setItemLabelGenerator(r -> r.getLib());
 				//Affichage des suggestions : libellé + type lisible (comme l'ancien AutoComplete)
@@ -166,20 +167,12 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 					}
 				});
 
-				//BOUTON RESET
-				final Button resetButton = new Button(VaadinIcon.CLOSE.create());
-				resetButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-				resetButton.addClassName("btn-reset");
-				resetButton.addClickListener(e -> {
-					champRecherche.clear();
-					champRecherche.focus();
-				});
-
 				final HorizontalLayout champRechercheLayout = new HorizontalLayout();
 				champRechercheLayout.addClassName("champ-recherche-layout");
+				champRechercheLayout.setSpacing(false);
 				champRechercheLayout.setWidthFull();
 				champRechercheLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
-				champRechercheLayout.add(champRecherche, resetButton, btnRecherche);
+				champRechercheLayout.add(champRecherche, btnRecherche);
 				champRechercheLayout.setFlexGrow(1, champRecherche);
 				add(champRechercheLayout);
 
