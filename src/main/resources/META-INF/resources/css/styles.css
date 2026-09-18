@@ -15,101 +15,14 @@ html, [theme~="dark"] {
 }
 
 /* Indicateur de chargement (barre en haut de page).
- * Le thème par défaut de Flow est désactivé dans Application.java ;
- * la couleur ci-dessous est une couleur d'accent visible sur fond clair comme foncé. */
-:root {
-	--app-loading-indicator-color: #ffed45;
-	--app-loading-indicator-height: 4px;
-}
-
-.v-loading-indicator {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: var(--app-loading-indicator-height);
-	background: transparent;
-	pointer-events: none;
-	z-index: 2147483647;
-}
-
-.v-loading-indicator:before {
-	content: "";
-	display: block;
-	height: 100%;
-	width: 40%;
-	background: var(--app-loading-indicator-color);
-	box-shadow: 0 0 8px var(--app-loading-indicator-color);
-	border-radius: 0 var(--app-loading-indicator-height) var(--app-loading-indicator-height) 0;
-	animation: app-loading-indicator-slide 1.2s ease-in-out infinite;
-}
-
-.v-loading-indicator.second:before,
-.v-loading-indicator.third:before {
-	animation-duration: 0.8s;
-}
-
-/* Hors ligne / reconnexion : on masque la barre au profit du message d'état */
-vaadin-connection-indicator[offline] .v-loading-indicator,
-vaadin-connection-indicator[reconnecting] .v-loading-indicator {
-	display: none;
-}
-
-@keyframes app-loading-indicator-slide {
-	0% {
-		transform: translateX(-100%);
-	}
-	100% {
-		transform: translateX(250%);
-	}
-}
-
-/* Message d'état de connexion ("Online", "Connexion perdue...") du
- * <vaadin-connection-indicator>. Le thème par défaut de Flow étant désactivé,
- * il faut le restyler : replié par défaut, il ne s'étend que hors ligne ou
- * en reconnexion (ou au survol). Le message "Online" reste donc invisible. */
-.v-status-message {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: auto;
-	z-index: 2147483646;
-	opacity: 0;
-	width: 100%;
-	max-height: var(--status-height-collapsed, 8px);
-	overflow: hidden;
-	background-color: var(--status-bg-color-online, var(--lumo-primary-color, #343a40));
-	color: var(--status-text-color-online, #fff);
-	font-size: 0.75rem;
-	font-weight: 600;
-	line-height: 1;
-	transition: all 0.5s;
-	padding: 0 0.5em;
-	box-sizing: border-box;
-}
-
-vaadin-connection-indicator[offline] .v-status-message,
-vaadin-connection-indicator[reconnecting] .v-status-message {
-	opacity: 1;
-	background-color: var(--status-bg-color-offline, #b00020);
-	color: var(--status-text-color-offline, #fff);
-}
-
-vaadin-connection-indicator[offline] .v-status-message:hover,
-vaadin-connection-indicator[reconnecting] .v-status-message:hover,
-vaadin-connection-indicator[expanded] .v-status-message {
-	max-height: var(--status-height, 1.75rem);
-}
-
-vaadin-connection-indicator[expanded] .v-status-message {
-	opacity: 1;
-}
-
-.v-status-message span {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: var(--status-height, 1.75rem);
+ * Le thème par défaut de Flow est conservé ; on ne surcharge que la couleur,
+ * en la limitant à la portée de l'indicateur pour ne pas impacter le reste
+ * de l'application (--lumo-primary-color est utilisé ailleurs). */
+vaadin-connection-indicator {
+	--lumo-primary-color: #ffed45;
+	--status-bg-color-online: #ffed45;
+	--status-text-color-online: #343a40;
+	--status-spinner-color: #ffed45;
 }
 
 /* Réduction de l'espace entre titres */
