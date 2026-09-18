@@ -468,6 +468,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			libelle.addClassName("libelle-actions-menu");
 			final ContextMenu menu = new ContextMenu(libelle);
 			menu.setOpenOnClick(true);
+			//En-tête rappelant l'élément cliqué (lecture seule, non cliquable)
+			final Span entete = new Span(item.getLibelle() == null ? "" : item.getLibelle());
+			entete.addClassName("menu-actions-entete");
+			menu.addItem(entete);
 			remplirMenuActions(menu, item);
 			//Le clic sur le libellé n'atteint pas le document (stopPropagation pour bloquer
 			//le dépliage) : on gère nous-mêmes la fermeture du menu précédemment ouvert.

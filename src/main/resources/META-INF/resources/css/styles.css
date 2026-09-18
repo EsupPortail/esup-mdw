@@ -109,6 +109,19 @@ vaadin-grid::part(marked) {
 	background-color: var(--lumo-primary-color-10pct);
 }
 
+/* En-tête du menu d'actions (recherche arborescente, mobile) : rappel de l'élément
+ * cliqué, non cliquable et visuellement distinct des entrées d'action. */
+.menu-actions-entete {
+	display: block;
+	max-width: 18em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: bold;
+	color: var(--lumo-secondary-text-color);
+	cursor: default;
+}
+
 /* Utilitaires */
 .text-secondary {
 	color: var(--lumo-secondary-text-color);
