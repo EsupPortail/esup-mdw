@@ -321,7 +321,15 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			table.addClassName("scrollabletable");
 			table.setSelectionMode(com.vaadin.flow.component.grid.Grid.SelectionMode.SINGLE);
 
-			table.addHierarchyColumn(obj -> obj.getLibelle() == null ? "" : obj.getLibelle())
+			table.addComponentHierarchyColumn(obj -> {
+					final Span libelle = new Span(obj.getLibelle() == null ? "" : obj.getLibelle());
+					//tabindex rend le libellé "focusable" au sens de vaadin-grid-tree-toggle :
+					//le clic sur le libellé ne déplie donc plus l'arborescence, seul le clic
+					//sur la flèche (part="toggle") le fait. Le clic continue de remonter
+					//jusqu'à la grille, la sélection de ligne reste donc fonctionnelle.
+					libelle.getElement().setAttribute("tabindex", "-1");
+					return libelle;
+				})
 				.setHeader(getTranslation(NAME + ".table.libelle"))
 				.setFlexGrow(4).setResizable(true);
 			colCode = table.addColumn(ObjetBase::getTrueObjectId)
