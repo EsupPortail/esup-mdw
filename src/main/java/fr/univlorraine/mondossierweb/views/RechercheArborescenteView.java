@@ -24,8 +24,10 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -208,6 +210,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	 */
 	private void majAffichageMobile(final int largeur) {
 		final boolean mobile = largeur < SEUIL_MOBILE_PX;
+		final boolean seuilFranchi = mobile != affichageMobile;
 		affichageMobile = mobile;
 		if (ligneLayout != null && mobile == ligneLayout.isVisible()) {
 			ligneLayout.setVisible(!mobile);
@@ -219,6 +222,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		if (colCode != null && colType != null && mobile == colCode.isVisible()) {
 			colCode.setVisible(!mobile);
 			colType.setVisible(!mobile);
+		}
+		//La colonne Actions change de rendu (menu 3 points sur mobile) : on reconstruit ses composants
+		if (seuilFranchi && treeDataProvider != null) {
+			treeDataProvider.refreshAll();
 		}
 	}
 
@@ -432,54 +439,63 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		final String idObj = item.getTrueObjectId();
 		final String idFav = typeObj + ":" + idObj;
 
+		final boolean peutEtreFavori = typeObj != null && liste_types_favoris.contains(typeObj);
+		final boolean peutEtreDeplie = typeObj != null && liste_types_deplier.contains(typeObj);
+		final boolean peutVoirInscrits = typeObj != null && liste_types_inscrits.contains(typeObj);
+
+		if (!peutEtreFavori && !peutEtreDeplie && !peutVoirInscrits) {
+			return boutonActionLayout;
+		}
+
+		//Sur petit écran, les actions sont regroupées dans un menu modal ouvert par un unique bouton 3 points
+		if (affichageMobile) {
+			final Button btnMenu = new Button(VaadinIcon.ELLIPSIS_V.create());
+			btnMenu.setTooltipText(getTranslation(NAME + ".table.actions"));
+			final ContextMenu menu = new ContextMenu(btnMenu);
+			menu.setOpenOnClick(true);
+
+			if (peutEtreFavori) {
+				final boolean favori = markedRows.contains(idFav);
+				menu.addItem(
+					actionMenuItem(favori ? VaadinIcon.TRASH : VaadinIcon.STAR_O,
+						getTranslation(favori ? NAME + ".supprimerfavori" : NAME + ".ajouterfavori")),
+					e -> basculerFavori(typeObj, idObj, idFav));
+			}
+			if (peutEtreDeplie) {
+				menu.addItem(
+					actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".deplierarbo")),
+					e -> deplierToutAvecIndicateur(item));
+			}
+			if (peutVoirInscrits) {
+				menu.addItem(
+					actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
+					e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
+			}
+			boutonActionLayout.add(btnMenu);
+			return boutonActionLayout;
+		}
+
 		//Si c'est un objet qui peut être mis en favori
-		if (typeObj != null && liste_types_favoris.contains(typeObj)) {
+		if (peutEtreFavori) {
 			final Button btnFav = new Button();
 			majBoutonFavori(btnFav, idFav);
 			//Gestion du clic sur le bouton favori
 			btnFav.addClickListener(event -> {
-				final FavorisPK fpk = new FavorisPK();
-				fpk.setLogin(userController.getCurrentUserName());
-				fpk.setTypfav(typeObj);
-				fpk.setIdfav(idObj);
-				if (markedRows.contains(idFav)) {
-					//suppression du favori en base
-					favorisController.removeFavori(fpk);
-					markedRows.remove(idFav);
-				} else {
-					final Favoris favori = new Favoris();
-					favori.setId(fpk);
-					//ajout du favori en base
-					favorisController.saveFavori(favori);
-					markedRows.add(idFav);
-				}
+				basculerFavori(typeObj, idObj, idFav);
 				majBoutonFavori(btnFav, idFav);
 				treeDataProvider.refreshAll();
 			});
 			boutonActionLayout.add(btnFav);
 		}
 
-		if (typeObj != null && liste_types_deplier.contains(typeObj)) {
+		if (peutEtreDeplie) {
 			final Button btnDeplier = new Button(VaadinIcon.SITEMAP.create());
 			btnDeplier.setTooltipText(getTranslation(NAME + ".deplierarbo"));
-			btnDeplier.addClickListener(e -> {
-				if (PropertyUtils.isShowLoadingIndicator()) {
-					//affichage de la pop-up de loading
-					MainLayout.getCurrent().ifPresent(MainLayout::startBusyIndicator);
-					final UI ui = UI.getCurrent();
-					//Execution de la méthode en parallèle dans un thread
-					new Thread(() -> {
-						ui.access(() -> deplierTout(item));
-						ui.access(() -> MainLayout.getCurrent().ifPresent(MainLayout::stopBusyIndicator));
-					}).start();
-				} else {
-					deplierTout(item);
-				}
-			});
+			btnDeplier.addClickListener(e -> deplierToutAvecIndicateur(item));
 			boutonActionLayout.add(btnDeplier);
 		}
 
-		if (typeObj != null && liste_types_inscrits.contains(typeObj)) {
+		if (peutVoirInscrits) {
 			final Button btnListeInscrits = new Button(VaadinIcon.USERS.create());
 			btnListeInscrits.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 			btnListeInscrits.setTooltipText(getTranslation(NAME + ".acceslisteinscrits"));
@@ -488,6 +504,52 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		}
 
 		return boutonActionLayout;
+	}
+
+	/** Construit l'icône et le libellé textuel d'une entrée du menu d'actions mobile. */
+	private HorizontalLayout actionMenuItem(final VaadinIcon icone, final String libelle) {
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(true);
+		layout.setAlignItems(FlexComponent.Alignment.CENTER);
+		final Icon icon = icone.create();
+		icon.setSize("var(--lumo-icon-size-s)");
+		layout.add(icon, new Span(libelle));
+		return layout;
+	}
+
+	/** Ajoute ou retire le favori de l'utilisateur courant pour l'objet indiqué. */
+	private void basculerFavori(final String typeObj, final String idObj, final String idFav) {
+		final FavorisPK fpk = new FavorisPK();
+		fpk.setLogin(userController.getCurrentUserName());
+		fpk.setTypfav(typeObj);
+		fpk.setIdfav(idObj);
+		if (markedRows.contains(idFav)) {
+			//suppression du favori en base
+			favorisController.removeFavori(fpk);
+			markedRows.remove(idFav);
+		} else {
+			final Favoris favori = new Favoris();
+			favori.setId(fpk);
+			//ajout du favori en base
+			favorisController.saveFavori(favori);
+			markedRows.add(idFav);
+		}
+	}
+
+	/** Déplie toute l'arborescence sous l'élément, avec l'indicateur de chargement si activé. */
+	private void deplierToutAvecIndicateur(final ObjetBase item) {
+		if (PropertyUtils.isShowLoadingIndicator()) {
+			//affichage de la pop-up de loading
+			MainLayout.getCurrent().ifPresent(MainLayout::startBusyIndicator);
+			final UI ui = UI.getCurrent();
+			//Execution de la méthode en parallèle dans un thread
+			new Thread(() -> {
+				ui.access(() -> deplierTout(item));
+				ui.access(() -> MainLayout.getCurrent().ifPresent(MainLayout::stopBusyIndicator));
+			}).start();
+		} else {
+			deplierTout(item);
+		}
 	}
 
 	private void majBoutonFavori(final Button btnFav, final String idFav) {
