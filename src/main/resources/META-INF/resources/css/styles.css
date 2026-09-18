@@ -122,6 +122,14 @@ vaadin-grid::part(marked) {
 	cursor: default;
 }
 
+/* Libellé d'une ligne sur mobile (recherche arborescente) : la colonne est plus large
+ * que l'écran, on empêche la troncature pour permettre la lecture par défilement. */
+.libelle-actions-menu {
+	white-space: nowrap;
+	overflow: visible;
+	text-overflow: clip;
+}
+
 /* Utilitaires */
 .text-secondary {
 	color: var(--lumo-secondary-text-color);

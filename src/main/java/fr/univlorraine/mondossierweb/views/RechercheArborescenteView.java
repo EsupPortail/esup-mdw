@@ -92,6 +92,9 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	/** Seuil (exclu) sous lequel les éléments secondaires (colonnes code/type, rappel de sélection) sont masqués, aligné sur le seuil CSS 767px */
 	private static final int SEUIL_MOBILE_PX = 768;
 
+	/** Largeur (px) de la colonne libellé sur mobile : au-delà de la largeur d'écran pour permettre le défilement horizontal */
+	private static final String LARGEUR_LIBELLE_MOBILE = "1400px";
+
 	/* Injections */
 	@Resource
 	private transient UserController userController;
@@ -113,6 +116,8 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	private TreeGrid<ObjetBase> table;
 	private TreeData<ObjetBase> treeData;
 	private TreeDataProvider<ObjetBase> treeDataProvider;
+	/** Colonne libellé, élargie au-delà de l'écran sur mobile pour éviter la troncature */
+	private Grid.Column<ObjetBase> colLibelle;
 	/** Colonnes masquées sur petit écran pour laisser la place à l'arborescence */
 	private Grid.Column<ObjetBase> colCode;
 	private Grid.Column<ObjetBase> colType;
@@ -232,6 +237,18 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		if (colActions != null && mobile == colActions.isVisible()) {
 			colActions.setVisible(!mobile);
 		}
+		//Sur mobile, la colonne libellé est plus large que l'écran et n'est pas tronquée :
+		//un défilement horizontal permet de lire le libellé en entier
+		if (colLibelle != null && mobile != LARGEUR_LIBELLE_MOBILE.equals(colLibelle.getWidth())) {
+			if (mobile) {
+				colLibelle.setAutoWidth(false);
+				colLibelle.setFlexGrow(0);
+				colLibelle.setWidth(LARGEUR_LIBELLE_MOBILE);
+			} else {
+				colLibelle.setWidth(null);
+				colLibelle.setFlexGrow(4);
+			}
+		}
 		if (menuActionsOuvert != null && !mobile) {
 			menuActionsOuvert.close();
 			menuActionsOuvert = null;
@@ -324,7 +341,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			table.addClassName("scrollabletable");
 			table.setSelectionMode(com.vaadin.flow.component.grid.Grid.SelectionMode.SINGLE);
 
-			table.addComponentHierarchyColumn(this::createLibelleColumn)
+			colLibelle = table.addComponentHierarchyColumn(this::createLibelleColumn)
 				.setHeader(getTranslation(NAME + ".table.libelle"))
 				.setFlexGrow(4).setResizable(true);
 			colCode = table.addColumn(ObjetBase::getTrueObjectId)
