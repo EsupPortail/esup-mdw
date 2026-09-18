@@ -191,7 +191,9 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 				casesAcocherEtudiant.addValueChangeListener(e -> tuneSearch());
 
 				final HorizontalLayout checkBoxLayout = new HorizontalLayout();
+				checkBoxLayout.addClassName("checkbox-layout");
 				checkBoxLayout.setSpacing(true);
+				checkBoxLayout.setWidthFull();
 				checkBoxLayout.add(casesAcocherComposantes, casesAcocherVet, casesAcocherElp, casesAcocherEtudiant);
 				add(checkBoxLayout);
 
