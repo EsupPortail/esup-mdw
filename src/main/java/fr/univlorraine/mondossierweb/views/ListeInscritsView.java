@@ -299,11 +299,9 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		menuItemDisplayFiltres.setVisible(false);
 
 		//Action de masquage des filtres, uniquement pour un ELP (remplace l'ancien bouton btnMasquerFiltre)
-		if (typeIsElp()) {
-			menuItemMasquerFiltres = actionsMenu.addItem(
+		menuItemMasquerFiltres = actionsMenu.addItem(
 				actionMenuItem(VaadinIcon.CHEVRON_CIRCLE_UP, getTranslation(NAME + ".btn.btnMasquerFiltre")),
 				e -> masquerFiltres());
-		}
 
 		//Le bouton d'actions n'est affiché que si au moins une action est disponible
 		majVisibiliteBtnActionsMenu();
