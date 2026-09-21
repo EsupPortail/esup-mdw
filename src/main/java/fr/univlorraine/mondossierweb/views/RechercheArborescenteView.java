@@ -493,9 +493,15 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			libelle.addClassName("libelle-actions-menu");
 			final ContextMenu menu = new ContextMenu(libelle);
 			menu.setOpenOnClick(true);
-			//En-tête rappelant l'élément cliqué (lecture seule, non cliquable)
-			final Span entete = new Span(item.getLibelle() == null ? "" : item.getLibelle());
-			entete.addClassName("menu-actions-entete");
+			//En-tête rappelant l'élément cliqué (lecture seule, non cliquable) :
+			//libellé sur la première ligne, identifiant technique en dessous
+			final Span enteteLibelle = new Span(item.getLibelle() == null ? "" : item.getLibelle());
+			enteteLibelle.addClassName("menu-actions-entete");
+			final Span enteteId = new Span(item.getTrueObjectId() == null ? "" : item.getTrueObjectId());
+			enteteId.addClassName("menu-actions-entete-id");
+			final VerticalLayout entete = new VerticalLayout(enteteLibelle, enteteId);
+			entete.setPadding(false);
+			entete.setSpacing(false);
 			menu.addItem(entete);
 			if (!remplirMenuActions(menu, item)) {
 				//Aucune action : on l'indique dans le menu plutôt que de ne rien afficher

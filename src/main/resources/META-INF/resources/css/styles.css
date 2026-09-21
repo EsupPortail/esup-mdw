@@ -122,6 +122,18 @@ vaadin-grid::part(marked) {
 	cursor: default;
 }
 
+/* Identifiant technique rappelé sous le libellé dans l'en-tête du menu d'actions. */
+.menu-actions-entete-id {
+	display: block;
+	max-width: 18em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: var(--lumo-font-size-s);
+	color: var(--lumo-tertiary-text-color);
+	cursor: default;
+}
+
 /* Message affiché dans le menu d'actions lorsqu'aucune action n'est disponible. */
 .menu-actions-vide {
 	display: block;
