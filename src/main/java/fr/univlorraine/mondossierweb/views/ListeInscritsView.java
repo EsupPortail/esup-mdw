@@ -313,6 +313,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			listeAnnees.setAllowCustomValue(false);
 			listeAnnees.setWidth("150px");
 			listeAnnees.setItems(lannees);
+			listeAnnees.getStyle().set("padding", "0");
 			listeAnnees.setItemLabelGenerator(annee -> annee + "/" + (Integer.parseInt(annee) + 1));
 			listeAnnees.setValue(sessionController.getAnneeInscrits());
 
