@@ -222,9 +222,17 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		return createLibelleColumn(r, false);
 	}
 
-	private com.vaadin.flow.component.Component createLibelleColumn(final ResultatDeRecherche r, final boolean sansCode) {
+	/**
+	 * Construit le libellé cliquable d'un résultat.
+	 * Pour un étudiant, la formation en cours est affichée à côté du libellé
+	 * en grand écran, et en dessous en affichage mobile.
+	 *
+	 * @param r      résultat affiché
+	 * @param mobile vrai pour l'affichage carte (mobile), qui masque le code et empile la formation
+	 */
+	private com.vaadin.flow.component.Component createLibelleColumn(final ResultatDeRecherche r, final boolean mobile) {
 		// Libellé cliquable, accès au détail de l'objet
-		final Button b = new Button(sansCode ? getLibelleSansCode(r) : r.getLib());
+		final Button b = new Button(mobile ? getLibelleSansCode(r) : r.getLib());
 		b.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		b.addClassName("v-link");
 		b.addClickListener(e -> rechercheController.accessToDetail(r.getCode(), r.type, null));
@@ -233,13 +241,21 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		if (r.type != null && (r.type.equals(Utils.TYPE_ETU) || r.type.equals(Utils.ETU))) {
 			final String formationEnCours = etudiantController.getFormationEnCours(r.getCode());
 			if (StringUtils.hasText(formationEnCours)) {
+				final Span formation = new Span(formationEnCours);
+				formation.addClassName("text-secondary");
+				if (mobile) {
+					final VerticalLayout libvl = new VerticalLayout();
+					libvl.setPadding(false);
+					libvl.setSpacing(false);
+					libvl.setWidthFull();
+					libvl.add(b, formation);
+					return libvl;
+				}
 				final HorizontalLayout libhl = new HorizontalLayout();
 				libhl.setWidthFull();
 				libhl.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 				libhl.setAlignItems(FlexComponent.Alignment.CENTER);
 				libhl.getStyle().set("flex-wrap", "wrap").set("row-gap", "0.25em");
-				final Span formation = new Span(formationEnCours);
-				formation.addClassName("text-secondary");
 				libhl.add(b, formation);
 				return libhl;
 			}
@@ -274,35 +290,8 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		}
 
 		/* Ligne 2 : libellé cliquable sans le code, formation en cours en dessous pour un étudiant */
-		card.add(ligneEntete, createLibelleCard(r));
+		card.add(ligneEntete, createLibelleColumn(r, true));
 		return card;
-	}
-
-	/**
-	 * Construit le libellé cliquable d'une carte, sans le code.
-	 * Pour un étudiant, la formation en cours est affichée en dessous du libellé.
-	 */
-	private com.vaadin.flow.component.Component createLibelleCard(final ResultatDeRecherche r) {
-		final Button b = new Button(getLibelleSansCode(r));
-		b.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		b.addClassName("v-link");
-		b.addClickListener(e -> rechercheController.accessToDetail(r.getCode(), r.type, null));
-
-		// Pour un étudiant : affichage de la formation en cours sous le libellé
-		if (r.type != null && (r.type.equals(Utils.TYPE_ETU) || r.type.equals(Utils.ETU))) {
-			final String formationEnCours = etudiantController.getFormationEnCours(r.getCode());
-			if (StringUtils.hasText(formationEnCours)) {
-				final VerticalLayout libvl = new VerticalLayout();
-				libvl.setPadding(false);
-				libvl.setSpacing(false);
-				libvl.setWidthFull();
-				final Span formation = new Span(formationEnCours);
-				formation.addClassName("text-secondary");
-				libvl.add(b, formation);
-				return libvl;
-			}
-		}
-		return b;
 	}
 
 	/** Retourne le code entre crochets en début de libellé, ou null s'il est absent. */

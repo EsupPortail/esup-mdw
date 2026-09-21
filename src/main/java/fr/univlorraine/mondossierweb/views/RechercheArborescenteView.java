@@ -539,6 +539,16 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		final boolean peutEtreDeplie = typeObj != null && liste_types_deplier.contains(typeObj);
 		final boolean peutVoirInscrits = typeObj != null && liste_types_inscrits.contains(typeObj);
 
+		if (peutVoirInscrits) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
+				e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
+		}
+		if (peutEtreDeplie) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".deplierarbo")),
+				e -> deplierToutAvecIndicateur(item));
+		}
 		if (peutEtreFavori) {
 			final boolean favori = markedRows.contains(idFav);
 			menu.addItem(
@@ -548,16 +558,6 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 					basculerFavori(typeObj, idObj, idFav);
 					treeDataProvider.refreshAll();
 				});
-		}
-		if (peutEtreDeplie) {
-			menu.addItem(
-				actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".deplierarbo")),
-				e -> deplierToutAvecIndicateur(item));
-		}
-		if (peutVoirInscrits) {
-			menu.addItem(
-				actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
-				e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
 		}
 		return peutEtreFavori || peutEtreDeplie || peutVoirInscrits;
 	}

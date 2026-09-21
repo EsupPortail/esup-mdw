@@ -250,19 +250,19 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 		final String typeObj = fav.getId().getTypfav();
 		final String idObj = fav.getId().getIdfav();
 
-		menu.addItem(
-			actionMenuItem(VaadinIcon.TRASH, getTranslation(NAME + ".suppressionfavori")),
-			e -> supprimerFavori(fav));
-		if (peutAccederArborescence(typeObj)) {
-			menu.addItem(
-				actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".accesarborescence")),
-				e -> accederArborescence(idObj, typeObj));
-		}
 		if (peutAccederListeInscrits(typeObj)) {
 			menu.addItem(
 				actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
 				e -> accederListeInscrits(idObj, typeObj));
 		}
+		if (peutAccederArborescence(typeObj)) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".accesarborescence")),
+				e -> accederArborescence(idObj, typeObj));
+		}
+		menu.addItem(
+			actionMenuItem(VaadinIcon.TRASH, getTranslation(NAME + ".suppressionfavori")),
+			e -> supprimerFavori(fav));
 	}
 
 	/** Construit l'icône et le libellé textuel d'une entrée du menu d'actions. */
