@@ -21,9 +21,12 @@ package fr.univlorraine.mondossierweb.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -171,57 +174,111 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 		btnfav.addClassName("deletefavbutton");
 		btnfav.setTooltipText(getTranslation(NAME + ".suppressionfavori"));
 		//Gestion du clic sur le bouton de suppression du favori
-		btnfav.addClickListener(event -> {
-			FavorisPK fpk = new FavorisPK();
-			fpk.setIdfav(idObj);
-			fpk.setLogin(userController.getCurrentUserName());
-			fpk.setTypfav(typeObj);
-			favorisController.removeFavori(fpk);
-			lfav.remove(fav);
-			favorisList.setItems(lfav);
-			if (lfav.isEmpty()) {
-				favorisList.setVisible(false);
-				labelAucunFavoriLayout.setVisible(true);
-			}
-		});
+		btnfav.addClickListener(event -> supprimerFavori(fav));
 		boutonActionLayout.add(btnfav);
 
 		// Si on peut accéder à l'arborescence depuis le favori
-		if (typeObj != null && liste_type_arbo != null && liste_type_arbo.contains(typeObj)) {
+		if (peutAccederArborescence(typeObj)) {
 			Button btnArbo = new Button(VaadinIcon.SITEMAP.create());
 			btnArbo.setTooltipText(getTranslation(NAME + ".accesarborescence"));
-			btnArbo.addClickListener(e -> rechercheController.accessToRechercheArborescente(idObj, typeObj));
+			btnArbo.addClickListener(e -> accederArborescence(idObj, typeObj));
 			boutonActionLayout.add(btnArbo);
 		}
 		// Si on peut accéder à la liste des inscrits depuis le favori
-		if (typeObj != null && liste_types_inscrits != null && liste_types_inscrits.contains(typeObj)) {
+		if (peutAccederListeInscrits(typeObj)) {
 			Button btnListeInscrits = new Button(VaadinIcon.USERS.create());
 			btnListeInscrits.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 			btnListeInscrits.setTooltipText(getTranslation(NAME + ".acceslisteinscrits"));
-			btnListeInscrits.addClickListener(e -> {
-				//Si on doit afficher une fenêtre de loading pendant l'exécution
-				if (PropertyUtils.isShowLoadingIndicator()) {
-					//affichage de la pop-up de loading
-					MainLayout.getCurrent().ifPresent(MainLayout::startBusyIndicator);
-					final UI ui = UI.getCurrent();
-					//Execution de la méthode en parallèle dans un thread
-					new Thread(() -> {
-						ui.access(() -> rechercheController.accessToDetail(idObj, typeObj, null));
-						ui.access(() -> MainLayout.getCurrent().ifPresent(MainLayout::stopBusyIndicator));
-					}).start();
-				} else {
-					//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
-					rechercheController.accessToDetail(idObj, typeObj, null);
-				}
-			});
+			btnListeInscrits.addClickListener(e -> accederListeInscrits(idObj, typeObj));
 			boutonActionLayout.add(btnListeInscrits);
 		}
 		return boutonActionLayout;
 	}
 
+	/** Supprime le favori de l'utilisateur courant et met à jour l'affichage. */
+	private void supprimerFavori(final Favoris fav) {
+		final FavorisPK fpk = new FavorisPK();
+		fpk.setIdfav(fav.getId().getIdfav());
+		fpk.setLogin(userController.getCurrentUserName());
+		fpk.setTypfav(fav.getId().getTypfav());
+		favorisController.removeFavori(fpk);
+		lfav.remove(fav);
+		favorisList.setItems(lfav);
+		if (lfav.isEmpty()) {
+			favorisList.setVisible(false);
+			labelAucunFavoriLayout.setVisible(true);
+		}
+	}
+
+	/** Vrai si le type de favori donne accès à l'arborescence. */
+	private boolean peutAccederArborescence(final String typeObj) {
+		return typeObj != null && liste_type_arbo != null && liste_type_arbo.contains(typeObj);
+	}
+
+	/** Vrai si le type de favori donne accès à la liste des inscrits. */
+	private boolean peutAccederListeInscrits(final String typeObj) {
+		return typeObj != null && liste_types_inscrits != null && liste_types_inscrits.contains(typeObj);
+	}
+
+	/** Ouvre l'arborescence sur l'élément du favori. */
+	private void accederArborescence(final String idObj, final String typeObj) {
+		rechercheController.accessToRechercheArborescente(idObj, typeObj);
+	}
+
+	/** Ouvre la liste des inscrits de l'élément du favori. */
+	private void accederListeInscrits(final String idObj, final String typeObj) {
+		//Si on doit afficher une fenêtre de loading pendant l'exécution
+		if (PropertyUtils.isShowLoadingIndicator()) {
+			//affichage de la pop-up de loading
+			MainLayout.getCurrent().ifPresent(MainLayout::startBusyIndicator);
+			final UI ui = UI.getCurrent();
+			//Execution de la méthode en parallèle dans un thread
+			new Thread(() -> {
+				ui.access(() -> rechercheController.accessToDetail(idObj, typeObj, null));
+				ui.access(() -> MainLayout.getCurrent().ifPresent(MainLayout::stopBusyIndicator));
+			}).start();
+		} else {
+			//On ne doit pas afficher de fenêtre de loading, on exécute directement la méthode
+			rechercheController.accessToDetail(idObj, typeObj, null);
+		}
+	}
+
+	/**
+	 * Remplit le menu d'actions d'un favori (affiché sur petit écran au clic sur le libellé).
+	 */
+	private void remplirMenuActions(final ContextMenu menu, final Favoris fav) {
+		final String typeObj = fav.getId().getTypfav();
+		final String idObj = fav.getId().getIdfav();
+
+		menu.addItem(
+			actionMenuItem(VaadinIcon.TRASH, getTranslation(NAME + ".suppressionfavori")),
+			e -> supprimerFavori(fav));
+		if (peutAccederArborescence(typeObj)) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.SITEMAP, getTranslation(NAME + ".accesarborescence")),
+				e -> accederArborescence(idObj, typeObj));
+		}
+		if (peutAccederListeInscrits(typeObj)) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
+				e -> accederListeInscrits(idObj, typeObj));
+		}
+	}
+
+	/** Construit l'icône et le libellé textuel d'une entrée du menu d'actions. */
+	private HorizontalLayout actionMenuItem(final VaadinIcon icone, final String libelle) {
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(true);
+		layout.setAlignItems(FlexComponent.Alignment.CENTER);
+		final Icon icon = icone.create();
+		icon.setSize("var(--lumo-icon-size-s)");
+		layout.add(icon, new Span(libelle));
+		return layout;
+	}
+
 	/**
 	 * Construit la carte d'un favori, affichée sur petit écran :
-	 * badge du type + code, libellé, boutons d'action.
+	 * badge du type + code, libellé cliquable ouvrant le menu des actions.
 	 */
 	private Div createFavoriCard(final Favoris fav) {
 		final String typeObj = fav.getId().getTypfav();
@@ -242,14 +299,25 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 		}
 		ligneEntete.add(badgeType, new Span(idObj));
 
-		/* Ligne 2 : libellé */
+		/* Ligne 2 : libellé, cliquable pour ouvrir le menu des actions */
 		final Span libelle = new Span(favorisController.getLibObjFavori(typeObj, idObj));
 		libelle.addClassName("font-bold");
+		libelle.addClassName("libelle-actions-menu");
 
-		/* Ligne 3 : actions (méthode partagée avec le Grid) */
-		final HorizontalLayout actions = createActionsColumn(fav);
+		final ContextMenu menu = new ContextMenu(libelle);
+		menu.setOpenOnClick(true);
+		//En-tête rappelant l'élément cliqué : libellé puis identifiant technique
+		final Span enteteLibelle = new Span(favorisController.getLibObjFavori(typeObj, idObj));
+		enteteLibelle.addClassName("menu-actions-entete");
+		final Span enteteId = new Span(idObj);
+		enteteId.addClassName("menu-actions-entete-id");
+		final VerticalLayout entete = new VerticalLayout(enteteLibelle, enteteId);
+		entete.setPadding(false);
+		entete.setSpacing(false);
+		menu.addItem(entete);
+		remplirMenuActions(menu, fav);
 
-		card.add(ligneEntete, libelle, actions);
+		card.add(ligneEntete, libelle);
 		return card;
 	}
 

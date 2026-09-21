@@ -144,12 +144,14 @@ vaadin-grid::part(marked) {
 	cursor: default;
 }
 
-/* Libellé d'une ligne sur mobile (recherche arborescente) : la colonne est plus large
- * que l'écran, on empêche la troncature pour permettre la lecture par défilement. */
+/* Libellé cliquable ouvrant le menu des actions sur mobile (recherche arborescente
+ * et favoris). Dans l'arborescence la colonne est plus large que l'écran : on empêche
+ * la troncature pour permettre la lecture par défilement. */
 .libelle-actions-menu {
 	white-space: nowrap;
 	overflow: visible;
 	text-overflow: clip;
+	cursor: pointer;
 }
 
 /* Sur mobile, l'en-tête de la grille ne contient que "Libellé" : on le masque. */
