@@ -75,6 +75,7 @@ public class DetailInscriptionWindow extends Dialog {
 			setWidth("80%");
 			setHeight("95%");
 			setResizable(false);
+			setCloseOnOutsideClick(true);
 
 			//Test si user enseignant
 			if (userController.isEnseignant()) {

@@ -64,7 +64,7 @@ public class HelpBasicWindow extends Dialog {
 		setMaxWidth("100%");
 		setResizable(false);
 		setCloseOnEsc(false);
-		setCloseOnOutsideClick(false);
+		setCloseOnOutsideClick(true);
 
 		/* Titre */
 		setHeaderTitle(titre);

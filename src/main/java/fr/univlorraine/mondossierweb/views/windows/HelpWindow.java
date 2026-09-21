@@ -55,7 +55,7 @@ public class HelpWindow extends Dialog {
 		setMaxWidth("100%");
 		setResizable(false);
 		setCloseOnEsc(false);
-		setCloseOnOutsideClick(false);
+		setCloseOnOutsideClick(true);
 
 		/* Titre */
 		setHeaderTitle(titre != null ? titre : getTranslation("helpWindow.defaultTitle"));

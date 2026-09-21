@@ -76,6 +76,7 @@ public class DetailGroupesWindow extends Dialog {
 		setWidth("80%");
 		setHeight("95%");
 		setResizable(false);
+		setCloseOnOutsideClick(true);
 
 		/* Titre */
 		setHeaderTitle(getTranslation(NAME + ".title"));
