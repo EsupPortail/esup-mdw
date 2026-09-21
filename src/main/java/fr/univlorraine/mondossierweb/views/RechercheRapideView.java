@@ -58,6 +58,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Recherche rapide (ElasticSearch)
@@ -72,6 +74,9 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 
 	public static final String NAME = "rechercheRapideView";
 	public static final String ROUTE = NAME;
+
+	/** Préfixe « [code] » ajouté en tête des libellés par {@link ResultatDeRecherche}. */
+	private static final Pattern CODE_EN_DEBUT = Pattern.compile("^\\[([^\\]]+)\\]\\s*");
 
 	/* Injections */
 	@Resource
@@ -214,8 +219,12 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 	}
 
 	private com.vaadin.flow.component.Component createLibelleColumn(final ResultatDeRecherche r) {
+		return createLibelleColumn(r, false);
+	}
+
+	private com.vaadin.flow.component.Component createLibelleColumn(final ResultatDeRecherche r, final boolean sansCode) {
 		// Libellé cliquable, accès au détail de l'objet
-		final Button b = new Button(r.getLib());
+		final Button b = new Button(sansCode ? getLibelleSansCode(r) : r.getLib());
 		b.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		b.addClassName("v-link");
 		b.addClickListener(e -> rechercheController.accessToDetail(r.getCode(), r.type, null));
@@ -246,7 +255,7 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		final Div card = new Div();
 		card.addClassName("card");
 
-		/* Ligne 1 : badge du type */
+		/* Ligne 1 : badge du type + code de l'objet (extrait du libellé) */
 		final HorizontalLayout ligneEntete = new HorizontalLayout();
 		ligneEntete.setSpacing(true);
 		final Span badgeType = new Span(rechercheArborescenteController.getTypeObj(r.type, r.getCode()));
@@ -258,9 +267,32 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		}
 		ligneEntete.add(badgeType);
 
-		/* Ligne 2 : libellé cliquable (+ formation en cours pour un étudiant) */
-		card.add(ligneEntete, createLibelleColumn(r));
+		/* Le libellé est préfixé par [code] : on l'extrait pour l'afficher à côté du type */
+		final String code = getCodeEnDebut(r.getLib());
+		if (code != null) {
+			ligneEntete.add(new Span(code));
+		}
+
+		/* Ligne 2 : libellé cliquable sans le code (+ formation en cours pour un étudiant) */
+		card.add(ligneEntete, createLibelleColumn(r, true));
 		return card;
+	}
+
+	/** Retourne le code entre crochets en début de libellé, ou null s'il est absent. */
+	private String getCodeEnDebut(final String libelle) {
+		if (libelle == null) {
+			return null;
+		}
+		final Matcher matcher = CODE_EN_DEBUT.matcher(libelle);
+		return matcher.find() ? matcher.group(1) : null;
+	}
+
+	/** Retire le préfixe « [code] » du libellé s'il est présent. */
+	private String getLibelleSansCode(final ResultatDeRecherche r) {
+		if (r.getLib() == null) {
+			return null;
+		}
+		return CODE_EN_DEBUT.matcher(r.getLib()).replaceFirst("");
 	}
 
 	private List<ResultatDeRecherche> quickSearch(final String valueString) {
