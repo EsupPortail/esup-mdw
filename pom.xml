@@ -293,13 +293,6 @@
 			<version>2.0.5</version>
 		</dependency>
 
-		<!-- PhotoServer UL -->
-		<dependency>
-			<groupId>fr.univlorraine.photoserver</groupId>
-			<artifactId>photoserver-client</artifactId>
-			<version>0.0.5-RC3</version>
-		</dependency>
-
 		<!-- JWT (photo serveur v2) -->
 		<dependency>
 			<groupId>com.auth0</groupId>
