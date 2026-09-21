@@ -130,6 +130,12 @@ vaadin-grid::part(marked) {
 	text-overflow: clip;
 }
 
+/* Sur mobile, l'en-tête de la grille ne contient que "Libellé" : on le masque. */
+.grid-sans-entete::part(header-row),
+.grid-sans-entete::part(header-cell) {
+	display: none;
+}
+
 /* Utilitaires */
 .text-secondary {
 	color: var(--lumo-secondary-text-color);

@@ -237,6 +237,14 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		if (colActions != null && mobile == colActions.isVisible()) {
 			colActions.setVisible(!mobile);
 		}
+		//Sur mobile, l'en-tête deseuilFranchi la grille n'affiche que "Libellé" : il est masqué
+		if (table != null) {
+			if (mobile) {
+				table.addClassName("grid-sans-entete");
+			} else {
+				table.removeClassName("grid-sans-entete");
+			}
+		}
 		//Sur mobile, la colonne libellé est plus large que l'écran et n'est pas tronquée :
 		//un défilement horizontal permet de lire le libellé en entier
 		if (colLibelle != null && mobile != LARGEUR_LIBELLE_MOBILE.equals(colLibelle.getWidth())) {
