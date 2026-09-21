@@ -446,7 +446,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		resumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
 		//Label affichant le nb d'inscrits
-		infoNbInscrit = new Span(getTranslation(NAME + ".message.nbinscrit") + " : " + linscrits.size());
+		infoNbInscrit = new Span(linscrits.size() + " " + (linscrits.size() > 1 ? getTranslation(NAME + ".message.nbinscrit") : getTranslation(NAME + ".message.nbinscrits")));
 
 		leftResumeLayout = new HorizontalLayout();
 		leftResumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
