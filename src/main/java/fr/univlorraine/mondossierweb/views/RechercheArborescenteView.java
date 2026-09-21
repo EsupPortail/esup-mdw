@@ -299,6 +299,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 
 			comboBoxAnneeUniv = new ComboBox<>(getTranslation(NAME + ".anneeuniv"));
 			comboBoxAnneeUniv.setAllowCustomValue(false);
+			comboBoxAnneeUniv.getStyle().set("padding", "0");
 			//Initialisation de la liste des années
 			final List<String> lanneeUniv = rechercheArborescenteController.recupererLesDernieresAnneeUniversitaire();
 			if (lanneeUniv != null && !lanneeUniv.isEmpty()) {
@@ -336,6 +337,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			selectionLayout = new HorizontalLayout();
 			selectionLayout.addClassName("selection-arbo");
 			selectionLayout.setWidthFull();
+			selectionLayout.setMaxWidth("50em");
 			selectionLayout.setPadding(false);
 			selectionLayout.setSpacing(true);
 			selectionLayout.setAlignItems(FlexComponent.Alignment.CENTER);
