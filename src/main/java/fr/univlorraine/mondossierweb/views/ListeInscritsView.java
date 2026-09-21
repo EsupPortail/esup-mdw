@@ -446,7 +446,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		resumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
 		//Label affichant le nb d'inscrits
-		infoNbInscrit = new Span(linscrits.size() + " " + (linscrits.size() > 1 ? getTranslation(NAME + ".message.nbinscrit") : getTranslation(NAME + ".message.nbinscrits")));
+		infoNbInscrit = new Span(getInfoNbInscrits(linscrits.size()));
 
 		leftResumeLayout = new HorizontalLayout();
 		leftResumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -723,6 +723,10 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		filtrerInscrits(getEtapeSelectionnee(), getGroupeSelectionne());
 	}
 
+	private String getInfoNbInscrits(int size) {
+		return size + " " + (size > 1 ? getTranslation(NAME + ".message.nbinscrits") : getTranslation(NAME + ".message.nbinscrit"));
+	}
+
 	private boolean afficherInfoNaissance() {
 		return (userController.isEnseignant() && configController.isAffInfoNaissanceEnseignant())
 			|| (userController.isGestionnaire() && configController.isAffInfoNaissanceGestionnaire());
@@ -869,7 +873,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			displayTrombinoscope();
 
 			//maj de l'affichage du nombre d'étudiants
-			infoNbInscrit.setText(getTranslation(NAME + ".message.nbinscrit") + " : " + listecodind.size());
+			infoNbInscrit.setText(getInfoNbInscrits(listecodind.size()));
 		}
 	}
 
