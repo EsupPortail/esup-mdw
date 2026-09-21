@@ -22,7 +22,6 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -148,14 +147,12 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	/** Layout regroupant le titre et le bouton d'actions */
 	private HorizontalLayout titreLayout;
 	private HorizontalLayout leftResumeLayout;
-	private HorizontalLayout middleResumeLayout;
 	private Button btnDisplayFiltres;
-	private Anchor exportTrombiAnchor;
-	private Anchor exportExcelAnchor;
-	private Checkbox collapseEtp;
-	private Checkbox collapseResultatsS1;
-	private Checkbox collapseResultatsS2;
-	private Checkbox collapseGrp;
+	/** Colonnes affichées dans la liste, pilotées depuis le menu d'actions */
+	private boolean afficherEtape = true;
+	private boolean afficherSession1 = false;
+	private boolean afficherSession2 = false;
+	private boolean afficherGroupe = false;
 	/** Bouton d'actions (trois points verticaux) affiché à côté du bouton d'information */
 	private Button btnResumeMenu;
 	/** Menu d'actions des exports et de l'affichage des colonnes */
@@ -483,14 +480,12 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		btnResumeMenu.setTooltipText(getTranslation(NAME + ".btn.actions"));
 		leftResumeLayout.add(btnResumeMenu);
 
-		//Bouton export trombinoscope (pdf)
-		String nomFichier = getTranslation("pdf.trombinoscope.title") + "_" + panelTitre.getText() + ".pdf";
-		nomFichier = nomFichier.replaceAll(" ", "_");
-		final String nomFichierPdf = nomFichier;
-		final Button btnExportTrombi = new Button(VaadinIcon.FILE_TEXT_O.create());
-		btnExportTrombi.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		btnExportTrombi.setTooltipText(getTranslation(NAME + ".pdf.trombinoscope.link"));
-		exportTrombiAnchor = new Anchor(DownloadHandler.fromInputStream(evt -> {
+		//Noms des fichiers exportés
+		final String nomFichierPdf = (getTranslation("pdf.trombinoscope.title") + "_" + panelTitre.getText() + ".pdf").replaceAll(" ", "_");
+		final String nomFichierXls = (getTranslation("excel.listeinscrits.title") + "_" + panelTitre.getText() + ".xlsx").replaceAll(" ", "_");
+
+		//Ancres de téléchargement, masquées et utilisées uniquement pour déclencher les exports
+		final Anchor ancreExportTrombi = creerAncreMasquee(DownloadHandler.fromInputStream(evt -> {
 			/* Le handler s'exécute hors du verrou de session Vaadin : verrou requis pour lire
 			   les composants et résoudre les beans de scope vaadin-session (SessionController) */
 			final VaadinSession session = evt.getSession();
@@ -505,21 +500,8 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			} finally {
 				session.unlock();
 			}
-		}), "");
-		exportTrombiAnchor.add(btnExportTrombi);
-		exportTrombiAnchor.getElement().setAttribute("download", true);
-		leftResumeLayout.add(exportTrombiAnchor);
-		//On cache le bouton d'export pdf
-		exportTrombiAnchor.setVisible(false);
-
-		//Bouton export liste excel
-		String nomFichierExcel = getTranslation("excel.listeinscrits.title") + "_" + panelTitre.getText() + ".xlsx";
-		nomFichierExcel = nomFichierExcel.replaceAll(" ", "_");
-		final String nomFichierXls = nomFichierExcel;
-		final Button btnExportExcel = new Button(VaadinIcon.FILE_TABLE.create());
-		btnExportExcel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		btnExportExcel.setTooltipText(getTranslation(NAME + ".excel.link"));
-		exportExcelAnchor = new Anchor(DownloadHandler.fromInputStream(evt -> {
+		}));
+		final Anchor ancreExportExcel = creerAncreMasquee(DownloadHandler.fromInputStream(evt -> {
 			/* Le handler s'exécute hors du verrou de session Vaadin : verrou requis (cf. export trombinoscope) */
 			final VaadinSession session = evt.getSession();
 			session.lock();
@@ -528,94 +510,57 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 				final String annee = listeAnnees.getValue();
 				final String libObj = panelTitre.getText();
 				// Récupération des paramètres d'affichage du tableau
-				final boolean etp = collapseEtp != null && Boolean.TRUE.equals(collapseEtp.getValue());
-				final boolean s1 = collapseResultatsS1 != null && Boolean.TRUE.equals(collapseResultatsS1.getValue());
-				final boolean s2 = collapseResultatsS2 != null && Boolean.TRUE.equals(collapseResultatsS2.getValue());
-				final boolean grp = collapseGrp != null && Boolean.TRUE.equals(collapseGrp.getValue());
+				final boolean etp = !typeIsVet() && afficherEtape;
+				final boolean s1 = afficherSession1;
+				final boolean s2 = afficherSession2;
+				final boolean grp = listeGroupes != null && afficherGroupe;
 				return new DownloadResponse(listeInscritsController.getXlsStream(linscrits, listecodind, libellesGroupes, libObj, annee, typeFavori, etp, s1, s2, grp, afficherInfoNaissance()),
 					nomFichierXls, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", -1);
 			} finally {
 				session.unlock();
 			}
-		}), "");
-		exportExcelAnchor.add(btnExportExcel);
-		exportExcelAnchor.getElement().setAttribute("download", true);
-		leftResumeLayout.add(exportExcelAnchor);
+		}));
 
 		resumeLayout.add(leftResumeLayout);
-
-		//Middle layout avec les boutons de collapse des colonnes
-		middleResumeLayout = new HorizontalLayout();
-		middleResumeLayout.addClassName("small-font-element");
-		middleResumeLayout.setSpacing(true);
-
-		if (!typeIsVet()) {
-			collapseEtp = new Checkbox(getTranslation(NAME + ".collapseEtp.title"));
-			collapseEtp.setValue(true);
-			collapseEtp.addValueChangeListener(e -> colEtape.setVisible(collapseEtp.getValue()));
-			collapseEtp.setTooltipText(getTranslation(NAME + ".collapseEtp.description"));
-			middleResumeLayout.add(collapseEtp);
-		}
-		collapseResultatsS1 = new Checkbox(getTranslation(NAME + ".collapseResultatsS1.title"));
-		collapseResultatsS1.setValue(false);
-		collapseResultatsS1.addValueChangeListener(e -> colNotes1.setVisible(collapseResultatsS1.getValue()));
-		collapseResultatsS1.setTooltipText(getTranslation(NAME + ".collapseResultatsS1.description"));
-		middleResumeLayout.add(collapseResultatsS1);
-
-		collapseResultatsS2 = new Checkbox(getTranslation(NAME + ".collapseResultatsS2.title"));
-		collapseResultatsS2.setValue(false);
-		collapseResultatsS2.addValueChangeListener(e -> colNotes2.setVisible(collapseResultatsS2.getValue()));
-		collapseResultatsS2.setTooltipText(getTranslation(NAME + ".collapseResultatsS2.description"));
-		middleResumeLayout.add(collapseResultatsS2);
-
-		if (listeGroupes != null) {
-			collapseGrp = new Checkbox(getTranslation(NAME + ".collapseGrp.title"));
-			collapseGrp.setValue(false);
-			collapseGrp.addValueChangeListener(e -> colGroupe.setVisible(collapseGrp.getValue()));
-			collapseGrp.setTooltipText(getTranslation(NAME + ".collapseGrp.description"));
-			middleResumeLayout.add(collapseGrp);
-		}
-
-		resumeLayout.add(middleResumeLayout);
 
 		//Menu d'actions ouvert au clic sur le bouton : exports puis affichage des colonnes
 		resumeMenu = new ContextMenu(btnResumeMenu);
 		resumeMenu.setOpenOnClick(true);
 
-		//Export du trombinoscope (pdf), visible selon l'affichage courant
+		//Export du trombinoscope (pdf), proposé uniquement lorsque le trombinoscope est affiché
 		menuItemExportTrombi = resumeMenu.addItem(
 			actionMenuItem(VaadinIcon.FILE_TEXT_O, getTranslation(NAME + ".pdf.trombinoscope.link")),
-			e -> exportTrombiAnchor.getElement().callJsFunction("click"));
-		menuItemExportTrombi.setVisible(exportTrombiAnchor.isVisible());
+			e -> ancreExportTrombi.getElement().callJsFunction("click"));
+		menuItemExportTrombi.setVisible(afficherTrombinoscope);
 
-		//Export de la liste (excel), visible selon l'affichage courant
+		//Export de la liste (excel), proposé uniquement lorsque la liste est affichée
 		menuItemExportExcel = resumeMenu.addItem(
 			actionMenuItem(VaadinIcon.FILE_TABLE, getTranslation(NAME + ".excel.link")),
-			e -> exportExcelAnchor.getElement().callJsFunction("click"));
-		menuItemExportExcel.setVisible(exportExcelAnchor.isVisible());
+			e -> ancreExportExcel.getElement().callJsFunction("click"));
+		menuItemExportExcel.setVisible(!afficherTrombinoscope);
 
-		//Actions d'affichage des colonnes, en cochant/décochant la case correspondante
-		if (collapseEtp != null) {
+		//Actions d'affichage des colonnes, en cochant/décochant l'entrée correspondante
+		if (!typeIsVet()) {
 			menuItemCollapseEtp = resumeMenu.addItem(
 				actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseEtp.title")),
-				e -> basculerCheckbox(collapseEtp));
-			initialiserItemCheckbox(collapseEtp, menuItemCollapseEtp);
+				e -> basculerAffichageColonne(menuItemCollapseEtp, true));
+			initialiserItemColonne(menuItemCollapseEtp, afficherEtape);
 		}
 		menuItemCollapseS1 = resumeMenu.addItem(
 			actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseResultatsS1.title")),
-			e -> basculerCheckbox(collapseResultatsS1));
-		initialiserItemCheckbox(collapseResultatsS1, menuItemCollapseS1);
+			e -> basculerAffichageColonne(menuItemCollapseS1, false));
+		initialiserItemColonne(menuItemCollapseS1, afficherSession1);
 
 		menuItemCollapseS2 = resumeMenu.addItem(
 			actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseResultatsS2.title")),
-			e -> basculerCheckbox(collapseResultatsS2));
-		initialiserItemCheckbox(collapseResultatsS2, menuItemCollapseS2);
+			e -> basculerAffichageColonne(menuItemCollapseS2, false));
+		initialiserItemColonne(menuItemCollapseS2, afficherSession2);
 
-		if (collapseGrp != null) {
+		if (listeGroupes != null) {
 			menuItemCollapseGrp = resumeMenu.addItem(
 				actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseGrp.title")),
-				e -> basculerCheckbox(collapseGrp));
-			initialiserItemCheckbox(collapseGrp, menuItemCollapseGrp);
+				e -> basculerAffichageColonne(menuItemCollapseGrp, false));
+			initialiserItemColonne(menuItemCollapseGrp, afficherGroupe);
 		}
 
 		majVisibiliteResumeMenu();
@@ -661,13 +606,10 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		//Gestion du clic sur le bouton de retour à l'affichage de la liste
 		btnRetourListe.addClickListener(e -> {
 			afficherTrombinoscope = false;
-			exportTrombiAnchor.setVisible(false);
-			exportExcelAnchor.setVisible(true);
 			btnTrombi.setVisible(true);
 			btnRetourListe.setVisible(false);
 			dataLayout.removeAll();
 			dataLayout.add(inscritstable);
-			middleResumeLayout.setVisible(true);
 			majVisibiliteResumeMenu();
 		});
 		resumeLayout.add(buttonResumeLayout);
@@ -846,18 +788,52 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		btnActionsMenu.setVisible(actionVisible);
 	}
 
-	/** Initialise une entrée de menu cochable à partir de l'état de la case à cocher associée. */
-	private void initialiserItemCheckbox(final Checkbox checkbox, final MenuItem menuItem) {
-		menuItem.setCheckable(true);
-		menuItem.setKeepOpen(true);
-		menuItem.setChecked(Boolean.TRUE.equals(checkbox.getValue()));
-		//Maintient l'état coché du menu synchronisé avec la case à cocher
-		checkbox.addValueChangeListener(e -> menuItem.setChecked(Boolean.TRUE.equals(e.getValue())));
+	/** Crée une ancre masquée, rattachée à la vue, servant uniquement à déclencher un téléchargement. */
+	private Anchor creerAncreMasquee(final DownloadHandler handler) {
+		final Anchor anchor = new Anchor(handler, "");
+		anchor.getElement().setAttribute("download", true);
+		anchor.getStyle().set("display", "none");
+		add(anchor);
+		return anchor;
 	}
 
-	/** Bascule la case à cocher associée à une entrée de menu (l'état coché suit via le listener). */
-	private void basculerCheckbox(final Checkbox checkbox) {
-		checkbox.setValue(!Boolean.TRUE.equals(checkbox.getValue()));
+	/** Initialise une entrée de menu cochable correspondant à l'affichage d'une colonne. */
+	private void initialiserItemColonne(final MenuItem menuItem, final boolean affiche) {
+		menuItem.setCheckable(true);
+		menuItem.setKeepOpen(true);
+		menuItem.setChecked(affiche);
+	}
+
+	/**
+	 * Applique l'affichage de la colonne associée à une entrée de menu.
+	 * L'état est basculé à partir de la valeur métier, puis resynchronisé sur le composant.
+	 */
+	private void basculerAffichageColonne(final MenuItem menuItem, final boolean estEtape) {
+		if (estEtape) {
+			afficherEtape = !afficherEtape;
+			menuItem.setChecked(afficherEtape);
+			if (colEtape != null) {
+				colEtape.setVisible(afficherEtape);
+			}
+		} else if (menuItem == menuItemCollapseS1) {
+			afficherSession1 = !afficherSession1;
+			menuItem.setChecked(afficherSession1);
+			if (colNotes1 != null) {
+				colNotes1.setVisible(afficherSession1);
+			}
+		} else if (menuItem == menuItemCollapseS2) {
+			afficherSession2 = !afficherSession2;
+			menuItem.setChecked(afficherSession2);
+			if (colNotes2 != null) {
+				colNotes2.setVisible(afficherSession2);
+			}
+		} else if (menuItem == menuItemCollapseGrp) {
+			afficherGroupe = !afficherGroupe;
+			menuItem.setChecked(afficherGroupe);
+			if (colGroupe != null) {
+				colGroupe.setVisible(afficherGroupe);
+			}
+		}
 	}
 
 	/**
@@ -868,26 +844,25 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		if (resumeMenu == null) {
 			return;
 		}
-		//Les exports suivent la visibilité de leur ancre (le trombinoscope et la liste s'excluent)
+		//Le trombinoscope et la liste s'excluent : un seul export est proposé
 		if (menuItemExportTrombi != null) {
-			menuItemExportTrombi.setVisible(exportTrombiAnchor.isVisible());
+			menuItemExportTrombi.setVisible(afficherTrombinoscope);
 		}
 		if (menuItemExportExcel != null) {
-			menuItemExportExcel.setVisible(exportExcelAnchor.isVisible());
+			menuItemExportExcel.setVisible(!afficherTrombinoscope);
 		}
-		//Les actions d'affichage des colonnes suivent la visibilité du layout des cases à cocher
-		final boolean colonnesVisibles = middleResumeLayout == null || middleResumeLayout.isVisible();
+		//Les actions d'affichage des colonnes ne concernent que la liste
 		if (menuItemCollapseEtp != null) {
-			menuItemCollapseEtp.setVisible(colonnesVisibles);
+			menuItemCollapseEtp.setVisible(!afficherTrombinoscope);
 		}
 		if (menuItemCollapseS1 != null) {
-			menuItemCollapseS1.setVisible(colonnesVisibles);
+			menuItemCollapseS1.setVisible(!afficherTrombinoscope);
 		}
 		if (menuItemCollapseS2 != null) {
-			menuItemCollapseS2.setVisible(colonnesVisibles);
+			menuItemCollapseS2.setVisible(!afficherTrombinoscope);
 		}
 		if (menuItemCollapseGrp != null) {
-			menuItemCollapseGrp.setVisible(colonnesVisibles);
+			menuItemCollapseGrp.setVisible(!afficherTrombinoscope);
 		}
 		final boolean actionVisible = (menuItemExportTrombi != null && menuItemExportTrombi.isVisible())
 			|| (menuItemExportExcel != null && menuItemExportExcel.isVisible())
@@ -916,14 +891,11 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 
 		afficherTrombinoscope = true;
 		btnTrombi.setVisible(false);
-		exportTrombiAnchor.setVisible(true);
-		exportExcelAnchor.setVisible(false);
 
 		//Bouton retour à la liste devient visible
 		btnRetourListe.setVisible(true);
 		dataLayout.removeAll();
 		dataLayout.add(trombiLayout);
-		middleResumeLayout.setVisible(false);
 		majVisibiliteResumeMenu();
 	}
 
