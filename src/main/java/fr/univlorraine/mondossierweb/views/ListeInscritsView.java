@@ -156,6 +156,16 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private Checkbox collapseResultatsS1;
 	private Checkbox collapseResultatsS2;
 	private Checkbox collapseGrp;
+	/** Bouton d'actions (trois points verticaux) affiché à côté du bouton d'information */
+	private Button btnResumeMenu;
+	/** Menu d'actions des exports et de l'affichage des colonnes */
+	private ContextMenu resumeMenu;
+	private MenuItem menuItemExportTrombi;
+	private MenuItem menuItemExportExcel;
+	private MenuItem menuItemCollapseEtp;
+	private MenuItem menuItemCollapseS1;
+	private MenuItem menuItemCollapseS2;
+	private MenuItem menuItemCollapseGrp;
 
 	@Override
 	public String getPageTitle() {
@@ -467,6 +477,12 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		});
 		leftResumeLayout.add(infoDescriptionButton);
 
+		//Bouton d'actions (trois points verticaux) : exports et affichage des colonnes
+		btnResumeMenu = new Button(VaadinIcon.ELLIPSIS_V.create());
+		btnResumeMenu.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		btnResumeMenu.setTooltipText(getTranslation(NAME + ".btn.actions"));
+		leftResumeLayout.add(btnResumeMenu);
+
 		//Bouton export trombinoscope (pdf)
 		String nomFichier = getTranslation("pdf.trombinoscope.title") + "_" + panelTitre.getText() + ".pdf";
 		nomFichier = nomFichier.replaceAll(" ", "_");
@@ -562,6 +578,48 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 
 		resumeLayout.add(middleResumeLayout);
 
+		//Menu d'actions ouvert au clic sur le bouton : exports puis affichage des colonnes
+		resumeMenu = new ContextMenu(btnResumeMenu);
+		resumeMenu.setOpenOnClick(true);
+
+		//Export du trombinoscope (pdf), visible selon l'affichage courant
+		menuItemExportTrombi = resumeMenu.addItem(
+			actionMenuItem(VaadinIcon.FILE_TEXT_O, getTranslation(NAME + ".pdf.trombinoscope.link")),
+			e -> exportTrombiAnchor.getElement().callJsFunction("click"));
+		menuItemExportTrombi.setVisible(exportTrombiAnchor.isVisible());
+
+		//Export de la liste (excel), visible selon l'affichage courant
+		menuItemExportExcel = resumeMenu.addItem(
+			actionMenuItem(VaadinIcon.FILE_TABLE, getTranslation(NAME + ".excel.link")),
+			e -> exportExcelAnchor.getElement().callJsFunction("click"));
+		menuItemExportExcel.setVisible(exportExcelAnchor.isVisible());
+
+		//Actions d'affichage des colonnes, en cochant/décochant la case correspondante
+		if (collapseEtp != null) {
+			menuItemCollapseEtp = resumeMenu.addItem(
+				actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseEtp.title")),
+				e -> basculerCheckbox(collapseEtp));
+			initialiserItemCheckbox(collapseEtp, menuItemCollapseEtp);
+		}
+		menuItemCollapseS1 = resumeMenu.addItem(
+			actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseResultatsS1.title")),
+			e -> basculerCheckbox(collapseResultatsS1));
+		initialiserItemCheckbox(collapseResultatsS1, menuItemCollapseS1);
+
+		menuItemCollapseS2 = resumeMenu.addItem(
+			actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseResultatsS2.title")),
+			e -> basculerCheckbox(collapseResultatsS2));
+		initialiserItemCheckbox(collapseResultatsS2, menuItemCollapseS2);
+
+		if (collapseGrp != null) {
+			menuItemCollapseGrp = resumeMenu.addItem(
+				actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseGrp.title")),
+				e -> basculerCheckbox(collapseGrp));
+			initialiserItemCheckbox(collapseGrp, menuItemCollapseGrp);
+		}
+
+		majVisibiliteResumeMenu();
+
 		final HorizontalLayout buttonResumeLayout = new HorizontalLayout();
 		buttonResumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 		//Bouton pour afficher les filtres
@@ -610,6 +668,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			dataLayout.removeAll();
 			dataLayout.add(inscritstable);
 			middleResumeLayout.setVisible(true);
+			majVisibiliteResumeMenu();
 		});
 		resumeLayout.add(buttonResumeLayout);
 		infoLayout.add(resumeLayout);
@@ -787,6 +846,58 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		btnActionsMenu.setVisible(actionVisible);
 	}
 
+	/** Initialise une entrée de menu cochable à partir de l'état de la case à cocher associée. */
+	private void initialiserItemCheckbox(final Checkbox checkbox, final MenuItem menuItem) {
+		menuItem.setCheckable(true);
+		menuItem.setKeepOpen(true);
+		menuItem.setChecked(Boolean.TRUE.equals(checkbox.getValue()));
+		//Maintient l'état coché du menu synchronisé avec la case à cocher
+		checkbox.addValueChangeListener(e -> menuItem.setChecked(Boolean.TRUE.equals(e.getValue())));
+	}
+
+	/** Bascule la case à cocher associée à une entrée de menu (l'état coché suit via le listener). */
+	private void basculerCheckbox(final Checkbox checkbox) {
+		checkbox.setValue(!Boolean.TRUE.equals(checkbox.getValue()));
+	}
+
+	/**
+	 * Affiche les actions d'export et d'affichage des colonnes selon l'affichage courant
+	 * (liste ou trombinoscope), puis masque le bouton d'actions s'il ne reste aucune action.
+	 */
+	private void majVisibiliteResumeMenu() {
+		if (resumeMenu == null) {
+			return;
+		}
+		//Les exports suivent la visibilité de leur ancre (le trombinoscope et la liste s'excluent)
+		if (menuItemExportTrombi != null) {
+			menuItemExportTrombi.setVisible(exportTrombiAnchor.isVisible());
+		}
+		if (menuItemExportExcel != null) {
+			menuItemExportExcel.setVisible(exportExcelAnchor.isVisible());
+		}
+		//Les actions d'affichage des colonnes suivent la visibilité du layout des cases à cocher
+		final boolean colonnesVisibles = middleResumeLayout == null || middleResumeLayout.isVisible();
+		if (menuItemCollapseEtp != null) {
+			menuItemCollapseEtp.setVisible(colonnesVisibles);
+		}
+		if (menuItemCollapseS1 != null) {
+			menuItemCollapseS1.setVisible(colonnesVisibles);
+		}
+		if (menuItemCollapseS2 != null) {
+			menuItemCollapseS2.setVisible(colonnesVisibles);
+		}
+		if (menuItemCollapseGrp != null) {
+			menuItemCollapseGrp.setVisible(colonnesVisibles);
+		}
+		final boolean actionVisible = (menuItemExportTrombi != null && menuItemExportTrombi.isVisible())
+			|| (menuItemExportExcel != null && menuItemExportExcel.isVisible())
+			|| (menuItemCollapseEtp != null && menuItemCollapseEtp.isVisible())
+			|| (menuItemCollapseS1 != null && menuItemCollapseS1.isVisible())
+			|| (menuItemCollapseS2 != null && menuItemCollapseS2.isVisible())
+			|| (menuItemCollapseGrp != null && menuItemCollapseGrp.isVisible());
+		btnResumeMenu.setVisible(actionVisible);
+	}
+
 	/** Construit l'icône et le libellé textuel d'une entrée du menu d'actions. */
 	private HorizontalLayout actionMenuItem(final VaadinIcon icone, final String libelle) {
 		final HorizontalLayout layout = new HorizontalLayout();
@@ -813,6 +924,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		dataLayout.removeAll();
 		dataLayout.add(trombiLayout);
 		middleResumeLayout.setVisible(false);
+		majVisibiliteResumeMenu();
 	}
 
 	private void displayTrombinoscope() {
