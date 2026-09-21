@@ -588,6 +588,21 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			return boutonActionLayout;
 		}
 
+		if (peutVoirInscrits) {
+			final Button btnListeInscrits = new Button(VaadinIcon.USERS.create());
+			btnListeInscrits.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+			btnListeInscrits.setTooltipText(getTranslation(NAME + ".acceslisteinscrits"));
+			btnListeInscrits.addClickListener(e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
+			boutonActionLayout.add(btnListeInscrits);
+		}
+
+		if (peutEtreDeplie) {
+			final Button btnDeplier = new Button(VaadinIcon.SITEMAP.create());
+			btnDeplier.setTooltipText(getTranslation(NAME + ".deplierarbo"));
+			btnDeplier.addClickListener(e -> deplierToutAvecIndicateur(item));
+			boutonActionLayout.add(btnDeplier);
+		}
+
 		//Si c'est un objet qui peut être mis en favori
 		if (peutEtreFavori) {
 			final Button btnFav = new Button();
@@ -599,21 +614,6 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 				treeDataProvider.refreshAll();
 			});
 			boutonActionLayout.add(btnFav);
-		}
-
-		if (peutEtreDeplie) {
-			final Button btnDeplier = new Button(VaadinIcon.SITEMAP.create());
-			btnDeplier.setTooltipText(getTranslation(NAME + ".deplierarbo"));
-			btnDeplier.addClickListener(e -> deplierToutAvecIndicateur(item));
-			boutonActionLayout.add(btnDeplier);
-		}
-
-		if (peutVoirInscrits) {
-			final Button btnListeInscrits = new Button(VaadinIcon.USERS.create());
-			btnListeInscrits.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-			btnListeInscrits.setTooltipText(getTranslation(NAME + ".acceslisteinscrits"));
-			btnListeInscrits.addClickListener(e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
-			boutonActionLayout.add(btnListeInscrits);
 		}
 
 		return boutonActionLayout;

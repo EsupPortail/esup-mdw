@@ -122,6 +122,17 @@ vaadin-grid::part(marked) {
 	cursor: default;
 }
 
+/* En-tête du menu d'actions : masqué sur desktop, affiché uniquement sur mobile. */
+.menu-actions-entete-item {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.menu-actions-entete-item {
+		display: flex;
+	}
+}
+
 /* Identifiant technique rappelé sous le libellé dans l'en-tête du menu d'actions. */
 .menu-actions-entete-id {
 	display: block;
@@ -237,9 +248,14 @@ vaadin-grid::part(marked) {
 		display: none;
 	}
 
-	/* Bouton de mise en favori de la liste des inscrits : icône seule sur mobile */
-	.btn-ajout-favori::part(label) {
-		display: none;
+	/* Liste des inscrits : le titre occupe toute la largeur et le bouton d'actions
+	 * est poussé à droite. */
+	.titre-liste-inscrits {
+		width: 100%;
+	}
+
+	.titre-liste-inscrits .btn-actions-menu {
+		margin-left: auto;
 	}
 }
 

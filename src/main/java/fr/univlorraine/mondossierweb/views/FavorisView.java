@@ -169,21 +169,6 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 		HorizontalLayout boutonActionLayout = new HorizontalLayout();
 		boutonActionLayout.setSpacing(false);
 
-		Button btnfav = new Button(VaadinIcon.TRASH.create());
-		btnfav.addThemeVariants(ButtonVariant.LUMO_ERROR);
-		btnfav.addClassName("deletefavbutton");
-		btnfav.setTooltipText(getTranslation(NAME + ".suppressionfavori"));
-		//Gestion du clic sur le bouton de suppression du favori
-		btnfav.addClickListener(event -> supprimerFavori(fav));
-		boutonActionLayout.add(btnfav);
-
-		// Si on peut accéder à l'arborescence depuis le favori
-		if (peutAccederArborescence(typeObj)) {
-			Button btnArbo = new Button(VaadinIcon.SITEMAP.create());
-			btnArbo.setTooltipText(getTranslation(NAME + ".accesarborescence"));
-			btnArbo.addClickListener(e -> accederArborescence(idObj, typeObj));
-			boutonActionLayout.add(btnArbo);
-		}
 		// Si on peut accéder à la liste des inscrits depuis le favori
 		if (peutAccederListeInscrits(typeObj)) {
 			Button btnListeInscrits = new Button(VaadinIcon.USERS.create());
@@ -192,6 +177,22 @@ public class FavorisView extends VerticalLayout implements HasDynamicTitle, Befo
 			btnListeInscrits.addClickListener(e -> accederListeInscrits(idObj, typeObj));
 			boutonActionLayout.add(btnListeInscrits);
 		}
+		// Si on peut accéder à l'arborescence depuis le favori
+		if (peutAccederArborescence(typeObj)) {
+			Button btnArbo = new Button(VaadinIcon.SITEMAP.create());
+			btnArbo.setTooltipText(getTranslation(NAME + ".accesarborescence"));
+			btnArbo.addClickListener(e -> accederArborescence(idObj, typeObj));
+			boutonActionLayout.add(btnArbo);
+		}
+
+		Button btnfav = new Button(VaadinIcon.TRASH.create());
+		btnfav.addThemeVariants(ButtonVariant.LUMO_ERROR);
+		btnfav.addClassName("deletefavbutton");
+		btnfav.setTooltipText(getTranslation(NAME + ".suppressionfavori"));
+		//Gestion du clic sur le bouton de suppression du favori
+		btnfav.addClickListener(event -> supprimerFavori(fav));
+		boutonActionLayout.add(btnfav);
+
 		return boutonActionLayout;
 	}
 

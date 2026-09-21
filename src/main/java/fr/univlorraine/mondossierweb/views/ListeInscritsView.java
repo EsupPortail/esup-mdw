@@ -24,12 +24,15 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -116,7 +119,16 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private Grid.Column<Inscrit> colNotes2;
 	private Grid.Column<Inscrit> colGroupe;
 	private FlexLayout trombiLayout;
-	private Button btnAjoutFavori;
+	/** Menu d'actions (trois points verticaux) affiché à côté du titre */
+	private ContextMenu actionsMenu;
+	/** Bouton d'ouverture du menu d'actions */
+	private Button btnActionsMenu;
+	/** Entrée du menu d'actions pour ajouter l'objet aux favoris */
+	private MenuItem menuItemAjoutFavori;
+	/** Entrée du menu d'actions pour réafficher les filtres */
+	private MenuItem menuItemDisplayFiltres;
+	/** Entrée du menu d'actions pour masquer les filtres (uniquement pour un ELP) */
+	private MenuItem menuItemMasquerFiltres;
 	private String code;
 	private String typeFavori;
 	private VerticalLayout dataLayout;
@@ -133,6 +145,8 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private Div panelFormInscrits;
 	private HorizontalLayout panelLayout;
 	private Span panelTitre;
+	/** Layout regroupant le titre et le bouton d'actions */
+	private HorizontalLayout titreLayout;
 	private HorizontalLayout leftResumeLayout;
 	private HorizontalLayout middleResumeLayout;
 	private Button btnDisplayFiltres;
@@ -234,28 +248,59 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		favpk.setTypfav(typeFavori);
 		final Favoris favori = new Favoris();
 		favori.setId(favpk);
-		//Bouton pour ajouter l'objet aux favoris, affiché à côté du titre
-		btnAjoutFavori = new Button(getTranslation(NAME + ".btn.ajoutFavori"), VaadinIcon.STAR_O.create());
-		btnAjoutFavori.addClassName("btn-ajout-favori");
-		btnAjoutFavori.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		btnAjoutFavori.addClickListener(e -> {
-			//creation du favori en base sur le clic du bouton
-			favorisController.saveFavori(favori);
-			//On cache le bouton de mise en favori
-			btnAjoutFavori.setVisible(false);
-			//Affichage d'un message de confirmation
-			Notification.show(getTranslation(NAME + ".message.favoriAjoute"));
-		});
-		//Si l'objet est déjà en favori, on n'affiche pas le bouton de mise en favori
-		if (lfav != null && lfav.contains(favori)) {
-			btnAjoutFavori.setVisible(false);
-		}
 
-		//Titre et bouton de mise en favori alignés horizontalement
-		final HorizontalLayout titreLayout = new HorizontalLayout();
+		//Bouton d'actions (trois points verticaux) affiché à côté du titre
+		btnActionsMenu = new Button(VaadinIcon.ELLIPSIS_V.create());
+		btnActionsMenu.addClassName("btn-actions-menu");
+		btnActionsMenu.setTooltipText(getTranslation(NAME + ".btn.actions"));
+
+		//Titre et bouton d'actions alignés horizontalement
+		titreLayout = new HorizontalLayout();
+		titreLayout.addClassName("titre-liste-inscrits");
 		titreLayout.setSpacing(true);
 		titreLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-		titreLayout.add(panelTitre, btnAjoutFavori);
+		titreLayout.add(panelTitre, btnActionsMenu);
+
+		//Menu d'actions ouvert au clic sur le bouton : titre rappelant l'objet puis actions
+		actionsMenu = new ContextMenu(btnActionsMenu);
+		actionsMenu.setOpenOnClick(true);
+		final Span enteteMenu = new Span(panelTitre.getText());
+		enteteMenu.addClassName("menu-actions-entete");
+		//En-tête affiché uniquement sur mobile
+		actionsMenu.addItem(enteteMenu).setClassName("menu-actions-entete-item");
+
+		//Action de mise en favori de l'objet concerné par la liste des inscrits
+		menuItemAjoutFavori = actionsMenu.addItem(
+			actionMenuItem(VaadinIcon.STAR_O, getTranslation(NAME + ".btn.ajoutFavori")),
+			e -> {
+				//creation du favori en base sur le clic du menu
+				favorisController.saveFavori(favori);
+				//On cache l'action de mise en favori
+				menuItemAjoutFavori.setVisible(false);
+				//Affichage d'un message de confirmation
+				Notification.show(getTranslation(NAME + ".message.favoriAjoute"));
+				majVisibiliteBtnActionsMenu();
+			});
+		//Si l'objet est déjà en favori, on n'affiche pas l'action de mise en favori
+		if (lfav != null && lfav.contains(favori)) {
+			menuItemAjoutFavori.setVisible(false);
+		}
+
+		//Action de réaffichage des filtres (même condition d'affichage que btnDisplayFiltres)
+		menuItemDisplayFiltres = actionsMenu.addItem(
+			actionMenuItem(VaadinIcon.FILTER, getTranslation(NAME + ".btn.displayFilters")),
+			e -> afficherFiltres());
+		menuItemDisplayFiltres.setVisible(false);
+
+		//Action de masquage des filtres, uniquement pour un ELP (remplace l'ancien bouton btnMasquerFiltre)
+		if (typeIsElp()) {
+			menuItemMasquerFiltres = actionsMenu.addItem(
+				actionMenuItem(VaadinIcon.CHEVRON_CIRCLE_UP, getTranslation(NAME + ".btn.btnMasquerFiltre")),
+				e -> masquerFiltres());
+		}
+
+		//Le bouton d'actions n'est affiché que si au moins une action est disponible
+		majVisibiliteBtnActionsMenu();
 
 		//Affichage d'une liste déroulante contenant la liste des années
 		final List<String> lannees = sessionController.getListeAnneeInscrits();
@@ -374,22 +419,6 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			}
 		}
 		panelLayout.add(formInscritLayout);
-
-		if (typeIsElp()) {
-			final VerticalLayout filtreBtnLayout = new VerticalLayout();
-			filtreBtnLayout.setPadding(false);
-			filtreBtnLayout.setAlignItems(FlexComponent.Alignment.END);
-			final Button btnMasquerFiltre = new Button(getTranslation(NAME + ".btn.btnMasquerFiltre"), VaadinIcon.CHEVRON_CIRCLE_UP.create());
-			btnMasquerFiltre.addClickListener(e -> {
-				panelFormInscrits.removeAll();
-				panelFormInscrits.add(titreLayout);
-				if (btnDisplayFiltres != null) {
-					btnDisplayFiltres.setVisible(true);
-				}
-			});
-			filtreBtnLayout.add(btnMasquerFiltre);
-			panelLayout.add(filtreBtnLayout);
-		}
 
 		panelFormInscrits.add(titreLayout, panelLayout);
 		add(panelFormInscrits);
@@ -538,11 +567,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		//Bouton pour afficher les filtres
 		btnDisplayFiltres = new Button(VaadinIcon.FILTER.create());
 		btnDisplayFiltres.setTooltipText(getTranslation(NAME + ".btn.displayFilters"));
-		btnDisplayFiltres.addClickListener(e -> {
-			panelFormInscrits.removeAll();
-			panelFormInscrits.add(titreLayout, panelLayout);
-			btnDisplayFiltres.setVisible(false);
-		});
+		btnDisplayFiltres.addClickListener(e -> afficherFiltres());
 		btnDisplayFiltres.setVisible(false);
 		buttonResumeLayout.add(btnDisplayFiltres);
 
@@ -713,6 +738,60 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private String getGroupeSelectionne() {
 		final String grpSelectionne = (listeGroupes != null && listeGroupes.getValue() != null) ? listeGroupes.getValue() : null;
 		return TOUS_LES_GROUPES_LABEL.equals(grpSelectionne) ? null : grpSelectionne;
+	}
+
+	/** Masque les filtres : seul le titre (et le bouton d'actions) reste affiché. */
+	private void masquerFiltres() {
+		panelFormInscrits.removeAll();
+		panelFormInscrits.add(titreLayout);
+		if (btnDisplayFiltres != null) {
+			btnDisplayFiltres.setVisible(true);
+		}
+		if (menuItemDisplayFiltres != null) {
+			menuItemDisplayFiltres.setVisible(true);
+		}
+		if (menuItemMasquerFiltres != null) {
+			menuItemMasquerFiltres.setVisible(false);
+		}
+		majVisibiliteBtnActionsMenu();
+	}
+
+	/** Réaffiche les filtres sous le titre. */
+	private void afficherFiltres() {
+		panelFormInscrits.removeAll();
+		panelFormInscrits.add(titreLayout, panelLayout);
+		if (btnDisplayFiltres != null) {
+			btnDisplayFiltres.setVisible(false);
+		}
+		if (menuItemDisplayFiltres != null) {
+			menuItemDisplayFiltres.setVisible(false);
+		}
+		if (menuItemMasquerFiltres != null) {
+			menuItemMasquerFiltres.setVisible(true);
+		}
+		majVisibiliteBtnActionsMenu();
+	}
+
+	/** Affiche le bouton d'actions uniquement si au moins une action du menu est visible. */
+	private void majVisibiliteBtnActionsMenu() {
+		if (btnActionsMenu == null) {
+			return;
+		}
+		final boolean actionVisible = (menuItemAjoutFavori != null && menuItemAjoutFavori.isVisible())
+			|| (menuItemDisplayFiltres != null && menuItemDisplayFiltres.isVisible())
+			|| (menuItemMasquerFiltres != null && menuItemMasquerFiltres.isVisible());
+		btnActionsMenu.setVisible(actionVisible);
+	}
+
+	/** Construit l'icône et le libellé textuel d'une entrée du menu d'actions. */
+	private HorizontalLayout actionMenuItem(final VaadinIcon icone, final String libelle) {
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(true);
+		layout.setAlignItems(FlexComponent.Alignment.CENTER);
+		final Icon icon = icone.create();
+		icon.setSize("var(--lumo-icon-size-s)");
+		layout.add(icon, new Span(libelle));
+		return layout;
 	}
 
 	private void executeDisplayTrombinoscope() {
