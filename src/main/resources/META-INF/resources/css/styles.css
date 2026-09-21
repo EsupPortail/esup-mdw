@@ -236,6 +236,11 @@ vaadin-grid::part(marked) {
 	.btn-recherche::part(label) {
 		display: none;
 	}
+
+	/* Bouton de mise en favori de la liste des inscrits : icône seule sur mobile */
+	.btn-ajout-favori::part(label) {
+		display: none;
+	}
 }
 
 /* Filtre de la recherche rapide : pas de padding autour du champ. */

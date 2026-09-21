@@ -212,7 +212,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			return;
 		}
 
-		//Panel contenant les filtres d'affichage et le bouton de mise en favori
+		//Panel contenant les filtres d'affichage
 		panelLayout = new HorizontalLayout();
 		panelLayout.setWidthFull();
 		panelLayout.addClassName("small-font-element");
@@ -225,6 +225,37 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		panelTitre.addClassName("font-bold");
 		panelFormInscrits = new Div();
 		panelFormInscrits.setWidthFull();
+
+		//Création du favori pour l'objet concerné par la liste des inscrits
+		final List<Favoris> lfav = favorisController.getFavoris();
+		final FavorisPK favpk = new FavorisPK();
+		favpk.setLogin(userController.getCurrentUserName());
+		favpk.setIdfav(code);
+		favpk.setTypfav(typeFavori);
+		final Favoris favori = new Favoris();
+		favori.setId(favpk);
+		//Bouton pour ajouter l'objet aux favoris, affiché à côté du titre
+		btnAjoutFavori = new Button(getTranslation(NAME + ".btn.ajoutFavori"), VaadinIcon.STAR_O.create());
+		btnAjoutFavori.addClassName("btn-ajout-favori");
+		btnAjoutFavori.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		btnAjoutFavori.addClickListener(e -> {
+			//creation du favori en base sur le clic du bouton
+			favorisController.saveFavori(favori);
+			//On cache le bouton de mise en favori
+			btnAjoutFavori.setVisible(false);
+			//Affichage d'un message de confirmation
+			Notification.show(getTranslation(NAME + ".message.favoriAjoute"));
+		});
+		//Si l'objet est déjà en favori, on n'affiche pas le bouton de mise en favori
+		if (lfav != null && lfav.contains(favori)) {
+			btnAjoutFavori.setVisible(false);
+		}
+
+		//Titre et bouton de mise en favori alignés horizontalement
+		final HorizontalLayout titreLayout = new HorizontalLayout();
+		titreLayout.setSpacing(true);
+		titreLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+		titreLayout.add(panelTitre, btnAjoutFavori);
 
 		//Affichage d'une liste déroulante contenant la liste des années
 		final List<String> lannees = sessionController.getListeAnneeInscrits();
@@ -344,49 +375,23 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		}
 		panelLayout.add(formInscritLayout);
 
-		//Création du favori pour l'objet concerné par la liste des inscrits
-		final List<Favoris> lfav = favorisController.getFavoris();
-		final FavorisPK favpk = new FavorisPK();
-		favpk.setLogin(userController.getCurrentUserName());
-		favpk.setIdfav(code);
-		favpk.setTypfav(typeFavori);
-		final Favoris favori = new Favoris();
-		favori.setId(favpk);
-		//Création du bouton pour ajouter l'objet aux favoris
-		final VerticalLayout filtreBtnLayout = new VerticalLayout();
-		filtreBtnLayout.setPadding(false);
-		filtreBtnLayout.setAlignItems(FlexComponent.Alignment.END);
-		btnAjoutFavori = new Button(getTranslation(NAME + ".btn.ajoutFavori"), VaadinIcon.STAR_O.create());
-		btnAjoutFavori.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		btnAjoutFavori.addClickListener(e -> {
-			//creation du favori en base sur le clic du bouton
-			favorisController.saveFavori(favori);
-			//On cache le bouton de mise en favori
-			btnAjoutFavori.setVisible(false);
-			//Affichage d'un message de confirmation
-			Notification.show(getTranslation(NAME + ".message.favoriAjoute"));
-		});
-		filtreBtnLayout.add(btnAjoutFavori);
-
 		if (typeIsElp()) {
+			final VerticalLayout filtreBtnLayout = new VerticalLayout();
+			filtreBtnLayout.setPadding(false);
+			filtreBtnLayout.setAlignItems(FlexComponent.Alignment.END);
 			final Button btnMasquerFiltre = new Button(getTranslation(NAME + ".btn.btnMasquerFiltre"), VaadinIcon.CHEVRON_CIRCLE_UP.create());
 			btnMasquerFiltre.addClickListener(e -> {
 				panelFormInscrits.removeAll();
-				panelFormInscrits.add(panelTitre);
+				panelFormInscrits.add(titreLayout);
 				if (btnDisplayFiltres != null) {
 					btnDisplayFiltres.setVisible(true);
 				}
 			});
 			filtreBtnLayout.add(btnMasquerFiltre);
-		}
-		panelLayout.add(filtreBtnLayout);
-
-		//Si l'objet est déjà en favori, on n'affiche pas le bouton de mise en favori
-		if (lfav != null && lfav.contains(favori)) {
-			btnAjoutFavori.setVisible(false);
+			panelLayout.add(filtreBtnLayout);
 		}
 
-		panelFormInscrits.add(panelTitre, panelLayout);
+		panelFormInscrits.add(titreLayout, panelLayout);
 		add(panelFormInscrits);
 
 		//Récupération de la liste des inscrits
@@ -535,7 +540,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		btnDisplayFiltres.setTooltipText(getTranslation(NAME + ".btn.displayFilters"));
 		btnDisplayFiltres.addClickListener(e -> {
 			panelFormInscrits.removeAll();
-			panelFormInscrits.add(panelTitre, panelLayout);
+			panelFormInscrits.add(titreLayout, panelLayout);
 			btnDisplayFiltres.setVisible(false);
 		});
 		btnDisplayFiltres.setVisible(false);
