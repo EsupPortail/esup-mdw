@@ -147,7 +147,6 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	/** Layout regroupant le titre et le bouton d'actions */
 	private HorizontalLayout titreLayout;
 	private HorizontalLayout leftResumeLayout;
-	private Button btnDisplayFiltres;
 	/** Colonnes affichées dans la liste, pilotées depuis le menu d'actions */
 	private boolean afficherEtape = true;
 	private boolean afficherSession1 = false;
@@ -293,7 +292,7 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			menuItemAjoutFavori.setVisible(false);
 		}
 
-		//Action de réaffichage des filtres (même condition d'affichage que btnDisplayFiltres)
+		//Action de réaffichage des filtres
 		menuItemDisplayFiltres = actionsMenu.addItem(
 			actionMenuItem(VaadinIcon.FILTER, getTranslation(NAME + ".btn.displayFilters")),
 			e -> afficherFiltres());
@@ -567,12 +566,6 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 
 		final HorizontalLayout buttonResumeLayout = new HorizontalLayout();
 		buttonResumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-		//Bouton pour afficher les filtres
-		btnDisplayFiltres = new Button(VaadinIcon.FILTER.create());
-		btnDisplayFiltres.setTooltipText(getTranslation(NAME + ".btn.displayFilters"));
-		btnDisplayFiltres.addClickListener(e -> afficherFiltres());
-		btnDisplayFiltres.setVisible(false);
-		buttonResumeLayout.add(btnDisplayFiltres);
 
 		//Bouton trombinoscope
 		btnTrombi = new Button(getTranslation(NAME + ".message.trombinoscope"), VaadinIcon.GROUP.create());
@@ -749,9 +742,6 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private void masquerFiltres() {
 		panelFormInscrits.removeAll();
 		panelFormInscrits.add(titreLayout);
-		if (btnDisplayFiltres != null) {
-			btnDisplayFiltres.setVisible(true);
-		}
 		if (menuItemDisplayFiltres != null) {
 			menuItemDisplayFiltres.setVisible(true);
 		}
@@ -765,9 +755,6 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private void afficherFiltres() {
 		panelFormInscrits.removeAll();
 		panelFormInscrits.add(titreLayout, panelLayout);
-		if (btnDisplayFiltres != null) {
-			btnDisplayFiltres.setVisible(false);
-		}
 		if (menuItemDisplayFiltres != null) {
 			menuItemDisplayFiltres.setVisible(false);
 		}
