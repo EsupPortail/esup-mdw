@@ -160,6 +160,17 @@ vaadin-grid::part(marked) {
 	display: none;
 }
 
+/* Zone regroupant le rappel de la sélection et le bouton de réinitialisation
+ * dans la recherche arborescente (affichée au-dessus de la comboBox des années). */
+.selection-arbo {
+	box-sizing: border-box;
+	border: 1px solid var(--lumo-contrast-10pct);
+	border-radius: var(--lumo-border-radius-m);
+	background-color: var(--lumo-contrast-5pct);
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
 /* Utilitaires */
 .text-secondary {
 	color: var(--lumo-secondary-text-color);

@@ -137,9 +137,10 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 	private List<String> liste_types_deplier;
 	/** Rappel de la ligne sélectionnée, masqué sur petit écran */
 	private VerticalLayout ligneLayout;
+	/** Zone regroupant le rappel de sélection et le bouton de réinitialisation */
+	private HorizontalLayout selectionLayout;
 	private Span ligneSelectionneeLabel;
 	private Span vetElpSelectionneLabel;
-	private Span labelLigneSelectionneeLabel;
 	private String annee;
 	private ComboBox<String> comboBoxAnneeUniv;
 	private String code;
@@ -173,6 +174,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			if (initEffectue) {
 				initComposantes();
 				reinitButton.setVisible(true);
+				majZoneSelectionVisible();
 			}
 		}
 	}
@@ -221,13 +223,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		final boolean mobile = largeur < SEUIL_MOBILE_PX;
 		final boolean seuilFranchi = mobile != affichageMobile;
 		affichageMobile = mobile;
-		if (ligneLayout != null && mobile == ligneLayout.isVisible()) {
-			ligneLayout.setVisible(!mobile);
-		}
-		//Ce label est ré-affiché par selectionnerLigne : on le masque sans le ré-afficher au retour desktop
-		if (labelLigneSelectionneeLabel != null && mobile) {
-			labelLigneSelectionneeLabel.setVisible(false);
-		}
+		//Ce label reste affiché sur mobile, seul le rappel ELP/VET (ligneLayout) est masqué
 		if (colCode != null && colType != null && mobile == colCode.isVisible()) {
 			colCode.setVisible(!mobile);
 			colType.setVisible(!mobile);
@@ -275,6 +271,9 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		code = null;
 		type = null;
 		reinitButton.setVisible(false);
+		ligneSelectionneeLabel.setVisible(false);
+		vetElpSelectionneLabel.setVisible(false);
+		majZoneSelectionVisible();
 		comboBoxAnneeUniv.setValue(etudiantController.getAnneeUnivEnCours());
 		annee = comboBoxAnneeUniv.getValue();
 		initComposantes();
@@ -322,10 +321,6 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			reinitButton.addClickListener(e -> initFromScratch());
 			reinitButton.setVisible(StringUtils.hasText(code));
 
-			labelLigneSelectionneeLabel = new Span(getTranslation(NAME + ".ligneselectionnee"));
-			labelLigneSelectionneeLabel.addClassName("text-secondary");
-			labelLigneSelectionneeLabel.setVisible(false);
-
 			ligneSelectionneeLabel = new Span();
 			ligneSelectionneeLabel.setVisible(false);
 			vetElpSelectionneLabel = new Span();
@@ -336,12 +331,23 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			ligneLayout.setSpacing(false);
 			ligneLayout.add(ligneSelectionneeLabel, vetElpSelectionneLabel);
 
-			final HorizontalLayout btnLayout = new HorizontalLayout();
+			//Zone regroupant le rappel de la sélection et le bouton de réinitialisation,
+			//affichée uniquement lorsqu'une pré-sélection est active
+			selectionLayout = new HorizontalLayout();
+			selectionLayout.addClassName("selection-arbo");
+			selectionLayout.setWidthFull();
+			selectionLayout.setPadding(false);
+			selectionLayout.setSpacing(true);
+			selectionLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			selectionLayout.add(ligneLayout, reinitButton);
+			selectionLayout.expand(ligneLayout);
+			selectionLayout.setVisible(false);
+
+			final VerticalLayout btnLayout = new VerticalLayout();
 			btnLayout.setWidthFull();
 			btnLayout.setPadding(true);
-			btnLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-			btnLayout.add(comboBoxAnneeUniv, labelLigneSelectionneeLabel, ligneLayout, reinitButton);
-			btnLayout.expand(ligneLayout);
+			btnLayout.setSpacing(true);
+			btnLayout.add(selectionLayout, comboBoxAnneeUniv);
 			add(btnLayout);
 
 			table = new TreeGrid<>();
@@ -372,7 +378,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 
 			table.addItemClickListener(event -> {
 				if (event.getItem() != null && !isPlaceholder(event.getItem())) {
-					selectionnerLigne(event.getItem());
+					selectionnerLigne(event.getItem(), false);
 				}
 			});
 
@@ -380,7 +386,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			table.addExpandListener(event -> {
 				if (event.isFromClient()) {
 					event.getItems().stream().findFirst().ifPresent(obj -> {
-						selectionnerLigne(obj);
+						selectionnerLigne(obj, false);
 						deplierNoeud(obj, true);
 					});
 				}
@@ -429,7 +435,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			ajouterItem(obj, null);
 			treeDataProvider = new TreeDataProvider<>(treeData);
 			table.setDataProvider(treeDataProvider);
-			selectionnerLigne(obj);
+			selectionnerLigne(obj, true);
 			deplierNoeud(obj, true);
 			table.expand(obj);
 		}
@@ -486,7 +492,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 				+ "  this.__mdwNoToggle = true;"
 				+ "  this.addEventListener('click', e => e.stopPropagation());"
 				+ "}");
-		libelle.addClickListener(e -> selectionnerLigne(item));
+		libelle.addClickListener(e -> selectionnerLigne(item, false));
 
 		//Sur petit écran, le clic sur le libellé ouvre le menu des actions de la ligne
 		if (affichageMobile) {
@@ -670,10 +676,12 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		}
 	}
 
-	private void selectionnerLigne(final ObjetBase item) {
+	private void selectionnerLigne(final ObjetBase item, boolean racine) {
 		table.select(item);
 		final String typeItemSelected = item.getType();
-		ligneSelectionneeLabel.setText(item.getLibelle() + " (" + typeItemSelected + ")");
+		if (racine) {
+			ligneSelectionneeLabel.setText(item.getLibelle() + " (" + typeItemSelected + ")");
+		}
 		//Si c'est un ELP, une collection ou un groupe qui est sélectionné
 		if (typeItemSelected.equals(Utils.ELP) || typeItemSelected.equals(Utils.COL) || typeItemSelected.equals(Utils.GRP)) {
 			//On va chercher le premier élément père non ELP pour l'afficher en rappel
@@ -711,13 +719,19 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			vetElpSelectionneLabel.setVisible(false);
 		}
 		ligneSelectionneeLabel.setVisible(true);
-		//Sur petit écran, le libellé "Ligne sélectionnée" reste masqué
-		labelLigneSelectionneeLabel.setVisible(!affichageMobile);
+		majZoneSelectionVisible();
+	}
+
+	/** Affiche la zone de rappel de sélection dès que le libellé ou le bouton de réinitialisation est visible. */
+	private void majZoneSelectionVisible() {
+		if (selectionLayout != null) {
+			selectionLayout.setVisible(reinitButton.isVisible());
+		}
 	}
 
 	public void deplierTout(final ObjetBase item) {
 		deplierNoeudComplet(item);
-		selectionnerLigne(item);
+		selectionnerLigne(item, false);
 		table.scrollToItem(item);
 	}
 
@@ -822,7 +836,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 									ajouterItem(obj, item);
 									table.expand(obj);
 									//On remet le focus sur l'ELP
-									selectionnerLigne(item);
+									selectionnerLigne(item, false);
 									//Le père des groupes sera la collection et non l'elp
 									parentPourGroupe = obj;
 								}
