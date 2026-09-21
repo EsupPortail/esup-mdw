@@ -122,6 +122,16 @@ vaadin-grid::part(marked) {
 	cursor: default;
 }
 
+/* Message affiché dans le menu d'actions lorsqu'aucune action n'est disponible. */
+.menu-actions-vide {
+	display: block;
+	max-width: 18em;
+	white-space: normal;
+	font-style: italic;
+	color: var(--lumo-disabled-text-color);
+	cursor: default;
+}
+
 /* Libellé d'une ligne sur mobile (recherche arborescente) : la colonne est plus large
  * que l'écran, on empêche la troncature pour permettre la lecture par défilement. */
 .libelle-actions-menu {

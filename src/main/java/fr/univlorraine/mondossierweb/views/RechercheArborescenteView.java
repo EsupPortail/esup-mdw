@@ -489,7 +489,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		libelle.addClickListener(e -> selectionnerLigne(item));
 
 		//Sur petit écran, le clic sur le libellé ouvre le menu des actions de la ligne
-		if (affichageMobile && aDesActions(item)) {
+		if (affichageMobile) {
 			libelle.addClassName("libelle-actions-menu");
 			final ContextMenu menu = new ContextMenu(libelle);
 			menu.setOpenOnClick(true);
@@ -497,7 +497,12 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 			final Span entete = new Span(item.getLibelle() == null ? "" : item.getLibelle());
 			entete.addClassName("menu-actions-entete");
 			menu.addItem(entete);
-			remplirMenuActions(menu, item);
+			if (!remplirMenuActions(menu, item)) {
+				//Aucune action : on l'indique dans le menu plutôt que de ne rien afficher
+				final Span aucuneAction = new Span(getTranslation(NAME + ".aucuneaction"));
+				aucuneAction.addClassName("menu-actions-vide");
+				menu.addItem(aucuneAction);
+			}
 			//Le clic sur le libellé n'atteint pas le document (stopPropagation pour bloquer
 			//le dépliage) : on gère nous-mêmes la fermeture du menu précédemment ouvert.
 			menu.addOpenedChangeListener(e -> {
@@ -514,19 +519,12 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		return libelle;
 	}
 
-	/** Indique si au moins une action est disponible pour l'objet. */
-	private boolean aDesActions(final ObjetBase item) {
-		final String typeObj = item.getType();
-		return typeObj != null
-			&& (liste_types_favoris.contains(typeObj)
-				|| liste_types_deplier.contains(typeObj)
-				|| liste_types_inscrits.contains(typeObj));
-	}
-
 	/**
 	 * Remplit un menu avec les actions disponibles pour l'objet.
+	 *
+	 * @return vrai si au moins une action a été ajoutée
 	 */
-	private void remplirMenuActions(final ContextMenu menu, final ObjetBase item) {
+	private boolean remplirMenuActions(final ContextMenu menu, final ObjetBase item) {
 		final String typeObj = item.getType();
 		final String idObj = item.getTrueObjectId();
 		final String idFav = typeObj + ":" + idObj;
@@ -555,6 +553,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 				actionMenuItem(VaadinIcon.USERS, getTranslation(NAME + ".acceslisteinscrits")),
 				e -> rechercheController.accessToDetail(idObj, typeObj, comboBoxAnneeUniv.getValue()));
 		}
+		return peutEtreFavori || peutEtreDeplie || peutVoirInscrits;
 	}
 
 	private com.vaadin.flow.component.Component createActionsColumn(final ObjetBase item) {
