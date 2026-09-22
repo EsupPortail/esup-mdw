@@ -106,15 +106,22 @@ public class DetailGroupesWindow extends Dialog {
 		layout.add(titleLayout);
 
 		final Div panelDetailGroupes = new Div();
-		panelDetailGroupes.setSizeFull();
-		panelDetailGroupes.getStyle().set("min-width", "0").set("overflow", "hidden");
+		panelDetailGroupes.setWidthFull();
+		panelDetailGroupes.getStyle()
+			.set("min-width", "0")
+			.set("min-height", "0")
+			.set("flex", "1 1 auto")
+			.set("display", "flex")
+			.set("flex-direction", "column")
+			.set("overflow", "hidden");
 		final Span titreGroupes = new Span(elpLibelle);
 		titreGroupes.addClassName("font-bold");
 		panelDetailGroupes.add(titreGroupes);
 
 		if (lgroupes != null && !lgroupes.isEmpty()) {
 			final TreeGrid<ObjetBaseCollectionGroupe> detailGroupesTable = new TreeGrid<>();
-			detailGroupesTable.setSizeFull();
+			detailGroupesTable.setWidthFull();
+			detailGroupesTable.getStyle().set("flex", "1 1 auto").set("min-height", "0");
 			detailGroupesTable.addClassName("scrollabletable");
 
 			final TreeData<ObjetBaseCollectionGroupe> treeData = new TreeData<>();
