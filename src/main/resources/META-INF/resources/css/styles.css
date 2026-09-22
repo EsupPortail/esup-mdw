@@ -184,9 +184,11 @@ vaadin-grid::part(marked) {
 
 /* Panneau de signification des colonnes / résultats */
 .significationpanel {
-	margin-top: 3em;
 	border: solid 1px var(--lumo-contrast-20pct);
 	padding: 0.5em;
+	box-sizing: border-box;
+	max-width: 100%;
+	min-width: 0;
 }
 
 /* Utilitaires */

@@ -90,6 +90,7 @@ public class DetailGroupesWindow extends Dialog {
 		layout.setSizeFull();
 		layout.setPadding(false);
 		layout.setSpacing(true);
+		layout.getStyle().set("min-width", "0");
 		add(layout);
 
 		//Sous titre avec l'année
@@ -106,6 +107,7 @@ public class DetailGroupesWindow extends Dialog {
 
 		final Div panelDetailGroupes = new Div();
 		panelDetailGroupes.setSizeFull();
+		panelDetailGroupes.getStyle().set("min-width", "0").set("overflow", "hidden");
 		final Span titreGroupes = new Span(elpLibelle);
 		titreGroupes.addClassName("font-bold");
 		panelDetailGroupes.add(titreGroupes);
