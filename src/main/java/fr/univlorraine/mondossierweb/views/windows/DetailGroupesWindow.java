@@ -19,6 +19,8 @@
 package fr.univlorraine.mondossierweb.views.windows;
 
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -78,6 +80,7 @@ public class DetailGroupesWindow extends Dialog {
 		setHeight("95%");
 		setResizable(false);
 		setCloseOnOutsideClick(true);
+		addClassName("detail-groupes-window");
 
 		/* Titre */
 		setHeaderTitle(getTranslation(NAME + ".title"));
@@ -181,5 +184,13 @@ public class DetailGroupesWindow extends Dialog {
 		panelCollectionInfo.add(titreInfo);
 		panelCollectionInfo.add(new Html("<div>" + getTranslation(NAME + ".collection.info") + "</div>"));
 		layout.add(panelCollectionInfo);
+
+		/* Bouton de fermeture, aligné en bas à droite */
+		final Button btnFermer = new Button(getTranslation(NAME + ".btnFermer"), e -> close());
+		btnFermer.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		final HorizontalLayout boutonsLayout = new HorizontalLayout(btnFermer);
+		boutonsLayout.setWidthFull();
+		boutonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+		layout.add(boutonsLayout);
 	}
 }

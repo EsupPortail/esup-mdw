@@ -184,7 +184,7 @@ vaadin-grid::part(marked) {
 
 /* Panneau de signification des colonnes / résultats */
 .significationpanel {
-	margin-top: 1em;
+	margin-top: 3em;
 	border: solid 1px var(--lumo-contrast-20pct);
 	padding: 0.5em;
 }
@@ -315,5 +315,17 @@ vaadin-grid::part(marked) {
 		flex-direction: column;
 		flex: 1 1 auto;
 		overflow-y: auto;
+	}
+}
+
+/* Sur mobile, la fenêtre du détail des groupes occupe tout l'écran. */
+@media (max-width: 767px) {
+	.detail-groupes-window::part(overlay) {
+		width: 100vw !important;
+		height: 100vh !important;
+		max-width: 100vw !important;
+		max-height: 100vh !important;
+		margin: 0 !important;
+		border-radius: 0 !important;
 	}
 }
