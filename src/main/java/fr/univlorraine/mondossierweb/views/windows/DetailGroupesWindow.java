@@ -22,6 +22,7 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -141,22 +142,22 @@ public class DetailGroupesWindow extends Dialog {
 
 			detailGroupesTable.addHierarchyColumn(ObjetBaseCollectionGroupe::getCod_coll)
 				.setHeader(getTranslation(NAME + ".table.codecollection"))
-				.setFlexGrow(2).setResizable(true);
+				.setAutoWidth(true).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getCod_gpe)
 				.setHeader(getTranslation(NAME + ".table.codegroupe"))
-				.setFlexGrow(1).setResizable(true);
+				.setAutoWidth(true).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getLib_gpe)
 				.setHeader(getTranslation(NAME + ".table.libgroupe"))
-				.setFlexGrow(3).setResizable(true);
+				.setAutoWidth(true).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getCap_max)
 				.setHeader(getTranslation(NAME + ".table.capmax"))
-				.setFlexGrow(1).setResizable(true);
+				.setAutoWidth(true).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getCap_int)
 				.setHeader(getTranslation(NAME + ".table.capint"))
-				.setFlexGrow(1).setResizable(true);
+				.setAutoWidth(true).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getNb_inscrits)
 				.setHeader(getTranslation(NAME + ".table.nbinscrits"))
-				.setFlexGrow(1).setResizable(true);
+				.setAutoWidth(true).setResizable(true);
 
 			detailGroupesTable.setDataProvider(new TreeDataProvider<>(treeData));
 			detailGroupesTable.expand(treeData.getRootItems());
@@ -170,7 +171,11 @@ public class DetailGroupesWindow extends Dialog {
 		/* Signification des colonnes */
 		final Div panelCollectionInfo = new Div();
 		panelCollectionInfo.addClassName("significationpanel");
-		final Span titreInfo = new Span(VaadinIcon.INFO_CIRCLE.create());
+		panelCollectionInfo.setWidthFull();
+
+		final Icon iconeInfo = VaadinIcon.INFO_CIRCLE.create();
+		iconeInfo.getStyle().set("width","1em");
+		final Span titreInfo = new Span(iconeInfo);
 		titreInfo.add(" " + getTranslation(NAME + ".info.title"));
 		titreInfo.addClassName("font-bold");
 		panelCollectionInfo.add(titreInfo);
