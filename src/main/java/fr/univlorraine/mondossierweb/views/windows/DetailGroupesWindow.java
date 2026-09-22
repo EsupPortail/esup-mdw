@@ -140,17 +140,23 @@ public class DetailGroupesWindow extends Dialog {
 			}
 
 			detailGroupesTable.addHierarchyColumn(ObjetBaseCollectionGroupe::getCod_coll)
-				.setHeader(getTranslation(NAME + ".table.codecollection"));
+				.setHeader(getTranslation(NAME + ".table.codecollection"))
+				.setFlexGrow(2).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getCod_gpe)
-				.setHeader(getTranslation(NAME + ".table.codegroupe"));
+				.setHeader(getTranslation(NAME + ".table.codegroupe"))
+				.setFlexGrow(1).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getLib_gpe)
-				.setHeader(getTranslation(NAME + ".table.libgroupe"));
+				.setHeader(getTranslation(NAME + ".table.libgroupe"))
+				.setFlexGrow(3).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getCap_max)
-				.setHeader(getTranslation(NAME + ".table.capmax"));
+				.setHeader(getTranslation(NAME + ".table.capmax"))
+				.setFlexGrow(1).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getCap_int)
-				.setHeader(getTranslation(NAME + ".table.capint"));
+				.setHeader(getTranslation(NAME + ".table.capint"))
+				.setFlexGrow(1).setResizable(true);
 			detailGroupesTable.addColumn(ObjetBaseCollectionGroupe::getNb_inscrits)
-				.setHeader(getTranslation(NAME + ".table.nbinscrits"));
+				.setHeader(getTranslation(NAME + ".table.nbinscrits"))
+				.setFlexGrow(1).setResizable(true);
 
 			detailGroupesTable.setDataProvider(new TreeDataProvider<>(treeData));
 			detailGroupesTable.expand(treeData.getRootItems());
