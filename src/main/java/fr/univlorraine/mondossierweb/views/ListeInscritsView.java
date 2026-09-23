@@ -955,15 +955,11 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	}
 
 	private void refreshListeCodind(final List<Inscrit> inscrits) {
-		if (listecodind != null) {
-			listecodind.clear();
-		} else {
+		if (listecodind == null) {
 			listecodind = new LinkedList<>();
+		} else {
+			listecodind.clear();
 		}
-		if (inscrits != null) {
-			for (final Inscrit inscrit : inscrits) {
-				listecodind.add(inscrit.getCod_ind());
-			}
-		}
+		listecodind.addAll(inscrits.stream().map(Inscrit::getCod_ind).toList());
 	}
 }
