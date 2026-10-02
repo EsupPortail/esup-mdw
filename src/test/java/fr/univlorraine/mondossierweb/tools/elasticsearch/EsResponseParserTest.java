@@ -35,6 +35,14 @@ class EsResponseParserTest {
 	}
 
 	@Test
+	void sourceConserveLongAuDelaDeIntegerMax() throws Exception {
+		final String json = "{\"hits\":{\"hits\":[{\"_source\":{\"cod_vrs_obj\":3000000000}}]}}";
+		final JsonNode hit = EsResponseParser.hits(json).get(0);
+		final Map<String, Object> source = EsResponseParser.source(hit);
+		assertEquals(Long.valueOf(3000000000L), source.get("cod_vrs_obj"));
+	}
+
+	@Test
 	void reponseSansHitsRenvoieListeVide() throws Exception {
 		assertTrue(EsResponseParser.hits("{}").isEmpty());
 	}
