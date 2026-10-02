@@ -110,9 +110,12 @@ public class PropertyUtils {
 		return getRequired("param.elasticsearch.index.champlibelleobjet");
 	}
 
-	/** Retourne le champ de l'index elasticSearch correspondant au type de l'objet (ES 8/9) */
+	/** Retourne le champ de l'index elasticSearch correspondant au type de l'objet (ES 8/9).
+	 * Retourne {@code type_objet} par défaut si la propriété est absente, afin de ne pas
+	 * empêcher le démarrage des déploiements ES 2.x qui n'en ont pas besoin. */
 	public static String getElasticSearchChampTypeObjet() {
-		return getRequired("param.elasticsearch.index.champtypeobjet");
+		final String value = get("param.elasticsearch.index.champtypeobjet");
+		return StringUtils.hasText(value) ? value : "type_objet";
 	}
 
 	/** Retourne le port ElasticSearch */

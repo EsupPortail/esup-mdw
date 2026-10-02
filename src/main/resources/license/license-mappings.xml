@@ -49,11 +49,6 @@
   		<artifactId>photoserver-client</artifactId>
         <license>Apache License, Version 2.0</license>
     </artifact>
-       <artifact>
-        <groupId>fr.univlorraine</groupId>
-  		<artifactId>mdw-tools</artifactId>
-        <license>Apache License, Version 2.0</license>
-    </artifact>  
     <artifact>
         <groupId>fr.univlorraine</groupId>
   		<artifactId>mdw-vaadin</artifactId>

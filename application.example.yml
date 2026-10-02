@@ -103,7 +103,9 @@ pdf.sign.alt.tsa.tokensize: 8192
 
 # --- ElasticSearch (recherche rapide) ---
 param.elasticsearch.url: localhost
-param.elasticsearch.port: 9300
+# Port HTTP Elasticsearch (ex. 9200/9202) — plus le port transport 9300
+param.elasticsearch.port: 9200
+# Obsolète : conservé pour rétro-compatibilité mais ignoré en mode REST
 param.elasticsearch.cluster: dev-1.3.4
 param.elasticsearch.index: apogee
 param.elasticsearch.index.champrecherche: lib_desc_obj

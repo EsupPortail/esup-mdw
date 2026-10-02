@@ -116,7 +116,7 @@ Le DSL `match` / `wildcard` / `bool.must` est **compatible** entre 2.x et 8/9.
 ### 6.1 ES 2.x (`Es2QueryStrategy`)
 
 - Chemin : `POST /{index}/{type1,type2,…}/_search` (chemin typé → renvoie `_type`).
-  Exemple : `POST /apogee/cmp,vet,elp,etu/_search`.
+  Exemple : `POST /apogee/CMP,VET,ELP,ETU/_search`.
 - Corps :
 
 ```json
@@ -146,7 +146,7 @@ Le DSL `match` / `wildcard` / `bool.must` est **compatible** entre 2.x et 8/9.
     "bool": {
       "must": [ { /* match | wildcard | bool.must */ } ],
       "filter": [
-        { "terms": { "type_objet": ["cmp", "vet", "elp", "etu"] } }
+        { "terms": { "type_objet": ["CMP", "VET", "ELP", "ETU"] } }
       ]
     }
   }
