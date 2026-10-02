@@ -89,13 +89,40 @@ class ElasticSearchApogeeServiceImplTest {
 	@Test
 	void rechercheParCodeRepli() {
 		stubVersion("8.13.0");
-		server.stubFor(post(urlEqualTo("/apogee/_search")).willReturn(aResponse()
-			.withHeader("Content-Type", "application/json")
-			.withBody("{\"hits\":{\"hits\":[{\"_source\":{\"cod_obj\":\"ABC\",\"cod_vrs_obj\":0,\"lib_obj\":\"Lib\",\"type_objet\":\"CMP\"}}]}}")));
+		// Première recherche (match sur le libellé) : aucun résultat, le repli doit se déclencher.
+		server.stubFor(post(urlEqualTo("/apogee/_search"))
+			.withRequestBody(containing("\"match\":{\"lib_desc_obj\":\"abc\"}"))
+			.willReturn(aResponse()
+				.withHeader("Content-Type", "application/json")
+				.withBody("{\"hits\":{\"hits\":[]}}")));
+		// Repli (match sur le code objet) : renvoie le document.
+		server.stubFor(post(urlEqualTo("/apogee/_search"))
+			.withRequestBody(containing("\"match\":{\"cod_obj\":\"abc\"}"))
+			.willReturn(aResponse()
+				.withHeader("Content-Type", "application/json")
+				.withBody("{\"hits\":{\"hits\":[{\"_source\":{\"cod_obj\":\"ABC\",\"cod_vrs_obj\":0,\"lib_obj\":\"Lib\",\"type_objet\":\"CMP\"}}]}}")));
 
 		assertTrue(service.initConnexion());
 		final List<Map<String, Object>> results = service.findObj("abc", 10, false);
+
 		assertEquals(1, results.size());
+		assertEquals("ABC", results.get(0).get("cod_obj"));
+		server.verify(postRequestedFor(urlEqualTo("/apogee/_search"))
+			.withRequestBody(containing("\"match\":{\"cod_obj\":\"abc\"}")));
+	}
+
+	@Test
+	void sourceAbsentNeLevePasEtConserveLeType() {
+		stubVersion("2.3.5");
+		server.stubFor(post(urlEqualTo("/apogee/CMP,VET,ELP,ETU/_search")).willReturn(aResponse()
+			.withHeader("Content-Type", "application/json")
+			.withBody("{\"hits\":{\"hits\":[{\"_type\":\"CMP\"}]}}")));
+
+		assertTrue(service.initConnexion());
+		final List<Map<String, Object>> results = service.findObj("abc", 10, false);
+
+		assertEquals(1, results.size());
+		assertEquals("CMP", results.get(0).get("TYP_OBJ"));
 	}
 
 	@Test
