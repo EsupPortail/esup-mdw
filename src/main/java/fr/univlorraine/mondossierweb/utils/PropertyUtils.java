@@ -110,6 +110,11 @@ public class PropertyUtils {
 		return getRequired("param.elasticsearch.index.champlibelleobjet");
 	}
 
+	/** Retourne le champ de l'index elasticSearch correspondant au type de l'objet (ES 8/9) */
+	public static String getElasticSearchChampTypeObjet() {
+		return getRequired("param.elasticsearch.index.champtypeobjet");
+	}
+
 	/** Retourne le port ElasticSearch */
 	public static int getElasticSearchPort() {
 		return Integer.parseInt(getRequired("param.elasticsearch.port"));

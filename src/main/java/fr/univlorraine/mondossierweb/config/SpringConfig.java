@@ -130,6 +130,7 @@ public class SpringConfig {
 		esas.setElasticSearchChampCodeObjet(PropertyUtils.getElasticSearchChampCodeObjet());
 		esas.setElasticSearchChampRecherche(PropertyUtils.getElasticSearchChampRecherche());
 		esas.setElasticSearchChampVersionObjet(PropertyUtils.getElasticSearchChampVersionObjet());
+		esas.setElasticSearchChampTypeObjet(PropertyUtils.getElasticSearchChampTypeObjet());
 
 		return esas;
 	}

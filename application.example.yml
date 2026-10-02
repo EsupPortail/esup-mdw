@@ -110,6 +110,8 @@ param.elasticsearch.index.champrecherche: lib_desc_obj
 param.elasticsearch.index.champcodeobjet: cod_obj
 param.elasticsearch.index.champversionobjet: cod_vrs_obj
 param.elasticsearch.index.champlibelleobjet: lib_obj
+# Champ portant le type d'objet (CMP/VET/ELP/ETU) — utilisé uniquement avec ES 8/9
+param.elasticsearch.index.champtypeobjet: type_objet
 # Autocomplétion sur les ELP
 recherche.autocompletion.elp: false
 
