@@ -106,9 +106,12 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 		http.csrf(csrf -> csrf.ignoringRequestMatchers(new VaadinInternalRequestMatcher()));
 		//http.csrf(c -> c.ignoringRequestMatchers("/HEARTBEAT/**", "/PUSH/**", "/UIDL/**","/vaadin/**", "/VAADIN/**"));
 
-		// Autorise l'affichage en iFrame et Supprime la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
+		// SAMEORIGIN (et non DENY) : le FileDownloader de Vaadin declenche les telechargements (xlsx/pdf) via une iframe de meme origine.
+		// Avec DENY, Safari/Chrome/IE refusent de charger cette iframe ("Refused to display ... X-Frame-Options DENY") et le telechargement echoue.
+		// SAMEORIGIN continue de proteger contre le clickjacking inter-origines.
+		// Supprime aussi la gestion du cache du navigateur, pour corriger le bug IE de chargement des polices cf. http://stackoverflow.com/questions/7748140/font-face-eot-not-loading-over-https
 		http.headers(h -> h
-					.frameOptions(o -> o.deny())
+					.frameOptions(o -> o.sameOrigin())
 					.cacheControl(c -> c.disable()));
 
 		return http.build();
