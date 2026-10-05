@@ -99,7 +99,7 @@ public class SecurityConfig {
 
 		/* Interdit l'affichage en iFrame */
 		http.headers(h -> h
-			.frameOptions(o -> o.deny())
+			.frameOptions(o -> o.sameOrigin())
 			.cacheControl(c -> c.disable()));
 
 		/* Gestion de la déconnexion : invalide la session puis redirige vers le logout CAS */
