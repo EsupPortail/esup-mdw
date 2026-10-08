@@ -61,7 +61,7 @@
 		<oracle.ojdbc.version>23.7.0.25.01</oracle.ojdbc.version>
 		<!-- OTHERS -->
 		<!--<fasterxml.jackson.version>2.18.6</fasterxml.jackson.version>-->
-		<fasterxml.jackson.version>2.22.0</fasterxml.jackson.version>
+		<fasterxml.jackson.version>2.22.1</fasterxml.jackson.version>
 		<fasterxml.jackson-annotations.version>2.22</fasterxml.jackson-annotations.version>
 		<aspectj.version>1.8.2</aspectj.version>
 		<logback.version>1.5.18</logback.version>
