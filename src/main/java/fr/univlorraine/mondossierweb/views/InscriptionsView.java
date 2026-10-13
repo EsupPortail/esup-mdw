@@ -22,7 +22,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -35,6 +34,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.HttpStatusCode;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.DownloadResponse;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -48,6 +49,7 @@ import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.SsoController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.views.windows.DetailInscriptionWindow;
 import jakarta.annotation.Resource;
@@ -57,6 +59,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Page des inscriptions
@@ -125,48 +128,50 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			if (sessionController.isRecuperationWsInscriptionsOk()) {
 
 				//Tout s'est bien passé lors de la récupération des infos via le WS
-				Grid<Inscription> inscriptionsGrid = new Grid<>();
-				inscriptionsGrid.setWidthFull();
-				inscriptionsGrid.setAllRowsVisible(true);
-				inscriptionsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+				ResponsiveCardList<Inscription> inscriptionsList = new ResponsiveCardList<>();
+				inscriptionsList.setWidthFull();
+				inscriptionsList.setAllRowsVisible(true);
 				String[] colonnes = IA_FIELDS_ORDER;
 				if (userController.isEtudiant()) {
 					colonnes = IA_FIELDS_ORDER_ETU;
 				}
 				for (String fieldName : colonnes) {
-					inscriptionsGrid.addColumn(inscription -> getInscriptionFieldValue(inscription, fieldName))
-						.setHeader(getTranslation(NAME + ".table." + fieldName))
+					inscriptionsList.addColumn(inscription -> getInscriptionFieldValue(inscription, fieldName),
+							getTranslation(NAME + ".table." + fieldName))
 						.setResizable(true)
 						.setFlexGrow(fieldName.equals("cod_anu") || fieldName.equals("cod_comp")? 1 : 0);
 				}
-				inscriptionsGrid.addComponentColumn(this::buildLibelleInscriptionColumn)
-					.setHeader(getTranslation(NAME + ".table.lib_etp"))
+				inscriptionsList.addComponentColumn(this::buildLibelleInscriptionColumn,
+						getTranslation(NAME + ".table.lib_etp"))
 					.setResizable(true)
 					.setFlexGrow(5);
-				inscriptionsGrid.addComponentColumn(this::buildActionsColumn)
-					.setHeader(getTranslation(NAME + ".table.documents"))
+				inscriptionsList.addComponentColumn(this::buildActionsColumn,
+						getTranslation(NAME + ".table.documents"))
 					.setResizable(true)
 					.setFlexGrow(3);
-				inscriptionsGrid.setItems(etudiant.getLinsciae() != null ? etudiant.getLinsciae() : Collections.emptyList());
+				/* Cartes affichées sur petit écran */
+				inscriptionsList.setCardRenderer(this::createInscriptionCard);
+				inscriptionsList.setItems(etudiant.getLinsciae() != null ? etudiant.getLinsciae() : Collections.emptyList());
 
-				globalLayout.add(createPanel(etudiant.getLibEtablissement(), inscriptionsGrid));
+				globalLayout.add(createPanel(etudiant.getLibEtablissement(), inscriptionsList));
 
 				// Si on doit afficher les inscriptions dans d'autres cursus
 				if (configController.isAffInscriptionsAutreCursus()) {
 					Component dacContent;
 					if (etudiant.getLinscdac() != null && !etudiant.getLinscdac().isEmpty()) {
-						Grid<Inscription> inscriptionsDAC = new Grid<>();
-						inscriptionsDAC.setWidthFull();
-						inscriptionsDAC.setAllRowsVisible(true);
-						inscriptionsDAC.setSelectionMode(Grid.SelectionMode.NONE);
+						ResponsiveCardList<Inscription> inscriptionsDacList = new ResponsiveCardList<>();
+						inscriptionsDacList.setWidthFull();
+						inscriptionsDacList.setAllRowsVisible(true);
 						for (String fieldName : DAC_FIELDS_ORDER) {
-							inscriptionsDAC.addColumn(inscription -> getInscriptionFieldValue(inscription, fieldName))
-								.setHeader(getTranslation(NAME + ".tabledac." + fieldName))
+							inscriptionsDacList.addColumn(inscription -> getInscriptionFieldValue(inscription, fieldName),
+									getTranslation(NAME + ".tabledac." + fieldName))
 								.setResizable(true)
 								.setFlexGrow(fieldName.equals(DAC_FIELDS_ORDER[2]) || fieldName.equals(DAC_FIELDS_ORDER[3])? 3 : (fieldName.equals(DAC_FIELDS_ORDER[1])? 2 : 1));
 						}
-						inscriptionsDAC.setItems(etudiant.getLinscdac());
-						dacContent = inscriptionsDAC;
+						/* Cartes affichées sur petit écran */
+						inscriptionsDacList.setCardRenderer(this::createDacCard);
+						inscriptionsDacList.setItems(etudiant.getLinscdac());
+						dacContent = inscriptionsDacList;
 					} else {
 						Span aucuneDAC = new Span(getTranslation(NAME + ".dac.aucune") + " " + etudiant.getLibEtablissement());
 						aucuneDAC.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.BOLD);
@@ -264,75 +269,139 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 
 		//Si on peut proposer le certificat de scolarité
 		if (etudiantController.proposerCertificat(inscription, etudiant)) {
-			DownloadFile df = inscriptionController.exportPdf(inscription);
-			if (df != null) {
-				//On affiche le bouton pour éditer le certificat de scolarité
-				Button bCertificatInscription = new Button(VaadinIcon.FILE_TEXT_O.create());
-				//Si on n'affiche pas le bouton sous forme de libellé
-				if (!configController.isAffBtnCertifNouvelleLigne()) {
-					bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-					bCertificatInscription.setTooltipText(getTranslation(NAME + ".certificatScolarite.link"));
-					if (configController.isAffBtnCertificatCouleur()) {
-						bCertificatInscription.addClassName("red-button-icon");
-					}
-				} else {
-					bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_SMALL);
-					bCertificatInscription.setText(getTranslation(NAME + ".certificatScolarite.btn.link"));
+			//On affiche le bouton pour éditer le certificat de scolarité
+			Button bCertificatInscription = new Button(VaadinIcon.FILE_TEXT_O.create());
+			//Si on n'affiche pas le bouton sous forme de libellé
+			if (!configController.isAffBtnCertifNouvelleLigne()) {
+				bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+				bCertificatInscription.setTooltipText(getTranslation(NAME + ".certificatScolarite.link"));
+				if (configController.isAffBtnCertificatCouleur()) {
+					bCertificatInscription.addClassName("red-button-icon");
 				}
-				actionsLayout.add(createDownloadAnchor(df, bCertificatInscription));
+			} else {
+				bCertificatInscription.addThemeVariants(ButtonVariant.LUMO_SMALL);
+				bCertificatInscription.setText(getTranslation(NAME + ".certificatScolarite.btn.link"));
 			}
+			actionsLayout.add(createDownloadAnchor(() -> inscriptionController.exportPdf(inscription), bCertificatInscription));
 		}
 
 		//Si on peut proposer l'attestation d'affiliation
 		if (etudiantController.proposerAttestationAffiliationSSO(inscription, etudiant)) {
-			DownloadFile df = ssoController.exportAffiliationSsoPdf(etudiant, inscription);
-			if (df != null) {
-				//On affiche le bouton pour éditer l'attestation d'affiliation
-				Button bAttestationAffiliationSso = new Button(VaadinIcon.FILE_TEXT_O.create());
-				//Si on n'affiche pas le bouton sous forme de libellé
-				if (!configController.isAffBtnAttestSsoNouvelleLigne()) {
-					bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-					bAttestationAffiliationSso.setTooltipText(getTranslation(NAME + ".affiliationSso.link"));
-					bAttestationAffiliationSso.addClassName("blue-button-icon");
-				} else {
-					bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
-					bAttestationAffiliationSso.setText(getTranslation(NAME + ".affiliationSso.btn.link"));
-				}
-				actionsLayout.add(createDownloadAnchor(df, bAttestationAffiliationSso));
+			//On affiche le bouton pour éditer l'attestation d'affiliation
+			Button bAttestationAffiliationSso = new Button(VaadinIcon.FILE_TEXT_O.create());
+			//Si on n'affiche pas le bouton sous forme de libellé
+			if (!configController.isAffBtnAttestSsoNouvelleLigne()) {
+				bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+				bAttestationAffiliationSso.setTooltipText(getTranslation(NAME + ".affiliationSso.link"));
+				bAttestationAffiliationSso.addClassName("blue-button-icon");
+			} else {
+				bAttestationAffiliationSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
+				bAttestationAffiliationSso.setText(getTranslation(NAME + ".affiliationSso.btn.link"));
 			}
+			actionsLayout.add(createDownloadAnchor(() -> ssoController.exportAffiliationSsoPdf(etudiant, inscription), bAttestationAffiliationSso));
 		}
 
 		//Si on peut proposer la quittance
 		if (etudiantController.proposerQuittanceDroitsPayes(inscription, etudiant)) {
-			DownloadFile df = ssoController.exportQuittancePdf(etudiant, inscription);
-			if (df != null) {
-				//On affiche le bouton pour éditer la quittance
-				Button bQuittanceSso = new Button(VaadinIcon.FILE_TEXT_O.create());
-				//Si on n'affiche pas le bouton sous forme de libellé
-				if (!configController.isAffBtnQuittanceDroitsPayesNouvelleLigne()) {
-					bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-					bQuittanceSso.setTooltipText(getTranslation(NAME + ".quittance.link"));
-					if (configController.isAffBtnQuittanceCouleur()) {
-						bQuittanceSso.addClassName("green-button-icon");
-					}
-				} else {
-					bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
-					bQuittanceSso.setText(getTranslation(NAME + ".quittance.btn.link"));
+			//On affiche le bouton pour éditer la quittance
+			Button bQuittanceSso = new Button(VaadinIcon.FILE_TEXT_O.create());
+			//Si on n'affiche pas le bouton sous forme de libellé
+			if (!configController.isAffBtnQuittanceDroitsPayesNouvelleLigne()) {
+				bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+				bQuittanceSso.setTooltipText(getTranslation(NAME + ".quittance.link"));
+				if (configController.isAffBtnQuittanceCouleur()) {
+					bQuittanceSso.addClassName("green-button-icon");
 				}
-				actionsLayout.add(createDownloadAnchor(df, bQuittanceSso));
+			} else {
+				bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
+				bQuittanceSso.setText(getTranslation(NAME + ".quittance.btn.link"));
 			}
+			actionsLayout.add(createDownloadAnchor(() -> ssoController.exportQuittancePdf(etudiant, inscription), bQuittanceSso));
 		}
 
 		return actionsLayout;
 	}
 
 	/**
-	 * Encapsule un bouton dans une ancre de téléchargement du fichier.
+	 * Construit la carte d'une inscription, affichée sur petit écran :
+	 * badge de l'année, libellé (avec bouton de détail) et documents.
+	 * Les informations des colonnes Composante, Code et Version ne sont pas
+	 * reprises dans la carte.
 	 */
-	private Anchor createDownloadAnchor(DownloadFile df, Button button) {
+	private Div createInscriptionCard(final Inscription inscription) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		/* Ligne 1 : badge de l'année */
+		final Span badgeAnnee = new Span(inscription.getCod_anu());
+		badgeAnnee.addClassName("card-badge");
+
+		/* Ligne 2 : libellé + bouton de détail (méthode partagée avec le Grid) */
+		final Component libelle = buildLibelleInscriptionColumn(inscription);
+
+		/* Ligne 3 : documents (méthode partagée avec le Grid), si au moins un document est proposé */
+		final Component documents = buildActionsColumn(inscription);
+
+		card.add(badgeAnnee, libelle);
+		if (documents instanceof HorizontalLayout documentsLayout && documentsLayout.getComponentCount() > 0) {
+			card.add(documents);
+		}
+		return card;
+	}
+
+	/**
+	 * Construit la carte d'une inscription hors établissement (DAC), affichée sur petit écran :
+	 * badge de l'année + type de cursus, spécialité, établissement et résultat.
+	 */
+	private Div createDacCard(final Inscription inscription) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		/* Ligne 1 : badge de l'année + type de cursus */
+		final HorizontalLayout ligneEntete = new HorizontalLayout();
+		ligneEntete.setSpacing(true);
+		ligneEntete.setAlignItems(FlexComponent.Alignment.CENTER);
+		final Span badgeAnnee = new Span(inscription.getCod_anu());
+		badgeAnnee.addClassName("card-badge");
+		ligneEntete.add(badgeAnnee);
+		if (StringUtils.hasText(inscription.getCod_dac())) {
+			ligneEntete.add(new Span(inscription.getCod_dac()));
+		}
+
+		/* Ligne 2 : spécialité en gras */
+		final Span specialite = new Span(inscription.getLib_cmt_dac());
+		specialite.addClassName(LumoUtility.FontWeight.BOLD);
+
+		card.add(ligneEntete, specialite, new Span(inscription.getLib_etb()), new Span(inscription.getRes()));
+		return card;
+	}
+
+	/**
+	 * Encapsule un bouton dans une ancre de téléchargement du fichier.
+	 * La génération du document est différée à la demande de téléchargement :
+	 * elle n'a donc pas lieu pour les vues masquées (cartes sur grand écran,
+	 * grille sur petit écran) et n'est jamais produite deux fois.
+	 *
+	 * @param dfSupplier fournit le document à télécharger, généré au clic
+	 */
+	private Anchor createDownloadAnchor(Supplier<DownloadFile> dfSupplier, Button button) {
 		Anchor anchor = new Anchor();
-		anchor.setHref(DownloadHandler.fromInputStream(evt ->
-			new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
+		anchor.setHref(DownloadHandler.fromInputStream(evt -> {
+			/* Le handler s'exécute hors du verrou de session Vaadin : verrou requis pour
+			   résoudre les beans de scope vaadin-session (SessionController) et générer le document */
+			final VaadinSession session = evt.getSession();
+			session.lock();
+			try {
+				final DownloadFile df = dfSupplier.get();
+				if (df == null) {
+					//La génération a échoué : on renvoie une erreur plutôt qu'une page blanche
+					return DownloadResponse.error(HttpStatusCode.INTERNAL_SERVER_ERROR);
+				}
+				return new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength());
+			} finally {
+				session.unlock();
+			}
+		}));
 		anchor.add(button);
 		return anchor;
 	}
@@ -366,7 +435,7 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			panel.add(header);
 		}
 		Div body = new Div(content);
-		if (!(content instanceof Grid)) {
+		if (!(content instanceof ResponsiveCardList<?>)) {
 			body.getStyle().set("padding", "var(--lumo-space-s)");
 		}
 		panel.add(body);

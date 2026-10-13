@@ -97,6 +97,13 @@ public class ResponsiveCardList<T> extends Div {
 	}
 
 	/**
+	 * Affiche toutes les lignes du Grid sans défilement interne (grand écran).
+	 */
+	public void setAllRowsVisible(final boolean allRowsVisible) {
+		grid.setAllRowsVisible(allRowsVisible);
+	}
+
+	/**
 	 * Fournit un renderer custom pour les cartes. Sans renderer, une ligne
 	 * « En-tête : valeur » est générée pour chaque colonne.
 	 */
