@@ -15,6 +15,8 @@
 # OpenCode
 /.opencode/opencode.jsonc
 AGENTS.md
+/.superpowers/*.*
+/.superpowers-tmp/*.*
 
 # Configuration locale
 /application.yml
