@@ -12,10 +12,9 @@
 /target/
 /**/favicon.ico
 
-#IA
+# OpenCode
+/.opencode/opencode.jsonc
 AGENTS.md
-.claude-migration-guide.md
-.claude-geco-report.md
 
 # Configuration locale
 /application.yml
@@ -46,3 +45,6 @@ src/main/dev-bundle/
 /src/main/resources/repository/gouv/education/apogee/apo-webservices-client/**/apo-webservices-client-*.jar
 /src/main/resources/i18n/messages.properties
 /src/main/resources/i18n/vaadin-messages.properties
+
+# OpenCode
+/.opencode/opencode.jsonc
