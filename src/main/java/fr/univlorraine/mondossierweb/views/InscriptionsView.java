@@ -342,8 +342,12 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 		card.addClassName("card");
 
 		/* Ligne 1 : badge de l'année */
+		final HorizontalLayout ligneEntete = new HorizontalLayout();
+		ligneEntete.setSpacing(true);
+		ligneEntete.setAlignItems(FlexComponent.Alignment.CENTER);
 		final Span badgeAnnee = new Span(inscription.getCod_anu());
 		badgeAnnee.addClassName("card-badge");
+		ligneEntete.add(badgeAnnee);
 
 		/* Ligne 2 : libellé cliquable ouvrant le menu des actions */
 		final Span libelle = new Span(inscription.getLib_etp());
@@ -368,7 +372,7 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			menu.addItem(aucuneAction);
 		}
 
-		card.add(badgeAnnee, libelle);
+		card.add(ligneEntete, libelle);
 		return card;
 	}
 
