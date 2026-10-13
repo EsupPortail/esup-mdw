@@ -21,11 +21,13 @@ package fr.univlorraine.mondossierweb.views;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -232,28 +234,35 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 		libelleLayout.add(new Span(inscription.getLib_etp()));
 
 		//Si c'est une inscription sur l'année en cours
-		if (inscription.getCod_anu() != null && inscription.getCod_anu().length() >= 4
-				&& inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours())) {
+		if (estInscriptionAnneeEnCours(inscription)) {
 			//On affiche le bouton pour voir le détail de l'inscription
 			Button bDetailInscription = new Button(VaadinIcon.SEARCH.create());
 			bDetailInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 			bDetailInscription.setTooltipText(getTranslation(NAME + ".inscriptionPedagogique.link"));
-			//Appel de la window contenant le détail de l'inscription
-			Etape etape = new Etape();
-			etape.setAnnee(inscription.getCod_anu());
-			etape.setCode(inscription.getCod_etp());
-			etape.setVersion(inscription.getCod_vrs_vet());
-			etape.setLibelle(inscription.getLib_etp());
-			bDetailInscription.addClickListener(e -> {
-				DetailInscriptionWindow dnw = detailInscriptionWindowFactory.getObject();
-				dnw.init(etape);
-				dnw.open();
-			});
+			bDetailInscription.addClickListener(e -> ouvrirDetailInscription(inscription));
 			//ajout du bouton au layout
 			libelleLayout.add(bDetailInscription);
 		}
 
 		return libelleLayout;
+	}
+
+	/** Vrai si l'inscription porte sur l'année universitaire en cours. */
+	private boolean estInscriptionAnneeEnCours(final Inscription inscription) {
+		return inscription.getCod_anu() != null && inscription.getCod_anu().length() >= 4
+				&& inscription.getCod_anu().substring(0, 4).equals(etudiantController.getAnneeUnivEnCours());
+	}
+
+	/** Ouvre la fenêtre de détail (inscription pédagogique) d'une inscription. */
+	private void ouvrirDetailInscription(final Inscription inscription) {
+		Etape etape = new Etape();
+		etape.setAnnee(inscription.getCod_anu());
+		etape.setCode(inscription.getCod_etp());
+		etape.setVersion(inscription.getCod_vrs_vet());
+		etape.setLibelle(inscription.getLib_etp());
+		DetailInscriptionWindow dnw = detailInscriptionWindowFactory.getObject();
+		dnw.init(etape);
+		dnw.open();
 	}
 
 	/**
@@ -324,9 +333,9 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 
 	/**
 	 * Construit la carte d'une inscription, affichée sur petit écran :
-	 * badge de l'année, libellé (avec bouton de détail) et documents.
-	 * Les informations des colonnes Composante, Code et Version ne sont pas
-	 * reprises dans la carte.
+	 * badge de l'année et libellé cliquable ouvrant le menu des actions
+	 * (détail et documents). Les informations des colonnes Composante, Code
+	 * et Version ne sont pas reprises dans la carte.
 	 */
 	private Div createInscriptionCard(final Inscription inscription) {
 		final Div card = new Div();
@@ -336,17 +345,93 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 		final Span badgeAnnee = new Span(inscription.getCod_anu());
 		badgeAnnee.addClassName("card-badge");
 
-		/* Ligne 2 : libellé + bouton de détail (méthode partagée avec le Grid) */
-		final Component libelle = buildLibelleInscriptionColumn(inscription);
+		/* Ligne 2 : libellé cliquable ouvrant le menu des actions */
+		final Span libelle = new Span(inscription.getLib_etp());
+		libelle.addClassName(LumoUtility.FontWeight.BOLD);
+		libelle.addClassName("libelle-actions-menu");
 
-		/* Ligne 3 : documents (méthode partagée avec le Grid), si au moins un document est proposé */
-		final Component documents = buildActionsColumn(inscription);
+		final ContextMenu menu = new ContextMenu(libelle);
+		menu.setOpenOnClick(true);
+		/* En-tête rappelant l'inscription cliquée : libellé puis année */
+		final Span enteteLibelle = new Span(inscription.getLib_etp());
+		enteteLibelle.addClassName("menu-actions-entete");
+		final Span enteteAnnee = new Span(inscription.getCod_anu());
+		enteteAnnee.addClassName("menu-actions-entete-id");
+		final VerticalLayout entete = new VerticalLayout(enteteLibelle, enteteAnnee);
+		entete.setPadding(false);
+		entete.setSpacing(false);
+		menu.addItem(entete);
+		if (!remplirMenuActions(menu, inscription)) {
+			/* Aucune action : on l'indique dans le menu plutôt que de ne rien afficher */
+			final Span aucuneAction = new Span(getTranslation(NAME + ".aucuneaction"));
+			aucuneAction.addClassName("menu-actions-vide");
+			menu.addItem(aucuneAction);
+		}
 
 		card.add(badgeAnnee, libelle);
-		if (documents instanceof HorizontalLayout documentsLayout && documentsLayout.getComponentCount() > 0) {
-			card.add(documents);
-		}
 		return card;
+	}
+
+	/**
+	 * Remplit le menu d'actions d'une inscription (affiché sur petit écran au clic
+	 * sur le libellé) : détail de l'inscription et documents téléchargeables
+	 * disponibles.
+	 *
+	 * @return vrai si au moins une action a été ajoutée
+	 */
+	private boolean remplirMenuActions(final ContextMenu menu, final Inscription inscription) {
+		final Etudiant etudiant = sessionController.getEtudiant();
+		boolean auMoinsUneAction = false;
+
+		//Détail de l'inscription (uniquement sur l'année en cours)
+		if (estInscriptionAnneeEnCours(inscription)) {
+			menu.addItem(
+				actionMenuItem(VaadinIcon.SEARCH, getTranslation(NAME + ".inscriptionPedagogique.link")),
+				e -> ouvrirDetailInscription(inscription));
+			auMoinsUneAction = true;
+		}
+
+		//Certificat de scolarité
+		if (etudiantController.proposerCertificat(inscription, etudiant)) {
+			menu.addItem(createDownloadMenuItem(() -> inscriptionController.exportPdf(inscription),
+				VaadinIcon.FILE_TEXT_O, getTranslation(NAME + ".certificatScolarite.link")));
+			auMoinsUneAction = true;
+		}
+
+		//Attestation d'affiliation
+		if (etudiantController.proposerAttestationAffiliationSSO(inscription, etudiant)) {
+			menu.addItem(createDownloadMenuItem(() -> ssoController.exportAffiliationSsoPdf(etudiant, inscription),
+				VaadinIcon.FILE_TEXT_O, getTranslation(NAME + ".affiliationSso.link")));
+			auMoinsUneAction = true;
+		}
+
+		//Quittance
+		if (etudiantController.proposerQuittanceDroitsPayes(inscription, etudiant)) {
+			menu.addItem(createDownloadMenuItem(() -> ssoController.exportQuittancePdf(etudiant, inscription),
+				VaadinIcon.FILE_TEXT_O, getTranslation(NAME + ".quittance.link")));
+			auMoinsUneAction = true;
+		}
+
+		return auMoinsUneAction;
+	}
+
+	/** Construit l'icône et le libellé textuel d'une entrée du menu d'actions. */
+	private HorizontalLayout actionMenuItem(final VaadinIcon icone, final String libelle) {
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(true);
+		layout.setAlignItems(FlexComponent.Alignment.CENTER);
+		final Icon icon = icone.create();
+		icon.setSize("var(--lumo-icon-size-s)");
+		layout.add(icon, new Span(libelle));
+		return layout;
+	}
+
+	/**
+	 * Construit une entrée de menu téléchargeable : une ancre (avec génération
+	 * différée du document) contenant l'icône et le libellé de l'action.
+	 */
+	private Anchor createDownloadMenuItem(final Supplier<DownloadFile> dfSupplier, final VaadinIcon icone, final String libelle) {
+		return createDownloadAnchor(dfSupplier, actionMenuItem(icone, libelle));
 	}
 
 	/**
@@ -383,8 +468,9 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 	 * grille sur petit écran) et n'est jamais produite deux fois.
 	 *
 	 * @param dfSupplier fournit le document à télécharger, généré au clic
+	 * @param content composant cliquable (bouton ou entrée de menu) encapsulé dans l'ancre
 	 */
-	private Anchor createDownloadAnchor(Supplier<DownloadFile> dfSupplier, Button button) {
+	private Anchor createDownloadAnchor(Supplier<DownloadFile> dfSupplier, Component content) {
 		Anchor anchor = new Anchor();
 		anchor.setHref(DownloadHandler.fromInputStream(evt -> {
 			/* Le handler s'exécute hors du verrou de session Vaadin : verrou requis pour
@@ -402,7 +488,7 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 				session.unlock();
 			}
 		}));
-		anchor.add(button);
+		anchor.add(content);
 		return anchor;
 	}
 
