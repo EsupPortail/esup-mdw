@@ -223,28 +223,21 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 	}
 
 	/**
-	 * Colonne libellé de l'inscription : libellé de l'étape + bouton de détail.
+	 * Colonne libellé de l'inscription : sur l'année en cours, le libellé est
+	 * cliquable et ouvre le détail de l'inscription ; sinon, simple libellé.
 	 */
 	private Component buildLibelleInscriptionColumn(Inscription inscription) {
-		HorizontalLayout libelleLayout = new HorizontalLayout();
-		libelleLayout.setSpacing(true);
-		libelleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-
-		//ajout du libellé de l'étape concernée par l'inscription
-		libelleLayout.add(new Span(inscription.getLib_etp()));
-
-		//Si c'est une inscription sur l'année en cours
+		//Si c'est une inscription sur l'année en cours : libellé cliquable ouvrant le détail
 		if (estInscriptionAnneeEnCours(inscription)) {
-			//On affiche le bouton pour voir le détail de l'inscription
-			Button bDetailInscription = new Button(VaadinIcon.SEARCH.create());
-			bDetailInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-			bDetailInscription.setTooltipText(getTranslation(NAME + ".inscriptionPedagogique.link"));
-			bDetailInscription.addClickListener(e -> ouvrirDetailInscription(inscription));
-			//ajout du bouton au layout
-			libelleLayout.add(bDetailInscription);
+			Button bLibelleInscription = new Button(inscription.getLib_etp());
+			bLibelleInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			bLibelleInscription.addClassName("v-link");
+			bLibelleInscription.setTooltipText(getTranslation(NAME + ".inscriptionPedagogique.link"));
+			bLibelleInscription.addClickListener(e -> ouvrirDetailInscription(inscription));
+			return bLibelleInscription;
 		}
-
-		return libelleLayout;
+		//Sinon, simple libellé non cliquable
+		return new Span(inscription.getLib_etp());
 	}
 
 	/** Vrai si l'inscription porte sur l'année universitaire en cours. */
