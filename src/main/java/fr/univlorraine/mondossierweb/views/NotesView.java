@@ -23,7 +23,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -49,6 +48,7 @@ import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
@@ -113,7 +113,9 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		/* Titre */
 		HorizontalLayout titleLayout = new HorizontalLayout();
 		titleLayout.setWidthFull();
+		titleLayout.setSpacing(true);
 		titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+		titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
 		//On vérifie le droit d'accéder à la vue
 		if (etudiant != null
@@ -136,6 +138,9 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 				//On récupère les notes pour un étudiant
 				resultatController.renseigneNotesEtResultatsEtudiant(etudiant);
 			}
+
+			// Ajouter le bloc "Voir comme un étudiant" (enseignants/gestionnaires), sur la même ligne que le bouton PDF
+			ajouterVoirCommeUnEtudiant(titleLayout);
 
 			//Test si on a des diplomes ou des etapes
 			if ((etudiant.getDiplomes() != null && !etudiant.getDiplomes().isEmpty())
@@ -161,64 +166,63 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			globalLayout.setPadding(false);
 			globalLayout.setSpacing(true);
 
-			// Ajouter bloc "Voir comme un étudiant" si nécessaire
-			ajouterVoirCommeUnEtudiant(globalLayout);
-
 			/* Les diplômes */
-			Grid<Diplome> notesDiplomesGrid = new Grid<>();
-			notesDiplomesGrid.setWidthFull();
-			notesDiplomesGrid.setAllRowsVisible(true);
-			notesDiplomesGrid.setSelectionMode(Grid.SelectionMode.NONE);
-			notesDiplomesGrid.addColumn(Diplome::getAnnee)
-				.setHeader(getTranslation(NAME + ".table.diplomes.annee")).setFlexGrow(1).setResizable(true);
-			notesDiplomesGrid.addColumn(Diplome::getCod_dip)
-				.setHeader(getTranslation(NAME + ".table.diplomes.cod_dip")).setFlexGrow(1).setResizable(true);
-			notesDiplomesGrid.addColumn(Diplome::getLib_web_vdi)
-				.setHeader(getTranslation(NAME + ".table.diplomes.lib_web_vdi")).setFlexGrow(3).setResizable(true);
-			notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getSession))
-				.setHeader(getTranslation(NAME + ".table.diplomes.session")).setFlexGrow(1).setResizable(true);
-			notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), this::formatNote))
-				.setHeader(getTranslation(NAME + ".table.diplomes.note")).setFlexGrow(1).setResizable(true);
-			notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getAdmission))
-				.setHeader(getTranslation(NAME + ".table.diplomes.resultat")).setFlexGrow(1).setResizable(true);
+			ResponsiveCardList<Diplome> notesDiplomesList = new ResponsiveCardList<>();
+			notesDiplomesList.setWidthFull();
+			notesDiplomesList.setAllRowsVisible(true);
+			notesDiplomesList.addColumn(Diplome::getAnnee,
+					getTranslation(NAME + ".table.diplomes.annee")).setFlexGrow(1).setResizable(true);
+			notesDiplomesList.addColumn(Diplome::getCod_dip,
+					getTranslation(NAME + ".table.diplomes.cod_dip")).setFlexGrow(1).setResizable(true);
+			notesDiplomesList.addColumn(Diplome::getLib_web_vdi,
+					getTranslation(NAME + ".table.diplomes.lib_web_vdi")).setFlexGrow(3).setResizable(true);
+			notesDiplomesList.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getSession),
+					getTranslation(NAME + ".table.diplomes.session")).setFlexGrow(1).setResizable(true);
+			notesDiplomesList.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), this::formatNote),
+					getTranslation(NAME + ".table.diplomes.note")).setFlexGrow(1).setResizable(true);
+			notesDiplomesList.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getAdmission),
+					getTranslation(NAME + ".table.diplomes.resultat")).setFlexGrow(1).setResizable(true);
 			if (configController.isAffMentionEtudiant()) {
-				notesDiplomesGrid.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getCodMention))
-					.setHeader(getTranslation(NAME + ".table.diplomes.mention")).setFlexGrow(1).setResizable(true);
+				notesDiplomesList.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getCodMention),
+						getTranslation(NAME + ".table.diplomes.mention")).setFlexGrow(1).setResizable(true);
 			}
 			if (etudiant.isAfficherRang()) {
-				notesDiplomesGrid.addComponentColumn(diplome -> buildRangColumn(diplome.getRang(), diplome.isAfficherRang()))
-					.setHeader(getTranslation(NAME + ".table.diplomes.rang")).setFlexGrow(1).setResizable(true);
+				notesDiplomesList.addComponentColumn(diplome -> buildRangColumn(diplome.getRang(), diplome.isAfficherRang()),
+						getTranslation(NAME + ".table.diplomes.rang")).setFlexGrow(1).setResizable(true);
 			}
-			notesDiplomesGrid.setItems(etudiant.getDiplomes() != null ? etudiant.getDiplomes() : Collections.emptyList());
-			globalLayout.add(createPanel(getTranslation(NAME + ".table.diplomes"), notesDiplomesGrid));
+			/* Cartes affichées sur petit écran */
+			notesDiplomesList.setCardRenderer(this::createDiplomeCard);
+			notesDiplomesList.setItems(etudiant.getDiplomes() != null ? etudiant.getDiplomes() : Collections.emptyList());
+			globalLayout.add(createPanel(getTranslation(NAME + ".table.diplomes"), notesDiplomesList));
 
 			/* Les étapes */
-			Grid<Etape> notesEtapesGrid = new Grid<>();
-			notesEtapesGrid.setWidthFull();
-			notesEtapesGrid.setAllRowsVisible(true);
-			notesEtapesGrid.setSelectionMode(Grid.SelectionMode.NONE);
-			notesEtapesGrid.addColumn(Etape::getAnnee)
-				.setHeader(getTranslation(NAME + ".table.etapes.annee")).setFlexGrow(1).setResizable(true);
-			notesEtapesGrid.addComponentColumn(this::buildCodeEtapeColumn)
-				.setHeader(getTranslation(NAME + ".table.etapes.codevers")).setFlexGrow(1).setResizable(true);
-			notesEtapesGrid.addComponentColumn(this::buildLibelleEtapeColumn)
-				.setHeader(getTranslation(NAME + ".table.etapes.libelle")).setFlexGrow(3).setResizable(true);
-			notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getSession))
-				.setHeader(getTranslation(NAME + ".table.etapes.session")).setFlexGrow(1).setResizable(true);
-			notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), this::formatNote))
-				.setHeader(getTranslation(NAME + ".table.etapes.note")).setFlexGrow(1).setResizable(true);
-			notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getAdmission))
-				.setHeader(getTranslation(NAME + ".table.etapes.resultat")).setFlexGrow(1).setResizable(true);
+			ResponsiveCardList<Etape> notesEtapesList = new ResponsiveCardList<>();
+			notesEtapesList.setWidthFull();
+			notesEtapesList.setAllRowsVisible(true);
+			notesEtapesList.addColumn(Etape::getAnnee,
+					getTranslation(NAME + ".table.etapes.annee")).setFlexGrow(1).setResizable(true);
+			notesEtapesList.addComponentColumn(this::buildCodeEtapeColumn,
+					getTranslation(NAME + ".table.etapes.codevers")).setFlexGrow(1).setResizable(true);
+			notesEtapesList.addComponentColumn(this::buildLibelleEtapeColumn,
+					getTranslation(NAME + ".table.etapes.libelle")).setFlexGrow(3).setResizable(true);
+			notesEtapesList.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getSession),
+					getTranslation(NAME + ".table.etapes.session")).setFlexGrow(1).setResizable(true);
+			notesEtapesList.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), this::formatNote),
+					getTranslation(NAME + ".table.etapes.note")).setFlexGrow(1).setResizable(true);
+			notesEtapesList.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getAdmission),
+					getTranslation(NAME + ".table.etapes.resultat")).setFlexGrow(1).setResizable(true);
 			if (configController.isAffMentionEtudiant()) {
-				notesEtapesGrid.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getCodMention))
-					.setHeader(getTranslation(NAME + ".table.etapes.mention")).setFlexGrow(1).setResizable(true);
+				notesEtapesList.addComponentColumn(etape -> buildResultatsColumn(etape.getResultats(), Resultat::getCodMention),
+						getTranslation(NAME + ".table.etapes.mention")).setFlexGrow(1).setResizable(true);
 			}
 			if (etudiant.isAfficherRang()) {
-				notesEtapesGrid.addComponentColumn(etape -> buildRangColumn(etape.getRang(), etape.isAfficherRang()))
-					.setHeader(getTranslation(NAME + ".table.etapes.rang")).setFlexGrow(1).setResizable(true);
+				notesEtapesList.addComponentColumn(etape -> buildRangColumn(etape.getRang(), etape.isAfficherRang()),
+						getTranslation(NAME + ".table.etapes.rang")).setFlexGrow(1).setResizable(true);
 			}
-			notesEtapesGrid.setItems(etudiant.getEtapes() != null ? etudiant.getEtapes() : Collections.emptyList());
-			globalLayout.add(createPanel(getTranslation(NAME + ".table.etapes"), notesEtapesGrid));
+			/* Cartes affichées sur petit écran */
+			notesEtapesList.setCardRenderer(this::createEtapeCard);
+			notesEtapesList.setItems(etudiant.getEtapes() != null ? etudiant.getEtapes() : Collections.emptyList());
+			globalLayout.add(createPanel(getTranslation(NAME + ".table.etapes"), notesEtapesList));
 
 			/* Signification des résultats */
 			if (etudiant.isSignificationResultatsUtilisee()) {
@@ -240,10 +244,9 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			}
 			add(globalLayout);
 		} else {
-			add(titleLayout);
-
 			// Ajouter bloc "Voir comme un étudiant" si nécessaire
-			ajouterVoirCommeUnEtudiant(this);
+			ajouterVoirCommeUnEtudiant(titleLayout);
+			add(titleLayout);
 
 			//Si on est dans le cas d'un blocage apogée
 			if (etudiant != null
@@ -255,13 +258,14 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		}
 	}
 
-	private void ajouterVoirCommeUnEtudiant(com.vaadin.flow.component.HasComponents globalLayout) {
+	private void ajouterVoirCommeUnEtudiant(HorizontalLayout titleLayout) {
 		//Test si user enseignant
 		if (isUserGestionnaireWithAccess() || isUserEnseignantWithAccess()) {
-			HorizontalLayout vueLayout = new HorizontalLayout();
+			VerticalLayout vueLayout = new VerticalLayout();
 			vueLayout.setWidthFull();
 			vueLayout.setSpacing(true);
-			vueLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			vueLayout.setPadding(false);
+			vueLayout.setAlignItems(FlexComponent.Alignment.START);
 
 			Button changerVueButton = new Button(getTranslation(NAME + ".button.vueEnseignant"));
 			changerVueButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -284,9 +288,11 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 
 			vueLayout.add(changerVueButton);
 			vueLayout.add(vueLabelWrapper);
-			vueLayout.expand(vueLabelWrapper);
 
-			globalLayout.add(createPanel(null, vueLayout));
+			/* Le bloc est placé dans l'entête, à gauche du bouton PDF */
+			Div vuePanel = createPanel(null, vueLayout);
+			titleLayout.add(vuePanel);
+			titleLayout.expand(vuePanel);
 		}
 	}
 
@@ -414,6 +420,135 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 	}
 
 	/**
+	 * Construit la carte d'un diplôme, affichée sur petit écran : à gauche
+	 * l'année et le libellé ; à droite les sessions (libellé, note, résultat)
+	 * puis, en pied, le rang et la mention.
+	 */
+	private Div createDiplomeCard(final Diplome diplome) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		final HorizontalLayout split = new HorizontalLayout();
+		split.setWidthFull();
+		split.setSpacing(true);
+		split.setPadding(false);
+		split.setAlignItems(FlexComponent.Alignment.START);
+		split.addClassName("card-split");
+
+		/* Colonne gauche : année puis libellé (une ligne par info) */
+		final VerticalLayout gauche = new VerticalLayout();
+		gauche.setPadding(false);
+		gauche.setSpacing(false);
+		gauche.setAlignItems(FlexComponent.Alignment.STRETCH);
+		gauche.addClassName("card-split-left");
+		gauche.add(new Span(diplome.getAnnee() != null ? diplome.getAnnee() : ""));
+		gauche.add(new Span(diplome.getLib_web_vdi() != null ? diplome.getLib_web_vdi() : ""));
+
+		/* Colonne droite : sessions puis pied (rang, mention) */
+		final VerticalLayout droite = buildResultatsCarte(diplome.getResultats(), diplome.getRang(), diplome.isAfficherRang(),
+				getTranslation(NAME + ".table.diplomes.rang"), getTranslation(NAME + ".table.diplomes.mention"));
+
+		split.add(gauche, droite);
+		split.expand(droite);
+		card.add(split);
+		return card;
+	}
+
+	/**
+	 * Construit la carte d'une étape, affichée sur petit écran : à gauche
+	 * l'année et le libellé (cliquable) ; à droite les sessions (libellé, note,
+	 * résultat) puis, en pied, le rang et la mention.
+	 */
+	private Div createEtapeCard(final Etape etape) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		final HorizontalLayout split = new HorizontalLayout();
+		split.setWidthFull();
+		split.setSpacing(true);
+		split.setPadding(false);
+		split.setAlignItems(FlexComponent.Alignment.START);
+		split.addClassName("card-split");
+
+		/* Colonne gauche : année puis libellé (cliquable) */
+		final VerticalLayout gauche = new VerticalLayout();
+		gauche.setPadding(false);
+		gauche.setSpacing(false);
+		gauche.setAlignItems(FlexComponent.Alignment.STRETCH);
+		gauche.addClassName("card-split-left");
+		gauche.add(new Span(etape.getAnnee() != null ? etape.getAnnee() : ""));
+		/* Le libellé de la filière peut passer sur plusieurs lignes si la place manque */
+		final Component libelleEtape = buildLibelleEtapeColumn(etape);
+		libelleEtape.getElement().getClassList().add("card-libelle-wrap");
+		gauche.add(libelleEtape);
+
+		/* Colonne droite : sessions puis pied (rang, mention) */
+		final VerticalLayout droite = buildResultatsCarte(etape.getResultats(), etape.getRang(), etape.isAfficherRang(),
+				getTranslation(NAME + ".table.etapes.rang"), getTranslation(NAME + ".table.etapes.mention"));
+
+		split.add(gauche, droite);
+		split.expand(droite);
+		card.add(split);
+		return card;
+	}
+
+	/**
+	 * Construit la partie droite d'une carte : une colonne par session
+	 * (libellé, note, résultat), puis un pied avec le rang et la mention.
+	 */
+	private VerticalLayout buildResultatsCarte(final List<Resultat> resultats, final String rang, final boolean afficherRang,
+			final String rangLabel, final String mentionLabel) {
+		final Etudiant etudiant = sessionController.getEtudiant();
+
+		final VerticalLayout droite = new VerticalLayout();
+		droite.setPadding(false);
+		droite.setSpacing(false);
+		droite.addClassName("card-split-right");
+
+		final HorizontalLayout sessions = new HorizontalLayout();
+		sessions.setPadding(false);
+		sessions.setSpacing(true);
+		sessions.setAlignItems(FlexComponent.Alignment.START);
+		if (resultats != null) {
+			for (final Resultat r : resultats) {
+				final VerticalLayout session = new VerticalLayout();
+				session.setPadding(false);
+				session.setSpacing(false);
+				session.addClassName("card-session");
+				/* Largeur au contenu : les sessions restent l'une à côté de l'autre */
+				session.getStyle().set("width", "auto");
+				final Span sessionLabel = new Span(r.getSession() != null ? r.getSession() : "");
+				sessionLabel.addClassName("card-session-header");
+				session.add(sessionLabel);
+				session.add(new Span(formatNote(r)));
+				session.add(new Span(r.getAdmission() != null ? r.getAdmission() : ""));
+				sessions.add(session);
+			}
+		}
+		droite.add(sessions);
+
+		/* Pied : rang puis mention, l'un en dessous de l'autre */
+		final VerticalLayout footer = new VerticalLayout();
+		footer.setPadding(false);
+		footer.setSpacing(false);
+		footer.addClassName("card-footer");
+		if (etudiant != null && etudiant.isAfficherRang() && afficherRang && StringUtils.hasText(rang)) {
+			footer.add(new Span(rangLabel + " " + rang));
+		}
+		if (configController.isAffMentionEtudiant() && resultats != null) {
+			for (final Resultat r : resultats) {
+				if (StringUtils.hasText(r.getCodMention())) {
+					footer.add(new Span(mentionLabel + " " + r.getCodMention()));
+				}
+			}
+		}
+		if (footer.getComponentCount() > 0) {
+			droite.add(footer);
+		}
+		return droite;
+	}
+
+	/**
 	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
 	 */
 	private Div createPanel(String titre, Component content) {
@@ -433,7 +568,7 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			panel.add(header);
 		}
 		Div body = new Div(content);
-		if (!(content instanceof Grid)) {
+		if (!(content instanceof ResponsiveCardList<?>)) {
 			body.getStyle().set("padding", "var(--lumo-space-s)");
 		}
 		panel.add(body);

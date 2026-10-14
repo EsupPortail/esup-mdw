@@ -24,7 +24,6 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -43,6 +42,7 @@ import fr.univlorraine.mondossierweb.controllers.NoteController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
@@ -87,6 +87,7 @@ public class DetailNotesWindow extends Dialog {
 
 	private void buildContent() {
 		removeAll();
+		addClassName("detail-notes-window");
 
 		final Etudiant etudiant = sessionController.getEtudiant();
 
@@ -98,6 +99,7 @@ public class DetailNotesWindow extends Dialog {
 			headerInitialized = true;
 			Button btnFermer = new Button(VaadinIcon.CLOSE.create());
 			btnFermer.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			btnFermer.addClassName("btn-fermer-header");
 			btnFermer.getElement().setAttribute("aria-label", getTranslation(NAME + ".btnFermer"));
 			btnFermer.addClickListener(e -> close());
 			getHeader().add(btnFermer);
@@ -166,48 +168,52 @@ public class DetailNotesWindow extends Dialog {
 
 			Component detailContent;
 			if (lelp != null && !lelp.isEmpty()) {
-				Grid<ElementPedagogique> detailNotesGrid = new Grid<>();
-				detailNotesGrid.setSizeFull();
-				detailNotesGrid.setSelectionMode(Grid.SelectionMode.NONE);
-				if (contientElpObtenusPrecedemment(lelp)) {
-					detailNotesGrid.addComponentColumn(this::buildAnneeColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.annee")).setFlexGrow(1).setResizable(true);
-				}
-				detailNotesGrid.addComponentColumn(this::buildCodeElpColumn)
-					.setHeader(getTranslation(NAME + ".table.elp.code")).setFlexGrow(1).setResizable(true);
-				detailNotesGrid.addComponentColumn(this::buildLibelleElpColumn)
-					.setHeader(getTranslation(NAME + ".table.elp.libelle")).setFlexGrow(4).setResizable(true);
-				detailNotesGrid.addComponentColumn(el -> buildNoteColumn(el, el.getNote1(), el.getBareme1()))
-					.setHeader(noteController.renommerSession1(lelp)
-						? getTranslation(NAME + ".table.elp.notesession1bis")
-						: getTranslation(NAME + ".table.elp.notesession1"))
-					.setFlexGrow(1).setResizable(true);
-				detailNotesGrid.addComponentColumn(el -> buildResultatColumn(el, el.getRes1()))
-					.setHeader(getTranslation(NAME + ".table.elp.resultatsession1")).setFlexGrow(1).setResizable(true);
+				final String headerSession1 = noteController.renommerSession1(lelp)
+					? getTranslation(NAME + ".table.elp.notesession1bis")
+					: getTranslation(NAME + ".table.elp.notesession1");
+				final String headerSession2 = getTranslation(NAME + ".table.elp.notesession2");
+				final boolean afficherSession2 = noteController.afficherSession2(lelp);
 
-				if (noteController.afficherSession2(lelp)) {
-					detailNotesGrid.addComponentColumn(el -> buildNoteColumn(el, el.getNote2(), el.getBareme2()))
-						.setHeader(getTranslation(NAME + ".table.elp.notesession2")).setFlexGrow(1).setResizable(true);
-					detailNotesGrid.addComponentColumn(el -> buildResultatColumn(el, el.getRes2()))
-						.setHeader(getTranslation(NAME + ".table.elp.resultatsession2")).setFlexGrow(1).setResizable(true);
+				ResponsiveCardList<ElementPedagogique> detailNotesList = new ResponsiveCardList<>();
+				detailNotesList.setSizeFull();
+				if (contientElpObtenusPrecedemment(lelp)) {
+					detailNotesList.addComponentColumn(this::buildAnneeColumn,
+							getTranslation(NAME + ".table.elp.annee")).setFlexGrow(1).setResizable(true);
+				}
+				detailNotesList.addComponentColumn(this::buildCodeElpColumn,
+						getTranslation(NAME + ".table.elp.code")).setFlexGrow(1).setResizable(true);
+				detailNotesList.addComponentColumn(this::buildLibelleElpColumn,
+						getTranslation(NAME + ".table.elp.libelle")).setFlexGrow(4).setResizable(true);
+				detailNotesList.addComponentColumn(el -> buildNoteColumn(el, el.getNote1(), el.getBareme1()),
+						headerSession1).setFlexGrow(1).setResizable(true);
+				detailNotesList.addComponentColumn(el -> buildResultatColumn(el, el.getRes1()),
+						getTranslation(NAME + ".table.elp.resultatsession1")).setFlexGrow(1).setResizable(true);
+
+				if (afficherSession2) {
+					detailNotesList.addComponentColumn(el -> buildNoteColumn(el, el.getNote2(), el.getBareme2()),
+							headerSession2).setFlexGrow(1).setResizable(true);
+					detailNotesList.addComponentColumn(el -> buildResultatColumn(el, el.getRes2()),
+							getTranslation(NAME + ".table.elp.resultatsession2")).setFlexGrow(1).setResizable(true);
 				}
 				if (configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) {
-					detailNotesGrid.addComponentColumn(this::buildRangColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.rang")).setFlexGrow(1).setResizable(true);
+					detailNotesList.addComponentColumn(this::buildRangColumn,
+							getTranslation(NAME + ".table.elp.rang")).setFlexGrow(1).setResizable(true);
 				}
 				if (configController.isAffECTSEtudiant()) {
-					detailNotesGrid.addComponentColumn(this::buildEctsColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.ects"))
+					detailNotesList.addComponentColumn(this::buildEctsColumn,
+							getTranslation(NAME + ".table.elp.ects"))
 						.setFlexGrow(1)
 						.setResizable(true)
 						.setVisible(!configController.isMasqueECTSEtudiant());
 				}
 				if (configController.isAffMentionElpEtudiant()) {
-					detailNotesGrid.addComponentColumn(this::buildMentionColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.mention")).setFlexGrow(1).setResizable(true);
+					detailNotesList.addComponentColumn(this::buildMentionColumn,
+							getTranslation(NAME + ".table.elp.mention")).setFlexGrow(1).setResizable(true);
 				}
-				detailNotesGrid.setItems(lelp);
-				detailContent = detailNotesGrid;
+				/* Cartes affichées sur petit écran */
+				detailNotesList.setCardRenderer(el -> createElpCard(el, headerSession1, headerSession2, afficherSession2));
+				detailNotesList.setItems(lelp);
+				detailContent = detailNotesList;
 			} else {
 				setHeight("30%");
 				Span labelAucunResultat = new Span(getTranslation(NAME + ".message.aucuneresultat"));
@@ -237,6 +243,16 @@ public class DetailNotesWindow extends Dialog {
 			}
 
 			layout.setFlexGrow(1, panelDetailNotes);
+
+			/* Bouton de fermeture, aligné en bas (affiché sur mobile) */
+			final Button btnFermerMobile = new Button(getTranslation(NAME + ".btnFermer"), e -> close());
+			btnFermerMobile.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			btnFermerMobile.addClassName("btn-fermer-mobile");
+			final HorizontalLayout boutonsLayout = new HorizontalLayout(btnFermerMobile);
+			boutonsLayout.setWidthFull();
+			boutonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			layout.add(boutonsLayout);
+
 			add(layout);
 
 		} else {
@@ -265,10 +281,11 @@ public class DetailNotesWindow extends Dialog {
 	private void ajouterPanelVoirCommeUnEtudiant(VerticalLayout layout) {
 		//Test si user enseignant
 		if (userController.isEnseignant()) {
-			HorizontalLayout vueLayout = new HorizontalLayout();
+			VerticalLayout vueLayout = new VerticalLayout();
 			vueLayout.setWidthFull();
 			vueLayout.setSpacing(true);
-			vueLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			vueLayout.setPadding(false);
+			vueLayout.setAlignItems(FlexComponent.Alignment.START);
 
 			Button changerVueButton = new Button(getTranslation(NAME + ".button.vueEnseignant"));
 			changerVueButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -291,7 +308,6 @@ public class DetailNotesWindow extends Dialog {
 
 			vueLayout.add(changerVueButton);
 			vueLayout.add(vueLabelWrapper);
-			vueLayout.expand(vueLabelWrapper);
 
 			panelVue = createPanel(null, vueLayout);
 			layout.add(panelVue);
@@ -457,6 +473,94 @@ public class DetailNotesWindow extends Dialog {
 	}
 
 	/**
+	 * Construit la carte d'un élément pédagogique, affichée sur petit écran :
+	 * à gauche le libellé ; à droite une colonne par session (libellé, note,
+	 * résultat) puis, en pied, le rang, l'ECTS et la mention.
+	 */
+	private Div createElpCard(final ElementPedagogique el, final String headerSession1,
+			final String headerSession2, final boolean afficherSession2) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		final HorizontalLayout split = new HorizontalLayout();
+		split.setWidthFull();
+		split.setSpacing(true);
+		split.setPadding(false);
+		split.setAlignItems(FlexComponent.Alignment.START);
+		split.addClassName("card-split");
+
+		/* Colonne gauche : libellé */
+		final VerticalLayout gauche = new VerticalLayout();
+		gauche.setPadding(false);
+		gauche.setSpacing(false);
+		gauche.setAlignItems(FlexComponent.Alignment.STRETCH);
+		gauche.addClassName("card-split-left");
+		gauche.add(buildLibelleElpColumn(el));
+
+		/* Colonne droite : sessions puis pied (rang, ECTS, mention) */
+		final VerticalLayout droite = new VerticalLayout();
+		droite.setPadding(false);
+		droite.setSpacing(false);
+		droite.addClassName("card-split-right");
+
+		final HorizontalLayout sessions = new HorizontalLayout();
+		sessions.setPadding(false);
+		sessions.setSpacing(true);
+		sessions.setAlignItems(FlexComponent.Alignment.START);
+		sessions.add(buildSessionCarte(headerSession1, el.getNote1(), el.getBareme1(), el.getRes1()));
+		if (afficherSession2) {
+			sessions.add(buildSessionCarte(headerSession2, el.getNote2(), el.getBareme2(), el.getRes2()));
+		}
+		droite.add(sessions);
+
+		/* Pied : rang, ECTS puis mention, l'un en dessous de l'autre */
+		final VerticalLayout footer = new VerticalLayout();
+		footer.setPadding(false);
+		footer.setSpacing(false);
+		footer.addClassName("card-footer");
+		if ((configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) && StringUtils.hasText(el.getRang())) {
+			footer.add(new Span(getTranslation(NAME + ".table.elp.rang") + " " + el.getRang()));
+		}
+		if (configController.isAffECTSEtudiant() && !configController.isMasqueECTSEtudiant() && StringUtils.hasText(el.getEcts())) {
+			footer.add(new Span(getTranslation(NAME + ".table.elp.ects") + " " + el.getEcts()));
+		}
+		if (configController.isAffMentionElpEtudiant() && StringUtils.hasText(el.getCodMention())) {
+			footer.add(new Span(getTranslation(NAME + ".table.elp.mention") + " " + el.getCodMention()));
+		}
+		if (footer.getComponentCount() > 0) {
+			droite.add(footer);
+		}
+
+		split.add(gauche, droite);
+		split.expand(droite);
+		card.add(split);
+		return card;
+	}
+
+	/**
+	 * Construit la colonne d'une session dans une carte mobile : libellé de la
+	 * session, note (avec barème éventuel) et résultat.
+	 */
+	private VerticalLayout buildSessionCarte(final String header, final String note, final int bareme, final String resultat) {
+		final VerticalLayout session = new VerticalLayout();
+		session.setPadding(false);
+		session.setSpacing(false);
+		session.addClassName("card-session");
+		/* Largeur au contenu : les sessions restent l'une à côté de l'autre */
+		session.getStyle().set("width", "auto");
+		final Span sessionLabel = new Span(header != null ? header : "");
+		sessionLabel.addClassName("card-session-header");
+		session.add(sessionLabel);
+		String valeurNote = note;
+		if (StringUtils.hasText(note) && bareme != 0 && (configController.isToujoursAfficherBareme() || bareme != 20)) {
+			valeurNote += "/" + bareme;
+		}
+		session.add(new Span(valeurNote != null ? valeurNote : ""));
+		session.add(new Span(resultat != null ? resultat : ""));
+		return session;
+	}
+
+	/**
 	 * Panel (ancien com.vaadin.ui.Panel) : bloc avec un titre et une bordure.
 	 */
 	private Div createPanel(String titre, Component content) {
@@ -481,7 +585,7 @@ public class DetailNotesWindow extends Dialog {
 		body.getStyle()
 			.set("flex", "1 1 auto")
 			.set("overflow", "auto");
-		if (!(content instanceof Grid)) {
+		if (!(content instanceof ResponsiveCardList<?>)) {
 			body.getStyle().set("padding", "var(--lumo-space-s)");
 		}
 		panel.add(body);

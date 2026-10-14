@@ -320,15 +320,80 @@ vaadin-grid::part(marked) {
 	}
 }
 
-/* Sur mobile, les fenêtres de détail des groupes et de l'inscription occupent tout l'écran. */
+/* Cartes mobiles à deux colonnes : informations à gauche, contenu principal à droite */
+.responsive-card-list .card-split {
+	width: 100%;
+}
+
+.responsive-card-list .card-split-left {
+	/* Peut se réduire et passer à la ligne si le libellé est long */
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
+.responsive-card-list .card-split-right {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Libellé de carte pouvant passer sur plusieurs lignes (filière d'inscription) */
+.responsive-card-list .card-libelle-wrap {
+	min-width: 0;
+	max-width: 100%;
+	white-space: normal;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	text-align: left;
+}
+
+.responsive-card-list .card-libelle-wrap::part(label) {
+	white-space: normal;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	text-align: left;
+}
+
+/* Colonnes de sessions (libellé, note, résultat) dans une carte mobile */
+.responsive-card-list .card-session {
+	flex: 0 0 auto;
+}
+
+.responsive-card-list .card-session-header {
+	font-weight: 600;
+}
+
+/* Pied de carte mobile : rang, ECTS, mention empilés */
+.responsive-card-list .card-footer {
+	width: 100%;
+	border-top: 1px solid var(--lumo-contrast-10pct);
+	margin-top: var(--lumo-space-xs);
+	padding-top: var(--lumo-space-xs);
+}
+
+/* DetailNotesWindow : bouton « Fermer » affiché uniquement sur mobile */
+.detail-notes-window .btn-fermer-mobile {
+	display: none;
+}
+
+/* Sur mobile, les fenêtres de détail (groupes, inscription, notes) occupent tout l'écran. */
 @media (max-width: 767px) {
 	.detail-groupes-window::part(overlay),
-	.detail-inscription-window::part(overlay) {
+	.detail-inscription-window::part(overlay),
+	.detail-notes-window::part(overlay) {
 		width: 100vw !important;
 		height: 100vh !important;
 		max-width: 100vw !important;
 		max-height: 100vh !important;
 		margin: 0 !important;
 		border-radius: 0 !important;
+	}
+
+	/* DetailNotesWindow : on masque la croix d'entête et on affiche le bouton « Fermer » en bas */
+	.detail-notes-window .btn-fermer-header {
+		display: none;
+	}
+
+	.detail-notes-window .btn-fermer-mobile {
+		display: inline-flex;
 	}
 }

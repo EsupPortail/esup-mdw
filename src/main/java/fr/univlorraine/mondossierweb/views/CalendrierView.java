@@ -23,7 +23,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -47,6 +46,7 @@ import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
 import fr.univlorraine.mondossierweb.entities.apogee.Examen;
 import fr.univlorraine.mondossierweb.security.MdwUserDetailsService;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
@@ -116,7 +116,20 @@ public class CalendrierView extends VerticalLayout implements BeforeEnterObserve
 			/* Titre */
 			HorizontalLayout titleLayout = new HorizontalLayout();
 			titleLayout.setWidthFull();
+			titleLayout.setSpacing(true);
 			titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
+			/* Message d'info, à gauche, sur la même ligne que le bouton PDF */
+			String messageInfo = getTranslation(NAME + ".message.info");
+			if (StringUtils.hasText(messageInfo) && !messageInfo.equals(NAME + ".message.info")) {
+				Html infoLabel = new Html("<div>" + messageInfo + "</div>");
+				Div infoWrapper = new Div(infoLabel);
+				infoWrapper.addClassName(LumoUtility.FontSize.SMALL);
+				titleLayout.add(infoWrapper);
+				titleLayout.expand(infoWrapper);
+			}
+
 			//Test si on a des épreuves
 			if (etudiant.getCalendrier() != null && !etudiant.getCalendrier().isEmpty()) {
 				DownloadFile df = calendrierController.exportPdf();
@@ -140,25 +153,14 @@ public class CalendrierView extends VerticalLayout implements BeforeEnterObserve
 			globalLayout.setPadding(false);
 			globalLayout.setSpacing(true);
 
-			/* Message d'info */
-			String messageInfo = getTranslation(NAME + ".message.info");
-			if (StringUtils.hasText(messageInfo) && !messageInfo.equals(NAME + ".message.info")) {
-				Html infoLabel = new Html("<div>" + messageInfo + "</div>");
-				Div infoWrapper = new Div(infoLabel);
-				infoWrapper.addClassName(LumoUtility.FontSize.SMALL);
-				globalLayout.add(createPanel(null, infoWrapper));
-			}
-
 			/* Le Calendrier */
 			Component calendrierContent;
 			// Si on a des données à afficher
 			if (etudiant.getCalendrier() != null && !etudiant.getCalendrier().isEmpty()) {
 
-				Grid<Examen> calendrierGrid = new Grid<>();
-				calendrierGrid.setWidthFull();
-				calendrierGrid.setAllRowsVisible(true);
-				calendrierGrid.setSelectionMode(Grid.SelectionMode.NONE);
-				calendrierGrid.setColumnReorderingAllowed(true);
+				ResponsiveCardList<Examen> calendrierList = new ResponsiveCardList<>();
+				calendrierList.setWidthFull();
+				calendrierList.setAllRowsVisible(true);
 
 				String[] colonnesToDisplay = CAL_FIELDS_ORDER;
 				if (configController.isAffDetailExamen()) {
@@ -172,21 +174,23 @@ public class CalendrierView extends VerticalLayout implements BeforeEnterObserve
 				}
 				for (String fieldName : colonnesToDisplay) {
 					if ("batiment".equals(fieldName)) {
-						calendrierGrid.addComponentColumn(this::buildBatimentColumn)
-							.setHeader(getTranslation(NAME + ".table.batiment"))
+						calendrierList.addComponentColumn(this::buildBatimentColumn,
+								getTranslation(NAME + ".table.batiment"))
 							.setAutoWidth(true).setResizable(true);
 					} else if ("salle".equals(fieldName)) {
-						calendrierGrid.addComponentColumn(this::buildSalleColumn)
-							.setHeader(getTranslation(NAME + ".table.salle"))
+						calendrierList.addComponentColumn(this::buildSalleColumn,
+								getTranslation(NAME + ".table.salle"))
 							.setAutoWidth(true).setResizable(true);
 					} else {
-						calendrierGrid.addColumn(examen -> getExamenFieldValue(examen, fieldName))
-							.setHeader(getTranslation(NAME + ".table." + fieldName))
+						calendrierList.addColumn(examen -> getExamenFieldValue(examen, fieldName),
+								getTranslation(NAME + ".table." + fieldName))
 							.setAutoWidth(true).setResizable(true);
 					}
 				}
-				calendrierGrid.setItems(etudiant.getCalendrier());
-				calendrierContent = calendrierGrid;
+				/* Cartes affichées sur petit écran */
+				calendrierList.setCardRenderer(this::createExamenCard);
+				calendrierList.setItems(etudiant.getCalendrier());
+				calendrierContent = calendrierList;
 			} else {
 				Span aucunExamen = new Span(getTranslation(NAME + ".examen.aucun"));
 				aucunExamen.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.BOLD);
@@ -243,6 +247,69 @@ public class CalendrierView extends VerticalLayout implements BeforeEnterObserve
 			libLabel.getElement().setAttribute("title", ex.getLibsalle());
 		}
 		return libLabel;
+	}
+
+	/**
+	 * Construit la carte d'un examen, affichée sur petit écran : à gauche
+	 * (alignées à droite) la date, l'heure, le bâtiment, la salle et la place ;
+	 * à droite (aligné à gauche) le libellé de l'épreuve.
+	 */
+	private Div createExamenCard(final Examen examen) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		final HorizontalLayout split = new HorizontalLayout();
+		split.setWidthFull();
+		split.setSpacing(true);
+		split.setPadding(false);
+		split.setAlignItems(FlexComponent.Alignment.STRETCH);
+		split.addClassName("card-split");
+
+		/* Colonne gauche : date, heure, bâtiment, salle, place (une ligne par info), alignées à droite */
+		final VerticalLayout gauche = new VerticalLayout();
+		gauche.setPadding(false);
+		gauche.setSpacing(false);
+		gauche.setAlignItems(FlexComponent.Alignment.END);
+		gauche.addClassName("card-split-left");
+		gauche.getStyle().set("text-align", "right");
+
+		/* Date en gras */
+		final Span date = new Span(examen.getDatedeb() != null ? Utils.formatDateToString(examen.getDatedeb()) : "");
+		date.addClassName(LumoUtility.FontWeight.BOLD);
+		gauche.add(date);
+
+		gauche.add(new Span(examen.getHeure() != null ? examen.getHeure() : ""));
+
+		/* Bâtiment : police un peu plus petite */
+		final Span batiment = new Span(examen.getBatiment() != null ? examen.getBatiment() : "");
+		batiment.addClassName(LumoUtility.FontSize.SMALL);
+		gauche.add(batiment);
+
+		gauche.add(new Span(examen.getSalle() != null ? examen.getSalle() : ""));
+
+		/* Place : libellé « Place » devant le numéro, police un peu plus petite */
+		if (configController.isAffNumPlaceExamen()) {
+			final Span place = new Span(StringUtils.hasText(examen.getPlace())
+				? getTranslation(NAME + ".table.place") + " " + examen.getPlace()
+				: "");
+			place.addClassName(LumoUtility.FontSize.SMALL);
+			gauche.add(place);
+		}
+
+		/* Colonne droite : libellé de l'épreuve, en gras, centré verticalement */
+		final VerticalLayout droite = new VerticalLayout();
+		droite.setPadding(false);
+		droite.setSpacing(false);
+		droite.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+		droite.addClassName("card-split-right");
+		final Span epreuve = new Span(examen.getEpreuve() != null ? examen.getEpreuve() : "");
+		epreuve.addClassName(LumoUtility.FontWeight.BOLD);
+		droite.add(epreuve);
+
+		split.add(gauche, droite);
+		split.expand(droite);
+		card.add(split);
+		return card;
 	}
 
 	/**
