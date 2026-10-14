@@ -25,7 +25,8 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import fr.univlorraine.mondossierweb.beans.ElementPedagogique;
@@ -76,6 +77,7 @@ public class DetailInscriptionWindow extends Dialog {
 			setHeight("95%");
 			setResizable(false);
 			setCloseOnOutsideClick(true);
+			addClassName("detail-inscription-window");
 
 			//Test si user enseignant
 			if (userController.isEnseignant()) {
@@ -88,13 +90,6 @@ public class DetailInscriptionWindow extends Dialog {
 
 			/* Titre */
 			setHeaderTitle(getTranslation(NAME + ".title"));
-
-			/* Bouton de fermeture */
-			Button btnFermer = new Button(VaadinIcon.CLOSE.create());
-			btnFermer.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-			btnFermer.getElement().setAttribute("aria-label", getTranslation(NAME + ".btnFermer"));
-			btnFermer.addClickListener(e -> close());
-			getHeader().add(btnFermer);
 
 			/* Layout */
 			VerticalLayout layout = new VerticalLayout();
@@ -140,6 +135,15 @@ public class DetailInscriptionWindow extends Dialog {
 			panelDetailInscription.setSizeFull();
 			layout.add(panelDetailInscription);
 			layout.setFlexGrow(1, panelDetailInscription);
+
+			/* Bouton de fermeture, aligné en bas */
+			final Button btnFermer = new Button(getTranslation(NAME + ".btnFermer"), e -> close());
+			btnFermer.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			final HorizontalLayout boutonsLayout = new HorizontalLayout(btnFermer);
+			boutonsLayout.setWidthFull();
+			boutonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			layout.add(boutonsLayout);
+
 			add(layout);
 		}
 	}
