@@ -22,7 +22,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -35,6 +34,7 @@ import fr.univlorraine.mondossierweb.controllers.ConfigController;
 import fr.univlorraine.mondossierweb.controllers.ResultatController;
 import fr.univlorraine.mondossierweb.controllers.SessionController;
 import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -51,6 +51,9 @@ import java.util.List;
 public class DetailInscriptionWindow extends Dialog {
 
 	public static final String NAME = "inscriptionWindow";
+
+	/** Indentation maximale (en nombre de niveaux) des libellés dans les cartes mobile. */
+	private static final int ELP_CARD_MAX_INDENT = 5;
 
 	@Resource
 	private transient UserController userController;
@@ -108,23 +111,25 @@ public class DetailInscriptionWindow extends Dialog {
 			Component detailContent;
 			List<ElementPedagogique> lelp = sessionController.getEtudiant().getElementsPedagogiques();
 			if (lelp != null && !lelp.isEmpty()) {
-				Grid<ElementPedagogique> detailInscriptionGrid = new Grid<>();
-				detailInscriptionGrid.setSizeFull();
-				detailInscriptionGrid.setSelectionMode(Grid.SelectionMode.NONE);
-				detailInscriptionGrid.addComponentColumn(this::buildCodeElpColumn)
-					.setHeader(getTranslation(NAME + ".table.elp.code"))
+				ResponsiveCardList<ElementPedagogique> detailInscriptionList = new ResponsiveCardList<>();
+				detailInscriptionList.setWidthFull();
+				detailInscriptionList.setAllRowsVisible(true);
+				detailInscriptionList.addComponentColumn(this::buildCodeElpColumn,
+						getTranslation(NAME + ".table.elp.code"))
 					.setFlexGrow(1);
-				detailInscriptionGrid.addComponentColumn(this::buildLibelleElpColumn)
-					.setHeader(getTranslation(NAME + ".table.elp.libelle"))
+				detailInscriptionList.addComponentColumn(this::buildLibelleElpColumn,
+						getTranslation(NAME + ".table.elp.libelle"))
 					.setFlexGrow(4);
 				if (configController.isAffECTSIPEtudiant()) {
-					detailInscriptionGrid.addComponentColumn(this::buildEctsColumn)
-						.setHeader(getTranslation(NAME + ".table.elp.ects"))
+					detailInscriptionList.addComponentColumn(this::buildEctsColumn,
+							getTranslation(NAME + ".table.elp.ects"))
 						.setFlexGrow(1)
 						.setVisible(!configController.isMasqueECTSIPEtudiant());
 				}
-				detailInscriptionGrid.setItems(lelp);
-				detailContent = detailInscriptionGrid;
+				/* Cartes affichées sur petit écran */
+				detailInscriptionList.setCardRenderer(this::createElpCard);
+				detailInscriptionList.setItems(lelp);
+				detailContent = detailInscriptionList;
 			} else {
 				setHeight("30%");
 				Span labelAucuneIp = new Span(getTranslation(NAME + ".message.aucuneip"));
@@ -190,6 +195,51 @@ public class DetailInscriptionWindow extends Dialog {
 			libLabel.addClassName("ects-value-label");
 		}
 		return libLabel;
+	}
+
+	/**
+	 * Construit la carte d'un élément pédagogique, affichée sur petit écran :
+	 * badge du code (+ ECTS éventuel) et libellé indenté selon le niveau.
+	 * L'indentation est plafonnée pour préserver la largeur de lecture.
+	 */
+	private Div createElpCard(final ElementPedagogique el) {
+		final Div card = new Div();
+		card.addClassName("card");
+
+		/* Indentation selon le niveau (plafonnée), appliquée à l'en-tête et au libellé */
+		final int indent = Math.min(Math.max(el.getLevel() - 1, 0), ELP_CARD_MAX_INDENT);
+		final String indentStyle = indent > 0 ? indent + "em" : null;
+
+		/* Ligne 1 : badge du code + ECTS éventuel */
+		final HorizontalLayout ligneEntete = new HorizontalLayout();
+		ligneEntete.setSpacing(true);
+		ligneEntete.setAlignItems(FlexComponent.Alignment.CENTER);
+		if (StringUtils.hasText(el.getLibelle()) && StringUtils.hasText(el.getCode())) {
+			final Span badgeCode = new Span(el.getCode());
+			badgeCode.addClassName("card-badge");
+			ligneEntete.add(badgeCode);
+		}
+		if (StringUtils.hasText(el.getEcts())) {
+			final Span badgeEcts = new Span(el.getEcts());
+			badgeEcts.addClassName("card-badge");
+			ligneEntete.add(badgeEcts);
+		}
+		if (indentStyle != null) {
+			ligneEntete.getStyle().set("padding-inline-start", indentStyle);
+		}
+		if (ligneEntete.getComponentCount() > 0) {
+			card.add(ligneEntete);
+		}
+
+		/* Ligne 2 : libellé indenté selon le niveau (indentation plafonnée) */
+		final Span libelle = new Span(el.getLibelle() != null ? el.getLibelle() : "");
+		applyElpStyle(libelle, el);
+		if (indentStyle != null) {
+			libelle.getStyle().set("padding-inline-start", indentStyle);
+		}
+		card.add(libelle);
+
+		return card;
 	}
 
 	/**
