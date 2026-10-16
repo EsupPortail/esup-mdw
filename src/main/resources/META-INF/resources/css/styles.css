@@ -399,9 +399,10 @@ vaadin-grid::part(marked) {
 		display: inline-flex;
 	}
 
-	/* DetailNotesWindow : réduit le padding du contenu sur mobile
+	/* Fenêtres de détail : réduit le padding du contenu sur mobile
 	   (lumo-space-l -> lumo-space-m) */
-	.detail-notes-window::part(content) {
+	.detail-notes-window::part(content),
+	.detail-inscription-window::part(content) {
 		padding: var(--lumo-space-m);
 	}
 }
