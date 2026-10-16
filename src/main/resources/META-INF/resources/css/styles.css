@@ -367,7 +367,9 @@ vaadin-grid::part(marked) {
 	width: 100%;
 	border-top: 1px solid var(--lumo-contrast-10pct);
 	margin-top: var(--lumo-space-xs);
-	padding-top: var(--lumo-space-xs);
+	padding: var(--lumo-space-s) var(--lumo-space-xs);
+	/* Espacement vertical entre les lignes (le footer est un flex colonne) */
+	gap: var(--lumo-space-xs);
 }
 
 /* DetailNotesWindow : bouton « Fermer » affiché uniquement sur mobile */
@@ -396,4 +398,44 @@ vaadin-grid::part(marked) {
 	.detail-notes-window .btn-fermer-mobile {
 		display: inline-flex;
 	}
+}
+
+/* Encart « Voir comme un enseignant » : le texte est à côté du bouton sur écran large,
+   et passe sous le bouton sur mobile (largeur <= 767px, comme partout ailleurs). */
+.vue-enseignant-layout {
+	flex-direction: row;
+	align-items: center;
+	gap: var(--lumo-space-s);
+}
+
+@media (max-width: 767px) {
+	.vue-enseignant-layout {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
+
+/* Signification des résultats : les items sont à la suite sur desktop,
+   une signification par ligne sur mobile (largeur <= 767px). */
+.signification-item {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+@media (max-width: 767px) {
+	.signification-item {
+		display: block;
+		margin-right: 0;
+		margin-bottom: var(--lumo-space-xs);
+	}
+}
+
+/* Libellé cliquable souligné (voir NotesView et InscriptionsView).
+ * Le label d'un vaadin-button étant dans le shadow DOM, le soulignement
+ * doit passer par ::part(label). */
+.lien-souligne,
+.lien-souligne::part(label) {
+	text-decoration: underline;
+	white-space: normal;
+	overflow-wrap: anywhere;
 }

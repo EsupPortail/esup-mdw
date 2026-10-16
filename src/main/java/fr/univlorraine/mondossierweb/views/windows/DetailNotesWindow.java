@@ -147,6 +147,13 @@ public class DetailNotesWindow extends Dialog {
 
 			ajouterVoirCommeUnEtudiant(titleLayout);
 
+			// L'encart « Voir comme un étudiant » est affiché pour les enseignants
+			// (même condition que son ajout par ajouterPanelVoirCommeUnEtudiant) :
+			// dans ce cas les boutons PDF et informations sont empilés verticalement
+			// en icône seule, sinon ils sont côte à côte avec leur libellé texte.
+			final boolean encartVueAffiche = userController.isEnseignant();
+
+			Anchor pdfAnchor = null;
 			if (lelp != null && !lelp.isEmpty() && configController.isPdfNotesActive()) {
 				DownloadFile df = noteController.exportPdfDetail(etape);
 				if (df != null) {
@@ -155,12 +162,37 @@ public class DetailNotesWindow extends Dialog {
 					pdfButton.addClassName("button-icon");
 					pdfButton.addClassName("red-button-icon");
 					pdfButton.setTooltipText(getTranslation(NAME + ".btn.pdf.description"));
-					Anchor pdfAnchor = new Anchor();
+					if (!encartVueAffiche) {
+						// Pas d'encart : le bouton affiche son libellé texte à côté de l'icône
+						pdfButton.setText(getTranslation(NAME + ".btn.pdf.label"));
+					}
+					pdfAnchor = new Anchor();
 					pdfAnchor.setHref(DownloadHandler.fromInputStream(evt ->
 						new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
 					pdfAnchor.add(pdfButton);
-					titleLayout.add(pdfAnchor);
 				}
+			}
+
+			// Bouton d'information sur la signification des résultats
+			Button infoButton = null;
+			if (lelp != null && !lelp.isEmpty() && etudiant.isSignificationResultatsUtilisee()) {
+				infoButton = new Button(VaadinIcon.INFO_CIRCLE.create());
+				infoButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				infoButton.addClassName("button-icon");
+				infoButton.setTooltipText(getTranslation(NAME + ".info.significations.resultats"));
+				infoButton.getElement().setAttribute("aria-label", getTranslation(NAME + ".info.significations.resultats"));
+				infoButton.addClickListener(e -> new HelpBasicWindow(buildSignificationResultatsHtml(etudiant),
+						getTranslation(NAME + ".info.significations.resultats")).open());
+				if (!encartVueAffiche) {
+					// Pas d'encart : le bouton affiche son libellé texte à côté de l'icône
+					infoButton.setText(getTranslation(NAME + ".btn.infos.label"));
+				}
+			}
+
+			// Les boutons PDF et informations sont regroupés dans un même conteneur,
+			// au même niveau que l'encart « Voir comme un enseignant ».
+			if (pdfAnchor != null || infoButton != null) {
+				titleLayout.add(buildConteneurBoutons(encartVueAffiche, pdfAnchor, infoButton));
 			}
 			layout.add(titleLayout);
 
@@ -224,24 +256,6 @@ public class DetailNotesWindow extends Dialog {
 			panelDetailNotes.setSizeFull();
 			layout.add(panelDetailNotes);
 
-			if (lelp != null && !lelp.isEmpty() && etudiant.isSignificationResultatsUtilisee()) {
-				StringBuilder grilleSignficationResultats = new StringBuilder();
-				@SuppressWarnings("unchecked")
-				Map<String, String> significations = etudiant.getSignificationResultats();
-				Set<String> ss = significations.keySet();
-				for (String k : ss) {
-					if (k != null && !k.equals("") && !k.equals(" ")) {
-						grilleSignficationResultats.append("<b>").append(k).append("</b>&#160;:&#160;").append(significations.get(k));
-						grilleSignficationResultats.append("&#160;&#160;&#160;");
-					}
-				}
-				Div significationLayout = new Div(new Html("<div>" + grilleSignficationResultats + "</div>"));
-				significationLayout.addClassName(LumoUtility.FontSize.SMALL);
-				Div panelSignificationResultats = createPanel(getTranslation(NAME + ".info.significations.resultats"), significationLayout);
-				panelSignificationResultats.addClassName("significationpanel");
-				layout.add(panelSignificationResultats);
-			}
-
 			layout.setFlexGrow(1, panelDetailNotes);
 
 			/* Bouton de fermeture, aligné en bas (affiché sur mobile) */
@@ -281,11 +295,11 @@ public class DetailNotesWindow extends Dialog {
 	private void ajouterPanelVoirCommeUnEtudiant(VerticalLayout layout) {
 		//Test si user enseignant
 		if (userController.isEnseignant()) {
-			VerticalLayout vueLayout = new VerticalLayout();
+			HorizontalLayout vueLayout = new HorizontalLayout();
 			vueLayout.setWidthFull();
-			vueLayout.setSpacing(true);
 			vueLayout.setPadding(false);
-			vueLayout.setAlignItems(FlexComponent.Alignment.START);
+			/* Sur écran large, le texte est à côté du bouton ; sur mobile, il passe en dessous (voir styles.css) */
+			vueLayout.addClassName("vue-enseignant-layout");
 
 			Button changerVueButton = new Button(getTranslation(NAME + ".button.vueEnseignant"));
 			changerVueButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -315,8 +329,63 @@ public class DetailNotesWindow extends Dialog {
 		}
 	}
 
+	/**
+	 * Regroupe les boutons PDF et informations dans un conteneur placé à droite de
+	 * l'entête. Si l'encart « Voir comme un étudiant » est affiché, les boutons sont
+	 * empilés verticalement en icône seule ; sinon ils sont côte à côte avec leur
+	 * libellé texte.
+	 */
+	private Component buildConteneurBoutons(final boolean encartVueAffiche, final Anchor pdfAnchor, final Button infoButton) {
+		if (encartVueAffiche) {
+			VerticalLayout boutonsLayout = new VerticalLayout();
+			/* Largeur au contenu : le conteneur se place à droite de l'entête */
+			boutonsLayout.setWidth("auto");
+			boutonsLayout.setPadding(false);
+			boutonsLayout.setSpacing(false);
+			boutonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			if (pdfAnchor != null) {
+				boutonsLayout.add(pdfAnchor);
+			}
+			if (infoButton != null) {
+				boutonsLayout.add(infoButton);
+			}
+			return boutonsLayout;
+		}
+		HorizontalLayout boutonsLayout = new HorizontalLayout();
+		/* Largeur au contenu : le conteneur se place à droite de l'entête */
+		boutonsLayout.setWidth("auto");
+		boutonsLayout.setPadding(false);
+		boutonsLayout.setSpacing(true);
+		boutonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+		if (pdfAnchor != null) {
+			boutonsLayout.add(pdfAnchor);
+		}
+		if (infoButton != null) {
+			boutonsLayout.add(infoButton);
+		}
+		return boutonsLayout;
+	}
+
 	private boolean voirCommeEnseignant() {
 		return sessionController.isVueEnseignantNotesEtResultats();
+	}
+
+	/**
+	 * Construit le contenu HTML de la signification des résultats, affiché dans la pop-up d'information.
+	 */
+	private String buildSignificationResultatsHtml(Etudiant etudiant) {
+		StringBuilder grilleSignificationResultats = new StringBuilder();
+		@SuppressWarnings("unchecked")
+		Map<String, String> significations = etudiant.getSignificationResultats();
+		Set<String> ss = significations.keySet();
+		for (String k : ss) {
+			if (k != null && !k.equals("") && !k.equals(" ")) {
+				grilleSignificationResultats.append("<span class=\"signification-item\"><b>")
+					.append(k).append("</b>&#160;:&#160;")
+					.append(significations.get(k)).append("</span>");
+			}
+		}
+		return grilleSignificationResultats.toString();
 	}
 
 	private void ajouterVoirCommeUnEtudiant(HorizontalLayout titleLayout) {
@@ -389,9 +458,9 @@ public class DetailNotesWindow extends Dialog {
 		if (StringUtils.hasText(el.getLibelle())) {
 			libLabel.setText(el.getLibelle());
 			applyElpStyle(libLabel, el);
-			//indentation des libelles dans la liste
+			//indentation légère des libelles dans la liste (0.5em par niveau)
 			if (el.getLevel() > 1) {
-				libLabel.getStyle().set("padding-inline-start", ((el.getLevel() - 1) * 1.5) + "em");
+				libLabel.getStyle().set("padding-inline-start", ((el.getLevel() - 1) * 0.5) + "em");
 			}
 		}
 		return libLabel;
@@ -503,15 +572,35 @@ public class DetailNotesWindow extends Dialog {
 		droite.setSpacing(false);
 		droite.addClassName("card-split-right");
 
-		final HorizontalLayout sessions = new HorizontalLayout();
-		sessions.setPadding(false);
-		sessions.setSpacing(true);
-		sessions.setAlignItems(FlexComponent.Alignment.START);
-		sessions.add(buildSessionCarte(headerSession1, el.getNote1(), el.getBareme1(), el.getRes1()));
-		if (afficherSession2) {
-			sessions.add(buildSessionCarte(headerSession2, el.getNote2(), el.getBareme2(), el.getRes2()));
+		/* Aucun résultat : ni note ni résultat pour toutes les sessions affichées */
+		final boolean aucunResultat = !StringUtils.hasText(el.getNote1()) && !StringUtils.hasText(el.getRes1())
+			&& (!afficherSession2 || (!StringUtils.hasText(el.getNote2()) && !StringUtils.hasText(el.getRes2())));
+
+		if (aucunResultat) {
+			/* Aucun résultat : message en italique à la place des sessions */
+			final Span labelAucunResultat = new Span(getTranslation(NAME + ".message.aucuneresultat"));
+			labelAucunResultat.getStyle().set("font-style", "italic").set("text-align", "center").set("width", "100%");
+			droite.add(labelAucunResultat);
+		} else {
+			final HorizontalLayout sessions = new HorizontalLayout();
+			sessions.setPadding(false);
+			sessions.setSpacing(true);
+			sessions.setAlignItems(FlexComponent.Alignment.START);
+			/* Session 1 : affichée seulement si elle porte une note ou un résultat */
+			if (StringUtils.hasText(el.getNote1()) || StringUtils.hasText(el.getRes1())) {
+				sessions.add(buildSessionCarte(headerSession1, el.getNote1(), el.getBareme1(), el.getRes1()));
+			}
+			/* Session 2 : affichée seulement si activée et porteuse d'une note ou d'un résultat */
+			if (afficherSession2 && (StringUtils.hasText(el.getNote2()) || StringUtils.hasText(el.getRes2()))) {
+				sessions.add(buildSessionCarte(headerSession2, el.getNote2(), el.getBareme2(), el.getRes2()));
+			}
+			/* Une seule session affichée : on la centre horizontalement */
+			if (sessions.getComponentCount() == 1) {
+				sessions.setWidthFull();
+				sessions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			}
+			droite.add(sessions);
 		}
-		droite.add(sessions);
 
 		/* Pied : rang, ECTS puis mention, l'un en dessous de l'autre */
 		final VerticalLayout footer = new VerticalLayout();
@@ -519,13 +608,13 @@ public class DetailNotesWindow extends Dialog {
 		footer.setSpacing(false);
 		footer.addClassName("card-footer");
 		if ((configController.isAffRangEtudiant() || resultatController.isAfficherRangElpEpr()) && StringUtils.hasText(el.getRang())) {
-			footer.add(new Span(getTranslation(NAME + ".table.elp.rang") + " " + el.getRang()));
+			footer.add(buildFooterLigne(getTranslation(NAME + ".table.elp.rang"), el.getRang()));
 		}
 		if (configController.isAffECTSEtudiant() && !configController.isMasqueECTSEtudiant() && StringUtils.hasText(el.getEcts())) {
-			footer.add(new Span(getTranslation(NAME + ".table.elp.ects") + " " + el.getEcts()));
+			footer.add(buildFooterLigne(getTranslation(NAME + ".table.elp.ects"), el.getEcts()));
 		}
 		if (configController.isAffMentionElpEtudiant() && StringUtils.hasText(el.getCodMention())) {
-			footer.add(new Span(getTranslation(NAME + ".table.elp.mention") + " " + el.getCodMention()));
+			footer.add(buildFooterLigne(getTranslation(NAME + ".table.elp.mention"), el.getCodMention()));
 		}
 		if (footer.getComponentCount() > 0) {
 			droite.add(footer);
@@ -535,6 +624,27 @@ public class DetailNotesWindow extends Dialog {
 		split.expand(droite);
 		card.add(split);
 		return card;
+	}
+
+	/**
+	 * Construit une ligne du pied de carte, centrée horizontalement : le libellé
+	 * occupe la zone gauche (aligné à droite) et la valeur la zone droite (alignée
+	 * à gauche), de largeur égale, de sorte que la paire soit centrée.
+	 */
+	private HorizontalLayout buildFooterLigne(final String label, final String valeur) {
+		final HorizontalLayout ligne = new HorizontalLayout();
+		ligne.setWidthFull();
+		ligne.setPadding(false);
+		ligne.setSpacing(false);
+
+		final Span labelSpan = new Span(label);
+		labelSpan.getStyle().set("flex", "1 1 0").set("text-align", "right").set("margin-right", "0.3em");
+
+		final Span valeurSpan = new Span(valeur);
+		valeurSpan.getStyle().set("flex", "1 1 0").set("text-align", "left");
+
+		ligne.add(labelSpan, valeurSpan);
+		return ligne;
 	}
 
 	/**

@@ -232,6 +232,10 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 			Button bLibelleInscription = new Button(inscription.getLib_etp());
 			bLibelleInscription.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 			bLibelleInscription.addClassName("v-link");
+			//Soulignement du lien et retour à la ligne du libellé (lisibilité et accessibilité) appliqués
+			//via la classe CSS lien-souligne : nécessaire pour atteindre le label du bouton, rendu dans le
+			//shadow DOM (::part(label))
+			bLibelleInscription.addClassName("lien-souligne");
 			bLibelleInscription.setTooltipText(getTranslation(NAME + ".inscriptionPedagogique.link"));
 			bLibelleInscription.addClickListener(e -> ouvrirDetailInscription(inscription));
 			return bLibelleInscription;
@@ -346,6 +350,9 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 		final Span libelle = new Span(inscription.getLib_etp());
 		libelle.addClassName(LumoUtility.FontWeight.BOLD);
 		libelle.addClassName("libelle-actions-menu");
+		//Soulignement du lien et retour à la ligne du libellé (lisibilité et accessibilité) appliqués
+		//via la classe CSS lien-souligne
+		libelle.addClassName("lien-souligne");
 
 		final ContextMenu menu = new ContextMenu(libelle);
 		menu.setOpenOnClick(true);

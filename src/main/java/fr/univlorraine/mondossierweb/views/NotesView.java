@@ -52,6 +52,7 @@ import fr.univlorraine.mondossierweb.uicomponents.ResponsiveCardList;
 import fr.univlorraine.mondossierweb.utils.DownloadFile;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import fr.univlorraine.mondossierweb.views.windows.DetailNotesWindow;
+import fr.univlorraine.mondossierweb.views.windows.HelpBasicWindow;
 import fr.univlorraine.mondossierweb.views.windows.HelpWindow;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -139,10 +140,15 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 				resultatController.renseigneNotesEtResultatsEtudiant(etudiant);
 			}
 
-			// Ajouter le bloc "Voir comme un étudiant" (enseignants/gestionnaires), sur la même ligne que le bouton PDF
+			// Ajouter le bloc "Voir comme un étudiant" (enseignants/gestionnaires), sur la même ligne que les boutons PDF et informations
 			ajouterVoirCommeUnEtudiant(titleLayout);
 
+			// L'encart « Voir comme un enseignant » est affiché dans les mêmes conditions que
+			// son ajout par ajouterVoirCommeUnEtudiant (gestionnaire ou enseignant avec accès).
+			final boolean encartVueAffiche = isUserGestionnaireWithAccess() || isUserEnseignantWithAccess();
+
 			//Test si on a des diplomes ou des etapes
+			Anchor pdfAnchor = null;
 			if ((etudiant.getDiplomes() != null && !etudiant.getDiplomes().isEmpty())
 					|| (etudiant.getEtapes() != null && !etudiant.getEtapes().isEmpty())) {
 				DownloadFile df = noteController.exportPdfResume();
@@ -152,12 +158,37 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 					pdfButton.addClassName("button-big-icon");
 					pdfButton.addClassName("red-button-icon");
 					pdfButton.setTooltipText(getTranslation(NAME + ".btn.pdf.description"));
-					Anchor pdfAnchor = new Anchor();
+					if (!encartVueAffiche) {
+						// Pas d'encart : le bouton affiche son libellé texte à côté de l'icône
+						pdfButton.setText(getTranslation(NAME + ".btn.pdf.label"));
+					}
+					pdfAnchor = new Anchor();
 					pdfAnchor.setHref(DownloadHandler.fromInputStream(evt ->
 						new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
 					pdfAnchor.add(pdfButton);
-					titleLayout.add(pdfAnchor);
 				}
+			}
+
+			// Bouton d'information sur la signification des résultats
+			Button infoButton = null;
+			if (etudiant.isSignificationResultatsUtilisee()) {
+				infoButton = new Button(VaadinIcon.INFO_CIRCLE.create());
+				infoButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+				infoButton.addClassName("button-big-icon");
+				infoButton.setTooltipText(getTranslation(NAME + ".info.significations.resultats"));
+				infoButton.getElement().setAttribute("aria-label", getTranslation(NAME + ".info.significations.resultats"));
+				infoButton.addClickListener(e -> new HelpBasicWindow(buildSignificationResultatsHtml(etudiant),
+						getTranslation(NAME + ".info.significations.resultats")).open());
+				if (!encartVueAffiche) {
+					// Pas d'encart : le bouton affiche son libellé texte à côté de l'icône
+					infoButton.setText(getTranslation(NAME + ".btn.infos.label"));
+				}
+			}
+
+			// Les boutons PDF et informations sont regroupés dans un même conteneur, au même
+			// niveau que l'encart « Voir comme un enseignant » (à droite de l'entête).
+			if (pdfAnchor != null || infoButton != null) {
+				titleLayout.add(buildConteneurBoutons(encartVueAffiche, pdfAnchor, infoButton));
 			}
 			add(titleLayout);
 
@@ -174,7 +205,7 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 					getTranslation(NAME + ".table.diplomes.annee")).setFlexGrow(1).setResizable(true);
 			notesDiplomesList.addColumn(Diplome::getCod_dip,
 					getTranslation(NAME + ".table.diplomes.cod_dip")).setFlexGrow(1).setResizable(true);
-			notesDiplomesList.addColumn(Diplome::getLib_web_vdi,
+			notesDiplomesList.addComponentColumn(diplome -> buildLibelleWrappable(diplome.getLib_web_vdi()),
 					getTranslation(NAME + ".table.diplomes.lib_web_vdi")).setFlexGrow(3).setResizable(true);
 			notesDiplomesList.addComponentColumn(diplome -> buildResultatsColumn(diplome.getResultats(), Resultat::getSession),
 					getTranslation(NAME + ".table.diplomes.session")).setFlexGrow(1).setResizable(true);
@@ -224,24 +255,6 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			notesEtapesList.setItems(etudiant.getEtapes() != null ? etudiant.getEtapes() : Collections.emptyList());
 			globalLayout.add(createPanel(getTranslation(NAME + ".table.etapes"), notesEtapesList));
 
-			/* Signification des résultats */
-			if (etudiant.isSignificationResultatsUtilisee()) {
-				StringBuilder grilleSignficationResultats = new StringBuilder();
-				@SuppressWarnings("unchecked")
-				Map<String, String> significations = etudiant.getSignificationResultats();
-				Set<String> ss = significations.keySet();
-				for (String k : ss) {
-					if (k != null && !k.equals("") && !k.equals(" ")) {
-						grilleSignficationResultats.append("<b>").append(k).append("</b>&#160;:&#160;").append(significations.get(k));
-						grilleSignficationResultats.append("&#160;&#160;&#160;");
-					}
-				}
-				Div significationLayout = new Div(new Html("<div>" + grilleSignficationResultats + "</div>"));
-				significationLayout.addClassName(LumoUtility.FontSize.SMALL);
-				Div panelSignificationResultats = createPanel(getTranslation(NAME + ".info.significations.resultats"), significationLayout);
-				panelSignificationResultats.addClassName("significationpanel");
-				globalLayout.add(panelSignificationResultats);
-			}
 			add(globalLayout);
 		} else {
 			// Ajouter bloc "Voir comme un étudiant" si nécessaire
@@ -261,11 +274,11 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 	private void ajouterVoirCommeUnEtudiant(HorizontalLayout titleLayout) {
 		//Test si user enseignant
 		if (isUserGestionnaireWithAccess() || isUserEnseignantWithAccess()) {
-			VerticalLayout vueLayout = new VerticalLayout();
+			HorizontalLayout vueLayout = new HorizontalLayout();
 			vueLayout.setWidthFull();
-			vueLayout.setSpacing(true);
 			vueLayout.setPadding(false);
-			vueLayout.setAlignItems(FlexComponent.Alignment.START);
+			/* Sur écran large, le texte est à côté du bouton ; sur mobile, il passe en dessous (voir styles.css) */
+			vueLayout.addClassName("vue-enseignant-layout");
 
 			Button changerVueButton = new Button(getTranslation(NAME + ".button.vueEnseignant"));
 			changerVueButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -296,8 +309,63 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		}
 	}
 
+	/**
+	 * Regroupe les boutons PDF et informations dans un conteneur placé à droite de
+	 * l'entête. Si l'encart « Voir comme un enseignant » est affiché, les boutons
+	 * sont empilés verticalement en icône seule ; sinon ils sont côte à côte avec
+	 * leur libellé texte.
+	 */
+	private Component buildConteneurBoutons(final boolean encartVueAffiche, final Anchor pdfAnchor, final Button infoButton) {
+		if (encartVueAffiche) {
+			VerticalLayout boutonsLayout = new VerticalLayout();
+			/* Largeur au contenu : le conteneur se place à droite de l'entête */
+			boutonsLayout.setWidth("auto");
+			boutonsLayout.setPadding(false);
+			boutonsLayout.setSpacing(false);
+			boutonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			if (pdfAnchor != null) {
+				boutonsLayout.add(pdfAnchor);
+			}
+			if (infoButton != null) {
+				boutonsLayout.add(infoButton);
+			}
+			return boutonsLayout;
+		}
+		HorizontalLayout boutonsLayout = new HorizontalLayout();
+		/* Largeur au contenu : le conteneur se place à droite de l'entête */
+		boutonsLayout.setWidth("auto");
+		boutonsLayout.setPadding(false);
+		boutonsLayout.setSpacing(true);
+		boutonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+		if (pdfAnchor != null) {
+			boutonsLayout.add(pdfAnchor);
+		}
+		if (infoButton != null) {
+			boutonsLayout.add(infoButton);
+		}
+		return boutonsLayout;
+	}
+
 	private boolean voirCommeEnseignant() {
 		return sessionController.isVueEnseignantNotesEtResultats();
+	}
+
+	/**
+	 * Construit le contenu HTML de la signification des résultats, affiché dans la pop-up d'information.
+	 */
+	private String buildSignificationResultatsHtml(Etudiant etudiant) {
+		StringBuilder grilleSignificationResultats = new StringBuilder();
+		@SuppressWarnings("unchecked")
+		Map<String, String> significations = etudiant.getSignificationResultats();
+		Set<String> ss = significations.keySet();
+		for (String k : ss) {
+			if (k != null && !k.equals("") && !k.equals(" ")) {
+				grilleSignificationResultats.append("<span class=\"signification-item\"><b>")
+					.append(k).append("</b>&#160;:&#160;")
+					.append(significations.get(k)).append("</span>");
+			}
+		}
+		return grilleSignificationResultats.toString();
 	}
 
 	private boolean isUserGestionnaireWithAccess() {
@@ -350,7 +418,8 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 	 * Colonne code/version de l'étape (ancienne CodeEtapeColumnGenerator).
 	 */
 	private Component buildCodeEtapeColumn(Etape etape) {
-		return buildEtapeLinkColumn(etape, etape.getCode() + "/" + etape.getVersion());
+		/* Le code n'est plus cliquable : simple Span pouvant passer sur plusieurs lignes */
+		return buildLibelleWrappable(etape.getCode() + "/" + etape.getVersion());
 	}
 
 	/**
@@ -364,11 +433,24 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		if (etape.getRang() == null || !etape.getRang().equals("NC")) {
 			Button b = new Button(libelle);
 			b.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+			/* Libellé cliquable souligné (voir styles.css, ::part(label)) */
+			b.addClassName("lien-souligne");
 			//Appel de la window contenant le détail des notes
 			prepareBoutonAppelDetailDesNotes(b, etape);
 			return b;
 		}
-		return new Span(libelle);
+		/* Cas non cliquable : le libellé doit aussi pouvoir passer sur 2 lignes */
+		return buildLibelleWrappable(libelle);
+	}
+
+	/**
+	 * Construit un Span dont le texte peut passer sur plusieurs lignes.
+	 */
+	private Span buildLibelleWrappable(String texte) {
+		Span span = new Span(texte);
+		span.getStyle().set("white-space", "normal");
+		span.getStyle().set("overflow-wrap", "anywhere");
+		return span;
 	}
 
 	private void prepareBoutonAppelDetailDesNotes(Button b, Etape etape) {
@@ -441,7 +523,11 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		gauche.setSpacing(false);
 		gauche.setAlignItems(FlexComponent.Alignment.STRETCH);
 		gauche.addClassName("card-split-left");
-		gauche.add(new Span(diplome.getAnnee() != null ? diplome.getAnnee() : ""));
+		final Span anneeDiplome = new Span(diplome.getAnnee() != null ? diplome.getAnnee() : "");
+		anneeDiplome.addClassName("card-badge");
+		/* Le fond du badge ne doit englober que le texte : on ne l'étire pas sur toute la largeur */
+		anneeDiplome.getStyle().set("align-self", "flex-start");
+		gauche.add(anneeDiplome);
 		gauche.add(new Span(diplome.getLib_web_vdi() != null ? diplome.getLib_web_vdi() : ""));
 
 		/* Colonne droite : sessions puis pied (rang, mention) */
@@ -476,7 +562,11 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		gauche.setSpacing(false);
 		gauche.setAlignItems(FlexComponent.Alignment.STRETCH);
 		gauche.addClassName("card-split-left");
-		gauche.add(new Span(etape.getAnnee() != null ? etape.getAnnee() : ""));
+		final Span anneeEtape = new Span(etape.getAnnee() != null ? etape.getAnnee() : "");
+		anneeEtape.addClassName("card-badge");
+		/* Le fond du badge ne doit englober que le texte : on ne l'étire pas sur toute la largeur */
+		anneeEtape.getStyle().set("align-self", "flex-start");
+		gauche.add(anneeEtape);
 		/* Le libellé de la filière peut passer sur plusieurs lignes si la place manque */
 		final Component libelleEtape = buildLibelleEtapeColumn(etape);
 		libelleEtape.getElement().getClassList().add("card-libelle-wrap");
@@ -505,11 +595,16 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		droite.setSpacing(false);
 		droite.addClassName("card-split-right");
 
-		final HorizontalLayout sessions = new HorizontalLayout();
-		sessions.setPadding(false);
-		sessions.setSpacing(true);
-		sessions.setAlignItems(FlexComponent.Alignment.START);
-		if (resultats != null) {
+		if (resultats == null || resultats.isEmpty()) {
+			/* Aucun résultat à afficher : message en italique à la place des sessions */
+			final Span aucunResultat = new Span(getTranslation(NAME + ".message.aucuneresultat"));
+			aucunResultat.getStyle().set("font-style", "italic").set("text-align", "center").set("width", "100%");
+			droite.add(aucunResultat);
+		} else {
+			final HorizontalLayout sessions = new HorizontalLayout();
+			sessions.setPadding(false);
+			sessions.setSpacing(true);
+			sessions.setAlignItems(FlexComponent.Alignment.START);
 			for (final Resultat r : resultats) {
 				final VerticalLayout session = new VerticalLayout();
 				session.setPadding(false);
@@ -524,8 +619,13 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 				session.add(new Span(r.getAdmission() != null ? r.getAdmission() : ""));
 				sessions.add(session);
 			}
+			/* Une seule session : on la centre horizontalement dans la carte */
+			if (resultats.size() == 1) {
+				sessions.setWidthFull();
+				sessions.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+			}
+			droite.add(sessions);
 		}
-		droite.add(sessions);
 
 		/* Pied : rang puis mention, l'un en dessous de l'autre */
 		final VerticalLayout footer = new VerticalLayout();
@@ -533,12 +633,12 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		footer.setSpacing(false);
 		footer.addClassName("card-footer");
 		if (etudiant != null && etudiant.isAfficherRang() && afficherRang && StringUtils.hasText(rang)) {
-			footer.add(new Span(rangLabel + " " + rang));
+			footer.add(buildFooterLigne(rangLabel, rang));
 		}
 		if (configController.isAffMentionEtudiant() && resultats != null) {
 			for (final Resultat r : resultats) {
 				if (StringUtils.hasText(r.getCodMention())) {
-					footer.add(new Span(mentionLabel + " " + r.getCodMention()));
+					footer.add(buildFooterLigne(mentionLabel, r.getCodMention()));
 				}
 			}
 		}
@@ -546,6 +646,27 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			droite.add(footer);
 		}
 		return droite;
+	}
+
+	/**
+	 * Construit une ligne du pied de carte, centrée horizontalement : le libellé
+	 * occupe la zone gauche (aligné à droite) et la valeur la zone droite (alignée
+	 * à gauche), de largeur égale, de sorte que la paire soit centrée.
+	 */
+	private HorizontalLayout buildFooterLigne(final String label, final String valeur) {
+		final HorizontalLayout ligne = new HorizontalLayout();
+		ligne.setWidthFull();
+		ligne.setPadding(false);
+		ligne.setSpacing(false);
+
+		final Span labelSpan = new Span(label);
+		labelSpan.getStyle().set("flex", "1 1 0").set("text-align", "right").set("margin-right", "0.3em");
+
+		final Span valeurSpan = new Span(valeur);
+		valeurSpan.getStyle().set("flex", "1 1 0").set("text-align", "left");
+
+		ligne.add(labelSpan, valeurSpan);
+		return ligne;
 	}
 
 	/**
