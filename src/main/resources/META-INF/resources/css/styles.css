@@ -438,4 +438,15 @@ vaadin-grid::part(marked) {
 	text-decoration: underline;
 	white-space: normal;
 	overflow-wrap: anywhere;
+	/* Le libellé peut occuper toute la largeur de la cellule : on l'aligne à
+	   gauche plutôt que de le centrer (alignement par défaut du bouton). */
+	text-align: left;
 }
+
+/* Dans une cellule de grid, le bouton occupe toute la largeur : on aligne son
+   contenu à gauche pour que le libellé ne paraisse pas centré. */
+.lien-souligne {
+	justify-content: flex-start;
+}
+
+
