@@ -64,6 +64,11 @@ public class DetailNotesWindow extends Dialog {
 
 	public static final String NAME = "notesWindow";
 
+	/** Indentation (en em) par niveau du libellé dans la grid desktop. */
+	private static final double INDENT_LIBELLE_GRID = 1.5;
+	/** Indentation (en em) par niveau du libellé dans la carte mobile. */
+	private static final double INDENT_LIBELLE_CARD = 0.5;
+
 	@Resource
 	private transient UserController userController;
 	@Resource(name = "${resultat.implementation}")
@@ -214,7 +219,7 @@ public class DetailNotesWindow extends Dialog {
 				}
 				detailNotesList.addComponentColumn(this::buildCodeElpColumn,
 						getTranslation(NAME + ".table.elp.code")).setFlexGrow(1).setResizable(true);
-				detailNotesList.addComponentColumn(this::buildLibelleElpColumn,
+				detailNotesList.addComponentColumn(el -> buildLibelleElpColumn(el, INDENT_LIBELLE_GRID),
 						getTranslation(NAME + ".table.elp.libelle")).setFlexGrow(4).setResizable(true);
 				detailNotesList.addComponentColumn(el -> buildNoteColumn(el, el.getNote1(), el.getBareme1()),
 						headerSession1).setFlexGrow(1).setResizable(true);
@@ -452,15 +457,18 @@ public class DetailNotesWindow extends Dialog {
 	/**
 	 * Colonne libellé de l'élément pédagogique, indenté selon le niveau
 	 * (ancienne LibelleElpColumnGenerator).
+	 *
+	 * @param indentEm indentation en em par niveau (différente entre la grid
+	 *                 desktop et la carte mobile)
 	 */
-	private Component buildLibelleElpColumn(ElementPedagogique el) {
+	private Component buildLibelleElpColumn(ElementPedagogique el, double indentEm) {
 		Span libLabel = new Span();
 		if (StringUtils.hasText(el.getLibelle())) {
 			libLabel.setText(el.getLibelle());
 			applyElpStyle(libLabel, el);
-			//indentation légère des libelles dans la liste (0.5em par niveau)
+			//indentation des libelles selon le niveau de l'élément
 			if (el.getLevel() > 1) {
-				libLabel.getStyle().set("padding-inline-start", ((el.getLevel() - 1) * 0.5) + "em");
+				libLabel.getStyle().set("padding-inline-start", ((el.getLevel() - 1) * indentEm) + "em");
 			}
 		}
 		return libLabel;
@@ -564,7 +572,7 @@ public class DetailNotesWindow extends Dialog {
 		gauche.setSpacing(false);
 		gauche.setAlignItems(FlexComponent.Alignment.STRETCH);
 		gauche.addClassName("card-split-left");
-		gauche.add(buildLibelleElpColumn(el));
+		gauche.add(buildLibelleElpColumn(el, INDENT_LIBELLE_CARD));
 
 		/* Colonne droite : sessions puis pied (rang, ECTS, mention) */
 		final VerticalLayout droite = new VerticalLayout();

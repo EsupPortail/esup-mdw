@@ -398,6 +398,12 @@ vaadin-grid::part(marked) {
 	.detail-notes-window .btn-fermer-mobile {
 		display: inline-flex;
 	}
+
+	/* DetailNotesWindow : réduit le padding du contenu sur mobile
+	   (lumo-space-l -> lumo-space-m) */
+	.detail-notes-window::part(content) {
+		padding: var(--lumo-space-m);
+	}
 }
 
 /* Encart « Voir comme un enseignant » : le texte est à côté du bouton sur écran large,
