@@ -372,6 +372,48 @@ vaadin-grid::part(marked) {
 	gap: var(--lumo-space-xs);
 }
 
+/* NotesView : sur mobile, boutons de bascule entre les sections Diplômes et Étapes.
+   Sur desktop, les boutons sont masqués et les deux sections restent empilées. */
+.notes-sections-switch {
+	display: none;
+}
+
+.notes-sections-switch .notes-section-button {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+/* Le libellé du bouton « Étapes » est long : on autorise le retour à la ligne
+   pour que les deux boutons restent de largeur égale sur mobile. */
+.notes-sections-switch .notes-section-button::part(label) {
+	white-space: normal;
+	text-align: center;
+}
+
+/* Le bouton de la section masquée est souligné pour montrer qu'il est cliquable ;
+   le bouton de la section affichée (LUMO_PRIMARY) ne l'est pas. */
+.notes-sections-switch .notes-section-button.notes-section-button-inactive::part(label) {
+	text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+	.notes-sections-switch {
+		display: flex;
+	}
+
+	.notes-sections .notes-section {
+		display: none;
+	}
+
+	.notes-sections.afficher-diplomes .notes-section-diplomes {
+		display: block;
+	}
+
+	.notes-sections.afficher-etapes .notes-section-etapes {
+		display: block;
+	}
+}
+
 /* DetailNotesWindow : bouton « Fermer » affiché uniquement sur mobile */
 .detail-notes-window .btn-fermer-mobile {
 	display: none;

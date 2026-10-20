@@ -224,7 +224,9 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			/* Cartes affichées sur petit écran */
 			notesDiplomesList.setCardRenderer(this::createDiplomeCard);
 			notesDiplomesList.setItems(etudiant.getDiplomes() != null ? etudiant.getDiplomes() : Collections.emptyList());
-			globalLayout.add(createPanel(getTranslation(NAME + ".table.diplomes"), notesDiplomesList));
+			final Component panelDiplomes = createPanel(getTranslation(NAME + ".table.diplomes"), notesDiplomesList);
+			panelDiplomes.setId("notes-section-diplomes");
+			panelDiplomes.addClassNames("notes-section", "notes-section-diplomes");
 
 			/* Les étapes */
 			ResponsiveCardList<Etape> notesEtapesList = new ResponsiveCardList<>();
@@ -253,7 +255,19 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			/* Cartes affichées sur petit écran */
 			notesEtapesList.setCardRenderer(this::createEtapeCard);
 			notesEtapesList.setItems(etudiant.getEtapes() != null ? etudiant.getEtapes() : Collections.emptyList());
-			globalLayout.add(createPanel(getTranslation(NAME + ".table.etapes"), notesEtapesList));
+			final Component panelEtapes = createPanel(getTranslation(NAME + ".table.etapes"), notesEtapesList);
+			panelEtapes.setId("notes-section-etapes");
+			panelEtapes.addClassNames("notes-section", "notes-section-etapes");
+
+			/* Sur mobile, un bouton par section permet d'afficher l'une ou l'autre ;
+			   sur desktop, les boutons sont masqués et les deux sections restent empilées (voir styles.css). */
+			final VerticalLayout sectionsLayout = new VerticalLayout(panelDiplomes, panelEtapes);
+			sectionsLayout.setWidthFull();
+			sectionsLayout.setPadding(false);
+			sectionsLayout.setSpacing(true);
+			sectionsLayout.addClassName("notes-sections");
+
+			globalLayout.add(buildSectionsSwitch(sectionsLayout), sectionsLayout);
 
 			add(globalLayout);
 		} else {
@@ -307,6 +321,62 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			titleLayout.add(vuePanel);
 			titleLayout.expand(vuePanel);
 		}
+	}
+
+	/**
+	 * Construit les boutons de bascule entre les sections « Diplômes » et
+	 * « Étapes ». Ils ne sont visibles que sur mobile (voir styles.css) ; sur
+	 * desktop, les deux sections restent affichées l'une sous l'autre.
+	 */
+	private HorizontalLayout buildSectionsSwitch(final Component sectionsLayout) {
+		final HorizontalLayout switchLayout = new HorizontalLayout();
+		switchLayout.addClassName("notes-sections-switch");
+		switchLayout.setWidthFull();
+		switchLayout.setSpacing(true);
+
+		final Button btnDiplomes = new Button(getTranslation(NAME + ".table.diplomes"));
+		btnDiplomes.addClassName("notes-section-button");
+		btnDiplomes.getElement().setAttribute("aria-controls", "notes-section-diplomes");
+
+		final Button btnEtapes = new Button(getTranslation(NAME + ".button.etapes"));
+		btnEtapes.addClassName("notes-section-button");
+		btnEtapes.getElement().setAttribute("aria-controls", "notes-section-etapes");
+
+		btnDiplomes.addClickListener(e -> afficherSection(sectionsLayout, btnDiplomes, btnEtapes, true));
+		btnEtapes.addClickListener(e -> afficherSection(sectionsLayout, btnDiplomes, btnEtapes, false));
+
+		switchLayout.add(btnDiplomes, btnEtapes);
+		//La section des diplômes est affichée par défaut
+		afficherSection(sectionsLayout, btnDiplomes, btnEtapes, true);
+		return switchLayout;
+	}
+
+	/**
+	 * Affiche la section demandée sur mobile et met à jour l'état des boutons.
+	 * La classe posée sur le conteneur n'a d'effet qu'en dessous du seuil mobile.
+	 */
+	private void afficherSection(final Component sectionsLayout, final Button btnDiplomes,
+			final Button btnEtapes, final boolean diplomes) {
+		sectionsLayout.removeClassName("afficher-diplomes");
+		sectionsLayout.removeClassName("afficher-etapes");
+		sectionsLayout.addClassName(diplomes ? "afficher-diplomes" : "afficher-etapes");
+		majBoutonSection(btnDiplomes, diplomes);
+		majBoutonSection(btnEtapes, !diplomes);
+	}
+
+	/**
+	 * Met à jour l'état visuel et accessible d'un bouton de bascule de section.
+	 * Le bouton de la section masquée est souligné pour montrer qu'il est cliquable.
+	 */
+	private void majBoutonSection(final Button bouton, final boolean actif) {
+		bouton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		if (actif) {
+			bouton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			bouton.removeClassName("notes-section-button-inactive");
+		} else {
+			bouton.addClassName("notes-section-button-inactive");
+		}
+		bouton.getElement().setAttribute("aria-pressed", String.valueOf(actif));
 	}
 
 	/**
