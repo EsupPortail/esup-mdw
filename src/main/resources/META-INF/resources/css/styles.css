@@ -90,11 +90,11 @@ vaadin-drawer-toggle {
 }
 
 /* Menu du drawer */
-#menu-tabs vaadin-tab:hover {
+.menu-tabs vaadin-tab:hover {
 	background-color: var(--lumo-contrast-5pct);
 }
 
-#menu-tabs vaadin-tab[selected] {
+.menu-tabs vaadin-tab[selected] {
 	background-color: var(--lumo-contrast-20pct);
 	font-weight: 700;
 }
