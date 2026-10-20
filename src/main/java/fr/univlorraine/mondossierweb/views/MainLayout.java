@@ -102,6 +102,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	private static final Set<String> ROUTES_DOSSIER = Set.of(ROUTE_ETAT_CIVIL, ROUTE_INFORMATIONS_ANNUELLES,
 		ROUTE_ADRESSES, ROUTE_INSCRIPTIONS, ROUTE_CALENDRIER, ROUTE_NOTES);
 
+	/** Seuil (exclu) sous lequel le drawer est ouvert automatiquement, aligné sur le seuil CSS 767px */
+	private static final int SEUIL_MOBILE_PX = 768;
+
 	/* Injections */
 	@Resource
 	private transient UserController userController;
@@ -139,6 +142,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	/** Indique si l'entrée "Liste des inscrits" est actuellement affichée dans le menu */
 	private boolean listeInscritsMenuVisible;
+
+	/** Indique si l'ouverture automatique du drawer sur mobile a déjà été tentée pour cette UI */
+	private boolean ouvertureMobileEffectuee;
 
 	/**
 	 * @return le MainLayout de l'UI courante, s'il est présent
@@ -555,6 +561,19 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		uiController.registerUI(attachEvent.getUI());
 
 		updateMenu();
+
+		/* Sur mobile, ouvre le menu latéral par défaut, comme si l'utilisateur
+		 * avait cliqué sur le bouton hamburger. L'opération n'est tentée qu'une
+		 * fois par UI : le menu ne se rouvre pas lors des navigations internes. */
+		if (!ouvertureMobileEffectuee) {
+			ouvertureMobileEffectuee = true;
+			attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {
+				final int largeur = details.getWindowInnerWidth();
+				if (largeur > 0 && largeur < SEUIL_MOBILE_PX) {
+					setDrawerOpened(true);
+				}
+			});
+		}
 
 		/* Affichage du message d'intro si besoin (préférence utilisateur) */
 		if (safeIsEnseignant()) {

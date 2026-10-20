@@ -195,7 +195,7 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 			VerticalLayout globalLayout = new VerticalLayout();
 			globalLayout.setWidthFull();
 			globalLayout.setPadding(false);
-			globalLayout.setSpacing(true);
+			globalLayout.setSpacing(false);
 
 			/* Les diplômes */
 			ResponsiveCardList<Diplome> notesDiplomesList = new ResponsiveCardList<>();
@@ -332,7 +332,7 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver, Ha
 		final HorizontalLayout switchLayout = new HorizontalLayout();
 		switchLayout.addClassName("notes-sections-switch");
 		switchLayout.setWidthFull();
-		switchLayout.setSpacing(true);
+		switchLayout.setSpacing(false);
 
 		final Button btnDiplomes = new Button(getTranslation(NAME + ".table.diplomes"));
 		btnDiplomes.addClassName("notes-section-button");
