@@ -436,6 +436,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			}
 		}
 
+		/* Clic sur l'entrée déjà sélectionnée : ferme le drawer en superposition (mobile) */
+		activerFermetureDrawerSurEntreeCourante(menuPrincipal);
+		activerFermetureDrawerSurEntreeCourante(menuDossier);
+
 		codEtuMenu = dossierVisible ? etudiant.getCod_etu() : null;
 	}
 
@@ -705,6 +709,19 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		return tabs.getChildren()
 			.filter(MenuTab.class::isInstance)
 			.map(MenuTab.class::cast);
+	}
+
+	/**
+	 * Ferme le drawer en superposition (mobile) lorsque l'utilisateur clique
+	 * sur l'entrée de menu déjà sélectionnée. Sur desktop, le drawer n'étant
+	 * pas une superposition, le clic reste sans effet.
+	 */
+	private void activerFermetureDrawerSurEntreeCourante(final Tabs tabs) {
+		tabsStream(tabs).forEach(tab -> tab.getElement().addEventListener("click", event -> {
+			if (isOverlay() && tab.equals(tabs.getSelectedTab())) {
+				setDrawerOpened(false);
+			}
+		}));
 	}
 
 	/* ====================== Services aux vues ====================== */
