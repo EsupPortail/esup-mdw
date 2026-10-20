@@ -84,6 +84,8 @@ public class DetailNotesWindow extends Dialog {
 	private Button btnDisplayFiltres;
 	private Div panelVue;
 	private boolean headerInitialized;
+	/** Actions (PDF, informations) affichées dans l'entête, en icône seule, sur mobile. */
+	private HorizontalLayout headerActions;
 
 	public void init(Etape et) {
 		etape = et;
@@ -144,9 +146,12 @@ public class DetailNotesWindow extends Dialog {
 			HorizontalLayout titleLayout = new HorizontalLayout();
 			titleLayout.setWidthFull();
 			titleLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+			/* Sur mobile, le message occupe sa propre ligne et les boutons passent en dessous (voir styles.css) */
+			titleLayout.addClassName("detail-notes-title-layout");
 			Html messageLabel = new Html("<div>" + getTranslation(NAME + ".label.messageinfo") + "</div>");
 			Div messageWrapper = new Div(messageLabel);
 			messageWrapper.addClassName(LumoUtility.FontSize.SMALL);
+			messageWrapper.addClassName("detail-notes-message-wrapper");
 			titleLayout.add(messageWrapper);
 			titleLayout.expand(messageWrapper);
 
@@ -158,41 +163,19 @@ public class DetailNotesWindow extends Dialog {
 			// en icône seule, sinon ils sont côte à côte avec leur libellé texte.
 			final boolean encartVueAffiche = userController.isEnseignant();
 
-			Anchor pdfAnchor = null;
+			// Fichier PDF généré une seule fois, partagé par le bouton du contenu et celui de l'entête
+			DownloadFile pdfFile = null;
 			if (lelp != null && !lelp.isEmpty() && configController.isPdfNotesActive()) {
-				DownloadFile df = noteController.exportPdfDetail(etape);
-				if (df != null) {
-					Button pdfButton = new Button(VaadinIcon.FILE_TEXT_O.create());
-					pdfButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-					pdfButton.addClassName("button-icon");
-					pdfButton.addClassName("red-button-icon");
-					pdfButton.setTooltipText(getTranslation(NAME + ".btn.pdf.description"));
-					if (!encartVueAffiche) {
-						// Pas d'encart : le bouton affiche son libellé texte à côté de l'icône
-						pdfButton.setText(getTranslation(NAME + ".btn.pdf.label"));
-					}
-					pdfAnchor = new Anchor();
-					pdfAnchor.setHref(DownloadHandler.fromInputStream(evt ->
-						new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
-					pdfAnchor.add(pdfButton);
-				}
+				pdfFile = noteController.exportPdfDetail(etape);
 			}
+			final boolean infoDisponible = lelp != null && !lelp.isEmpty() && etudiant.isSignificationResultatsUtilisee();
 
-			// Bouton d'information sur la signification des résultats
-			Button infoButton = null;
-			if (lelp != null && !lelp.isEmpty() && etudiant.isSignificationResultatsUtilisee()) {
-				infoButton = new Button(VaadinIcon.INFO_CIRCLE.create());
-				infoButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-				infoButton.addClassName("button-icon");
-				infoButton.setTooltipText(getTranslation(NAME + ".info.significations.resultats"));
-				infoButton.getElement().setAttribute("aria-label", getTranslation(NAME + ".info.significations.resultats"));
-				infoButton.addClickListener(e -> new HelpBasicWindow(buildSignificationResultatsHtml(etudiant),
-						getTranslation(NAME + ".info.significations.resultats")).open());
-				if (!encartVueAffiche) {
-					// Pas d'encart : le bouton affiche son libellé texte à côté de l'icône
-					infoButton.setText(getTranslation(NAME + ".btn.infos.label"));
-				}
-			}
+			// Actions de l'entête (icône seule, alignées à droite du titre), visibles uniquement sur mobile
+			majActionsEntete(pdfFile, infoDisponible, etudiant);
+
+			// Boutons du contenu (desktop) : masqués sur mobile au profit des actions de l'entête
+			final Anchor pdfAnchor = pdfFile != null ? buildPdfAnchor(pdfFile, !encartVueAffiche) : null;
+			final Button infoButton = infoDisponible ? buildInfoButton(etudiant, !encartVueAffiche) : null;
 
 			// Les boutons PDF et informations sont regroupés dans un même conteneur,
 			// au même niveau que l'encart « Voir comme un enseignant ».
@@ -335,15 +318,17 @@ public class DetailNotesWindow extends Dialog {
 	}
 
 	/**
-	 * Regroupe les boutons PDF et informations dans un conteneur placé à droite de
-	 * l'entête. Si l'encart « Voir comme un étudiant » est affiché, les boutons sont
+	 * Regroupe les boutons PDF et informations dans un conteneur du contenu.
+	 * Si l'encart « Voir comme un étudiant » est affiché, les boutons sont
 	 * empilés verticalement en icône seule ; sinon ils sont côte à côte avec leur
-	 * libellé texte.
+	 * libellé texte. Sur mobile, ce conteneur est masqué au profit des actions
+	 * de l'entête (voir styles.css).
 	 */
 	private Component buildConteneurBoutons(final boolean encartVueAffiche, final Anchor pdfAnchor, final Button infoButton) {
 		if (encartVueAffiche) {
 			VerticalLayout boutonsLayout = new VerticalLayout();
-			/* Largeur au contenu : le conteneur se place à droite de l'entête */
+			boutonsLayout.addClassName("detail-notes-content-actions");
+			/* Largeur au contenu : le conteneur se place à droite du message */
 			boutonsLayout.setWidth("auto");
 			boutonsLayout.setPadding(false);
 			boutonsLayout.setSpacing(false);
@@ -357,7 +342,8 @@ public class DetailNotesWindow extends Dialog {
 			return boutonsLayout;
 		}
 		HorizontalLayout boutonsLayout = new HorizontalLayout();
-		/* Largeur au contenu : le conteneur se place à droite de l'entête */
+		boutonsLayout.addClassName("detail-notes-content-actions");
+		/* Largeur au contenu : le conteneur se place à droite du message */
 		boutonsLayout.setWidth("auto");
 		boutonsLayout.setPadding(false);
 		boutonsLayout.setSpacing(true);
@@ -369,6 +355,79 @@ public class DetailNotesWindow extends Dialog {
 			boutonsLayout.add(infoButton);
 		}
 		return boutonsLayout;
+	}
+
+	/**
+	 * Construit l'ancre de téléchargement du PDF de détail des notes.
+	 *
+	 * @param df          fichier PDF déjà généré
+	 * @param avecLibelle vrai pour afficher le libellé texte à côté de l'icône
+	 */
+	private Anchor buildPdfAnchor(final DownloadFile df, final boolean avecLibelle) {
+		final Button pdfButton = new Button(VaadinIcon.FILE_TEXT_O.create());
+		pdfButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		pdfButton.addClassName("button-icon");
+		pdfButton.addClassName("red-button-icon");
+		pdfButton.setTooltipText(getTranslation(NAME + ".btn.pdf.description"));
+		pdfButton.getElement().setAttribute("aria-label", getTranslation(NAME + ".btn.pdf.description"));
+		if (avecLibelle) {
+			pdfButton.setText(getTranslation(NAME + ".btn.pdf.label"));
+		}
+		final Anchor pdfAnchor = new Anchor();
+		pdfAnchor.setHref(DownloadHandler.fromInputStream(evt ->
+			new DownloadResponse(df.getInputStream(), df.fileName(), df.mimeType(), df.getContentLength())));
+		pdfAnchor.add(pdfButton);
+		return pdfAnchor;
+	}
+
+	/**
+	 * Construit le bouton d'information sur la signification des résultats.
+	 *
+	 * @param etudiant    étudiant dont on affiche les notes
+	 * @param avecLibelle vrai pour afficher le libellé texte à côté de l'icône
+	 */
+	private Button buildInfoButton(final Etudiant etudiant, final boolean avecLibelle) {
+		final Button infoButton = new Button(VaadinIcon.INFO_CIRCLE.create());
+		infoButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		infoButton.addClassName("button-icon");
+		infoButton.setTooltipText(getTranslation(NAME + ".info.significations.resultats"));
+		infoButton.getElement().setAttribute("aria-label", getTranslation(NAME + ".info.significations.resultats"));
+		infoButton.addClickListener(e -> new HelpBasicWindow(buildSignificationResultatsHtml(etudiant),
+				getTranslation(NAME + ".info.significations.resultats")).open());
+		if (avecLibelle) {
+			infoButton.setText(getTranslation(NAME + ".btn.infos.label"));
+		}
+		return infoButton;
+	}
+
+	/**
+	 * Met à jour les actions affichées dans l'entête de la fenêtre : PDF et
+	 * informations en icône seule, alignées à droite du titre. Elles ne sont
+	 * visibles que sur mobile, où elles remplacent les boutons du contenu.
+	 */
+	private void majActionsEntete(final DownloadFile pdfFile, final boolean infoDisponible, final Etudiant etudiant) {
+		//Suppression des actions issues d'une précédente construction de la vue
+		if (headerActions != null) {
+			getHeader().remove(headerActions);
+			headerActions = null;
+		}
+		if (pdfFile == null && !infoDisponible) {
+			return;
+		}
+		headerActions = new HorizontalLayout();
+		headerActions.addClassName("detail-notes-header-actions");
+		/* Largeur au contenu : le conteneur reste aligné à droite du titre */
+		headerActions.setWidth("auto");
+		headerActions.setPadding(false);
+		headerActions.setSpacing(true);
+		headerActions.setAlignItems(FlexComponent.Alignment.CENTER);
+		if (pdfFile != null) {
+			headerActions.add(buildPdfAnchor(pdfFile, false));
+		}
+		if (infoDisponible) {
+			headerActions.add(buildInfoButton(etudiant, false));
+		}
+		getHeader().add(headerActions);
 	}
 
 	private boolean voirCommeEnseignant() {

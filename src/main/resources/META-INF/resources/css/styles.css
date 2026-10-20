@@ -377,6 +377,36 @@ vaadin-grid::part(marked) {
 	display: none;
 }
 
+/* DetailNotesWindow : sur mobile, le message d'information occupe sa propre ligne ;
+   les boutons d'action restant dans le contenu passent en dessous. */
+@media (max-width: 767px) {
+	.detail-notes-title-layout {
+		flex-wrap: wrap;
+	}
+
+	.detail-notes-title-layout .detail-notes-message-wrapper {
+		flex: 1 1 100%;
+		min-width: 0;
+	}
+}
+
+/* DetailNotesWindow : sur mobile, les actions PDF et informations sont déplacées
+   dans l'entête, en icône seule et alignées à droite du titre ; les boutons
+   équivalents du contenu sont masqués. Sur desktop, l'affichage reste inchangé. */
+.detail-notes-window .detail-notes-header-actions {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.detail-notes-window .detail-notes-header-actions {
+		display: flex;
+	}
+
+	.detail-notes-window .detail-notes-content-actions {
+		display: none;
+	}
+}
+
 /* Sur mobile, les fenêtres de détail (groupes, inscription, notes) occupent tout l'écran. */
 @media (max-width: 767px) {
 	.detail-groupes-window::part(overlay),

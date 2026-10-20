@@ -620,6 +620,9 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			final Button btnCodEtu = new Button(i.getCod_etu());
 			btnCodEtu.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 			btnCodEtu.addClassName("v-link");
+			//Soulignement du code étudiant cliquable (accessibilité) : la classe CSS lien-souligne
+			//cible le label du bouton, rendu dans le shadow DOM (::part(label))
+			btnCodEtu.addClassName("lien-souligne");
 			btnCodEtu.addClickListener(e -> rechercheController.accessToDetail(i.getCod_etu(), Utils.TYPE_ETU, null));
 			return btnCodEtu;
 		}).setHeader(getTranslation(NAME + ".table.cod_etu")).setAutoWidth(true).setResizable(true);
