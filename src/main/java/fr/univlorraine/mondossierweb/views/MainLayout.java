@@ -33,6 +33,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -224,7 +226,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 
 	/**
 	 * Construit l'en-tête affiché tout en haut du drawer :
-	 * logo de l'université et nom de l'application.
+	 * logo de l'université, nom de l'application et bouton de fermeture
+	 * (visible uniquement lorsque le drawer est en superposition, sur mobile).
 	 */
 	private void buildDrawerHeader() {
 		drawerHeader.setId("drawer-header");
@@ -245,6 +248,18 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			.set("margin", "0")
 			.set("white-space", "nowrap");
 		drawerHeader.add(appTitle);
+
+		/* Fermeture du menu en superposition (mobile) : même rendu que le
+		 * DrawerToggle de la navbar, aligné en bout de ligne. Le bouton est
+		 * masqué en CSS sur desktop, où le drawer n'est pas superposé. */
+		final DrawerToggle drawerClose = new DrawerToggle();
+		drawerClose.setIcon(VaadinIcon.CLOSE.create());
+		drawerClose.addClassName("drawer-close");
+		final String closeLabel = getTranslation("mainLayout.drawerClose.title");
+		drawerClose.getElement().setAttribute("title", closeLabel);
+		drawerClose.getElement().setAttribute("aria-label", closeLabel);
+		drawerClose.addClickListener(e -> setDrawerOpened(false));
+		drawerHeader.add(drawerClose);
 	}
 
 	/* ====================== Logo ====================== */
@@ -496,6 +511,17 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 				: "mainLayout.etudiant.noninscrit", annee);
 			inscritIcon.getElement().setAttribute("title", description);
 			inscritIcon.getElement().setAttribute("aria-label", description);
+			/* Le survol n'étant pas disponible sur mobile, un clic (ou Entrée / Espace)
+			 * réaffiche le statut dans une notification légère. */
+			inscritIcon.getElement().setAttribute("role", "button");
+			inscritIcon.getElement().setAttribute("tabindex", "0");
+			inscritIcon.addClickListener(e -> afficherStatutInscription(description));
+			inscritIcon.getElement().addEventListener("keydown", event -> {
+				final String key = event.getEventData().get("event.key").asString();
+				if ("Enter".equals(key) || " ".equals(key)) {
+					afficherStatutInscription(description);
+				}
+			}).addEventData("event.key");
 
 			final Div photoContainer = new Div(photo, inscritIcon);
 			photoContainer.addClassName("photo-dossier");
@@ -509,6 +535,20 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		codetu.addClassName("text-secondary");
 		codetu.getStyle().set("display", "block");
 		dossierHeader.add(nom, codetu);
+	}
+
+	/**
+	 * Affiche le statut d'inscription de l'étudiant dans une notification légère.
+	 * Utilisé au clic sur l'icône, le survol (title) n'étant pas disponible sur mobile.
+	 *
+	 * @param description message décrivant le statut d'inscription
+	 */
+	private void afficherStatutInscription(final String description) {
+		final Notification notification = new Notification(description);
+		notification.setDuration(3000);
+		notification.setPosition(Notification.Position.BOTTOM_CENTER);
+		notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+		notification.open();
 	}
 
 	/**

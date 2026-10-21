@@ -89,6 +89,26 @@ vaadin-drawer-toggle {
 	padding: var(--lumo-space-wide-m);
 }
 
+/* Bouton de fermeture du drawer en superposition (mobile) : même rendu que le
+ * vaadin-drawer-toggle de la navbar, poussé en bout de ligne. Il est masqué par
+ * défaut car le drawer n'est pas superposé sur desktop. */
+#drawer-header .drawer-close {
+	display: none;
+	flex: 0 0 auto;
+	margin-left: auto;
+	margin-right: 0;
+	/* Le sélecteur global vaadin-drawer-toggle force le blanc pour la navbar */
+	color: inherit;
+}
+
+/* Seuil de superposition du drawer, identique à celui de vaadin-app-layout
+ * (cf. @vaadin/app-layout : max-width 800px ou max-height 600px). */
+@media (max-width: 800px), (max-height: 600px) {
+	#drawer-header .drawer-close {
+		display: inline-flex;
+	}
+}
+
 /* Menu du drawer */
 .menu-tabs vaadin-tab:hover {
 	background-color: var(--lumo-contrast-5pct);
@@ -230,6 +250,13 @@ vaadin-grid::part(marked) {
 	border-radius: 50%;
 	background-color: var(--lumo-base-color);
 	box-shadow: 0 0 0 1px var(--lumo-contrast-10pct), 0 1px 3px rgba(0, 0, 0, 0.25);
+	/* Un clic affiche le statut d'inscription (le survol n'existe pas sur mobile) */
+	cursor: pointer;
+}
+
+.photo-dossier-badge:focus-visible {
+	outline: 2px solid var(--lumo-primary-color);
+	outline-offset: 2px;
 }
 
 /* Animations de la section dossier étudiant dans le drawer (entrée/sortie par la gauche) */
