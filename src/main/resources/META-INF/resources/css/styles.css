@@ -97,6 +97,7 @@ vaadin-drawer-toggle {
 	flex: 0 0 auto;
 	margin-left: auto;
 	margin-right: 0;
+	width: 1em;
 	/* Le sélecteur global vaadin-drawer-toggle force le blanc pour la navbar */
 	color: inherit;
 }
