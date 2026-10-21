@@ -235,6 +235,9 @@ public class RechercheRapideView extends VerticalLayout implements HasDynamicTit
 		final Button b = new Button(mobile ? getLibelleSansCode(r) : r.getLib());
 		b.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		b.addClassName("v-link");
+		//Soulignement du libellé cliquable (accessibilité) : la classe CSS lien-souligne
+		//cible le label du bouton, rendu dans le shadow DOM (::part(label))
+		b.addClassName("lien-souligne");
 		b.addClickListener(e -> rechercheController.accessToDetail(r.getCode(), r.type, null));
 
 		// Pour un étudiant : affichage de la formation en cours
