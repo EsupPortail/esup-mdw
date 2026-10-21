@@ -106,10 +106,7 @@ public class AssistanceView extends VerticalLayout implements HasDynamicTitle {
 			if (configController.isLogoutCasPropose()) {
 				Button decoBtn = new Button(getTranslation("buttonDeconnexion.label"), VaadinIcon.SIGN_OUT.create());
 				decoBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-				decoBtn.addClickListener(e -> {
-					userController.disconnectUser();
-					getUI().ifPresent(ui -> ui.getPage().setLocation("logout"));
-				});
+				decoBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.getPage().setLocation("logout")));
 				add(decoBtn);
 			}
 		}

@@ -33,7 +33,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
-import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -107,9 +106,13 @@ public class SecurityConfig {
 			logout.logoutRequestMatcher(requestMatcher.matcher(LOGOUT_URL));
 			logout.logoutSuccessHandler((request, response, authentication) -> {
 				final SimpleUrlLogoutSuccessHandler handler = new SimpleUrlLogoutSuccessHandler();
-				if (authentication instanceof CasAuthenticationToken) {
-					handler.setDefaultTargetUrl(environment.getRequiredProperty("cas.url") + LOGOUT_URL);
-				}
+				/*
+				 * Redirection systématique vers le logout CAS, quelle que soit
+				 * l'authentification courante : on ne doit jamais revenir sur
+				 * l'application, sinon le SSO CAS reconnecte automatiquement
+				 * l'utilisateur tant que sa session CAS est encore valide.
+				 */
+				handler.setDefaultTargetUrl(environment.getRequiredProperty("cas.url") + LOGOUT_URL);
 				handler.onLogoutSuccess(request, response, authentication);
 			});
 		});

@@ -149,18 +149,5 @@ public class UserController {
 				.anyMatch(propertyName::contains);
 	}
 
-	/** Nettoie la session */
-	public void disconnectUser() {
-		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		SecurityContextHolder.setContext(context);
-		UI ui = UI.getCurrent();
-		if (ui != null && ui.getSession() != null) {
-			if (ui.getSession().getSession() != null) {
-				ui.getSession().getSession().setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-			}
-			ui.getSession().close();
-		}
-	}
-
 
 }

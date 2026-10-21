@@ -204,6 +204,34 @@ vaadin-grid::part(marked) {
 	border-radius: 15px;
 }
 
+/* Photo du dossier étudiant dans le drawer : l'indicateur d'inscription est posé
+ * en badge sur le coin inférieur droit, à cheval sur le bord de la photo. */
+.photo-dossier {
+	position: relative;
+	display: inline-block;
+	width: 120px;
+	margin-bottom: var(--lumo-space-xs);
+	line-height: 0;
+}
+
+.photo-dossier .photo-mdw {
+	display: block;
+	width: 100%;
+}
+
+.photo-dossier-badge {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	/* Décalage d'un demi-côté : la moitié de l'icône reste sur la photo */
+	transform: translateX(50%);
+	box-sizing: content-box;
+	padding: 2px;
+	border-radius: 50%;
+	background-color: var(--lumo-base-color);
+	box-shadow: 0 0 0 1px var(--lumo-contrast-10pct), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 /* Animations de la section dossier étudiant dans le drawer (entrée/sortie par la gauche) */
 @keyframes mdw-dossier-slide-in {
 	from {

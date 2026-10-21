@@ -210,10 +210,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		logoutBtn.setIcon(VaadinIcon.SIGN_OUT.create());
 		logoutBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 		logoutBtn.getStyle().set("color", "inherit").set("margin-inline-end", "var(--lumo-space-m)");
-		logoutBtn.addClickListener(e -> {
-			userController.disconnectUser();
-			UI.getCurrent().getPage().setLocation("logout");
-		});
+		/* La session est invalidée par Spring Security sur /logout : ne pas vider
+		 * le contexte avant, sinon le handler de logout ne reconnaît plus
+		 * l'authentification CAS et renvoie sur l'application. */
+		logoutBtn.addClickListener(e -> UI.getCurrent().getPage().setLocation("logout"));
 		logoutBtn.setVisible(configController.isLogoutCasPropose());
 		//header.add(logoutBtn);
 
@@ -473,12 +473,12 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			dossierHeader.add(fermerBar);
 		}
 
-		/* Photo de l'étudiant + indicateur d'inscription pour l'année en cours */
+		/* Photo de l'étudiant + indicateur d'inscription pour l'année en cours,
+		 * l'icône étant posée en badge sur le coin inférieur droit de la photo */
 		if (StringUtils.hasText(etudiant.getPhoto())) {
 			final Image photo = new Image(etudiant.getPhoto(), etudiant.getNom());
 			photo.setWidth("120px");
 			photo.addClassName("photo-mdw");
-			dossierHeader.add(photo);
 
 			String annee = "";
 			try {
@@ -489,13 +489,17 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			final Icon inscritIcon = (etudiant.isInscritPourAnneeEnCours()
 				? VaadinIcon.CHECK_CIRCLE
 				: VaadinIcon.EXCLAMATION_CIRCLE).create();
-			inscritIcon.setSize("var(--lumo-icon-size-s)");
+			inscritIcon.setSize("1.25rem");
+			inscritIcon.addClassName("photo-dossier-badge");
 			final String description = getTranslation(etudiant.isInscritPourAnneeEnCours()
 				? "mainLayout.etudiant.inscrit"
 				: "mainLayout.etudiant.noninscrit", annee);
 			inscritIcon.getElement().setAttribute("title", description);
 			inscritIcon.getElement().setAttribute("aria-label", description);
-			dossierHeader.add(inscritIcon);
+
+			final Div photoContainer = new Div(photo, inscritIcon);
+			photoContainer.addClassName("photo-dossier");
+			dossierHeader.add(photoContainer);
 		}
 
 		final Span nom = new Span(etudiant.getNom());

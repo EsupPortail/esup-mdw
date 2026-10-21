@@ -240,10 +240,7 @@ public class AdminView extends VerticalLayout implements HasDynamicTitle {
 		// Deconnexion
 		Button decoBtn = new Button(getTranslation("adminView.btnDeconnexion"), VaadinIcon.SIGN_OUT.create());
 		decoBtn.addClassName("admin-button");
-		decoBtn.addClickListener(e -> {
-			userController.disconnectUser();
-			UI.getCurrent().getPage().setLocation("logout");
-		});
+		decoBtn.addClickListener(e -> UI.getCurrent().getPage().setLocation("logout"));
 		buttonsLayout.add(decoBtn);
 
 		/* Grid des swaps */
