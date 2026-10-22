@@ -13,6 +13,7 @@
 
 #IA
 AGENTS.md
+/.opencode/opencode.jsonc
 
 # Resources
 /src/main/webapp/META-INF/context.xml

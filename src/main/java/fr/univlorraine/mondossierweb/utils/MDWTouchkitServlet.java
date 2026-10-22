@@ -27,17 +27,29 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import fr.univlorraine.mondossierweb.MdwTouchkitUIProvider;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import java.io.IOException;
 import java.util.Locale;
 
 @SuppressWarnings("serial")
 @Slf4j
 public class MDWTouchkitServlet extends SpringVaadinServlet {
-	
-	
+
+	@Override
+	protected void service(final HttpServletRequest request, final HttpServletResponse response)
+			throws ServletException, IOException {
+		// Contournement CVE-2026-110803 : un v-uiId non entier fuit le verrou de session Vaadin
+		if (VaadinUiIdGuard.rejectIfInvalidUiId(request, response)) {
+			return;
+		}
+		super.service(request, response);
+	}
+
 	@Override
     protected void servletInitialized() throws ServletException {
 		
