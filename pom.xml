@@ -522,6 +522,20 @@
 						</excludes>
 					</resource>
 				</resources>
+				<plugins>
+					<!-- Les tests Elasticsearch s'appuient sur un environnement local (WireMock,
+					     Elasticsearch injoignable) et ne doivent pas tourner sur la chaîne
+					     de build nationale. -->
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/tools/elasticsearch/*Test.java</exclude>
+								<exclude>**/*$*</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 	</profiles>
