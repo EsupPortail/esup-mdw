@@ -509,6 +509,7 @@
 						<directory>src/main/resources</directory>
 						<excludes>
 							<exclude>application-defaults.yml</exclude>
+							<exclude>application.yml</exclude>
 							<exclude>assembly/</exclude>
 							<exclude>repository/</exclude>
 							<exclude>images/*.png</exclude>
@@ -523,6 +524,25 @@
 					</resource>
 				</resources>
 				<plugins>
+					<!-- Bundle frontend Vaadin (mode production) : sans cette exécution, le WAR
+					     ne contient pas META-INF/VAADIN et Vaadin démarre en mode développement. -->
+					<plugin>
+						<groupId>com.vaadin</groupId>
+						<artifactId>vaadin-maven-plugin</artifactId>
+						<version>${vaadin.version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>prepare-frontend</goal>
+									<goal>build-frontend</goal>
+								</goals>
+								<phase>compile</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<pnpmEnable>true</pnpmEnable>
+						</configuration>
+					</plugin>
 					<!-- Les tests Elasticsearch s'appuient sur un environnement local (WireMock,
 					     Elasticsearch injoignable) et ne doivent pas tourner sur la chaîne
 					     de build nationale. -->
