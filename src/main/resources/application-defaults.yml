@@ -19,12 +19,6 @@ spring:
         # en 2.0.x avant migration ; l'ancienne table Flyway 3 "schema_version" est abandonnée)
         baseline-version: "8.3"
 
-server:
-    servlet:
-        session:
-            # Durée max des sessions inactives
-            timeout: 3600s
-
 vaadin:
     heartbeatInterval: 15
     allowed-packages: fr/univlorraine,com/vaadin
@@ -35,22 +29,3 @@ logging:
         org.springframework.boot.web.servlet.support.ErrorPageFilter: OFF
         org.apache.catalina.session.StandardManager: OFF
         com.vaadin.flow.server.DefaultErrorHandler: ERROR
-
-# Rate limiting sur /login/cas désactivé par défaut
-ratelimiter.maxrequest: 0
-
-apoShowSql: false
-loginApogee: true
-checkTesUtilisateurApogee: false
-recherche.autocompletion.elp: false
-param.apogee.mail.annuaire: false
-EnablePdfSecurity: false
-showLoadingIndicator: true
-etatcivil.nom.affichage: standard
-sourceResultats: Apogee
-resultat.implementation: resultatController
-emailConverter.implementation: emailConverterBasicImpl
-codetuFromLogin.implementation: codetuFromLoginLdapImpl
-loginFromCodetu.implementation: loginFromCodetuLdapImpl
-serveurphoto.implementation: photoEmptyImpl
-liste.erreur.a.ignorer: ClientAbortException;IllegalStateException;SocketTimeoutException;RpcInvocationException
