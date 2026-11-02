@@ -29,3 +29,4 @@ logging:
         org.springframework.boot.web.servlet.support.ErrorPageFilter: OFF
         org.apache.catalina.session.StandardManager: OFF
         com.vaadin.flow.server.DefaultErrorHandler: ERROR
+        org.springframework.context.support.ResourceBundleMessageSource: OFF
