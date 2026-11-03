@@ -365,13 +365,13 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		configureMenu(menuDossier);
 
 		menuPrincipal.addSelectedChangeListener(e -> {
-			if (e.isFromClient() && e.getSelectedTab() instanceof MenuTab tab) {
+			if (e.isFromClient() && e.getSelectedTab() instanceof MenuTab tab && tab.getRoute() != null) {
 				menuDossier.setSelectedTab(null);
 				UI.getCurrent().navigate(tab.getRoute());
 			}
 		});
 		menuDossier.addSelectedChangeListener(e -> {
-			if (e.isFromClient() && e.getSelectedTab() instanceof MenuTab tab) {
+			if (e.isFromClient() && e.getSelectedTab() instanceof MenuTab tab && tab.getRoute() != null) {
 				menuPrincipal.setSelectedTab(null);
 				UI.getCurrent().navigate(tab.getRoute());
 			}
@@ -419,12 +419,28 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			}
 		}
 
-		/* Assistance : accessible à tous les profils autorisés */
-		menuPrincipal.add(new MenuTab(VaadinIcon.LIFEBUOY, getTranslation("assistanceView.title"), ROUTE_ASSISTANCE));
+		/* Assistance : réservée aux profils enseignants/gestionnaires (cf. AssistanceView.init()) */
+		if (enseignant) {
+			menuPrincipal.add(new MenuTab(VaadinIcon.LIFEBUOY, getTranslation("assistanceView.title"), ROUTE_ASSISTANCE));
+		}
 
 		/* Administration */
 		if (userController.userCanAccessAdminView()) {
 			menuPrincipal.add(new MenuTab(VaadinIcon.COG, getTranslation("adminView.title"), ROUTE_ADMIN));
+		}
+
+		/* Aide : réservée au profil étudiant connecté.
+		 * Déconnexion : dès que l'entrée Assistance n'est pas proposée (les enseignants
+		 * et gestionnaires ont le bouton de déconnexion dans la vue Assistance). */
+		if (etudiantConnecte) {
+			final MenuTab aideTab = new MenuTab(VaadinIcon.QUESTION_CIRCLE_O, getTranslation("helpWindow.defaultTitle"), null);
+			aideTab.getElement().addEventListener("click", event -> afficherAide());
+			menuPrincipal.add(aideTab);
+		}
+		if (!enseignant && configController.isLogoutCasPropose()) {
+			final MenuTab decoTab = new MenuTab(VaadinIcon.SIGN_OUT, getTranslation("buttonDeconnexion.label"), null);
+			decoTab.getElement().addEventListener("click", event -> UI.getCurrent().getPage().setLocation("logout"));
+			menuPrincipal.add(decoTab);
 		}
 
 		/* Dossier étudiant : pour l'étudiant connecté ou pour l'enseignant qui consulte un dossier
@@ -592,11 +608,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		if (affNotes) {
 			menuDossier.add(new MenuTab(VaadinIcon.LIST, getTranslation("notesView.title"), ROUTE_NOTES));
 		}
-
-		MenuTab menuAide = new MenuTab(VaadinIcon.QUESTION_CIRCLE_O, getTranslation("helpWindow.defaultTitle"), null);
-		menuAide.getElement().addEventListener("click", event -> afficherAide());
-		menuDossier.add(menuAide);
-
 	}
 
 	/* ====================== Cycle de vie / navigation ====================== */
@@ -832,11 +843,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	}
 
 	/**
-	 * Affiche la fenêtre d'aide (ancien bouton "Aide" du menu étudiant).
+	 * Affiche la fenêtre d'aide (entrée "Aide" du menu, réservée au profil étudiant).
 	 */
 	private void afficherAide() {
-		final String text = getTranslation(safeIsEtudiant() ? "helpWindow.text.etudiant" : "helpWindow.text.enseignant");
-		new HelpBasicWindow(text, getTranslation("helpWindow.defaultTitle"), true).open();
+		new HelpBasicWindow(getTranslation("helpWindow.text.etudiant"), getTranslation("helpWindow.defaultTitle"), true).open();
 	}
 
 	/* ====================== Helpers ====================== */
