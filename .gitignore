@@ -28,6 +28,7 @@ node_modules/
 package.json
 package-lock.json
 pnpm-lock.yaml
+pnpm-workspace.yaml
 tsconfig.json
 types.d.ts
 vite.config.ts

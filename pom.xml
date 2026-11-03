@@ -31,7 +31,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.5</version>
+		<version>4.1.2</version>
 	</parent>
 
 	<properties>
@@ -39,7 +39,7 @@
 		<!-- JAVA -->
 		<java.version>21</java.version>
 		<!-- VAADIN -->
-		<vaadin.version>25.1.9</vaadin.version>
+		<vaadin.version>25.3.5</vaadin.version>
 		<!-- WS Apogee AMUE -->
 		<apo.ws.version>6.70.20</apo.ws.version>
 		<!-- Lib oracle -->
