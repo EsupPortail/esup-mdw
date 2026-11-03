@@ -244,7 +244,6 @@ public class MdwUserDetailsService implements UserDetailsService {
 								//étudiant non autorise a consulter ses notes
 								log.info("utilisateur "+username+" bloqué car il possède des blocages dans Apogée");
 								return new String[]{Utils.UNAUTHORIZED_USER};
-
 							}
 						}
 					}
