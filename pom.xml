@@ -497,33 +497,20 @@
 			<id>deploiement-national</id>
 			<build>
 				<finalName>${project.name}-${project.version}</finalName>
-				<resources>
-					<resource>
-						<directory>src/main/resources</directory>
-						<filtering>true</filtering>
-						<includes>
-							<include>application-defaults.yml</include>
-						</includes>
-					</resource>
-					<resource>
-						<directory>src/main/resources</directory>
-						<excludes>
-							<exclude>application-defaults.yml</exclude>
-							<exclude>application.yml</exclude>
-							<exclude>assembly/</exclude>
-							<exclude>repository/</exclude>
-							<exclude>images/*.png</exclude>
-							<exclude>images/*.jpg</exclude>
-							<exclude>i18n/messages.properties</exclude>
-							<exclude>i18n/vaadin-messages.properties</exclude>
-							<exclude>configUrlServices.properties</exclude>
-							<exclude>configUrlServicesp*.properties</exclude>
-							<exclude>configUrlServicest*.properties</exclude>
-							<exclude>apogeeRequest.xml</exclude>
-						</excludes>
-					</resource>
-				</resources>
+				<!--
+					Les <resources> déclarées dans un profil sont AJOUTÉES à celles du build de base,
+					elles ne les remplacent pas : un fichier déjà copié par la ressource de base ne
+					peut donc pas être retiré ici. L'exclusion des fichiers d'environnement se fait
+					au packaging du WAR (packagingExcludes) ci-dessous.
+				-->
 				<plugins>
+					<!-- Exclusion des fichiers d'environnement du WAR national -->
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<packagingExcludes>**/application.yml,WEB-INF/classes/configUrlServices.properties,WEB-INF/classes/configUrlServicesp*.properties,WEB-INF/classes/configUrlServicest*.properties,WEB-INF/classes/apogeeRequest.xml,WEB-INF/classes/i18n/messages.properties,WEB-INF/classes/i18n/vaadin-messages.properties,WEB-INF/classes/images/*.png,WEB-INF/classes/images/*.jpg</packagingExcludes>
+						</configuration>
+					</plugin>
 					<!-- Bundle frontend Vaadin (mode production) : sans cette exécution, le WAR
 					     ne contient pas META-INF/VAADIN et Vaadin démarre en mode développement. -->
 					<plugin>
