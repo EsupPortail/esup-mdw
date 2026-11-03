@@ -18,6 +18,7 @@
  */
 package fr.univlorraine.mondossierweb.services.apogee;
 
+import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
@@ -39,10 +40,10 @@ public class InscriptionServiceImpl implements InscriptionService{
 	@Override
 	public String getProfil(String codAnu, String codInd) {
 		@SuppressWarnings("unchecked")
-		String  codPru= (String)entityManagerApogee.createNativeQuery("select cod_pru"+
+		String  codPru= Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select cod_pru"+
 				" from apogee.ins_adm_anu "+
 				" where cod_anu = "+codAnu+" "+
-				" and cod_ind = '"+codInd+"' ").getSingleResult();
+				" and cod_ind = '"+codInd+"' ").getSingleResult());
 		return codPru;
 	}
 
@@ -50,13 +51,13 @@ public class InscriptionServiceImpl implements InscriptionService{
 	@Override
 	public String getCgeFromCodIndIAE(String codAnu, String codInd,String codEtp, String vrsVet) {
 		@SuppressWarnings("unchecked")
-		String  codCge= (String)entityManagerApogee.createNativeQuery("select iae.cod_cge "+
+		String  codCge= Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select iae.cod_cge "+
 				" from apogee.ins_adm_etp iae "+
 				" where iae.cod_anu = "+codAnu+"  "+
 				" and iae.cod_ind = '"+codInd+"'  "+
 				" and iae.cod_etp = '"+codEtp+"'  "+
 				" and iae.cod_vrs_vet = "+vrsVet+"  "+
-				" and iae.eta_iae = 'E' ").getSingleResult();
+				" and iae.eta_iae = 'E' ").getSingleResult());
 		return codCge;
 	}
 
@@ -64,36 +65,36 @@ public class InscriptionServiceImpl implements InscriptionService{
 	@Override
 	public String getCmpFromCodIndIAE(String codAnu, String codInd,String codEtp, String vrsVet) {
 		@SuppressWarnings("unchecked")
-		String  codCmp= (String)entityManagerApogee.createNativeQuery("select iae.cod_cmp "+
+		String  codCmp= Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select iae.cod_cmp "+
 				" from apogee.ins_adm_etp iae  "+
 				" where iae.cod_anu = "+codAnu+"  "+
 				" and iae.cod_ind = '"+codInd+"'  "+
 				" and iae.cod_etp = '"+codEtp+"'  "+
 				" and iae.cod_vrs_vet = "+vrsVet+"  "+
-				" and iae.eta_iae = 'E' ").getSingleResult();
+				" and iae.eta_iae = 'E' ").getSingleResult());
 		return codCmp;
 	}
 	
 	@Override
 	public String getLicCmpFromCodIndIAE(String codAnu, String codInd, String codEtp, String vrsVet) {
 		@SuppressWarnings("unchecked")
-		String  codCmp= (String)entityManagerApogee.createNativeQuery("select c.lic_cmp "+
+		String  codCmp= Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select c.lic_cmp "+
 				" from apogee.ins_adm_etp iae, composante c  "+
 				" where c.cod_cmp = iae.cod_cmp  "+
 				" and iae.cod_anu = "+codAnu+"  "+
 				" and iae.cod_ind = '"+codInd+"'  "+
 				" and iae.cod_etp = '"+codEtp+"'  "+
 				" and iae.cod_vrs_vet = "+vrsVet+"  "+
-				" and iae.eta_iae = 'E' ").getSingleResult();
+				" and iae.eta_iae = 'E' ").getSingleResult());
 		return codCmp;
 	}
 
 	public String getStatut(String codAnu, String codInd) {
 		@SuppressWarnings("unchecked")
-		String codStu= (String)entityManagerApogee.createNativeQuery("select cod_stu"+
+		String codStu= Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select cod_stu"+
 				" from apogee.ins_adm_anu "+
 				" where cod_anu = "+codAnu+" "+
-				" and cod_ind = '"+codInd+"' ").getSingleResult();
+				" and cod_ind = '"+codInd+"' ").getSingleResult());
 		return codStu;
 	}
 

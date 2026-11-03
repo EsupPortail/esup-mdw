@@ -241,6 +241,15 @@ public class Utils {
 		return false;
 	}
 
+	/**
+	 * Convertit une valeur scalaire issue d'une requête native Apogée en String.
+	 * Hibernate 7 retourne un java.lang.Character pour toute colonne caractère de longueur 1
+	 * (CHAR(1) comme VARCHAR2(1)) : un cast direct en String lèverait une ClassCastException.
+	 */
+	public static String nativeValueToString(Object valeur) {
+		return valeur == null ? null : valeur.toString();
+	}
+
 	//retourne vrai si les listes ont une valeur en commun
 	public static boolean listHaveCommonValue(List<String> l1,List<String> l2) {
 		if(l1 != null && !l1.isEmpty() && l2 != null && !l2.isEmpty()){

@@ -19,6 +19,7 @@
 package fr.univlorraine.mondossierweb.services.apogee;
 
 import fr.univlorraine.mondossierweb.utils.RequestUtils;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -96,7 +97,7 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 
 		}
 		try{
-			mutuelle = (String)entityManagerApogee.createNativeQuery(requeteSQL).getSingleResult();
+			mutuelle = Utils.nativeValueToString(entityManagerApogee.createNativeQuery(requeteSQL).getSingleResult());
 		}catch(NoResultException | EmptyResultDataAccessException ex){
 			mutuelle = null;
 		}
@@ -297,9 +298,9 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 
 		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
-		// Hibernate 7 mappe les colonnes Oracle CHAR(1) (ici tem_pmt_3f) en java.lang.Character :
+		// Hibernate 7 retourne un Character pour tem_pmt_3f (VARCHAR2(1)) :
 		// conversion explicite pour ne pas dépendre du type Java retourné par le provider.
-		String tem_pmt_3xf = String.valueOf(query.getSingleResult());
+		String tem_pmt_3xf = Utils.nativeValueToString(query.getSingleResult());
 
 		if("O".equals(tem_pmt_3xf)){
 			return true;

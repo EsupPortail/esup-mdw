@@ -367,7 +367,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			try{
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
-				String codPcsSalarie = (String) query.getSingleResult();
+				String codPcsSalarie = Utils.nativeValueToString(query.getSingleResult());
 
 				if(StringUtils.hasText(codPcsSalarie)){
 					return true;
@@ -397,7 +397,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 			try{
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
-				String temBrsIaa = (String) query.getSingleResult();
+				String temBrsIaa = Utils.nativeValueToString(query.getSingleResult());
 
 				if(StringUtils.hasText(temBrsIaa)){
 					return true;
@@ -454,20 +454,20 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 	@Override
 	public String getCodSignataireRvn(Number cod_rvn) {
 		@SuppressWarnings("unchecked")
-		String codSig = (String)entityManagerApogee.createNativeQuery("select distinct s.cod_sig "+
+		String codSig = Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select distinct s.cod_sig "+
 			" from trav_ext_rvm_res t, releve_note rn, signataire s"+
 			" where t.cod_rvn=rn.cod_rvn and rn.cod_sig=s.cod_sig "+
-			"and t.cod_rvn="+cod_rvn ).getSingleResult();
+			"and t.cod_rvn="+cod_rvn ).getSingleResult());
 		return codSig;
 	}
 
 	@Override
 	public String getTemoinEditionCarte(String cod_ind, String cod_anu) {
 		@SuppressWarnings("unchecked")
-		String etaEdtCrt = (String)entityManagerApogee.createNativeQuery("select iaa.eta_edt_crt "+
+		String etaEdtCrt = Utils.nativeValueToString(entityManagerApogee.createNativeQuery("select iaa.eta_edt_crt "+
 			" from apogee.ins_adm_anu iaa"+
 			" where iaa.cod_anu="+cod_anu+
-			" and iaa.cod_ind="+cod_ind ).getSingleResult();
+			" and iaa.cod_ind="+cod_ind ).getSingleResult());
 		return etaEdtCrt;
 	}
 
@@ -487,7 +487,7 @@ public class MultipleApogeeServiceImpl implements MultipleApogeeService {
 
 			try{
 				Query query = entityManagerApogee.createNativeQuery(requeteSQL);
-				String temSesUni = (String) query.getSingleResult();
+				String temSesUni = Utils.nativeValueToString(query.getSingleResult());
 				log.debug("getTemSesUniVet "+codEtp + "/" + codVrsVet +" => " + temSesUni);
 				if(StringUtils.hasText(temSesUni) && temSesUni.equals(Utils.TEM_SES_UNI)) {
 					return true;
