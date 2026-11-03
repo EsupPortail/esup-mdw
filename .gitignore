@@ -50,6 +50,3 @@ src/main/dev-bundle/
 
 # Logs
 /logs/*.*
-
-# OpenCode
-/.opencode/opencode.jsonc
