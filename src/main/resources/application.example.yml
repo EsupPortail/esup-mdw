@@ -71,12 +71,12 @@ loginApogee: true
 checkTesUtilisateurApogee: false
 # Profil attribué aux utilisateurs Apogée (ENS ou GEST)
 profilUtilisateurApogee: ENS
-attributGroupeLdap: ""
+attributGroupeLdap:
 listeGroupesLdap: ""
 listeGroupesLdapAdmin: ""
-attributLdapEtudiant: edupersonprimaryaffiliation
-typeEtudiantLdap: student
-attributLdapCodEtu: supannEtuId
+attributLdapEtudiant: "edupersonprimaryaffiliation"
+typeEtudiantLdap: "student"
+attributLdapCodEtu: "supannEtuId"
 attributLdapDoctorant: ""
 valeursAttributLdapDoctorant: ""
 attributLdapGestionnaire: ""

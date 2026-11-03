@@ -19,7 +19,7 @@ Depuis la version 3.0.0, l'application repose sur Spring Boot 4, Vaadin 25 (Flow
 La configuration ne passe plus par le `context.xml` de Tomcat (JNDI) mais par un fichier
 **`application.yml`** externe (Spring Boot) :
 
-- copier `application.example.yml` en `application.yml` ;
+- copier `src/main/resources/application.example.yml` en `application.yml` ;
 - en développement : à la racine du projet ;
 - sur un serveur : dans le répertoire de travail du process, ou n'importe où via
   `-Dspring.config.additional-location=/chemin/application.yml`.

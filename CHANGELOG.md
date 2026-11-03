@@ -15,7 +15,7 @@ Migration majeure de la pile technique :
 - **Hibernate 7** remplace EclipseLink (plus de static weaving ni de génération de
   persistence.xml au build).
 - **Configuration** : le `context.xml` (JNDI Tomcat) est remplacé par un fichier
-  `application.yml` externe (voir `application.example.yml`). Les noms des paramètres sont
+  `application.yml` externe (voir `src/main/resources/application.example.yml`). Les noms des paramètres sont
   conservés (sans le préfixe `context.`). Les datasources se configurent via
   `spring.datasource.mdw.*` et `spring.datasource.apogee.*`.
 - **Flyway 11** : nouvelle table `flyway_schema_history` avec baseline 8.3 — l'installation
