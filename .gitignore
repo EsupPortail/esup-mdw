@@ -51,3 +51,6 @@ src/main/dev-bundle/
 
 # Logs
 /logs/*.*
+
+# Docs
+/docs/
