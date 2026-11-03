@@ -66,7 +66,8 @@ public class HomeView extends Div implements BeforeEnterObserver {
 			event.forwardTo(MainLayout.ROUTE_ETAT_CIVIL);
 			MainLayout.getCurrent().ifPresent(layout -> layout.afficherMessageIntro(false, true));
 		} else {
-			event.forwardTo(ErreurView.class);
+			/* Utilisateur authentifié mais non autorisé (ex. étudiant bloqué dans Apogée) */
+			event.forwardTo(AccesRefuseView.class);
 		}
 	}
 

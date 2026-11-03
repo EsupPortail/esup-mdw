@@ -241,8 +241,8 @@ public class MdwUserDetailsService implements UserDetailsService {
 						for(String codblo : lblo){
 							//Si le blocage est dans la liste des blocages configurés comme bloquant
 							if(codblo != null && lcodesBloquant.contains(codblo)){
-								//étudiant non autorise a consulter ses notes
-								log.info("utilisateur "+username+" bloqué car il possède des blocages dans Apogée");
+								//étudiant non autorise a accéder à l'application
+								log.warn("utilisateur {} bloqué car il possède le blocage {} dans Apogée", username, codblo);
 								return new String[]{Utils.UNAUTHORIZED_USER};
 							}
 						}

@@ -639,8 +639,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	}
 
 	/**
-	 * Avant chaque navigation : initialise le dossier de l'étudiant connecté
-	 * et bloque l'accès si l'application est en maintenance.
+	 * Avant chaque navigation : initialise le dossier de l'étudiant connecté,
+	 * redirige les profils non autorisés vers la vue de refus et bloque l'accès
+	 * si l'application est en maintenance.
 	 */
 	@Override
 	public void beforeEnter(final BeforeEnterEvent event) {
@@ -650,9 +651,21 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 			etudiantController.recupererEtatCivil();
 		}
 
+		final String route = event.getLocation().getFirstSegment();
+
+		/* Profil non autorisé (authentifié mais sans rôle applicatif, ex. étudiant
+		 * bloqué dans Apogée) : on renvoie vers la vue de refus pour toute vue
+		 * autre que la vue de refus, la page de maintenance et l'assistance. */
+		if (!isProfilAutorise()
+			&& !AccesRefuseView.NAME.equals(route)
+			&& !AccesBloqueView.NAME.equals(route)
+			&& !ROUTE_ASSISTANCE.equals(route)) {
+			event.forwardTo(AccesRefuseView.class);
+			return;
+		}
+
 		/* Si l'application est en maintenance, on bloque l'accès
 		 * (sauf vue admin pour les administrateurs) */
-		final String route = event.getLocation().getFirstSegment();
 		if (!applicationActive()
 			&& !AccesBloqueView.NAME.equals(route)
 			&& !(ROUTE_ADMIN.equals(route) && userController.userCanAccessAdminView())) {
@@ -840,6 +853,20 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 		try {
 			return userController.getCurrentUser() != null && userController.isEnseignant();
 		} catch (final Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Vrai si l'utilisateur courant possède un rôle applicatif : étudiant,
+	 * enseignant/gestionnaire ou droit d'accès à la vue d'administration.
+	 */
+	private boolean isProfilAutorise() {
+		try {
+			return safeIsEtudiant() || safeIsEnseignant() || userController.userCanAccessAdminView();
+		} catch (final Exception e) {
+			/* Contexte de sécurité indisponible : on considère le profil non autorisé */
+			log.debug("Impossible de déterminer le profil de l'utilisateur courant", e);
 			return false;
 		}
 	}
