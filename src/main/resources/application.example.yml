@@ -72,30 +72,30 @@ checkTesUtilisateurApogee: false
 # Profil attribué aux utilisateurs Apogée (ENS ou GEST)
 profilUtilisateurApogee: ENS
 attributGroupeLdap:
-listeGroupesLdap: ""
-listeGroupesLdapAdmin: ""
-attributLdapEtudiant: "edupersonprimaryaffiliation"
-typeEtudiantLdap: "student"
-attributLdapCodEtu: "supannEtuId"
-attributLdapDoctorant: ""
-valeursAttributLdapDoctorant: ""
-attributLdapGestionnaire: ""
-valeursAttributLdapGestionnaire: ""
+listeGroupesLdap:
+listeGroupesLdapAdmin:
+attributLdapEtudiant: edupersonprimaryaffiliation
+typeEtudiantLdap: student
+attributLdapCodEtu: supannEtuId
+attributLdapDoctorant:
+valeursAttributLdapDoctorant:
+attributLdapGestionnaire:
+valeursAttributLdapGestionnaire:
 
 # --- WebServices Apogée (AMUE) ---
-apoWsUsername: ""
-apoWsPassword: ""
+apoWsUsername:
+apoWsPassword:
 apoShowSql: false
 sourceResultats: Apogee
 
 # --- Génération PDF ---
 EnablePdfSecurity: true
 pdf.sign.keystore.path: C://monkeystore.keystore
-pdf.sign.password: ""
-pdf.sign.creator: ""
-pdf.sign.reason: ""
-pdf.sign.location: ""
-pdf.sign.contact: ""
+pdf.sign.password:
+pdf.sign.creator:
+pdf.sign.reason:
+pdf.sign.location:
+pdf.sign.contact:
 pdf.sign.alt.tsa.url: http://timestamp.digicert.com
 pdf.sign.alt.tsa.username: toto
 pdf.sign.alt.tsa.password: pwd
