@@ -48,5 +48,8 @@ src/main/dev-bundle/
 /src/main/resources/i18n/messages.properties
 /src/main/resources/i18n/vaadin-messages.properties
 
+# Logs
+/logs/*.*
+
 # OpenCode
 /.opencode/opencode.jsonc
