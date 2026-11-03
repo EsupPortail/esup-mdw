@@ -297,9 +297,11 @@ public class SsoApogeeServiceImpl implements SsoApogeeService{
 
 		Query query = entityManagerApogee.createNativeQuery(requeteSQL);
 
-		String tem_pmt_3xf = (String) query.getSingleResult();
+		// Hibernate 7 mappe les colonnes Oracle CHAR(1) (ici tem_pmt_3f) en java.lang.Character :
+		// conversion explicite pour ne pas dépendre du type Java retourné par le provider.
+		String tem_pmt_3xf = String.valueOf(query.getSingleResult());
 
-		if(tem_pmt_3xf!=null && tem_pmt_3xf.equals("O")){
+		if("O".equals(tem_pmt_3xf)){
 			return true;
 		}
 
