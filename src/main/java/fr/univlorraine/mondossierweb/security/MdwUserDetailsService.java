@@ -243,7 +243,7 @@ public class MdwUserDetailsService implements UserDetailsService {
 							if(codblo != null && lcodesBloquant.contains(codblo)){
 								//étudiant non autorise a accéder à l'application
 								log.warn("utilisateur {} bloqué car il possède le blocage {} dans Apogée", username, codblo);
-								return new String[]{Utils.UNAUTHORIZED_USER};
+								return new String[]{Utils.UNAUTHORIZED_USER, Utils.MOTIF_BLOCAGE};
 							}
 						}
 					}

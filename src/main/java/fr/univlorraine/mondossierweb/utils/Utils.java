@@ -69,6 +69,11 @@ public class Utils {
 	 */
 	public static final String UNAUTHORIZED_USER = "unauthorized";
 
+	/**
+	 * motif de refus d'accès : blocage dans Apogée.
+	 */
+	public static final String MOTIF_BLOCAGE = "blocage";
+
 	public static final String CAS_RETURN_URL = "/login/cas";
 
 	public static final String CAS_LOGIN_URL = "/login";

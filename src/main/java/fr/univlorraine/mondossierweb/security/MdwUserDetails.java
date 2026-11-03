@@ -48,7 +48,12 @@ public class MdwUserDetails implements UserDetails {
 	private boolean isEtudiant;
 
 	private String type;
-	
+
+	/**
+	 * Motif du refus d'accès (ex. {@link Utils#MOTIF_BLOCAGE}), null si non applicable.
+	 */
+	private String motifRefus;
+
 	private String ip;
 
 
@@ -75,6 +80,11 @@ public class MdwUserDetails implements UserDetails {
 		}
 
 		this.type = droit;
+
+		//Motif éventuel d'un refus d'accès (transmis dans profil[1], comme le codetu étudiant)
+		if(droit.equals(Utils.UNAUTHORIZED_USER) && profil.length > 1){
+			this.motifRefus = profil[1];
+		}
 
 		if(droit.equals(Utils.GEST_USER)){
 			this.isGestionnaire = true;

@@ -23,7 +23,11 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
+import fr.univlorraine.mondossierweb.controllers.UserController;
+import fr.univlorraine.mondossierweb.security.MdwUserDetails;
+import fr.univlorraine.mondossierweb.utils.Utils;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 
 /**
  * Page accès refusé
@@ -34,6 +38,9 @@ public class AccesRefuseView extends VerticalLayout implements HasDynamicTitle {
 
 	public static final String NAME = "accesRefuseView";
 	public static final String ROUTE = NAME;
+
+	@Resource
+	private transient UserController userController;
 
 	@Override
 	public String getPageTitle() {
@@ -52,7 +59,17 @@ public class AccesRefuseView extends VerticalLayout implements HasDynamicTitle {
 		/* Titre */
 		add(new H1(getTranslation(NAME + ".title")));
 
-		/* Texte */
-		add(new Html("<div>" + getTranslation(NAME + ".message") + "</div>"));
+		/* Texte : message dédié si l'accès a été refusé pour un blocage Apogée */
+		add(new Html("<div>" + getTranslation(getMessageKey()) + "</div>"));
+	}
+
+	/**
+	 * @return la clé du message à afficher selon le motif de refus de l'utilisateur courant
+	 */
+	private String getMessageKey() {
+		final MdwUserDetails user = userController.getCurrentUser();
+		return user != null && Utils.MOTIF_BLOCAGE.equals(user.getMotifRefus())
+			? NAME + ".message.blocage"
+			: NAME + ".message";
 	}
 }
