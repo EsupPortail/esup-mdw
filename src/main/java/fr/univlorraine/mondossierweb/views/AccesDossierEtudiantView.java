@@ -49,8 +49,15 @@ public class AccesDossierEtudiantView extends Div implements HasUrlParameter<Str
 
 	@Override
 	public void setParameter(final BeforeEvent event, final String codEtu) {
-		if (StringUtils.hasText(codEtu) && userController.isEnseignant()) {
-			rechercheController.accessToDossierEtudiantDeepLinking(NAME + "/" + codEtu);
+		if (!StringUtils.hasText(codEtu) || !userController.isEnseignant()) {
+			event.forwardTo(ErreurView.class);
+			return;
+		}
+
+		/* UI.navigate() est ignoré pendant une navigation : on prépare le dossier
+		 * puis on redirige vers la vue par défaut (état-civil) via forwardTo. */
+		if (rechercheController.preparerAccesDossierEtudiant(codEtu)) {
+			event.forwardTo(MainLayout.ROUTE_ETAT_CIVIL);
 		} else {
 			event.forwardTo(ErreurView.class);
 		}

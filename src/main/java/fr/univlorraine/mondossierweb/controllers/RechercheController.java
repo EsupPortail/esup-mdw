@@ -78,31 +78,34 @@ public class RechercheController {
 
 
 	/**
-	 * Accès à un dossier étudiant par deep linking
-	 * @param fragment
+	 * Prépare l'accès au dossier d'un étudiant (vérification de son existence puis
+	 * chargement de l'état-civil en session) sans naviguer.
+	 * <p>
+	 * À utiliser depuis un {@code BeforeEvent} (ex. {@code HasUrlParameter#setParameter}) :
+	 * {@code UI.navigate()} est sans effet pendant une navigation, la redirection doit
+	 * être faite par {@code event.forwardTo(...)}.
+	 *
+	 * @param code cod_etu de l'étudiant
+	 * @return {@code true} si le dossier est prêt à être affiché
 	 */
-	public void accessToDossierEtudiantDeepLinking(String fragment) {
-
-		String fragmentpart[] =fragment.split("/");
-
-		int rangCode = 0;
-		//parcours du fragment pour trouver le codetu. Obligatoire en cas de "polution" de l'url.
-		for(int i=0 ; i < fragmentpart.length ; i++){
-			if(fragmentpart[i]!=null && fragmentpart[i].contains(Utils.FRAGMENT_ACCES_DOSSIER_ETUDIANT)){
-				rangCode=i+1;
-			}
-		}
-		String code= fragmentpart[rangCode];
-
+	public boolean preparerAccesDossierEtudiant(String code) {
 		//On vérifie que l'étudiant avec ce code existe
-		if(etudiantController.isEtudiantExiste(code)){
-			//On accède au dossier
-			accessToDetail(code,Utils.ETU, null);
-		}else{
+		if(!etudiantController.isEtudiantExiste(code)){
 			Notification notification = Notification.show(applicationContext.getMessage("deepLinking.codetuNotFound",null, UI.getCurrent().getLocale()));
 			notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+			return false;
 		}
+		chargerDossierEtudiant(code);
+		return true;
+	}
 
+	/**
+	 * Charge le dossier de l'étudiant en session (identité + état-civil).
+	 * @param code cod_etu de l'étudiant
+	 */
+	private void chargerDossierEtudiant(String code) {
+		sessionController.setEtudiant(new Etudiant(code));
+		etudiantController.recupererEtatCivil();
 	}
 
 
@@ -132,15 +135,9 @@ public class RechercheController {
 
 		if(type.equals(Utils.TYPE_ETU) || type.equals(Utils.ETU)){
 			parameterMap.replace("type",Utils.ETU);
-			sessionController.setEtudiant(new Etudiant(code));
-			etudiantController.recupererEtatCivil();
-			//Si l'étudiant n'existe pas
-			if(sessionController.getEtudiant()==null){
-				UI.getCurrent().navigate(ROUTE_ERREUR);
-			}else{
-				//par défaut on affiche la vue état-civil du dossier
-				navigate(ROUTE_ETAT_CIVIL, parameterMap);
-			}
+			chargerDossierEtudiant(code);
+			//par défaut on affiche la vue état-civil du dossier
+			navigate(ROUTE_ETAT_CIVIL, parameterMap);
 		}
 	}
 
