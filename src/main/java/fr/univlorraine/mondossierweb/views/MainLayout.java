@@ -30,7 +30,6 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -48,6 +47,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Location;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.shared.Registration;
 import fr.univlorraine.mondossierweb.beans.Etudiant;
 import fr.univlorraine.mondossierweb.controllers.ConfigController;
@@ -265,7 +265,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	/* ====================== Logo ====================== */
 
 	/** Logo par défaut servi depuis {@code META-INF/resources/images/}. */
-	private static final String DEFAULT_LOGO_SRC = "/images/logo-ul-blanc.png";
+	private static final String DEFAULT_LOGO_SRC = "/images/logo_ul_couleur.png";
 
 	/**
 	 * Construit l'image du logo à partir du chemin/URL configuré en base
@@ -277,7 +277,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	 *   <li>URL http(s) ou protocole-relatif ({@code //...}) → utilisée telle quelle ;</li>
 	 *   <li>chemin web absolu ({@code /images/...}) → servi depuis {@code META-INF/resources} ;</li>
 	 *   <li>chemin filesystem → servi via un {@link StreamResource} ;</li>
-	 *   <li>chemin classpath (ex: {@code images/logo-ul-blanc.png}) → servi via un {@link StreamResource} ;</li>
+	 *   <li>chemin classpath (ex: {@code images/logo_ul_couleur.png}) → servi via un {@link StreamResource} ;</li>
 	 *   <li>vide ou introuvable → logo par défaut {@link #DEFAULT_LOGO_SRC}.</li>
 	 * </ul>
 	 */
