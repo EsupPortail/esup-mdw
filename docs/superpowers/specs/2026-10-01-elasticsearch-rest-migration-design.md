@@ -181,7 +181,7 @@ Le DSL `match` / `wildcard` / `bool.must` est **compatible** entre 2.x et 8/9.
 | `param.elasticsearch.index.champlibelleobjet` | inchangé |
 | `param.elasticsearch.index.champtypeobjet` | **nouveau** (ex. `type_objet`), utilisé en 8/9 |
 
-Fichiers à adapter : `application.yml`, `application.example.yml`, `PropertyUtils`
+Fichiers à adapter : `application.yml`, `../../../src/main/resources/application.example.yml`, `PropertyUtils`
 (nouveau getter `getElasticSearchChampTypeObjet()`), `SpringConfig` (ajout de
 `esas.setElasticSearchChampTypeObjet(...)`).
 
@@ -239,7 +239,7 @@ Nouveaux tests dans `esup-mdw-vaadin25/src/test/java/...`, JUnit 5 + WireMock.
 
 | Risque | Mitigation |
 |---|---|
-| Le `port` change de sens (transport 9302 → HTTP) : erreur de config au déploiement | documenter explicitement dans `application.example.yml` |
+| Le `port` change de sens (transport 9302 → HTTP) : erreur de config au déploiement | documenter explicitement dans `../../../src/main/resources/application.example.yml` |
 | L'index 8/9 n'a pas le champ `type_objet` | prérequis explicité ; log d'avertissement si absent |
 | Divergences de DSL entre versions | le DSL utilisé (match/wildcard/bool) est stable ; couvert par les tests WireMock |
 | ES 2.x n'expose pas HTTP / accès réseau fermé | à valider en environnement ; hors périmètre code |

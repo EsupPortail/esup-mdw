@@ -24,7 +24,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
-import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
@@ -157,18 +156,11 @@ public class CalendrierController {
 		//ouverte du document.
 		document.open();
 		try {
-			//ajout image test
-			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
-				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-
-				int largeurLogo = configController.getLogoUniversitePdfDimension();
-				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
-				float newHeight = scaleRatio * imageLogo.getHeight();
-				imageLogo.scaleAbsolute(largeurLogo, newHeight);
-				
-				imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
-				document.add(imageLogo);
-			}
+			// Logo de l'université
+			final int largeurLogo = configController.getLogoUniversitePdfDimension();
+			PdfUtils.addLogo(document, configController.getLogoUniversitePdf(), largeurLogo,
+				configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo,
+				configController.getLogoUniversitePdfPaysagePositionY());
 
 
 

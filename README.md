@@ -26,6 +26,27 @@ La configuration ne passe plus par le `context.xml` de Tomcat (JNDI) mais par un
 
 Les valeurs par défaut sont embarquées dans `src/main/resources/application-defaults.yml`.
 
+#### Images
+
+Deux répertoires, deux usages — ne pas les mélanger :
+
+| Répertoire | Rôle | Accès |
+|---|---|---|
+| `src/main/resources/META-INF/resources/images/` | ressources de vue (logo du bandeau, favicon…) | HTTP `/images/**` |
+| `src/main/resources/images/` | images de documents (logo et en-tête/pied de page des PDF, tampon) | classpath `images/**`, jamais exposé en HTTP |
+
+Les paramètres applicatifs `logoUniversitePdf`, `headerPdf`, `footerPdf` et `certScolTampon`
+acceptent indifféremment une URL, un chemin absolu du système de fichiers, ou un chemin
+classpath relatif au répertoire des images de documents (`images/logo-UL.png`, ou simplement
+`logo-UL.png`). Une valeur introuvable est ignorée et journalisée en avertissement : le PDF est
+généré sans l'image, sans échec.
+
+Les paramètres `logoUniversiteEns`, `logoUniversiteEtu` et `logoUniversiteMobile` attendent une URL
+ou un chemin web (`/images/...`) servi par le premier répertoire.
+
+Le `favicon.ico` n'est pas versionné (`.gitignore`) : chaque établissement dépose le sien dans
+`META-INF/resources/images/`.
+
 Points d'attention lors de la migration depuis une version 2.x :
 
 - l'installation doit être **à jour en 2.0.x** (dernière migration Flyway V8_3 appliquée) avant

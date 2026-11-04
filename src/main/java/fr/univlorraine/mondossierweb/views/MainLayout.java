@@ -275,9 +275,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 	 * qui chargeait un {@code FileResource} depuis un chemin filesystem :
 	 * <ul>
 	 *   <li>URL http(s) ou protocole-relatif ({@code //...}) → utilisée telle quelle ;</li>
-	 *   <li>chemin web absolu ({@code /images/...}) → servi depuis {@code META-INF/resources} ;</li>
+	 *   <li>chemin web absolu ({@code /images/...}) → servi depuis {@code META-INF/resources/images} ;</li>
 	 *   <li>chemin filesystem → servi via un {@link StreamResource} ;</li>
-	 *   <li>chemin classpath (ex: {@code images/logo_ul_couleur.png}) → servi via un {@link StreamResource} ;</li>
+	 *   <li>chemin classpath (ex: {@code META-INF/resources/images/logo_ul_couleur.png}) → servi via un {@link StreamResource} ;</li>
 	 *   <li>vide ou introuvable → logo par défaut {@link #DEFAULT_LOGO_SRC}.</li>
 	 * </ul>
 	 */

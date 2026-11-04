@@ -18,7 +18,10 @@
  */
 package fr.univlorraine.mondossierweb.utils;
 
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.error_messages.MessageLocalization;
 import com.lowagie.text.pdf.AcroFields;
@@ -73,6 +76,7 @@ import org.bouncycastle.x509.util.StreamParsingException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,6 +117,79 @@ public class PdfUtils {
 	private static final int SIGNATURE_CONTENT_ESTIMATED = 15000;
 
 	private static final String DIGEST_ALGORITHM = "SHA-256";
+
+	/**
+	 * Charge une image de document à partir de la valeur d'un paramètre applicatif.
+	 * <p>
+	 * Ordre de résolution : URL distante, puis fichier du système de fichiers, puis
+	 * ressource classpath sous {@link ImageResourceResolver#DOCUMENT_IMAGE_ROOT}.
+	 *
+	 * @param configured valeur du paramètre applicatif (peut être vide)
+	 * @return l'image, ou {@code null} si la valeur est vide ou introuvable
+	 * @throws BadElementException si le contenu n'est pas une image exploitable
+	 * @throws IOException         si la lecture échoue
+	 */
+	public static Image getImage(final String configured) throws BadElementException, IOException {
+		if (configured == null || configured.isBlank()) {
+			return null;
+		}
+		final String value = configured.trim();
+
+		if (ImageResourceResolver.isRemoteUrl(value)) {
+			return Image.getInstance(new URL(value));
+		}
+
+		final File file = new File(value);
+		if (file.isFile()) {
+			return Image.getInstance(file.getAbsolutePath());
+		}
+
+		final byte[] bytes = ImageResourceResolver.readClasspathImage(value);
+		if (bytes != null) {
+			return Image.getInstance(bytes);
+		}
+
+		log.warn("Image de document introuvable pour la valeur '{}' ; elle sera ignorée.", value);
+		return null;
+	}
+
+	/**
+	 * Ajoute une image mise à l'échelle sur la largeur demandée et positionnée en absolu.
+	 *
+	 * @return {@code true} si l'image a été ajoutée, {@code false} si elle est vide ou introuvable
+	 */
+	public static boolean addLogo(final Document document, final String configured, final int width,
+			final float x, final float y) throws BadElementException, IOException, DocumentException {
+		final Image logo = getImage(configured);
+		if (logo == null) {
+			return false;
+		}
+		scaleToWidth(logo, width);
+		logo.setAbsolutePosition(x, y);
+		document.add(logo);
+		return true;
+	}
+
+	/**
+	 * Ajoute une image mise à l'échelle sur la largeur demandée, sans positionnement absolu.
+	 *
+	 * @return {@code true} si l'image a été ajoutée, {@code false} si elle est vide ou introuvable
+	 */
+	public static boolean addScaledImage(final Document document, final String configured, final int width)
+			throws BadElementException, IOException, DocumentException {
+		final Image image = getImage(configured);
+		if (image == null) {
+			return false;
+		}
+		scaleToWidth(image, width);
+		document.add(image);
+		return true;
+	}
+
+	private static void scaleToWidth(final Image image, final int width) {
+		final float scaleRatio = (float) width / image.getWidth();
+		image.scaleAbsolute(width, scaleRatio * image.getHeight());
+	}
 
 	public static ByteArrayOutputStream signPdf(PdfReader reader, boolean signatureAlt, String[] signaturePosition) {
 		try {

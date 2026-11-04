@@ -352,40 +352,18 @@ public class SsoController {
 
 			// Ajout Bordeaux1
 			if (configController.isCertScolUtiliseLogo()){
-				//ajout image test
-				if (StringUtils.hasText(configController.getLogoUniversitePdf())){
-					Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-
-					int largeurLogo = configController.getLogoUniversitePdfDimension();
-					float scaleRatio = largeurLogo / imageLogo.getWidth(); 
-					float newHeight = scaleRatio * imageLogo.getHeight();
-					imageLogo.scaleAbsolute(largeurLogo, newHeight);
-
-					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPortraitPositionX(), configController.getLogoUniversitePdfPortraitPositionY());
-					document.add(imageLogo);
-				}
-				else if (StringUtils.hasText(configController.getHeaderPdf())) {
-					Image imageHeader = Image.getInstance(configController.getHeaderPdf());
-
-					int largeurHeader = configController.getDimensionPDFHeaderFooter();
-					float scaleHeader = largeurHeader / imageHeader.getWidth();
-					float newHeigthHeader = scaleHeader * imageHeader.getHeight();
-					imageHeader.scaleAbsolute(largeurHeader, newHeigthHeader);
-
-					document.add(imageHeader);
+				// Logo de l'université, sinon en-tête générique
+				final boolean logoAjoute = PdfUtils.addLogo(document, configController.getLogoUniversitePdf(),
+					configController.getLogoUniversitePdfDimension(),
+					configController.getLogoUniversitePdfPortraitPositionX(),
+					configController.getLogoUniversitePdfPortraitPositionY());
+				if (!logoAjoute) {
+					PdfUtils.addScaledImage(document, configController.getHeaderPdf(),
+						configController.getDimensionPDFHeaderFooter());
 				}
 
-				if (StringUtils.hasText(configController.getFooterPdf())) {
-					Image imageFooter = Image.getInstance(configController.getFooterPdf());
-
-					int largeurFooter = configController.getDimensionPDFHeaderFooter();
-					float scaleFooter = largeurFooter / imageFooter.getWidth();
-					float newHeigthHeader = scaleFooter * imageFooter.getHeight();
-					imageFooter.scaleAbsolute(largeurFooter, newHeigthHeader);
-
-					imageFooter.setAbsolutePosition(0, 0);
-					document.add(imageFooter);
-				}
+				PdfUtils.addLogo(document, configController.getFooterPdf(),
+					configController.getDimensionPDFHeaderFooter(), 0, 0);
 			}
 
 			//titre
@@ -712,41 +690,18 @@ public class SsoController {
 
 			// Ajout Bordeaux1
 			if (configController.isCertScolUtiliseLogo()){
-				//ajout image test
-				if (StringUtils.hasText(configController.getLogoUniversitePdf())){
-					Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-
-					int largeurLogo = configController.getLogoUniversitePdfDimension();
-					float scaleRatio = largeurLogo / imageLogo.getWidth(); 
-					float newHeight = scaleRatio * imageLogo.getHeight();
-					imageLogo.scaleAbsolute(largeurLogo, newHeight);
-
-					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPortraitPositionX(), configController.getLogoUniversitePdfPortraitPositionY());
-					document.add(imageLogo);
-				}
-				else if (StringUtils.hasText(configController.getHeaderPdf())) {
-					Image imageHeader = Image.getInstance(configController.getHeaderPdf());
-
-					int largeurHeader = configController.getDimensionPDFHeaderFooter();
-					float scaleHeader = largeurHeader / imageHeader.getWidth();
-					float newHeigthHeader = scaleHeader * imageHeader.getHeight();
-					imageHeader.scaleAbsolute(largeurHeader, newHeigthHeader);
-
-					imageHeader.setAbsolutePosition(0, 765);
-					document.add(imageHeader);
+				// Logo de l'université, sinon en-tête générique
+				final boolean logoAjoute = PdfUtils.addLogo(document, configController.getLogoUniversitePdf(),
+					configController.getLogoUniversitePdfDimension(),
+					configController.getLogoUniversitePdfPortraitPositionX(),
+					configController.getLogoUniversitePdfPortraitPositionY());
+				if (!logoAjoute) {
+					PdfUtils.addLogo(document, configController.getHeaderPdf(),
+						configController.getDimensionPDFHeaderFooter(), 0, 765);
 				}
 
-				if (StringUtils.hasText(configController.getFooterPdf())) {
-					Image imageFooter = Image.getInstance(configController.getFooterPdf());
-
-					int largeurFooter = configController.getDimensionPDFHeaderFooter();
-					float scaleFooter = largeurFooter / imageFooter.getWidth();
-					float newHeigthHeader = scaleFooter * imageFooter.getHeight();
-					imageFooter.scaleAbsolute(largeurFooter, newHeigthHeader);
-
-					imageFooter.setAbsolutePosition(0, 0);
-					document.add(imageFooter);
-				}
+				PdfUtils.addLogo(document, configController.getFooterPdf(),
+					configController.getDimensionPDFHeaderFooter(), 0, 0);
 			}
 
 			//titre

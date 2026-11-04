@@ -48,6 +48,7 @@ import fr.univlorraine.mondossierweb.entities.apogee.VersionEtape;
 import fr.univlorraine.mondossierweb.entities.apogee.VersionEtapePK;
 import fr.univlorraine.mondossierweb.services.apogee.ElementPedagogiqueService;
 import fr.univlorraine.mondossierweb.services.apogee.MultipleApogeeService;
+import fr.univlorraine.mondossierweb.utils.PdfUtils;
 import fr.univlorraine.mondossierweb.utils.PropertyUtils;
 import fr.univlorraine.mondossierweb.utils.Utils;
 import gouv.education.apogee.commun.client.ws.OffreFormationMetier.CollectionDTO4;
@@ -1034,18 +1035,11 @@ public class ListeInscritsController {
 
 		try {
 
-			//ajout image test
-			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
-				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-				
-				int largeurLogo = configController.getLogoUniversitePdfDimension();
-				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
-				float newHeight = scaleRatio * imageLogo.getHeight();
-				imageLogo.scaleAbsolute(largeurLogo, newHeight);
-				
-				imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
-				document.add(imageLogo);
-			}
+			// Logo de l'université
+			final int largeurLogo = configController.getLogoUniversitePdfDimension();
+			PdfUtils.addLogo(document, configController.getLogoUniversitePdf(), largeurLogo,
+				configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo,
+				configController.getLogoUniversitePdfPaysagePositionY());
 
 
 

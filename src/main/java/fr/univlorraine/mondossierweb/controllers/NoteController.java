@@ -267,22 +267,15 @@ public class NoteController {
 		//ouverte du document.
 		document.open();
 		try {
-			//ajout image test
-			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
-				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-
-				int largeurLogo = configController.getLogoUniversitePdfDimension();
-				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
-				float newHeight = scaleRatio * imageLogo.getHeight();
-				imageLogo.scaleAbsolute(largeurLogo, newHeight);
-
-				if(formatPortrait){
-					imageLogo.setAbsolutePosition(configController.getNotesPDFLogoUniversitePositionX() - largeurLogo,configController.getNotesPDFLogoUniversitePositionY());
-				}else{
-					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
-				}
-				document.add(imageLogo);
-			}
+			// Logo de l'université
+			final int largeurLogo = configController.getLogoUniversitePdfDimension();
+			final float positionXLogo = formatPortrait
+				? configController.getNotesPDFLogoUniversitePositionX() - largeurLogo
+				: configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo;
+			final float positionYLogo = formatPortrait
+				? configController.getNotesPDFLogoUniversitePositionY()
+				: configController.getLogoUniversitePdfPaysagePositionY();
+			PdfUtils.addLogo(document, configController.getLogoUniversitePdf(), largeurLogo, positionXLogo, positionYLogo);
 
 			boolean affMentionEtudiant = configController.isAffMentionEtudiant();
 
@@ -754,22 +747,15 @@ public class NoteController {
 		//ouverte du document.
 		document.open();
 		try {
-			//ajout image test
-			if (StringUtils.hasText(configController.getLogoUniversitePdf())){
-				Image imageLogo = Image.getInstance(configController.getLogoUniversitePdf());
-
-				int largeurLogo = configController.getLogoUniversitePdfDimension();
-				float scaleRatio = largeurLogo / imageLogo.getWidth(); 
-				float newHeight = scaleRatio * imageLogo.getHeight();
-				imageLogo.scaleAbsolute(largeurLogo, newHeight);
-
-				if(formatPortrait){
-					imageLogo.setAbsolutePosition(configController.getNotesPDFLogoUniversitePositionX() - largeurLogo, configController.getNotesPDFLogoUniversitePositionY());
-				}else{
-					imageLogo.setAbsolutePosition(configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo, configController.getLogoUniversitePdfPaysagePositionY());
-				}
-				document.add(imageLogo);
-			}
+			// Logo de l'université
+			final int largeurLogo = configController.getLogoUniversitePdfDimension();
+			final float positionXLogo = formatPortrait
+				? configController.getNotesPDFLogoUniversitePositionX() - largeurLogo
+				: configController.getLogoUniversitePdfPaysagePositionX() - largeurLogo;
+			final float positionYLogo = formatPortrait
+				? configController.getNotesPDFLogoUniversitePositionY()
+				: configController.getLogoUniversitePdfPaysagePositionY();
+			PdfUtils.addLogo(document, configController.getLogoUniversitePdf(), largeurLogo, positionXLogo, positionYLogo);
 
 			//nouveau paragraphe
 			Paragraph p = new Paragraph(applicationContext.getMessage("pdf.notes.title", null, Locale.getDefault()).toUpperCase(Locale.getDefault()) + "\n\n", headerbig);

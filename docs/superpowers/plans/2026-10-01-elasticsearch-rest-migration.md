@@ -52,7 +52,7 @@ Ces cas, implicites dans le spec mais non couverts par la logique nominale, doiv
 - `pom.xml` — retrait mdw-tools, ajout `jackson-databind` + `wiremock-standalone`.
 - `src/main/java/.../utils/PropertyUtils.java` — getter `getElasticSearchChampTypeObjet()`.
 - `src/main/java/.../config/SpringConfig.java` — appel `setElasticSearchChampTypeObjet(...)`.
-- `application.yml`, `application.example.yml` — propriété `param.elasticsearch.index.champtypeobjet`.
+- `application.yml`, `../../../src/main/resources/application.example.yml` — propriété `param.elasticsearch.index.champtypeobjet`.
 
 **Créés (test)** — sous `src/test/java/fr/univlorraine/mondossierweb/tools/elasticsearch/` :
 - `EsVersionTest.java`, `EsQueryBuilderTest.java`, `EsResponseParserTest.java`
@@ -1390,7 +1390,7 @@ git commit -m "feat(es): implémentation REST locale et retrait de mdw-tools"
 - Modify: `src/main/java/fr/univlorraine/mondossierweb/utils/PropertyUtils.java` (après la ligne 111)
 - Modify: `src/main/java/fr/univlorraine/mondossierweb/config/SpringConfig.java` (après la ligne 132)
 - Modify: `application.yml` (après la ligne 112)
-- Modify: `application.example.yml` (après la ligne 112)
+- Modify: `../../../src/main/resources/application.example.yml` (après la ligne 112)
 
 **Interfaces:**
 - Consumes: `ElasticSearchApogeeServiceImpl.setElasticSearchChampTypeObjet(String)` (Task 6).
@@ -1424,7 +1424,7 @@ Après la ligne `param.elasticsearch.index.champlibelleobjet: lib_obj` (ligne 11
 param.elasticsearch.index.champtypeobjet: type_objet
 ```
 
-- [ ] **Step 4 : Ajouter la propriété dans `application.example.yml`**
+- [ ] **Step 4 : Ajouter la propriété dans `../../../src/main/resources/application.example.yml`**
 
 Après la ligne `param.elasticsearch.index.champlibelleobjet: lib_obj` (ligne 112), ajouter la même ligne que ci-dessus.
 

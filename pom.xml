@@ -504,7 +504,10 @@
 					au packaging du WAR (packagingExcludes) ci-dessous.
 				-->
 				<plugins>
-					<!-- Exclusion des fichiers d'environnement du WAR national -->
+					<!-- Exclusion des fichiers d'environnement du WAR national.
+					     WEB-INF/classes/images/* : images de documents (PDF), propres à chaque
+					     établissement, à ne pas diffuser dans la distribution nationale. Les
+					     ressources de vue restent embarquées via META-INF/resources/images. -->
 					<plugin>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
