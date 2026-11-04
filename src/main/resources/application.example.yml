@@ -147,10 +147,6 @@ serveurphoto.implementation: photoEmptyImpl
 #param.photoserver.cypheralgo: AES/ECB/PKCS5Padding
 #param.photoserver.cypherkeyalgo: AES
 #param.photoserver.cypherkey: xxxxx
-# Ancien photoserver (v1)
-#param.photoserver.ressourceurl: http://photoserver.univ.fr/PhotoServer/Photos/%category%/ce/%code%?ticket=%ticket%&chksum=%chksum%
-#param.photoserver.ticketurl: http://photoserver.univ.fr/PhotoServer/getTicket?ip=%ip%&mode=%mode%&typ_lim=%typLim%&val_lim=%valLim%&client=%client%
-#param.photoserver.codeapp: 0
 # Photo ESUP-SGC
 #param.esupsgc.urlphoto: https://esup-sgc.univ.fr/wsrest/api/photo/{eppn}
 
