@@ -40,8 +40,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.shared.Registration;
+import com.vaadin.flow.spring.annotation.UIScope;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
@@ -287,8 +287,8 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 		//On vérifie le droit d'accéder à la vue
 		if (configController.isApplicationActive() && userController.isEnseignant()) {
 			/* Style */
-			setPadding(false);
-			setSpacing(false);
+			setPadding(true);
+			setSpacing(true);
 			setSizeFull();
 
 			liste_types_favoris = List.of(Utils.CMP, Utils.ELP, Utils.VET);
@@ -347,7 +347,7 @@ public class RechercheArborescenteView extends VerticalLayout implements HasDyna
 
 			final VerticalLayout btnLayout = new VerticalLayout();
 			btnLayout.setWidthFull();
-			btnLayout.setPadding(true);
+			btnLayout.setPadding(false);
 			btnLayout.setSpacing(true);
 			btnLayout.add(selectionLayout, comboBoxAnneeUniv);
 			add(btnLayout);
