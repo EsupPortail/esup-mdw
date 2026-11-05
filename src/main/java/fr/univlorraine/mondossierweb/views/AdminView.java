@@ -59,7 +59,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -153,6 +152,8 @@ public class AdminView extends VerticalLayout implements HasDynamicTitle {
 		Button homeButton = new Button(VaadinIcon.HOME.create());
 		homeButton.addClassName("admin-home-button");
 		homeButton.addClickListener(e -> UI.getCurrent().getPage().setLocation(PropertyUtils.getAppUrl()));
+		// On masque le bouton
+		homeButton.setVisible(false);
 
 		Div titleLayout = new Div();
 		titleLayout.setWidthFull();
@@ -177,6 +178,7 @@ public class AdminView extends VerticalLayout implements HasDynamicTitle {
 		VerticalLayout layoutConfigApplication = new VerticalLayout();
 		layoutConfigApplication.setSizeFull();
 		layoutConfigApplication.setSpacing(true);
+		layoutConfigApplication.setPadding(false);
 
 		/* Grid des conf */
 		Grid<PreferencesApplication> confAppGrid = new Grid<>();
