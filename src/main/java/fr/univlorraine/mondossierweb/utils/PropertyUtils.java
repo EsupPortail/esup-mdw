@@ -80,11 +80,6 @@ public class PropertyUtils {
 		return getRequired("param.elasticsearch.url");
 	}
 
-	/** Retourne le nom du cluster elasticSearch */
-	public static String getElasticSearchCluster() {
-		return getRequired("param.elasticsearch.cluster");
-	}
-
 	/** Retourne l'index elasticSearch */
 	public static String getElasticSearchIndex() {
 		return getRequired("param.elasticsearch.index");

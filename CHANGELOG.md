@@ -28,7 +28,8 @@ Migration majeure de la pile technique :
 - Le mode debug logback s'active désormais via le profil Spring `debug`
   (`spring.profiles.active=debug`) au lieu du paramètre `debugMode`.
 - Nettoyage : suppression des servlets JMeter/Touchkit, du push d'entités, des composants
-  Vaadin 7 utilitaires (BusyIndicator, AutoComplete...), du paramètre `startServletMobile`.
+  Vaadin 7 utilitaires (BusyIndicator, AutoComplete...), du paramètre `startServletMobile`,
+  et du paramètre `param.elasticsearch.cluster` (ignoré depuis le passage au client REST).
 
 ### Impacts exploitation
 

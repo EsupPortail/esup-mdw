@@ -31,5 +31,5 @@ public interface ElasticSearchApogeeService {
 
 	boolean initConnexion();
 
-	boolean initConnexion(String url, int port, String cluster);
+	boolean initConnexion(String url, int port);
 }

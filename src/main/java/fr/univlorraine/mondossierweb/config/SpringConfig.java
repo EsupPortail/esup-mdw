@@ -123,7 +123,6 @@ public class SpringConfig {
 		esas.setTypElp(Utils.ELP);
 		esas.setTypEtu(Utils.ETU);
 		esas.setEsTyp(Utils.ES_TYPE);
-		esas.setElasticSearchCluster(PropertyUtils.getElasticSearchCluster());
 		esas.setElasticSearchUrl(PropertyUtils.getElasticSearchUrl());
 		esas.setElasticSearchPort(PropertyUtils.getElasticSearchPort());
 		esas.setElasticSearchIndex(PropertyUtils.getElasticSearchIndex());

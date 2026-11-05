@@ -46,7 +46,6 @@ public class ElasticSearchApogeeServiceImpl implements ElasticSearchApogeeServic
 	private EsRestClient client;
 	private EsQueryStrategy strategy;
 
-	private String elasticSearchCluster;
 	private String elasticSearchUrl;
 	private int elasticSearchPort;
 	private String elasticSearchIndex;
@@ -61,14 +60,11 @@ public class ElasticSearchApogeeServiceImpl implements ElasticSearchApogeeServic
 
 	@Override
 	public boolean initConnexion() {
-		return initConnexion(elasticSearchUrl, elasticSearchPort, elasticSearchCluster);
+		return initConnexion(elasticSearchUrl, elasticSearchPort);
 	}
 
 	@Override
-	public boolean initConnexion(final String url, final int port, final String cluster) {
-		if (StringUtils.hasText(cluster)) {
-			LOG.warn("Le paramètre cluster Elasticsearch '{}' est ignoré en mode REST", cluster);
-		}
+	public boolean initConnexion(final String url, final int port) {
 		if (client == null) {
 			try {
 				final EsRestClient newClient = new EsRestClient(url, port);
@@ -239,14 +235,6 @@ public class ElasticSearchApogeeServiceImpl implements ElasticSearchApogeeServic
 
 	public void setEsTyp(final String esTyp) {
 		this.esTyp = esTyp;
-	}
-
-	public String getElasticSearchCluster() {
-		return elasticSearchCluster;
-	}
-
-	public void setElasticSearchCluster(final String elasticSearchCluster) {
-		this.elasticSearchCluster = elasticSearchCluster;
 	}
 
 	public String getElasticSearchUrl() {
