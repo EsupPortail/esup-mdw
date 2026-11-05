@@ -131,11 +131,14 @@ etatcivil.nom.affichage: standard
 resultat.implementation: resultatController
 
 # --- Serveur photo ---
-# photoEmptyImpl | photoUnivLorraineImpl | photoUnivLorraineImplV2 | photoEsupSgc
+# photoEmptyImpl | photoEsupSgc | photoUnivLorraineImplV2
 serveurphoto.implementation: photoEmptyImpl
-#param.photoserver.urlphoto: https://api.univ.fr/photoserver/v1/photos
-#param.photoserver.urltoken: https://api.univ.fr/photoserver/v1/token
-#param.photoserver.urlavatar: https://api.univ.fr/photoserver/v1/avatar
+# Photo ESUP-SGC
+#param.esupsgc.urlphoto: https://esup-sgc.univ.fr/wsrest/api/photo/{eppn}
+# Photoserver v2 UnivLorraine
+#param.photoserver.urlphoto: https://api.univ.fr/photoserver/v2/photos
+#param.photoserver.urltoken: https://api.univ.fr/photoserver/v2/token
+#param.photoserver.urlavatar: https://api.univ.fr/photoserver/v2/avatar
 #param.photoserver.clientidheader: client-id
 #param.photoserver.clientid: mdw
 #param.photoserver.apikeyheader: X-Gravitee-Api-Key
@@ -147,8 +150,6 @@ serveurphoto.implementation: photoEmptyImpl
 #param.photoserver.cypheralgo: AES/ECB/PKCS5Padding
 #param.photoserver.cypherkeyalgo: AES
 #param.photoserver.cypherkey: xxxxx
-# Photo ESUP-SGC
-#param.esupsgc.urlphoto: https://esup-sgc.univ.fr/wsrest/api/photo/{eppn}
 
 # --- Statistiques (Matomo/Piwik) ---
 #piwik.tracker.url: piwik.univ.fr
