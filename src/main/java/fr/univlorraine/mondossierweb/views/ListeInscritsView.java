@@ -972,8 +972,10 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			if (listecodind.contains(inscrit.getCod_ind())) {
 				final VerticalLayout photoLayout = new VerticalLayout();
 				photoLayout.setPadding(true);
+				//Padding élargi (var(--lumo-space-m) par défaut) pour aérer le trombinoscope
+				photoLayout.getStyle().set("padding", "var(--lumo-space-l)");
 				photoLayout.setSpacing(false);
-				photoLayout.setWidth("160px");
+				photoLayout.setWidth("220px");
 				photoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 				photoLayout.setId(inscrit.getCod_ind());
 				if (inscrit.getUrlphoto() != null) {
