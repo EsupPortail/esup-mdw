@@ -79,12 +79,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.util.Base64;
 import java.util.LinkedList;
@@ -1106,16 +1105,22 @@ public class ListeInscritsController {
 					String foto = sessionController.getPhotoProvider().getUrlPhotoTrombinoscopePdf(inscrit.getCod_ind(), inscrit.getCod_etu(), userController.isEnseignant(),userController.getCurrentUserName());
 					Image photo = null;
 					if(foto == null || !foto.startsWith(Utils.DATA_IMAGE)) {
-						photo = Image.getInstance(foto);
+							if (foto != null) {
+								photo = Image.getInstance(foto);
+							}
 					} else {
 						String base64Image = foto.split(",")[1];
 						byte[] imageBytes = Base64.getMimeDecoder().decode(base64Image);
 						photo = Image.getInstance(imageBytes);
 					}
-					photo.scaleAbsolute(85, 107);
+					if (photo != null) {
+						photo.scaleAbsolute(85, 107);
+					}
 
-
-					PdfPCell cell = new PdfPCell(photo);
+					PdfPCell cell = new PdfPCell();
+					if (photo != null) {
+						cell = new PdfPCell(photo);
+					}
 					cell.cloneNonPositionParameters(border);
 					table.addCell(cell);
 

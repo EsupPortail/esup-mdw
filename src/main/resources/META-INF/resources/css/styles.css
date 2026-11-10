@@ -225,6 +225,21 @@ vaadin-grid::part(marked) {
 	border-radius: 15px;
 }
 
+/* Trombinoscope (liste des inscrits) : prénom + nom sous la photo.
+ * Le libellé d'un vaadin-button est en nowrap par défaut (shadow DOM Lumo) :
+ * on autorise le retour à la ligne pour que les noms longs tiennent dans la
+ * carte de 160px au lieu de déborder sur les cartes voisines. */
+.trombi-nom-etudiant {
+	max-width: 100%;
+	min-width: 0;
+}
+
+.trombi-nom-etudiant::part(label) {
+	white-space: normal;
+	overflow-wrap: anywhere;
+	text-align: center;
+}
+
 /* Photo du dossier étudiant dans le drawer : l'indicateur d'inscription est posé
  * en badge sur le coin inférieur droit, à cheval sur le bord de la photo. */
 .photo-dossier {

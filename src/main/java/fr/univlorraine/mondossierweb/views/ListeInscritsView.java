@@ -987,6 +987,8 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 				final Button btnNomEtudiant = new Button(inscrit.getPrenom() + " " + inscrit.getNom());
 				btnNomEtudiant.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 				btnNomEtudiant.addClassName("v-link");
+				//Retour à la ligne du prénom + nom dans la carte du trombinoscope (voir styles.css)
+				btnNomEtudiant.addClassName("trombi-nom-etudiant");
 				btnNomEtudiant.addClickListener(e -> rechercheController.accessToDetail(inscrit.getCod_etu(), Utils.TYPE_ETU, null));
 				photoLayout.add(btnNomEtudiant);
 
