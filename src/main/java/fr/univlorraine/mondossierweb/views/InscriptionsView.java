@@ -25,7 +25,6 @@ import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -60,7 +59,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -316,7 +314,7 @@ public class InscriptionsView extends VerticalLayout implements BeforeEnterObser
 				bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 				bQuittanceSso.setTooltipText(getTranslation(NAME + ".quittance.link"));
 				if (configController.isAffBtnQuittanceCouleur()) {
-					bQuittanceSso.addClassName("green-button-icon");
+					bQuittanceSso.addClassName("blue-button-icon");
 				}
 			} else {
 				bQuittanceSso.addThemeVariants(ButtonVariant.LUMO_SMALL);
