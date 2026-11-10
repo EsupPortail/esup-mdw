@@ -585,26 +585,28 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			e -> ancreExportExcel.getElement().callJsFunction("click"));
 		menuItemExportExcel.setVisible(!afficherTrombinoscope);
 
-		//Actions d'affichage des colonnes, en cochant/décochant l'entrée correspondante
+		//Actions d'affichage des colonnes, en cochant/décochant l'entrée correspondante.
+		//Pas d'icône sur ces entrées : une entrée cochable affiche déjà sa propre coche,
+		//une icône supplémentaire rendrait l'état difficile à interpréter
 		if (!typeIsVet()) {
 			menuItemCollapseEtp = resumeMenu.addItem(
-				actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseEtp.title")),
+				new Span(getTranslation(NAME + ".collapseEtp.title")),
 				e -> basculerAffichageColonne(menuItemCollapseEtp, true));
 			initialiserItemColonne(menuItemCollapseEtp, afficherEtape);
 		}
 		menuItemCollapseS1 = resumeMenu.addItem(
-			actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseResultatsS1.title")),
+			new Span(getTranslation(NAME + ".collapseResultatsS1.title")),
 			e -> basculerAffichageColonne(menuItemCollapseS1, false));
 		initialiserItemColonne(menuItemCollapseS1, afficherSession1);
 
 		menuItemCollapseS2 = resumeMenu.addItem(
-			actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseResultatsS2.title")),
+			new Span(getTranslation(NAME + ".collapseResultatsS2.title")),
 			e -> basculerAffichageColonne(menuItemCollapseS2, false));
 		initialiserItemColonne(menuItemCollapseS2, afficherSession2);
 
 		if (listeGroupes != null) {
 			menuItemCollapseGrp = resumeMenu.addItem(
-				actionMenuItem(VaadinIcon.CHECK_SQUARE_O, getTranslation(NAME + ".collapseGrp.title")),
+				new Span(getTranslation(NAME + ".collapseGrp.title")),
 				e -> basculerAffichageColonne(menuItemCollapseGrp, false));
 			initialiserItemColonne(menuItemCollapseGrp, afficherGroupe);
 		}
