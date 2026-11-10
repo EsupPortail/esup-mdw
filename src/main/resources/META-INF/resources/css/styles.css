@@ -324,6 +324,16 @@ vaadin-grid::part(marked) {
 	}
 }
 
+/* Liste des inscrits : les exports (Excel, PDF) sont proposés par des boutons dédiés
+ * sur desktop et par le menu d'actions sur mobile (largeur <= 767px, comme partout ailleurs).
+ * Masqués dès le premier rendu mobile pour éviter que les boutons n'apparaissent avant
+ * la détection de largeur côté serveur. */
+@media (max-width: 767px) {
+	.btn-export-desktop {
+		display: none;
+	}
+}
+
 /* Filtre de la recherche rapide : pas de padding autour du champ. */
 .filtre-selector {
 	padding: 0;

@@ -18,6 +18,8 @@
  */
 package fr.univlorraine.mondossierweb.views;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -45,6 +47,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.DownloadResponse;
+import com.vaadin.flow.shared.Registration;
 import fr.univlorraine.mondossierweb.beans.CollectionDeGroupes;
 import fr.univlorraine.mondossierweb.beans.ElpDeCollection;
 import fr.univlorraine.mondossierweb.beans.Groupe;
@@ -91,6 +94,9 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 
 	public static final String TOUS_LES_GROUPES_LABEL = "tous";
 
+	/** Seuil (exclu) sous lequel les exports sont proposés dans le menu d'actions, aligné sur le seuil CSS 767px */
+	private static final int SEUIL_MOBILE_PX = 768;
+
 	/* Injections */
 	@Resource
 	private transient UserController userController;
@@ -112,6 +118,10 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 
 	private Button btnTrombi;
 	private Button btnRetourListe;
+	/** Bouton d'export de la liste en Excel, affiché sur desktop à côté du bouton de bascule d'affichage */
+	private Button btnExportExcel;
+	/** Bouton d'export du trombinoscope en PDF, affiché sur desktop à côté du bouton de bascule d'affichage */
+	private Button btnExportPdf;
 	private Grid<Inscrit> inscritstable;
 	private Grid.Column<Inscrit> colEtape;
 	private Grid.Column<Inscrit> colNotes1;
@@ -162,6 +172,10 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 	private MenuItem menuItemCollapseS1;
 	private MenuItem menuItemCollapseS2;
 	private MenuItem menuItemCollapseGrp;
+	/** Vrai quand l'écran est sous le seuil mobile : les exports sont alors proposés dans le menu d'actions */
+	private boolean affichageMobile;
+	/** Enregistrement du listener de redimensionnement de la fenêtre */
+	private Registration resizeRegistration;
 
 	@Override
 	public String getPageTitle() {
@@ -196,6 +210,41 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		}
 
 		initListe();
+	}
+
+	/**
+	 * Sur chaque (ré-)attachement de la vue, applique la largeur d'écran connue puis
+	 * suit les redimensionnements : les exports basculent entre le menu d'actions
+	 * (mobile) et les boutons dédiés (desktop).
+	 */
+	@Override
+	protected void onAttach(final AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		final UI ui = attachEvent.getUI();
+		ui.getPage().retrieveExtendedClientDetails(details -> majAffichageMobile(details.getWindowInnerWidth()));
+		resizeRegistration = ui.getPage().addBrowserWindowResizeListener(e -> majAffichageMobile(e.getWidth()));
+	}
+
+	@Override
+	protected void onDetach(final DetachEvent detachEvent) {
+		if (resizeRegistration != null) {
+			resizeRegistration.remove();
+			resizeRegistration = null;
+		}
+		super.onDetach(detachEvent);
+	}
+
+	/**
+	 * Bascule les exports entre le menu d'actions (mobile) et les boutons dédiés (desktop).
+	 * Un aller-retour serveur n'a lieu que lorsque le seuil est franchi.
+	 */
+	private void majAffichageMobile(final int largeur) {
+		final boolean mobile = largeur < SEUIL_MOBILE_PX;
+		if (mobile == affichageMobile) {
+			return;
+		}
+		affichageMobile = mobile;
+		majVisibiliteResumeMenu();
 	}
 
 	public void initListe() {
@@ -560,10 +609,24 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			initialiserItemColonne(menuItemCollapseGrp, afficherGroupe);
 		}
 
-		majVisibiliteResumeMenu();
-
 		final HorizontalLayout buttonResumeLayout = new HorizontalLayout();
 		buttonResumeLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+		//Boutons d'export (desktop), placés avant le bouton de bascule liste / trombinoscope.
+		//Sur mobile, ces boutons sont masqués par le CSS : les exports restent dans le menu d'actions
+		btnExportExcel = new Button(getTranslation(NAME + ".excel.button"), VaadinIcon.FILE_TABLE.create());
+		btnExportExcel.addClassName("btn-export-desktop");
+		btnExportExcel.setTooltipText(getTranslation(NAME + ".excel.link"));
+		btnExportExcel.getElement().setAttribute("aria-label", getTranslation(NAME + ".excel.link"));
+		btnExportExcel.addClickListener(e -> ancreExportExcel.getElement().callJsFunction("click"));
+		buttonResumeLayout.add(btnExportExcel);
+
+		btnExportPdf = new Button(getTranslation(NAME + ".pdf.trombinoscope.button"), VaadinIcon.FILE_TEXT_O.create());
+		btnExportPdf.addClassName("btn-export-desktop");
+		btnExportPdf.setTooltipText(getTranslation(NAME + ".pdf.trombinoscope.link"));
+		btnExportPdf.getElement().setAttribute("aria-label", getTranslation(NAME + ".pdf.trombinoscope.link"));
+		btnExportPdf.addClickListener(e -> ancreExportTrombi.getElement().callJsFunction("click"));
+		buttonResumeLayout.add(btnExportPdf);
 
 		//Bouton trombinoscope
 		btnTrombi = new Button(getTranslation(NAME + ".message.trombinoscope"), VaadinIcon.GROUP.create());
@@ -603,6 +666,8 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 			dataLayout.add(inscritstable);
 			majVisibiliteResumeMenu();
 		});
+		//Les boutons d'export viennent d'être créés : on applique l'affichage courant
+		majVisibiliteResumeMenu();
 		resumeLayout.add(buttonResumeLayout);
 		infoLayout.add(resumeLayout);
 
@@ -832,12 +897,19 @@ public class ListeInscritsView extends VerticalLayout implements HasDynamicTitle
 		if (resumeMenu == null) {
 			return;
 		}
-		//Le trombinoscope et la liste s'excluent : un seul export est proposé
+		//Le trombinoscope et la liste s'excluent : un seul export est proposé.
+		//Sur mobile, l'export est proposé dans le menu d'actions ; sur desktop, par un bouton dédié
 		if (menuItemExportTrombi != null) {
-			menuItemExportTrombi.setVisible(afficherTrombinoscope);
+			menuItemExportTrombi.setVisible(affichageMobile && afficherTrombinoscope);
 		}
 		if (menuItemExportExcel != null) {
-			menuItemExportExcel.setVisible(!afficherTrombinoscope);
+			menuItemExportExcel.setVisible(affichageMobile && !afficherTrombinoscope);
+		}
+		if (btnExportPdf != null) {
+			btnExportPdf.setVisible(afficherTrombinoscope);
+		}
+		if (btnExportExcel != null) {
+			btnExportExcel.setVisible(!afficherTrombinoscope);
 		}
 		//Les actions d'affichage des colonnes ne concernent que la liste
 		if (menuItemCollapseEtp != null) {
