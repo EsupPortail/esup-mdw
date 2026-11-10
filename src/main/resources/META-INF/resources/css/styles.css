@@ -594,4 +594,26 @@ vaadin-grid::part(marked) {
 	justify-content: flex-start;
 }
 
+/* Couleurs des icônes de boutons d'export (certificat de scolarité, attestation
+ * d'affiliation, quittance). Ces classes provenaient de l'ancien thème Valo
+ * (mainView.css, sélecteurs préfixés par .valo-ul et fichier qui n'est plus chargé
+ * depuis la migration Flow) : elles n'avaient donc plus d'effet et toutes les icônes
+ * s'affichaient avec la couleur par défaut. Les valeurs sont celles de l'ancien
+ * thème. L'icône (vaadin-icon) est un enfant du vaadin-button dans le light DOM :
+ * on colore les deux pour ne pas dépendre de l'héritage depuis le shadow DOM. */
+.red-button-icon,
+.red-button-icon vaadin-icon {
+	color: #ff0000;
+}
+
+.blue-button-icon,
+.blue-button-icon vaadin-icon {
+	color: #0080ff;
+}
+
+.green-button-icon,
+.green-button-icon vaadin-icon {
+	color: #008000;
+}
+
 
